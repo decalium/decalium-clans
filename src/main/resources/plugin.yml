@@ -1,0 +1,7 @@
+name: DecaliumClans
+version: ${project.version}
+main: com.manya.clans.DecaliumClans
+api-version: 1.16
+authors: [ objectwebasm ]
+description: another try.
+softdepend: [ PlaceholderAPI ]
