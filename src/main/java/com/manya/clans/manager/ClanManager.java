@@ -47,14 +47,14 @@ public class ClanManager {
         checkArgument(clansByTag.remove(clan.getTag(), clan), "this clan wasn't registered.");
         clan.getMemberList().getMembers().forEach(member -> userClans.remove(member.getUniqueId()));
     }
-    public void setPlayerClan(@NotNull Player player, @Nullable Clan clan) {
-        UUID uuid = player.getUniqueId();
+    public void setPlayerClan(UUID uuid, @Nullable Clan clan) {
         checkArgument(clan == null || !clan.getMemberList().isMember(uuid),
                 "this player is already member of this clan."
         );
         userClans.put(uuid, clan);
-
-
+    }
+    public void setPlayerClan(OfflinePlayer player, @Nullable Clan clan) {
+        setPlayerClan(player.getUniqueId(), clan);
     }
 
 

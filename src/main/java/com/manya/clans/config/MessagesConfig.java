@@ -22,6 +22,15 @@ public interface MessagesConfig {
     @SubSection ClanDeletion deletion();
     @SubSection ClanInvite invite();
     @SubSection ClanList clanList();
+    @SubSection DisplayName displayName();
+
+
+    interface DisplayName {
+        @DefaultString("<prefix> Вы успешно изменили название на <name>")
+        String success();
+        @DefaultString("<prefix>Ошибка в синтаксисе!")
+        String errorInSyntax();
+    }
 
 
     interface ClanCreation {

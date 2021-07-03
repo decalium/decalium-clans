@@ -2,10 +2,11 @@ package com.manya.clans;
 
 import co.aikar.commands.PaperCommandManager;
 import com.manya.clans.config.serializer.ClanRoleSerializer;
+import com.manya.clans.helper.ClanHelper;
 import com.manya.clans.hook.ClanPlaceholderExpansion;
+import com.manya.clans.command.InviteCommand;
 import com.manya.clans.statistic.StatisticType;
-import com.manya.clans.storage.ClanMapper;
-import com.manya.clans.storage.StatisticDao;
+import com.manya.clans.storage.*;
 import com.manya.clans.storage.converters.StatisticRowMapper;
 import com.manya.clans.storage.converters.component.ComponentArgumentFactory;
 import com.manya.clans.storage.converters.component.ComponentMapper;
@@ -22,8 +23,6 @@ import com.manya.clans.config.MessagesConfig;
 import com.manya.clans.config.serializer.ClanPermissionSerializer;
 import com.manya.clans.config.serializer.ComponentSerializer;
 import com.manya.clans.manager.ClanManager;
-import com.manya.clans.storage.ClanDao;
-import com.manya.clans.storage.ClanMemberDao;
 import com.manya.clans.storage.converters.ClanMemberMapper;
 import com.manya.clans.storage.converters.uuid.UuidArgumentFactory;
 import net.kyori.adventure.text.Component;
@@ -36,6 +35,7 @@ import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 import space.arim.dazzleconf.ConfigurationOptions;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -56,12 +56,14 @@ public final class DecaliumClans extends JavaPlugin {
     private ClanRole defaultRole, ownerRole;
     private ConfigManager<MessagesConfig> messagesConfigManager;
     private Jdbi jdbi;
+    private ClanHelper clanHelper;
     private final Path dataFolder = getDataFolder().toPath();
     private ConfigManager<ClansConfig> configManager;
-    private ClanManager clanManager;
+    private final ClanLoader loader = new ClanLoader();
     private MiniMessage miniMessage;
     private PaperCommandManager commandManager;
     private ClanCommand command;
+    private InviteCommand inviteCommand;
 
     @Override
     public void onEnable() {
@@ -91,16 +93,16 @@ public final class DecaliumClans extends JavaPlugin {
         ClansConfig cfg = configManager.getConfigData();
         Component prefix = MiniMessage.get().parse(messagesConfigManager.getConfigData().prefix());
         this.miniMessage = MiniMessage.builder().placeholderResolver(s ->
-                switch(s) {
-            case "prefix" -> prefix;
-            default -> null;
+        {
+            if(s.equals("prefix")) return prefix;
+            else return null;
         }).build();
         roleRegistry = Index.create(ClanRole::getName, cfg.roles());
 
         defaultRole = roleRegistry.value(cfg.defaultRole());
         ownerRole = roleRegistry.value(cfg.ownerRole());
-        this.clanManager = new ClanManager(this);
         scheduler.async(task -> {
+
             ClansConfig.SqlConfig sqlCfg = cfg.mysql();
             Jdbi jdbi = Jdbi.create("jdbc:mysql://" + sqlCfg.host() + "/" + sqlCfg.database(),
                     sqlCfg.user(),
@@ -109,48 +111,24 @@ public final class DecaliumClans extends JavaPlugin {
             jdbi.registerRowMapper(new ClanMapper())
                     .registerRowMapper(new ClanMemberMapper(getRoleRegistry()))
                     .registerRowMapper(new StatisticRowMapper(getStatisticTypeRegistry()));
-
             jdbi.registerColumnMapper(new UuidMapper()).registerColumnMapper(new ComponentMapper());
             jdbi.registerArgument(new UuidArgumentFactory()).registerArgument(new ComponentArgumentFactory());
-            Map<String, Clan> clans = jdbi.withExtension(ClanDao.class, dao -> {
-                dao.createTable();
-                return dao.getClans().stream()
-                        .peek(clan ->
-                                clan.getMemberList().addMember(
-                                        new ClanMember(Bukkit.getOfflinePlayer(clan.getCreator()), getOwnerRole())
-                                )
-                        )
-                        .collect(Collectors.toMap(Clan::getTag, c -> c));
-            });
-            // loading members
-            jdbi.withExtension(ClanMemberDao.class, dao -> {
-                dao.createTable();
-                return dao.loadMembers();
-            }).forEach((key, value) -> {
-                Clan clan = clans.get(key);
-                if(clan == null) return;
-                clan.getMemberList().addMember(value);
-            });
-            // loading statistics
-            jdbi.withExtension(StatisticDao.class, dao -> {
-                dao.createTable();
-                return dao.getStats();
-            }).forEach(result -> {
-                Clan clan = clans.get(result.clanTag());
-                if(clan != null) clan.getStatistics().setValue(result.statType(), result.value());
-            });
+            List<Clan> clans = loader.load(jdbi);
+
+
             Tasks.sync(this, t -> {
                 this.jdbi = jdbi;
-                clans.forEach((tag, clan) -> clanManager.addClan(clan, true));
+                this.clanHelper = new ClanHelper(scheduler, jdbi);
+                clans.forEach(clan -> clanHelper.addClan(clan));
+                this.commandManager = new PaperCommandManager(this);
+                command = new ClanCommand(this, clanHelper, messagesConfigManager.getConfigData());
+                inviteCommand = new InviteCommand(this, clanHelper, messagesConfigManager.getConfigData());
+                commandManager.registerCommand(command);
+                commandManager.registerCommand(inviteCommand);
+                new ClanPlaceholderExpansion(clanHelper).register();
             }
             );
         });
-
-
-        this.commandManager = new PaperCommandManager(this);
-        command = new ClanCommand(this, clanManager, messagesConfigManager.getConfigData());
-        commandManager.registerCommand(command);
-        new ClanPlaceholderExpansion(clanManager).register();
     }
 
 

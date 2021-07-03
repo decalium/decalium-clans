@@ -17,13 +17,13 @@ public interface ClanDao {
     void createTable();
 
     @SqlUpdate("INSERT INTO clans (`tag`, `creator_uuid`, `display_name`) VALUES (:getTag, :getCreator, :getDisplayName)")
-    void insertOrUpdateClan(@BindMethods Clan clan);
+    void insertClan(@BindMethods Clan clan);
 
     @SqlUpdate("DELETE FROM clans WHERE `tag`=:clan.getTag")
     void removeClan(@BindMethods("clan") Clan clan);
 
     @SqlQuery("SELECT * FROM clans")
-    List<Clan> getClans();
+    List<Clan> loadClans();
 
     @SqlUpdate("UPDATE clans SET `display_name`=:name WHERE `tag`=:clan.getTag")
     void setDisplayName(@BindMethods("clan") Clan clan, @Bind("name") Component displayName);

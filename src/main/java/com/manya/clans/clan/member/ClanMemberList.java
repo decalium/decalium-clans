@@ -35,6 +35,7 @@ public class ClanMemberList implements Iterable<ClanMember> {
     public boolean isMember(UUID uuid) {
         return members.containsKey(uuid);
     }
+    public boolean isMember(ClanMember member) {return isMember(member.getUniqueId()); }
     public boolean isMember(OfflinePlayer player) {return isMember(player.getUniqueId()); }
 
     @Nullable
