@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.manya.clans</groupId>
+    <groupId>org.gepron1x.clans</groupId>
     <artifactId>decaliumclans</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -29,6 +29,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
@@ -60,23 +63,23 @@
                             <relocations>
                                 <relocation>
                                     <pattern>co.aikar.commands</pattern>
-                                    <shadedPattern>com.manya.acf</shadedPattern>
+                                    <shadedPattern>org.gepron1x.acf</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>co.aikar.locales</pattern>
-                                    <shadedPattern>com.manya.locales</shadedPattern>
+                                    <shadedPattern>org.gepron1x.locales</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>space.arim.dazzleconf</pattern>
-                                    <shadedPattern>com.manya.dazzleconf</shadedPattern>
+                                    <shadedPattern>org.gepron1x.dazzleconf</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>net.kyori.adventure.text.minimessage</pattern>
-                                    <shadedPattern>com.manya/minimessage</shadedPattern>
+                                    <shadedPattern>org.gepron1x.minimessage</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>org.jdbi.v3.core</pattern>
-                                    <shadedPattern>com.manya.jdbi.v3.core</shadedPattern>
+                                    <pattern>org.jdbi</pattern>
+                                    <shadedPattern>org.gepron1x.jdbi</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
