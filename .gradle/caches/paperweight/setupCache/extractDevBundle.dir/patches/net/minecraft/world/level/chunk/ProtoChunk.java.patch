@@ -1,0 +1,341 @@
+--- a/net/minecraft/world/level/chunk/ProtoChunk.java
++++ b/net/minecraft/world/level/chunk/ProtoChunk.java
+@@ -63,16 +63,45 @@
+     private long inhabitedTime;
+     private final Map<GenerationStep.Carving, BitSet> carvingMasks = new Object2ObjectArrayMap<>();
+     private volatile boolean isLightCorrect;
++    // Paper start - Add level
++    final net.minecraft.world.level.Level level;
++    @Override
++    public net.minecraft.world.level.Level getLevel() {
++        return this.level;
++    }
++    // Paper end
++    private static boolean PRINTED_OUTDATED_CTOR_MSG = false; // Paper - Add level
+ 
++    @Deprecated // Paper start - add level
+     public ProtoChunk(ChunkPos pos, UpgradeData upgradeData, LevelHeightAccessor world) {
++        // Paper start
++        this(pos, upgradeData, world, null);
++        if (!PRINTED_OUTDATED_CTOR_MSG) {
++            new IllegalArgumentException("Must use ProtoChunk constructor with the ServerLevel parameter").printStackTrace();
++            PRINTED_OUTDATED_CTOR_MSG = true;
++        }
++    }
++    public ProtoChunk(ChunkPos pos, UpgradeData upgradeData, LevelHeightAccessor world, net.minecraft.server.level.ServerLevel level) {
++        // Paper end
+         this(pos, upgradeData, (LevelChunkSection[])null, new ProtoTickList<>((block) -> {
+             return block == null || block.defaultBlockState().isAir();
+         }, pos, world), new ProtoTickList<>((fluid) -> {
+             return fluid == null || fluid == Fluids.EMPTY;
+-        }, pos, world), world);
++        }, pos, world), world, level); // Paper - add level
+     }
+ 
++    @Deprecated // Paper start - add level
+     public ProtoChunk(ChunkPos pos, UpgradeData upgradeData, @Nullable LevelChunkSection[] levelChunkSections, ProtoTickList<Block> blockTickScheduler, ProtoTickList<Fluid> fluidTickScheduler, LevelHeightAccessor world) {
++        // Paper start
++        this(pos, upgradeData, levelChunkSections, blockTickScheduler, fluidTickScheduler, world, null);
++        if (!PRINTED_OUTDATED_CTOR_MSG) {
++            new IllegalArgumentException("Must use ProtoChunk constructor with the ServerLevel parameter").printStackTrace();
++            PRINTED_OUTDATED_CTOR_MSG = true;
++        }
++    }
++    public ProtoChunk(ChunkPos pos, UpgradeData upgradeData, @Nullable LevelChunkSection[] levelChunkSections, ProtoTickList<Block> blockTickScheduler, ProtoTickList<Fluid> fluidTickScheduler, LevelHeightAccessor world, net.minecraft.server.level.ServerLevel level) {
++        this.level = level;
++        // Paper end
+         this.chunkPos = pos;
+         this.upgradeData = upgradeData;
+         this.blockTicks = blockTickScheduler;
+@@ -90,16 +119,34 @@
+         this.postProcessing = new ShortList[world.getSectionsCount()];
+     }
+ 
++    // Paper start - If loaded util
++    @Override
++    public FluidState getFluidIfLoaded(BlockPos blockposition) {
++        return this.getFluidState(blockposition);
++    }
++
++    @Override
++    public BlockState getTypeIfLoaded(BlockPos blockposition) {
++        return this.getBlockState(blockposition);
++    }
++    // Paper end
++
++    @Override
+     public BlockState getBlockState(BlockPos pos) {
+-        int i = pos.getY();
+-        if (this.isOutsideBuildHeight(i)) {
++        // Paper start
++        return getType(pos.getX(), pos.getY(), pos.getZ());
++    }
++    public BlockState getType(final int x, final int y, final int z) {
++        if (this.isOutsideBuildHeight(y)) {
+             return Blocks.VOID_AIR.defaultBlockState();
+         } else {
+-            LevelChunkSection levelChunkSection = this.getSections()[this.getSectionIndex(i)];
+-            return LevelChunkSection.isEmpty(levelChunkSection) ? Blocks.AIR.defaultBlockState() : levelChunkSection.getBlockState(pos.getX() & 15, i & 15, pos.getZ() & 15);
++            LevelChunkSection chunksection = this.getSections()[this.getSectionIndex(y)];
++            return chunksection == LevelChunk.EMPTY_SECTION || chunksection.isEmpty() ? Blocks.AIR.defaultBlockState() : chunksection.getBlockState(x & 15, y & 15, z & 15);
+         }
+     }
++    // Paper end
+ 
++    @Override
+     public FluidState getFluidState(BlockPos pos) {
+         int i = pos.getY();
+         if (this.isOutsideBuildHeight(i)) {
+@@ -110,6 +157,7 @@
+         }
+     }
+ 
++    @Override
+     public Stream<BlockPos> getLights() {
+         return this.lights.stream();
+     }
+@@ -133,6 +181,7 @@
+     }
+ 
+     @Nullable
++    @Override
+     public BlockState setBlockState(BlockPos pos, BlockState state, boolean moved) {
+         int i = pos.getX();
+         int j = pos.getY();
+@@ -181,10 +230,12 @@
+         }
+     }
+ 
++    @Override
+     public void setBlockEntity(BlockEntity blockEntity) {
+         this.blockEntities.put(blockEntity.getBlockPos(), blockEntity);
+     }
+ 
++    @Override
+     public Set<BlockPos> getBlockEntitiesPos() {
+         Set<BlockPos> set = Sets.newHashSet(this.blockEntityNbts.keySet());
+         set.addAll(this.blockEntities.keySet());
+@@ -192,6 +243,7 @@
+     }
+ 
+     @Nullable
++    @Override
+     public BlockEntity getBlockEntity(BlockPos pos) {
+         return this.blockEntities.get(pos);
+     }
+@@ -204,6 +256,7 @@
+         this.entities.add(entityTag);
+     }
+ 
++    @Override
+     public void addEntity(Entity entity) {
+         if (!entity.isPassenger()) {
+             CompoundTag compoundTag = new CompoundTag();
+@@ -221,18 +274,22 @@
+     }
+ 
+     @Nullable
++    @Override
+     public ChunkBiomeContainer getBiomes() {
+         return this.biomes;
+     }
+ 
++    @Override
+     public void setUnsaved(boolean shouldSave) {
+         this.isDirty = shouldSave;
+     }
+ 
++    @Override
+     public boolean isUnsaved() {
+         return this.isDirty;
+     }
+ 
++    @Override
+     public ChunkStatus getStatus() {
+         return this.status;
+     }
+@@ -242,20 +299,24 @@
+         this.setUnsaved(true);
+     }
+ 
++    @Override
+     public LevelChunkSection[] getSections() {
+         return this.sections;
+     }
+ 
++    @Override
+     public Collection<Entry<Heightmap.Types, Heightmap>> getHeightmaps() {
+         return Collections.unmodifiableSet(this.heightmaps.entrySet());
+     }
+ 
++    @Override
+     public Heightmap getOrCreateHeightmapUnprimed(Heightmap.Types type) {
+         return this.heightmaps.computeIfAbsent(type, (typex) -> {
+             return new Heightmap(this, typex);
+         });
+     }
+ 
++    @Override
+     public int getHeight(Heightmap.Types type, int x, int z) {
+         Heightmap heightmap = this.heightmaps.get(type);
+         if (heightmap == null) {
+@@ -266,6 +327,7 @@
+         return heightmap.getFirstAvailable(x & 15, z & 15) - 1;
+     }
+ 
++    @Override
+     public BlockPos getHeighestPosition(Heightmap.Types types) {
+         int i = this.getMinBuildHeight();
+         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+@@ -283,36 +345,43 @@
+         return mutableBlockPos.immutable();
+     }
+ 
++    @Override
+     public ChunkPos getPos() {
+         return this.chunkPos;
+     }
+ 
+     @Nullable
++    @Override
+     public StructureStart<?> getStartForFeature(StructureFeature<?> structure) {
+         return this.structureStarts.get(structure);
+     }
+ 
++    @Override
+     public void setStartForFeature(StructureFeature<?> structure, StructureStart<?> start) {
+         this.structureStarts.put(structure, start);
+         this.isDirty = true;
+     }
+ 
++    @Override
+     public Map<StructureFeature<?>, StructureStart<?>> getAllStarts() {
+         return Collections.unmodifiableMap(this.structureStarts);
+     }
+ 
++    @Override
+     public void setAllStarts(Map<StructureFeature<?>, StructureStart<?>> structureStarts) {
+         this.structureStarts.clear();
+         this.structureStarts.putAll(structureStarts);
+         this.isDirty = true;
+     }
+ 
++    @Override
+     public LongSet getReferencesForFeature(StructureFeature<?> structure) {
+         return this.structuresRefences.computeIfAbsent(structure, (structurex) -> {
+             return new LongOpenHashSet();
+         });
+     }
+ 
++    @Override
+     public void addReferenceForFeature(StructureFeature<?> structure, long reference) {
+         this.structuresRefences.computeIfAbsent(structure, (structurex) -> {
+             return new LongOpenHashSet();
+@@ -320,10 +389,12 @@
+         this.isDirty = true;
+     }
+ 
++    @Override
+     public Map<StructureFeature<?>, LongSet> getAllReferences() {
+         return Collections.unmodifiableMap(this.structuresRefences);
+     }
+ 
++    @Override
+     public void setAllReferences(Map<StructureFeature<?>, LongSet> structureReferences) {
+         this.structuresRefences.clear();
+         this.structuresRefences.putAll(structureReferences);
+@@ -347,6 +418,7 @@
+         return new BlockPos(i, j, k);
+     }
+ 
++    @Override
+     public void markPosForPostprocessing(BlockPos pos) {
+         if (!this.isOutsideBuildHeight(pos)) {
+             ChunkAccess.getOrCreateOffsetList(this.postProcessing, this.getSectionIndex(pos.getY())).add(packOffsetCoordinates(pos));
+@@ -354,34 +426,42 @@
+ 
+     }
+ 
++    @Override
+     public ShortList[] getPostProcessing() {
+         return this.postProcessing;
+     }
+ 
++    @Override
+     public void addPackedPostProcess(short packedPos, int index) {
+         ChunkAccess.getOrCreateOffsetList(this.postProcessing, index).add(packedPos);
+     }
+ 
++    @Override
+     public ProtoTickList<Block> getBlockTicks() {
+         return this.blockTicks;
+     }
+ 
++    @Override
+     public ProtoTickList<Fluid> getLiquidTicks() {
+         return this.liquidTicks;
+     }
+ 
++    @Override
+     public UpgradeData getUpgradeData() {
+         return this.upgradeData;
+     }
+ 
++    @Override
+     public void setInhabitedTime(long inhabitedTime) {
+         this.inhabitedTime = inhabitedTime;
+     }
+ 
++    @Override
+     public long getInhabitedTime() {
+         return this.inhabitedTime;
+     }
+ 
++    @Override
+     public void setBlockEntityNbt(CompoundTag nbt) {
+         this.blockEntityNbts.put(new BlockPos(nbt.getInt("x"), nbt.getInt("y"), nbt.getInt("z")), nbt);
+     }
+@@ -390,16 +470,19 @@
+         return Collections.unmodifiableMap(this.blockEntityNbts);
+     }
+ 
++    @Override
+     public CompoundTag getBlockEntityNbt(BlockPos pos) {
+         return this.blockEntityNbts.get(pos);
+     }
+ 
+     @Nullable
++    @Override
+     public CompoundTag getBlockEntityNbtForSaving(BlockPos pos) {
+         BlockEntity blockEntity = this.getBlockEntity(pos);
+         return blockEntity != null ? blockEntity.save(new CompoundTag()) : this.blockEntityNbts.get(pos);
+     }
+ 
++    @Override
+     public void removeBlockEntity(BlockPos pos) {
+         this.blockEntities.remove(pos);
+         this.blockEntityNbts.remove(pos);
+@@ -424,19 +507,23 @@
+         this.lightEngine = lightingProvider;
+     }
+ 
++    @Override
+     public boolean isLightCorrect() {
+         return this.isLightCorrect;
+     }
+ 
++    @Override
+     public void setLightCorrect(boolean lightOn) {
+         this.isLightCorrect = lightOn;
+         this.setUnsaved(true);
+     }
+ 
++    @Override
+     public int getMinBuildHeight() {
+         return this.levelHeightAccessor.getMinBuildHeight();
+     }
+ 
++    @Override
+     public int getHeight() {
+         return this.levelHeightAccessor.getHeight();
+     }

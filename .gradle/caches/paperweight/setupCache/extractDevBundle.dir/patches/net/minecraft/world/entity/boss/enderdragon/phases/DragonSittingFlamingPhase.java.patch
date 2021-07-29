@@ -1,0 +1,51 @@
+--- a/net/minecraft/world/entity/boss/enderdragon/phases/DragonSittingFlamingPhase.java
++++ b/net/minecraft/world/entity/boss/enderdragon/phases/DragonSittingFlamingPhase.java
+@@ -21,6 +21,7 @@
+         super(dragon);
+     }
+ 
++    @Override
+     public void doClientTick() {
+         ++this.flameTicks;
+         if (this.flameTicks % 2 == 0 && this.flameTicks < 10) {
+@@ -45,6 +46,7 @@
+ 
+     }
+ 
++    @Override
+     public void doServerTick() {
+         ++this.flameTicks;
+         if (this.flameTicks >= 200) {
+@@ -79,16 +81,24 @@
+             this.flame.setDuration(200);
+             this.flame.setParticle(ParticleTypes.DRAGON_BREATH);
+             this.flame.addEffect(new MobEffectInstance(MobEffects.HARM));
++            if (new com.destroystokyo.paper.event.entity.EnderDragonFlameEvent((org.bukkit.entity.EnderDragon) this.dragon.getBukkitEntity(), (org.bukkit.entity.AreaEffectCloud) this.flame.getBukkitEntity()).callEvent()) { // Paper
+             this.dragon.level.addFreshEntity(this.flame);
++            // Paper start
++            } else {
++                this.end();
++            }
++            // Paper end
+         }
+ 
+     }
+ 
++    @Override
+     public void begin() {
+         this.flameTicks = 0;
+         ++this.flameCount;
+     }
+ 
++    @Override
+     public void end() {
+         if (this.flame != null) {
+             this.flame.discard();
+@@ -97,6 +107,7 @@
+ 
+     }
+ 
++    @Override
+     public EnderDragonPhase<DragonSittingFlamingPhase> getPhase() {
+         return EnderDragonPhase.SITTING_FLAMING;
+     }

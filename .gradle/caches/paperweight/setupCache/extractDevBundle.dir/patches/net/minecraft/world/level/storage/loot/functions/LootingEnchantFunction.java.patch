@@ -1,0 +1,108 @@
+--- a/net/minecraft/world/level/storage/loot/functions/LootingEnchantFunction.java
++++ b/net/minecraft/world/level/storage/loot/functions/LootingEnchantFunction.java
+@@ -18,20 +18,23 @@
+ import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
+ 
+ public class LootingEnchantFunction extends LootItemConditionalFunction {
++
+     public static final int NO_LIMIT = 0;
+     final NumberProvider value;
+     final int limit;
+ 
+-    LootingEnchantFunction(LootItemCondition[] conditions, NumberProvider numberProvider, int i) {
++    LootingEnchantFunction(LootItemCondition[] conditions, NumberProvider numberprovider, int i) {
+         super(conditions);
+-        this.value = numberProvider;
++        this.value = numberprovider;
+         this.limit = i;
+     }
+ 
++    @Override
+     public LootItemFunctionType getType() {
+         return LootItemFunctions.LOOTING_ENCHANT;
+     }
+ 
++    @Override
+     public Set<LootContextParam<?>> getReferencedContextParams() {
+         return Sets.union(ImmutableSet.of(LootContextParams.KILLER_ENTITY), this.value.getReferencedContextParams());
+     }
+@@ -40,15 +43,24 @@
+         return this.limit > 0;
+     }
+ 
++    @Override
+     public ItemStack run(ItemStack stack, LootContext context) {
+-        Entity entity = context.getParamOrNull(LootContextParams.KILLER_ENTITY);
++        Entity entity = (Entity) context.getParamOrNull(LootContextParams.KILLER_ENTITY);
++
+         if (entity instanceof LivingEntity) {
+-            int i = EnchantmentHelper.getMobLooting((LivingEntity)entity);
+-            if (i == 0) {
++            int i = EnchantmentHelper.getMobLooting((LivingEntity) entity);
++            // CraftBukkit start - use lootingModifier if set by plugin
++            if (context.hasParam(LootContextParams.LOOTING_MOD)) {
++                i = context.getParamOrNull(LootContextParams.LOOTING_MOD);
++            }
++            // CraftBukkit end
++
++            if (i <= 0) { // CraftBukkit - account for possible negative looting values from Bukkit
+                 return stack;
+             }
+ 
+-            float f = (float)i * this.value.getFloat(context);
++            float f = (float) i * this.value.getFloat(context);
++
+             stack.grow(Math.round(f));
+             if (this.hasLimit() && stack.getCount() > this.limit) {
+                 stack.setCount(this.limit);
+@@ -63,6 +75,7 @@
+     }
+ 
+     public static class Builder extends LootItemConditionalFunction.Builder<LootingEnchantFunction.Builder> {
++
+         private final NumberProvider count;
+         private int limit = 0;
+ 
+@@ -70,6 +83,7 @@
+             this.count = countRange;
+         }
+ 
++        @Override
+         protected LootingEnchantFunction.Builder getThis() {
+             return this;
+         }
+@@ -79,14 +93,18 @@
+             return this;
+         }
+ 
++        @Override
+         public LootItemFunction build() {
+             return new LootingEnchantFunction(this.getConditions(), this.count, this.limit);
+         }
+     }
+ 
+     public static class Serializer extends LootItemConditionalFunction.Serializer<LootingEnchantFunction> {
++
++        public Serializer() {}
++
+         public void serialize(JsonObject json, LootingEnchantFunction object, JsonSerializationContext context) {
+-            super.serialize(json, object, context);
++            super.serialize(json, object, context); // CraftBukkit - decompile error
+             json.add("count", context.serialize(object.value));
+             if (object.hasLimit()) {
+                 json.add("limit", context.serialize(object.limit));
+@@ -94,9 +112,11 @@
+ 
+         }
+ 
+-        public LootingEnchantFunction deserialize(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootItemCondition[] lootItemConditions) {
+-            int i = GsonHelper.getAsInt(jsonObject, "limit", 0);
+-            return new LootingEnchantFunction(lootItemConditions, GsonHelper.getAsObject(jsonObject, "count", jsonDeserializationContext, NumberProvider.class), i);
++        @Override
++        public LootingEnchantFunction deserialize(JsonObject jsonobject, JsonDeserializationContext jsondeserializationcontext, LootItemCondition[] alootitemcondition) {
++            int i = GsonHelper.getAsInt(jsonobject, "limit", (int) 0);
++
++            return new LootingEnchantFunction(alootitemcondition, (NumberProvider) GsonHelper.getAsObject(jsonobject, "count", jsondeserializationcontext, NumberProvider.class), i);
+         }
+     }
+ }

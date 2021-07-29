@@ -1,0 +1,72 @@
+--- a/net/minecraft/world/entity/ai/goal/WrappedGoal.java
++++ b/net/minecraft/world/entity/ai/goal/WrappedGoal.java
+@@ -17,18 +17,22 @@
+         return this.isInterruptable() && goal.getPriority() < this.getPriority();
+     }
+ 
++    @Override
+     public boolean canUse() {
+         return this.goal.canUse();
+     }
+ 
++    @Override
+     public boolean canContinueToUse() {
+         return this.goal.canContinueToUse();
+     }
+ 
++    @Override
+     public boolean isInterruptable() {
+         return this.goal.isInterruptable();
+     }
+ 
++    @Override
+     public void start() {
+         if (!this.isRunning) {
+             this.isRunning = true;
+@@ -36,6 +40,7 @@
+         }
+     }
+ 
++    @Override
+     public void stop() {
+         if (this.isRunning) {
+             this.isRunning = false;
+@@ -43,16 +48,20 @@
+         }
+     }
+ 
++    @Override
+     public void tick() {
+         this.goal.tick();
+     }
+ 
++    @Override
+     public void setFlags(EnumSet<Goal.Flag> controls) {
+         this.goal.setFlags(controls);
+     }
+ 
+-    public EnumSet<Goal.Flag> getFlags() {
+-        return this.goal.getFlags();
++    // Paper start - remove streams from pathfindergoalselector
++    public com.destroystokyo.paper.util.set.OptimizedSmallEnumSet<Goal.Flag> getGoalTypes() {
++        return this.goal.getGoalTypes();
++        // Paper end - remove streams from pathfindergoalselector
+     }
+ 
+     public boolean isRunning() {
+@@ -67,6 +76,7 @@
+         return this.goal;
+     }
+ 
++    @Override
+     public boolean equals(@Nullable Object object) {
+         if (this == object) {
+             return true;
+@@ -75,6 +85,7 @@
+         }
+     }
+ 
++    @Override
+     public int hashCode() {
+         return this.goal.hashCode();
+     }

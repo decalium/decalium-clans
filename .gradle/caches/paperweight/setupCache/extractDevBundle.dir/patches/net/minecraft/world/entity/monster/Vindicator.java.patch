@@ -1,0 +1,160 @@
+--- a/net/minecraft/world/entity/monster/Vindicator.java
++++ b/net/minecraft/world/entity/monster/Vindicator.java
+@@ -48,15 +48,16 @@
+ 
+ public class Vindicator extends AbstractIllager {
+     private static final String TAG_JOHNNY = "Johnny";
+-    static final Predicate<Difficulty> DOOR_BREAKING_PREDICATE = (difficulty) -> {
++    public static final Predicate<Difficulty> DOOR_BREAKING_PREDICATE = (difficulty) -> {
+         return difficulty == Difficulty.NORMAL || difficulty == Difficulty.HARD;
+     };
+-    boolean isJohnny;
++    public boolean isJohnny;
+ 
+     public Vindicator(EntityType<? extends Vindicator> type, Level world) {
+         super(type, world);
+     }
+ 
++    @Override
+     protected void registerGoals() {
+         super.registerGoals();
+         this.goalSelector.addGoal(0, new FloatGoal(this));
+@@ -74,6 +75,7 @@
+         this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Mob.class, 8.0F));
+     }
+ 
++    @Override
+     protected void customServerAiStep() {
+         if (!this.isNoAi() && GoalUtils.hasGroundPathNavigation(this)) {
+             boolean bl = ((ServerLevel)this.level).isRaided(this.blockPosition());
+@@ -87,6 +89,7 @@
+         return Monster.createMonsterAttributes().add(Attributes.MOVEMENT_SPEED, (double)0.35F).add(Attributes.FOLLOW_RANGE, 12.0D).add(Attributes.MAX_HEALTH, 24.0D).add(Attributes.ATTACK_DAMAGE, 5.0D);
+     }
+ 
++    @Override
+     public void addAdditionalSaveData(CompoundTag nbt) {
+         super.addAdditionalSaveData(nbt);
+         if (this.isJohnny) {
+@@ -95,6 +98,7 @@
+ 
+     }
+ 
++    @Override
+     public AbstractIllager.IllagerArmPose getArmPose() {
+         if (this.isAggressive()) {
+             return AbstractIllager.IllagerArmPose.ATTACKING;
+@@ -103,6 +107,7 @@
+         }
+     }
+ 
++    @Override
+     public void readAdditionalSaveData(CompoundTag nbt) {
+         super.readAdditionalSaveData(nbt);
+         if (nbt.contains("Johnny", 99)) {
+@@ -111,11 +116,13 @@
+ 
+     }
+ 
++    @Override
+     public SoundEvent getCelebrateSound() {
+         return SoundEvents.VINDICATOR_CELEBRATE;
+     }
+ 
+     @Nullable
++    @Override
+     public SpawnGroupData finalizeSpawn(ServerLevelAccessor world, DifficultyInstance difficulty, MobSpawnType spawnReason, @Nullable SpawnGroupData entityData, @Nullable CompoundTag entityNbt) {
+         SpawnGroupData spawnGroupData = super.finalizeSpawn(world, difficulty, spawnReason, entityData, entityNbt);
+         ((GroundPathNavigation)this.getNavigation()).setCanOpenDoors(true);
+@@ -124,6 +131,7 @@
+         return spawnGroupData;
+     }
+ 
++    @Override
+     protected void populateDefaultEquipmentSlots(DifficultyInstance difficulty) {
+         if (this.getCurrentRaid() == null) {
+             this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_AXE));
+@@ -131,6 +139,7 @@
+ 
+     }
+ 
++    @Override
+     public boolean isAlliedTo(Entity other) {
+         if (super.isAlliedTo(other)) {
+             return true;
+@@ -141,6 +150,7 @@
+         }
+     }
+ 
++    @Override
+     public void setCustomName(@Nullable Component name) {
+         super.setCustomName(name);
+         if (!this.isJohnny && name != null && name.getString().equals("Johnny")) {
+@@ -149,18 +159,22 @@
+ 
+     }
+ 
++    @Override
+     protected SoundEvent getAmbientSound() {
+         return SoundEvents.VINDICATOR_AMBIENT;
+     }
+ 
++    @Override
+     protected SoundEvent getDeathSound() {
+         return SoundEvents.VINDICATOR_DEATH;
+     }
+ 
++    @Override
+     protected SoundEvent getHurtSound(DamageSource source) {
+         return SoundEvents.VINDICATOR_HURT;
+     }
+ 
++    @Override
+     public void applyRaidBuffs(int wave, boolean unused) {
+         ItemStack itemStack = new ItemStack(Items.IRON_AXE);
+         Raid raid = this.getCurrentRaid();
+@@ -181,20 +195,23 @@
+ 
+     static class VindicatorBreakDoorGoal extends BreakDoorGoal {
+         public VindicatorBreakDoorGoal(Mob mob) {
+-            super(mob, 6, Vindicator.DOOR_BREAKING_PREDICATE);
++            super(mob, 6, com.google.common.base.Predicates.in(mob.level.paperConfig.vindicatorBreakDoors)); // Paper
+             this.setFlags(EnumSet.of(Goal.Flag.MOVE));
+         }
+ 
++        @Override
+         public boolean canContinueToUse() {
+             Vindicator vindicator = (Vindicator)this.mob;
+             return vindicator.hasActiveRaid() && super.canContinueToUse();
+         }
+ 
++        @Override
+         public boolean canUse() {
+             Vindicator vindicator = (Vindicator)this.mob;
+             return vindicator.hasActiveRaid() && vindicator.random.nextInt(10) == 0 && super.canUse();
+         }
+ 
++        @Override
+         public void start() {
+             super.start();
+             this.mob.setNoActionTime(0);
+@@ -206,10 +223,12 @@
+             super(vindicator, LivingEntity.class, 0, true, true, LivingEntity::attackable);
+         }
+ 
++        @Override
+         public boolean canUse() {
+             return ((Vindicator)this.mob).isJohnny && super.canUse();
+         }
+ 
++        @Override
+         public void start() {
+             super.start();
+             this.mob.setNoActionTime(0);
+@@ -221,6 +240,7 @@
+             super(vindicator, 1.0D, false);
+         }
+ 
++        @Override
+         protected double getAttackReachSqr(LivingEntity entity) {
+             if (this.mob.getVehicle() instanceof Ravager) {
+                 float f = this.mob.getVehicle().getBbWidth() - 0.1F;

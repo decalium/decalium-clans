@@ -1,0 +1,121 @@
+--- a/net/minecraft/world/entity/monster/piglin/AbstractPiglin.java
++++ b/net/minecraft/world/entity/monster/piglin/AbstractPiglin.java
+@@ -21,9 +21,10 @@
+ import net.minecraft.world.level.pathfinder.BlockPathTypes;
+ 
+ public abstract class AbstractPiglin extends Monster {
++
+     protected static final EntityDataAccessor<Boolean> DATA_IMMUNE_TO_ZOMBIFICATION = SynchedEntityData.defineId(AbstractPiglin.class, EntityDataSerializers.BOOLEAN);
+     protected static final int CONVERSION_TIME = 300;
+-    protected int timeInOverworld;
++    public int timeInOverworld;
+ 
+     public AbstractPiglin(EntityType<? extends AbstractPiglin> type, Level world) {
+         super(type, world);
+@@ -35,7 +36,7 @@
+ 
+     private void applyOpenDoorsAbility() {
+         if (GoalUtils.hasGroundPathNavigation(this)) {
+-            ((GroundPathNavigation)this.getNavigation()).setCanOpenDoors(true);
++            ((GroundPathNavigation) this.getNavigation()).setCanOpenDoors(true);
+         }
+ 
+     }
+@@ -43,18 +44,20 @@
+     protected abstract boolean canHunt();
+ 
+     public void setImmuneToZombification(boolean immuneToZombification) {
+-        this.getEntityData().set(DATA_IMMUNE_TO_ZOMBIFICATION, immuneToZombification);
++        this.getEntityData().set(AbstractPiglin.DATA_IMMUNE_TO_ZOMBIFICATION, immuneToZombification);
+     }
+ 
+-    protected boolean isImmuneToZombification() {
+-        return this.getEntityData().get(DATA_IMMUNE_TO_ZOMBIFICATION);
++    public boolean isImmuneToZombification() {
++        return (Boolean) this.getEntityData().get(AbstractPiglin.DATA_IMMUNE_TO_ZOMBIFICATION);
+     }
+ 
++    @Override
+     protected void defineSynchedData() {
+         super.defineSynchedData();
+-        this.entityData.define(DATA_IMMUNE_TO_ZOMBIFICATION, false);
++        this.entityData.define(AbstractPiglin.DATA_IMMUNE_TO_ZOMBIFICATION, false);
+     }
+ 
++    @Override
+     public void addAdditionalSaveData(CompoundTag nbt) {
+         super.addAdditionalSaveData(nbt);
+         if (this.isImmuneToZombification()) {
+@@ -64,16 +67,19 @@
+         nbt.putInt("TimeInOverworld", this.timeInOverworld);
+     }
+ 
++    @Override
+     public double getMyRidingOffset() {
+         return this.isBaby() ? -0.05D : -0.45D;
+     }
+ 
++    @Override
+     public void readAdditionalSaveData(CompoundTag nbt) {
+         super.readAdditionalSaveData(nbt);
+         this.setImmuneToZombification(nbt.getBoolean("IsImmuneToZombification"));
+         this.timeInOverworld = nbt.getInt("TimeInOverworld");
+     }
+ 
++    @Override
+     protected void customServerAiStep() {
+         super.customServerAiStep();
+         if (this.isConverting()) {
+@@ -84,7 +90,7 @@
+ 
+         if (this.timeInOverworld > 300) {
+             this.playConvertedSound();
+-            this.finishConversion((ServerLevel)this.level);
++            this.finishConversion((ServerLevel) this.level);
+         }
+ 
+     }
+@@ -94,9 +100,10 @@
+     }
+ 
+     protected void finishConversion(ServerLevel world) {
+-        ZombifiedPiglin zombifiedPiglin = this.convertTo(EntityType.ZOMBIFIED_PIGLIN, true);
+-        if (zombifiedPiglin != null) {
+-            zombifiedPiglin.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0));
++        ZombifiedPiglin entitypigzombie = (ZombifiedPiglin) this.convertTo(EntityType.ZOMBIFIED_PIGLIN, true, org.bukkit.event.entity.EntityTransformEvent.TransformReason.PIGLIN_ZOMBIFIED, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.PIGLIN_ZOMBIFIED); // CraftBukkit - add spawn and transform reasons
++
++        if (entitypigzombie != null) {
++            entitypigzombie.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0));
+         }
+ 
+     }
+@@ -108,14 +115,16 @@
+     public abstract PiglinArmPose getArmPose();
+ 
+     @Nullable
++    @Override
+     public LivingEntity getTarget() {
+-        return this.brain.getMemory(MemoryModuleType.ATTACK_TARGET).orElse((LivingEntity)null);
++        return (LivingEntity) this.brain.getMemory(MemoryModuleType.ATTACK_TARGET).orElse(null); // CraftBukkit - decompile error
+     }
+ 
+     protected boolean isHoldingMeleeWeapon() {
+         return this.getMainHandItem().getItem() instanceof TieredItem;
+     }
+ 
++    @Override
+     public void playAmbientSound() {
+         if (PiglinAi.isIdle(this)) {
+             super.playAmbientSound();
+@@ -123,9 +132,10 @@
+ 
+     }
+ 
++    @Override
+     protected void sendDebugPackets() {
+         super.sendDebugPackets();
+-        DebugPackets.sendEntityBrain(this);
++        DebugPackets.sendEntityBrain((LivingEntity) this);
+     }
+ 
+     protected abstract void playConvertedSound();

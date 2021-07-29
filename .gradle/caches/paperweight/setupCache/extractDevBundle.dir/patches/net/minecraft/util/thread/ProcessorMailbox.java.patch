@@ -1,0 +1,48 @@
+--- a/net/minecraft/util/thread/ProcessorMailbox.java
++++ b/net/minecraft/util/thread/ProcessorMailbox.java
+@@ -63,6 +63,7 @@
+         }
+     }
+ 
++    @Override
+     public void close() {
+         int i;
+         do {
+@@ -89,9 +90,10 @@
+         }
+     }
+ 
++    @Override
+     public void run() {
+         try {
+-            this.pollUntil((i) -> {
++            this.pollUntil((int i) -> { // Paper - decompile fix
+                 return i == 0;
+             });
+         } finally {
+@@ -113,6 +115,7 @@
+ 
+     }
+ 
++    @Override
+     public void tell(T message) {
+         this.queue.push(message);
+         this.registerForExecution();
+@@ -145,14 +148,17 @@
+         return this.queue.size();
+     }
+ 
++    @Override
+     public String toString() {
+         return this.name + " " + this.status.get() + " " + this.queue.isEmpty();
+     }
+ 
++    @Override
+     public String name() {
+         return this.name;
+     }
+ 
++    @Override
+     public List<MetricSampler> profiledMetrics() {
+         return ImmutableList.of(MetricSampler.create(this.name + "-queue-size", MetricCategory.MAIL_BOXES, this::size));
+     }

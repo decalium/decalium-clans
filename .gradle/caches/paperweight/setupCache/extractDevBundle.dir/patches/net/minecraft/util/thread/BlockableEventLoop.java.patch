@@ -1,0 +1,55 @@
+--- a/net/minecraft/util/thread/BlockableEventLoop.java
++++ b/net/minecraft/util/thread/BlockableEventLoop.java
+@@ -45,6 +45,7 @@
+         return this.pendingRunnables.size();
+     }
+ 
++    @Override
+     public String name() {
+         return this.name;
+     }
+@@ -77,12 +78,21 @@
+         }
+ 
+     }
++    // Paper start
++    public void scheduleOnMain(Runnable r0) {
++        // postToMainThread does not work the same as older versions of mc
++        // This method is actually used to create a TickTask, which can then be posted onto main
++        this.tell(this.wrapRunnable(r0));
++    }
++    // Paper end
+ 
++    @Override
+     public void tell(R runnable) {
+         this.pendingRunnables.add(runnable);
+         LockSupport.unpark(this.getRunningThread());
+     }
+ 
++    @Override
+     public void execute(Runnable runnable) {
+         if (this.scheduleExecutables()) {
+             this.tell(this.wrapRunnable(runnable));
+@@ -96,7 +106,7 @@
+         this.pendingRunnables.clear();
+     }
+ 
+-    protected void runAllTasks() {
++    public void runAllTasks() {
+         while(this.pollTask()) {
+         }
+ 
+@@ -138,11 +148,13 @@
+         try {
+             task.run();
+         } catch (Exception var3) {
++            if (var3.getCause() instanceof ThreadDeath) throw var3; // Paper
+             LOGGER.fatal("Error executing task on {}", this.name(), var3);
+         }
+ 
+     }
+ 
++    @Override
+     public List<MetricSampler> profiledMetrics() {
+         return ImmutableList.of(MetricSampler.create(this.name + "-pending-tasks", MetricCategory.EVENT_LOOPS, this::getPendingTasksCount));
+     }

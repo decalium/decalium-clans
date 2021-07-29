@@ -1,0 +1,31 @@
+--- a/net/minecraft/world/level/chunk/ChunkAccess.java
++++ b/net/minecraft/world/level/chunk/ChunkAccess.java
+@@ -29,6 +29,19 @@
+         return GameEventDispatcher.NOOP;
+     }
+ 
++    default void setLastSaved(long ticks) {}
++    // Paper start
++    default boolean generateFlatBedrock() {
++        if (this.getLevel() != null) {
++            return this.getLevel().paperConfig.generateFlatBedrock;
++        }
++        return false;
++    }
++
++    net.minecraft.world.level.Level getLevel();
++    // Paper end
++
++    BlockState getType(final int x, final int y, final int z); // Paper
+     @Nullable
+     BlockState setBlockState(BlockPos pos, BlockState state, boolean moved);
+ 
+@@ -62,7 +75,7 @@
+     default LevelChunkSection getOrCreateSection(int yIndex) {
+         LevelChunkSection[] levelChunkSections = this.getSections();
+         if (levelChunkSections[yIndex] == LevelChunk.EMPTY_SECTION) {
+-            levelChunkSections[yIndex] = new LevelChunkSection(this.getSectionYFromSectionIndex(yIndex));
++            levelChunkSections[yIndex] = new LevelChunkSection(this.getSectionYFromSectionIndex(yIndex), this, this.getLevel(), true); // Paper - Anti-Xray - Add parameters
+         }
+ 
+         return levelChunkSections[yIndex];

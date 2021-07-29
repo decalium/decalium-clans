@@ -1,0 +1,487 @@
+--- a/net/minecraft/server/level/WorldGenRegion.java
++++ b/net/minecraft/server/level/WorldGenRegion.java
+@@ -52,6 +52,7 @@
+ import org.apache.logging.log4j.Logger;
+ 
+ public class WorldGenRegion implements WorldGenLevel {
++
+     private static final Logger LOGGER = LogManager.getLogger();
+     private final List<ChunkAccess> cache;
+     private final ChunkPos center;
+@@ -61,11 +62,11 @@
+     private final LevelData levelData;
+     private final Random random;
+     private final DimensionType dimensionType;
+-    private final TickList<Block> blockTicks = new WorldGenTickList<>((pos) -> {
+-        return this.getChunk(pos).getBlockTicks();
++    private final TickList<Block> blockTicks = new WorldGenTickList<>((blockposition) -> {
++        return this.getChunk(blockposition).getBlockTicks();
+     });
+-    private final TickList<Fluid> liquidTicks = new WorldGenTickList<>((pos) -> {
+-        return this.getChunk(pos).getLiquidTicks();
++    private final TickList<Fluid> liquidTicks = new WorldGenTickList<>((blockposition) -> {
++        return this.getChunk(blockposition).getLiquidTicks();
+     });
+     private final BiomeManager biomeManager;
+     private final ChunkPos firstPos;
+@@ -76,16 +77,18 @@
+     @Nullable
+     private Supplier<String> currentlyGenerating;
+ 
+-    public WorldGenRegion(ServerLevel world, List<ChunkAccess> list, ChunkStatus chunkStatus, int i) {
+-        this.generatingStatus = chunkStatus;
++    public WorldGenRegion(ServerLevel world, List<ChunkAccess> list, ChunkStatus chunkstatus, int i) {
++        this.generatingStatus = chunkstatus;
+         this.writeRadiusCutoff = i;
+-        int j = Mth.floor(Math.sqrt((double)list.size()));
++        int j = Mth.floor(Math.sqrt((double) list.size()));
++
+         if (j * j != list.size()) {
+-            throw (IllegalStateException)Util.pauseInIde(new IllegalStateException("Cache size is not a square."));
++            throw (IllegalStateException) Util.pauseInIde((Throwable) (new IllegalStateException("Cache size is not a square.")));
+         } else {
+-            ChunkPos chunkPos = list.get(list.size() / 2).getPos();
++            ChunkPos chunkcoordintpair = ((ChunkAccess) list.get(list.size() / 2)).getPos();
++
+             this.cache = list;
+-            this.center = chunkPos;
++            this.center = chunkcoordintpair;
+             this.size = j;
+             this.level = world;
+             this.seed = world.getSeed();
+@@ -93,8 +96,8 @@
+             this.random = world.getRandom();
+             this.dimensionType = world.dimensionType();
+             this.biomeManager = new BiomeManager(this, BiomeManager.obfuscateSeed(this.seed), world.dimensionType().getBiomeZoomer());
+-            this.firstPos = list.get(0).getPos();
+-            this.lastPos = list.get(list.size() - 1).getPos();
++            this.firstPos = ((ChunkAccess) list.get(0)).getPos();
++            this.lastPos = ((ChunkAccess) list.get(list.size() - 1)).getPos();
+             this.structureFeatureManager = world.structureFeatureManager().forWorldGenRegion(this);
+         }
+     }
+@@ -107,82 +110,118 @@
+         this.currentlyGenerating = supplier;
+     }
+ 
++    @Override
+     public ChunkAccess getChunk(int chunkX, int chunkZ) {
+         return this.getChunk(chunkX, chunkZ, ChunkStatus.EMPTY);
+     }
+ 
+     @Nullable
++    @Override
+     public ChunkAccess getChunk(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
+-        ChunkAccess chunkAccess;
++        ChunkAccess ichunkaccess;
++
+         if (this.hasChunk(chunkX, chunkZ)) {
+-            int i = chunkX - this.firstPos.x;
+-            int j = chunkZ - this.firstPos.z;
+-            chunkAccess = this.cache.get(i + j * this.size);
+-            if (chunkAccess.getStatus().isOrAfter(leastStatus)) {
+-                return chunkAccess;
++            int k = chunkX - this.firstPos.x;
++            int l = chunkZ - this.firstPos.z;
++
++            ichunkaccess = (ChunkAccess) this.cache.get(k + l * this.size);
++            if (ichunkaccess.getStatus().isOrAfter(leastStatus)) {
++                return ichunkaccess;
+             }
+         } else {
+-            chunkAccess = null;
++            ichunkaccess = null;
+         }
+ 
+         if (!create) {
+             return null;
+         } else {
+-            LOGGER.error("Requested chunk : {} {}", chunkX, chunkZ);
+-            LOGGER.error("Region bounds : {} {} | {} {}", this.firstPos.x, this.firstPos.z, this.lastPos.x, this.lastPos.z);
+-            if (chunkAccess != null) {
+-                throw (RuntimeException)Util.pauseInIde(new RuntimeException(String.format("Chunk is not of correct status. Expecting %s, got %s | %s %s", leastStatus, chunkAccess.getStatus(), chunkX, chunkZ)));
++            WorldGenRegion.LOGGER.error("Requested chunk : {} {}", chunkX, chunkZ);
++            WorldGenRegion.LOGGER.error("Region bounds : {} {} | {} {}", this.firstPos.x, this.firstPos.z, this.lastPos.x, this.lastPos.z);
++            if (ichunkaccess != null) {
++                throw (RuntimeException) Util.pauseInIde((Throwable) (new RuntimeException(String.format("Chunk is not of correct status. Expecting %s, got %s | %s %s", leastStatus, ichunkaccess.getStatus(), chunkX, chunkZ))));
+             } else {
+-                throw (RuntimeException)Util.pauseInIde(new RuntimeException(String.format("We are asking a region for a chunk out of bound | %s %s", chunkX, chunkZ)));
++                throw (RuntimeException) Util.pauseInIde((Throwable) (new RuntimeException(String.format("We are asking a region for a chunk out of bound | %s %s", chunkX, chunkZ))));
+             }
+         }
+     }
+ 
++    @Override
+     public boolean hasChunk(int chunkX, int chunkZ) {
+         return chunkX >= this.firstPos.x && chunkX <= this.lastPos.x && chunkZ >= this.firstPos.z && chunkZ <= this.lastPos.z;
+     }
+ 
++    // Paper start - if loaded util
++    @Nullable
++    @Override
++    public ChunkAccess getChunkIfLoadedImmediately(int x, int z) {
++        return this.getChunk(x, z, ChunkStatus.FULL, false);
++    }
++
++    @Override
++    public BlockState getTypeIfLoaded(BlockPos blockposition) {
++        ChunkAccess chunk = this.getChunkIfLoadedImmediately(blockposition.getX() >> 4, blockposition.getZ() >> 4);
++        return chunk == null ? null : chunk.getBlockState(blockposition);
++    }
++
++    @Override
++    public FluidState getFluidIfLoaded(BlockPos blockposition) {
++        ChunkAccess chunk = this.getChunkIfLoadedImmediately(blockposition.getX() >> 4, blockposition.getZ() >> 4);
++        return chunk == null ? null : chunk.getFluidState(blockposition);
++    }
++    // Paper end
++
++    @Override
+     public BlockState getBlockState(BlockPos pos) {
+         return this.getChunk(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ())).getBlockState(pos);
+     }
+ 
++    @Override
+     public FluidState getFluidState(BlockPos pos) {
+         return this.getChunk(pos).getFluidState(pos);
+     }
+ 
+     @Nullable
++    @Override
+     public Player getNearestPlayer(double x, double y, double z, double maxDistance, Predicate<Entity> targetPredicate) {
+         return null;
+     }
+ 
++    @Override
+     public int getSkyDarken() {
+         return 0;
+     }
+ 
++    @Override
+     public BiomeManager getBiomeManager() {
+         return this.biomeManager;
+     }
+ 
++    @Override
+     public Biome getUncachedNoiseBiome(int biomeX, int biomeY, int biomeZ) {
+         return this.level.getUncachedNoiseBiome(biomeX, biomeY, biomeZ);
+     }
+ 
++    @Override
+     public float getShade(Direction direction, boolean shaded) {
+         return 1.0F;
+     }
+ 
++    @Override
+     public LevelLightEngine getLightEngine() {
+         return this.level.getLightEngine();
+     }
+ 
++    @Override
+     public boolean destroyBlock(BlockPos pos, boolean drop, @Nullable Entity breakingEntity, int maxUpdateDepth) {
+-        BlockState blockState = this.getBlockState(pos);
+-        if (blockState.isAir()) {
++        BlockState iblockdata = this.getBlockState(pos);
++
++        if (iblockdata.isAir()) {
+             return false;
+         } else {
+             if (drop) {
+-                BlockEntity blockEntity = blockState.hasBlockEntity() ? this.getBlockEntity(pos) : null;
+-                Block.dropResources(blockState, this.level, pos, blockEntity, breakingEntity, ItemStack.EMPTY);
++                BlockEntity tileentity = iblockdata.hasBlockEntity() ? this.getBlockEntity(pos) : null;
++
++                Block.dropResources(iblockdata, this.level, pos, tileentity, breakingEntity, ItemStack.EMPTY);
+             }
+ 
+             return this.setBlock(pos, Blocks.AIR.defaultBlockState(), 3, maxUpdateDepth);
+@@ -190,80 +229,89 @@
+     }
+ 
+     @Nullable
++    @Override
+     public BlockEntity getBlockEntity(BlockPos pos) {
+-        ChunkAccess chunkAccess = this.getChunk(pos);
+-        BlockEntity blockEntity = chunkAccess.getBlockEntity(pos);
+-        if (blockEntity != null) {
+-            return blockEntity;
++        ChunkAccess ichunkaccess = this.getChunk(pos);
++        BlockEntity tileentity = ichunkaccess.getBlockEntity(pos);
++
++        if (tileentity != null) {
++            return tileentity;
+         } else {
+-            CompoundTag compoundTag = chunkAccess.getBlockEntityNbt(pos);
+-            BlockState blockState = chunkAccess.getBlockState(pos);
+-            if (compoundTag != null) {
+-                if ("DUMMY".equals(compoundTag.getString("id"))) {
+-                    if (!blockState.hasBlockEntity()) {
++            CompoundTag nbttagcompound = ichunkaccess.getBlockEntityNbt(pos);
++            BlockState iblockdata = ichunkaccess.getBlockState(pos);
++
++            if (nbttagcompound != null) {
++                if ("DUMMY".equals(nbttagcompound.getString("id"))) {
++                    if (!iblockdata.hasBlockEntity()) {
+                         return null;
+                     }
+ 
+-                    blockEntity = ((EntityBlock)blockState.getBlock()).newBlockEntity(pos, blockState);
++                    tileentity = ((EntityBlock) iblockdata.getBlock()).newBlockEntity(pos, iblockdata);
+                 } else {
+-                    blockEntity = BlockEntity.loadStatic(pos, blockState, compoundTag);
++                    tileentity = BlockEntity.loadStatic(pos, iblockdata, nbttagcompound);
+                 }
+ 
+-                if (blockEntity != null) {
+-                    chunkAccess.setBlockEntity(blockEntity);
+-                    return blockEntity;
++                if (tileentity != null) {
++                    ichunkaccess.setBlockEntity(tileentity);
++                    return tileentity;
+                 }
+             }
+ 
+-            if (blockState.hasBlockEntity()) {
+-                LOGGER.warn("Tried to access a block entity before it was created. {}", (Object)pos);
++            if (iblockdata.hasBlockEntity()) {
++                WorldGenRegion.LOGGER.warn("Tried to access a block entity before it was created. {}", pos);
+             }
+ 
+             return null;
+         }
+     }
+ 
+-    public boolean ensureCanWrite(BlockPos blockPos) {
+-        int i = SectionPos.blockToSectionCoord(blockPos.getX());
+-        int j = SectionPos.blockToSectionCoord(blockPos.getZ());
++    @Override
++    public boolean ensureCanWrite(BlockPos blockposition) {
++        int i = SectionPos.blockToSectionCoord(blockposition.getX());
++        int j = SectionPos.blockToSectionCoord(blockposition.getZ());
+         int k = Math.abs(this.center.x - i);
+         int l = Math.abs(this.center.z - j);
++
+         if (k <= this.writeRadiusCutoff && l <= this.writeRadiusCutoff) {
+             return true;
+         } else {
+-            Util.logAndPauseIfInIde("Detected setBlock in a far chunk [" + i + ", " + j + "], pos: " + blockPos + ", status: " + this.generatingStatus + (this.currentlyGenerating == null ? "" : ", currently generating: " + (String)this.currentlyGenerating.get()));
++            Util.logAndPauseIfInIde("Detected setBlock in a far chunk [" + i + ", " + j + "], pos: " + blockposition + ", status: " + this.generatingStatus + (this.currentlyGenerating == null ? "" : ", currently generating: " + (String) this.currentlyGenerating.get()));
+             return false;
+         }
+     }
+ 
++    @Override
+     public boolean setBlock(BlockPos pos, BlockState state, int flags, int maxUpdateDepth) {
+         if (!this.ensureCanWrite(pos)) {
+             return false;
+         } else {
+-            ChunkAccess chunkAccess = this.getChunk(pos);
+-            BlockState blockState = chunkAccess.setBlockState(pos, state, false);
+-            if (blockState != null) {
+-                this.level.onBlockStateChange(pos, blockState, state);
++            ChunkAccess ichunkaccess = this.getChunk(pos);
++            BlockState iblockdata1 = ichunkaccess.setBlockState(pos, state, false);
++
++            if (iblockdata1 != null) {
++                this.level.onBlockStateChange(pos, iblockdata1, state);
+             }
+ 
+             if (state.hasBlockEntity()) {
+-                if (chunkAccess.getStatus().getChunkType() == ChunkStatus.ChunkType.LEVELCHUNK) {
+-                    BlockEntity blockEntity = ((EntityBlock)state.getBlock()).newBlockEntity(pos, state);
+-                    if (blockEntity != null) {
+-                        chunkAccess.setBlockEntity(blockEntity);
++                if (ichunkaccess.getStatus().getChunkType() == ChunkStatus.ChunkType.LEVELCHUNK) {
++                    BlockEntity tileentity = ((EntityBlock) state.getBlock()).newBlockEntity(pos, state);
++
++                    if (tileentity != null) {
++                        ichunkaccess.setBlockEntity(tileentity);
+                     } else {
+-                        chunkAccess.removeBlockEntity(pos);
++                        ichunkaccess.removeBlockEntity(pos);
+                     }
+                 } else {
+-                    CompoundTag compoundTag = new CompoundTag();
+-                    compoundTag.putInt("x", pos.getX());
+-                    compoundTag.putInt("y", pos.getY());
+-                    compoundTag.putInt("z", pos.getZ());
+-                    compoundTag.putString("id", "DUMMY");
+-                    chunkAccess.setBlockEntityNbt(compoundTag);
++                    CompoundTag nbttagcompound = new CompoundTag();
++
++                    nbttagcompound.putInt("x", pos.getX());
++                    nbttagcompound.putInt("y", pos.getY());
++                    nbttagcompound.putInt("z", pos.getZ());
++                    nbttagcompound.putString("id", "DUMMY");
++                    ichunkaccess.setBlockEntityNbt(nbttagcompound);
+                 }
+-            } else if (blockState != null && blockState.hasBlockEntity()) {
+-                chunkAccess.removeBlockEntity(pos);
++            } else if (iblockdata1 != null && iblockdata1.hasBlockEntity()) {
++                ichunkaccess.removeBlockEntity(pos);
+             }
+ 
+             if (state.hasPostProcess(this, pos)) {
+@@ -278,38 +326,54 @@
+         this.getChunk(pos).markPosForPostprocessing(pos);
+     }
+ 
++    @Override
+     public boolean addFreshEntity(Entity entity) {
++        // CraftBukkit start
++        return this.addEntity(entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DEFAULT);
++    }
++
++    @Override
++    public boolean addEntity(Entity entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason reason) {
++        // CraftBukkit end
+         int i = SectionPos.blockToSectionCoord(entity.getBlockX());
+         int j = SectionPos.blockToSectionCoord(entity.getBlockZ());
++
+         this.getChunk(i, j).addEntity(entity);
+         return true;
+     }
+ 
++    @Override
+     public boolean removeBlock(BlockPos pos, boolean move) {
+         return this.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+     }
+ 
++    @Override
+     public WorldBorder getWorldBorder() {
+         return this.level.getWorldBorder();
+     }
+ 
++    @Override
+     public boolean isClientSide() {
+         return false;
+     }
+ 
+     @Deprecated
++    @Override
+     public ServerLevel getLevel() {
+         return this.level;
+     }
+ 
++    @Override
+     public RegistryAccess registryAccess() {
+         return this.level.registryAccess();
+     }
+ 
++    @Override
+     public LevelData getLevelData() {
+         return this.levelData;
+     }
+ 
++    @Override
+     public DifficultyInstance getCurrentDifficultyAt(BlockPos pos) {
+         if (!this.hasChunk(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()))) {
+             throw new RuntimeException("We are asking a region for a chunk out of bound");
+@@ -319,82 +383,99 @@
+     }
+ 
+     @Nullable
++    @Override
+     public MinecraftServer getServer() {
+         return this.level.getServer();
+     }
+ 
++    @Override
+     public ChunkSource getChunkSource() {
+         return this.level.getChunkSource();
+     }
+ 
++    @Override
+     public long getSeed() {
+         return this.seed;
+     }
+ 
++    @Override
+     public TickList<Block> getBlockTicks() {
+         return this.blockTicks;
+     }
+ 
++    @Override
+     public TickList<Fluid> getLiquidTicks() {
+         return this.liquidTicks;
+     }
+ 
++    @Override
+     public int getSeaLevel() {
+         return this.level.getSeaLevel();
+     }
+ 
++    @Override
+     public Random getRandom() {
+         return this.random;
+     }
+ 
++    @Override
+     public int getHeight(Heightmap.Types heightmap, int x, int z) {
+         return this.getChunk(SectionPos.blockToSectionCoord(x), SectionPos.blockToSectionCoord(z)).getHeight(heightmap, x & 15, z & 15) + 1;
+     }
+ 
+-    public void playSound(@Nullable Player player, BlockPos pos, SoundEvent sound, SoundSource category, float volume, float pitch) {
+-    }
++    @Override
++    public void playSound(@Nullable Player player, BlockPos pos, SoundEvent sound, SoundSource category, float volume, float pitch) {}
+ 
+-    public void addParticle(ParticleOptions parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+-    }
++    @Override
++    public void addParticle(ParticleOptions parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {}
+ 
+-    public void levelEvent(@Nullable Player player, int eventId, BlockPos pos, int data) {
+-    }
++    @Override
++    public void levelEvent(@Nullable Player player, int eventId, BlockPos pos, int data) {}
+ 
+-    public void gameEvent(@Nullable Entity entity, GameEvent event, BlockPos pos) {
+-    }
++    @Override
++    public void gameEvent(@Nullable Entity entity, GameEvent event, BlockPos pos) {}
+ 
++    @Override
+     public DimensionType dimensionType() {
+         return this.dimensionType;
+     }
+ 
++    @Override
+     public boolean isStateAtPosition(BlockPos pos, Predicate<BlockState> state) {
+         return state.test(this.getBlockState(pos));
+     }
+ 
++    @Override
+     public boolean isFluidAtPosition(BlockPos pos, Predicate<FluidState> state) {
+         return state.test(this.getFluidState(pos));
+     }
+ 
++    @Override
+     public <T extends Entity> List<T> getEntities(EntityTypeTest<Entity, T> filter, AABB box, Predicate<? super T> predicate) {
+         return Collections.emptyList();
+     }
+ 
++    @Override
+     public List<Entity> getEntities(@Nullable Entity except, AABB box, @Nullable Predicate<? super Entity> predicate) {
+         return Collections.emptyList();
+     }
+ 
++    @Override
+     public List<Player> players() {
+         return Collections.emptyList();
+     }
+ 
++    @Override
+     public Stream<? extends StructureStart<?>> startsForFeature(SectionPos pos, StructureFeature<?> feature) {
+         return this.structureFeatureManager.startsForFeature(pos, feature);
+     }
+ 
++    @Override
+     public int getMinBuildHeight() {
+         return this.level.getMinBuildHeight();
+     }
+ 
++    @Override
+     public int getHeight() {
+         return this.level.getHeight();
+     }

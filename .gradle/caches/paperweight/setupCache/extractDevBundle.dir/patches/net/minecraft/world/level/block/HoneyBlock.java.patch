@@ -1,0 +1,25 @@
+--- a/net/minecraft/world/level/block/HoneyBlock.java
++++ b/net/minecraft/world/level/block/HoneyBlock.java
+@@ -35,10 +35,12 @@
+         return entity instanceof LivingEntity || entity instanceof AbstractMinecart || entity instanceof PrimedTnt || entity instanceof Boat;
+     }
+ 
++    @Override
+     public VoxelShape getCollisionShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+         return SHAPE;
+     }
+ 
++    @Override
+     public void fallOn(Level world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
+         entity.playSound(SoundEvents.HONEY_BLOCK_SLIDE, 1.0F, 1.0F);
+         if (!world.isClientSide) {
+@@ -51,7 +53,9 @@
+ 
+     }
+ 
++    @Override
+     public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
++        if (!new io.papermc.paper.event.entity.EntityInsideBlockEvent(entity.getBukkitEntity(), org.bukkit.craftbukkit.v1_17_R1.block.CraftBlock.at(world, pos)).callEvent()) { return; } // Paper
+         if (this.isSlidingDown(pos, entity)) {
+             this.maybeDoSlideAchievement(entity, pos);
+             this.doSlideMovement(entity);

@@ -1,0 +1,60 @@
+--- a/net/minecraft/server/level/SectionTracker.java
++++ b/net/minecraft/server/level/SectionTracker.java
+@@ -8,31 +8,45 @@
+         super(levelCount, expectedLevelSize, expectedTotalSize);
+     }
+ 
++    @Override
+     protected boolean isSource(long id) {
+         return id == Long.MAX_VALUE;
+     }
+ 
++    @Override
+     protected void checkNeighborsAfterUpdate(long id, int level, boolean decrease) {
++        // Paper start
++        int x = (int) (id >> 42);
++        int y = (int) (id << 44 >> 44);
++        int z = (int) (id << 22 >> 42);
++        // Paper end
+         for(int i = -1; i <= 1; ++i) {
+             for(int j = -1; j <= 1; ++j) {
+                 for(int k = -1; k <= 1; ++k) {
+-                    long l = SectionPos.offset(id, i, j, k);
+-                    if (l != id) {
++                    if (i == 0 && j == 0 && k == 0) continue; // Paper
++                    long l = (((long) (x + i) & 4194303L) << 42) | (((long) (y + j) & 1048575L)) | (((long) (z + k) & 4194303L) << 20);
++                    // if (l != id) { // Paper - checked above
+                         this.checkNeighbor(id, l, level, decrease);
+-                    }
++                    //} // Paper
+                 }
+             }
+         }
+ 
+     }
+ 
++    @Override
+     protected int getComputedLevel(long id, long excludedId, int maxLevel) {
+         int i = maxLevel;
+ 
++        // Paper start
++        int x = (int) (id >> 42);
++        int y = (int) (id << 44 >> 44);
++        int z = (int) (id << 22 >> 42);
++        // Paper end
+         for(int j = -1; j <= 1; ++j) {
+             for(int k = -1; k <= 1; ++k) {
+                 for(int l = -1; l <= 1; ++l) {
+-                    long m = SectionPos.offset(id, j, k, l);
++                    long m = (((long) (x + j) & 4194303L) << 42) | (((long) (y + k) & 1048575L)) | (((long) (z + l) & 4194303L) << 20); // Paper
+                     if (m == id) {
+                         m = Long.MAX_VALUE;
+                     }
+@@ -54,6 +68,7 @@
+         return i;
+     }
+ 
++    @Override
+     protected int computeLevelFromNeighbor(long sourceId, long targetId, int level) {
+         return sourceId == Long.MAX_VALUE ? this.getLevelFromSource(targetId) : level + 1;
+     }

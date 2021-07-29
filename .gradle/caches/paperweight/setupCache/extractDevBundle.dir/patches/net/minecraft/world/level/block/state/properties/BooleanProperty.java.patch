@@ -1,0 +1,37 @@
+--- a/net/minecraft/world/level/block/state/properties/BooleanProperty.java
++++ b/net/minecraft/world/level/block/state/properties/BooleanProperty.java
+@@ -11,6 +11,7 @@
+         super(name, Boolean.class);
+     }
+ 
++    @Override
+     public Collection<Boolean> getPossibleValues() {
+         return this.values;
+     }
+@@ -19,15 +20,17 @@
+         return new BooleanProperty(name);
+     }
+ 
++    @Override
+     public Optional<Boolean> getValue(String name) {
+         return !"true".equals(name) && !"false".equals(name) ? Optional.empty() : Optional.of(Boolean.valueOf(name));
+     }
+ 
++    @Override
+     public String getName(Boolean value) {
+         return value.toString();
+     }
+ 
+-    public boolean equals(Object object) {
++    public boolean equals_unused(Object object) { // Paper
+         if (this == object) {
+             return true;
+         } else if (object instanceof BooleanProperty && super.equals(object)) {
+@@ -38,6 +41,7 @@
+         }
+     }
+ 
++    @Override
+     public int generateHashCode() {
+         return 31 * super.generateHashCode() + this.values.hashCode();
+     }

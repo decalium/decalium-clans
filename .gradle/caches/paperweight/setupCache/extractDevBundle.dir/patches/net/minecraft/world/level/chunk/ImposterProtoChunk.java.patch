@@ -1,0 +1,209 @@
+--- a/net/minecraft/world/level/chunk/ImposterProtoChunk.java
++++ b/net/minecraft/world/level/chunk/ImposterProtoChunk.java
+@@ -25,46 +25,61 @@
+     private final LevelChunk wrapped;
+ 
+     public ImposterProtoChunk(LevelChunk wrapped) {
+-        super(wrapped.getPos(), UpgradeData.EMPTY, wrapped);
++        super(wrapped.getPos(), UpgradeData.EMPTY, wrapped, wrapped.level); // Paper - add level
+         this.wrapped = wrapped;
+     }
+ 
+     @Nullable
++    @Override
+     public BlockEntity getBlockEntity(BlockPos pos) {
+         return this.wrapped.getBlockEntity(pos);
+     }
+ 
+     @Nullable
++    @Override
+     public BlockState getBlockState(BlockPos pos) {
+         return this.wrapped.getBlockState(pos);
+     }
++    // Paper start
++    public final BlockState getType(final int x, final int y, final int z) {
++        return this.wrapped.getBlockData(x, y, z);
++    }
++    // Paper end
+ 
++    @Override
+     public FluidState getFluidState(BlockPos pos) {
+         return this.wrapped.getFluidState(pos);
+     }
+ 
++    @Override
+     public int getMaxLightLevel() {
+         return this.wrapped.getMaxLightLevel();
+     }
+ 
+     @Nullable
++    @Override
+     public BlockState setBlockState(BlockPos pos, BlockState state, boolean moved) {
+         return null;
+     }
+ 
++    @Override
+     public void setBlockEntity(BlockEntity blockEntity) {
+     }
+ 
++    @Override
+     public void addEntity(Entity entity) {
+     }
+ 
++    @Override
+     public void setStatus(ChunkStatus status) {
+     }
+ 
++    @Override
+     public LevelChunkSection[] getSections() {
+         return this.wrapped.getSections();
+     }
+ 
++    @Override
+     public void setHeightmap(Heightmap.Types type, long[] heightmap) {
+     }
+ 
+@@ -76,104 +91,130 @@
+         }
+     }
+ 
++    @Override
+     public int getHeight(Heightmap.Types type, int x, int z) {
+         return this.wrapped.getHeight(this.fixType(type), x, z);
+     }
+ 
++    @Override
+     public BlockPos getHeighestPosition(Heightmap.Types types) {
+         return this.wrapped.getHeighestPosition(this.fixType(types));
+     }
+ 
++    @Override
+     public ChunkPos getPos() {
+         return this.wrapped.getPos();
+     }
+ 
+     @Nullable
++    @Override
+     public StructureStart<?> getStartForFeature(StructureFeature<?> structure) {
+         return this.wrapped.getStartForFeature(structure);
+     }
+ 
++    @Override
+     public void setStartForFeature(StructureFeature<?> structure, StructureStart<?> start) {
+     }
+ 
++    @Override
+     public Map<StructureFeature<?>, StructureStart<?>> getAllStarts() {
+         return this.wrapped.getAllStarts();
+     }
+ 
++    @Override
+     public void setAllStarts(Map<StructureFeature<?>, StructureStart<?>> structureStarts) {
+     }
+ 
++    @Override
+     public LongSet getReferencesForFeature(StructureFeature<?> structure) {
+         return this.wrapped.getReferencesForFeature(structure);
+     }
+ 
++    @Override
+     public void addReferenceForFeature(StructureFeature<?> structure, long reference) {
+     }
+ 
++    @Override
+     public Map<StructureFeature<?>, LongSet> getAllReferences() {
+         return this.wrapped.getAllReferences();
+     }
+ 
++    @Override
+     public void setAllReferences(Map<StructureFeature<?>, LongSet> structureReferences) {
+     }
+ 
++    @Override
+     public ChunkBiomeContainer getBiomes() {
+         return this.wrapped.getBiomes();
+     }
+ 
++    @Override
+     public void setUnsaved(boolean shouldSave) {
+     }
+ 
++    @Override
+     public boolean isUnsaved() {
+         return false;
+     }
+ 
++    @Override
+     public ChunkStatus getStatus() {
+         return this.wrapped.getStatus();
+     }
+ 
++    @Override
+     public void removeBlockEntity(BlockPos pos) {
+     }
+ 
++    @Override
+     public void markPosForPostprocessing(BlockPos pos) {
+     }
+ 
++    @Override
+     public void setBlockEntityNbt(CompoundTag nbt) {
+     }
+ 
+     @Nullable
++    @Override
+     public CompoundTag getBlockEntityNbt(BlockPos pos) {
+         return this.wrapped.getBlockEntityNbt(pos);
+     }
+ 
+     @Nullable
++    @Override
+     public CompoundTag getBlockEntityNbtForSaving(BlockPos pos) {
+         return this.wrapped.getBlockEntityNbtForSaving(pos);
+     }
+ 
++    @Override
+     public void setBiomes(ChunkBiomeContainer biomes) {
+     }
+ 
++    @Override
+     public Stream<BlockPos> getLights() {
+         return this.wrapped.getLights();
+     }
+ 
++    @Override
+     public ProtoTickList<Block> getBlockTicks() {
+         return new ProtoTickList<>((block) -> {
+             return block.defaultBlockState().isAir();
+         }, this.getPos(), this);
+     }
+ 
++    @Override
+     public ProtoTickList<Fluid> getLiquidTicks() {
+         return new ProtoTickList<>((fluid) -> {
+             return fluid == Fluids.EMPTY;
+         }, this.getPos(), this);
+     }
+ 
++    @Override
+     public BitSet getCarvingMask(GenerationStep.Carving carver) {
+         throw (UnsupportedOperationException)Util.pauseInIde(new UnsupportedOperationException("Meaningless in this context"));
+     }
+ 
++    @Override
+     public BitSet getOrCreateCarvingMask(GenerationStep.Carving carver) {
+         throw (UnsupportedOperationException)Util.pauseInIde(new UnsupportedOperationException("Meaningless in this context"));
+     }
+@@ -182,10 +223,12 @@
+         return this.wrapped;
+     }
+ 
++    @Override
+     public boolean isLightCorrect() {
+         return this.wrapped.isLightCorrect();
+     }
+ 
++    @Override
+     public void setLightCorrect(boolean lightOn) {
+         this.wrapped.setLightCorrect(lightOn);
+     }

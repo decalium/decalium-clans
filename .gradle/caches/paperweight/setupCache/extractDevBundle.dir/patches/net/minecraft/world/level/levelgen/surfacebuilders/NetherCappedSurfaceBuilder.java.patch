@@ -1,0 +1,27 @@
+--- a/net/minecraft/world/level/levelgen/surfacebuilders/NetherCappedSurfaceBuilder.java
++++ b/net/minecraft/world/level/levelgen/surfacebuilders/NetherCappedSurfaceBuilder.java
+@@ -24,6 +24,7 @@
+         super(codec);
+     }
+ 
++    @Override
+     public void apply(Random random, ChunkAccess chunk, Biome biome, int x, int z, int height, double noise, BlockState defaultBlock, BlockState defaultFluid, int seaLevel, int i, long l, SurfaceBuilderBaseConfiguration surfaceBuilderBaseConfiguration) {
+         int j = seaLevel + 1;
+         int k = x & 15;
+@@ -41,7 +42,7 @@
+         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+         BlockState blockState3 = chunk.getBlockState(mutableBlockPos.set(k, 128, m));
+ 
+-        for(int p = 127; p >= i; --p) {
++        for(int p = height; p >= i; --p) { // Paper - fix MC-187716 - use configured height
+             mutableBlockPos.set(k, p, m);
+             BlockState blockState4 = chunk.getBlockState(mutableBlockPos);
+             if (blockState3.is(defaultBlock.getBlock()) && (blockState4.isAir() || blockState4 == defaultFluid)) {
+@@ -74,6 +75,7 @@
+ 
+     }
+ 
++    @Override
+     public void initNoise(long seed) {
+         if (this.seed != seed || this.patchNoise == null || this.floorNoises.isEmpty() || this.ceilingNoises.isEmpty()) {
+             this.floorNoises = initPerlinNoises(this.getFloorBlockStates(), seed);

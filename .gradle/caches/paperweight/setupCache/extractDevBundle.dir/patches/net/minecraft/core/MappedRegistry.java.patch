@@ -1,0 +1,138 @@
+--- a/net/minecraft/core/MappedRegistry.java
++++ b/net/minecraft/core/MappedRegistry.java
+@@ -30,14 +30,14 @@
+ import net.minecraft.resources.RegistryDataPackCodec;
+ import net.minecraft.resources.ResourceKey;
+ import net.minecraft.resources.ResourceLocation;
+-import org.apache.commons.lang3.Validate;
++import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.Validate;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
+ public class MappedRegistry<T> extends WritableRegistry<T> {
+     protected static final Logger LOGGER = LogManager.getLogger();
+     private final ObjectList<T> byId = new ObjectArrayList<>(256);
+-    private final Object2IntMap<T> toId = new Object2IntOpenCustomHashMap<>(Util.identityStrategy());
++    private final it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap<T> toId = new it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap<T>(2048);// Paper - use bigger expected size to reduce collisions and direct intent for FastUtil to be identity map
+     private final BiMap<ResourceLocation, T> storage;
+     private final BiMap<ResourceKey<T>, T> keyStorage;
+     private final Map<T, Lifecycle> lifecycles;
+@@ -48,9 +48,9 @@
+     public MappedRegistry(ResourceKey<? extends Registry<T>> key, Lifecycle lifecycle) {
+         super(key, lifecycle);
+         this.toId.defaultReturnValue(-1);
+-        this.storage = HashBiMap.create();
+-        this.keyStorage = HashBiMap.create();
+-        this.lifecycles = Maps.newIdentityHashMap();
++        this.storage = HashBiMap.create(2048); // Paper - use bigger expected size to reduce collisions
++        this.keyStorage = HashBiMap.create(2048); // Paper - use bigger expected size to reduce collisions
++        this.lifecycles = new java.util.IdentityHashMap<>(2048); // Paper - use bigger expected size to reduce collisions
+         this.elementsLifecycle = lifecycle;
+     }
+ 
+@@ -66,6 +66,7 @@
+         });
+     }
+ 
++    @Override
+     public <V extends T> V registerMapping(int rawId, ResourceKey<T> key, V entry, Lifecycle lifecycle) {
+         return this.registerMapping(rawId, key, entry, lifecycle, true);
+     }
+@@ -96,10 +97,12 @@
+         return entry;
+     }
+ 
++    @Override
+     public <V extends T> V register(ResourceKey<T> key, V entry, Lifecycle lifecycle) {
+         return this.registerMapping(this.nextId, key, entry, lifecycle);
+     }
+ 
++    @Override
+     public <V extends T> V registerOrOverride(OptionalInt rawId, ResourceKey<T> key, V newEntry, Lifecycle lifecycle) {
+         Validate.notNull(key);
+         Validate.notNull((T)newEntry);
+@@ -121,58 +124,71 @@
+     }
+ 
+     @Nullable
++    @Override
+     public ResourceLocation getKey(T entry) {
+         return this.storage.inverse().get(entry);
+     }
+ 
++    @Override
+     public Optional<ResourceKey<T>> getResourceKey(T entry) {
+         return Optional.ofNullable(this.keyStorage.inverse().get(entry));
+     }
+ 
++    @Override
+     public int getId(@Nullable T entry) {
+         return this.toId.getInt(entry);
+     }
+ 
+     @Nullable
++    @Override
+     public T get(@Nullable ResourceKey<T> key) {
+         return this.keyStorage.get(key);
+     }
+ 
+     @Nullable
++    @Override
+     public T byId(int index) {
+         return (T)(index >= 0 && index < this.byId.size() ? this.byId.get(index) : null);
+     }
+ 
++    @Override
+     public Lifecycle lifecycle(T entry) {
+         return this.lifecycles.get(entry);
+     }
+ 
++    @Override
+     public Lifecycle elementsLifecycle() {
+         return this.elementsLifecycle;
+     }
+ 
++    @Override
+     public Iterator<T> iterator() {
+         return Iterators.filter(this.byId.iterator(), Objects::nonNull);
+     }
+ 
+     @Nullable
++    @Override
+     public T get(@Nullable ResourceLocation id) {
+         return this.storage.get(id);
+     }
+ 
++    @Override
+     public Set<ResourceLocation> keySet() {
+         return Collections.unmodifiableSet(this.storage.keySet());
+     }
+ 
++    @Override
+     public Set<Entry<ResourceKey<T>, T>> entrySet() {
+         return Collections.unmodifiableMap(this.keyStorage).entrySet();
+     }
+ 
++    @Override
+     public boolean isEmpty() {
+         return this.storage.isEmpty();
+     }
+ 
+     @Nullable
++    @Override
+     public T getRandom(Random random) {
+         if (this.randomCache == null) {
+             Collection<?> collection = this.storage.values();
+@@ -186,10 +202,12 @@
+         return Util.getRandom((T[])this.randomCache, random);
+     }
+ 
++    @Override
+     public boolean containsKey(ResourceLocation id) {
+         return this.storage.containsKey(id);
+     }
+ 
++    @Override
+     public boolean containsKey(ResourceKey<T> key) {
+         return this.keyStorage.containsKey(key);
+     }

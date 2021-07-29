@@ -1,0 +1,28 @@
+--- a/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java
++++ b/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java
+@@ -12,6 +12,7 @@
+ import net.minecraft.world.phys.AABB;
+ 
+ public class NearestLivingEntitySensor extends Sensor<LivingEntity> {
++    @Override
+     protected void doTick(ServerLevel world, LivingEntity entity) {
+         AABB aABB = entity.getBoundingBox().inflate(16.0D, 16.0D, 16.0D);
+         List<LivingEntity> list = world.getEntitiesOfClass(LivingEntity.class, aABB, (livingEntity2) -> {
+@@ -20,11 +21,14 @@
+         list.sort(Comparator.comparingDouble(entity::distanceToSqr));
+         Brain<?> brain = entity.getBrain();
+         brain.setMemory(MemoryModuleType.NEAREST_LIVING_ENTITIES, list);
+-        brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES, list.stream().filter((livingEntity2) -> {
+-            return isEntityTargetable(entity, livingEntity2);
+-        }).collect(Collectors.toList()));
++        // Paper start - remove streams in favour of lists
++        List<LivingEntity> visibleMobs = new java.util.ArrayList<>(list);
++        visibleMobs.removeIf(otherEntityLiving -> !Sensor.isEntityTargetable(entity, otherEntityLiving));
++        brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES, visibleMobs);
++        // Paper end
+     }
+ 
++    @Override
+     public Set<MemoryModuleType<?>> requires() {
+         return ImmutableSet.of(MemoryModuleType.NEAREST_LIVING_ENTITIES, MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES);
+     }

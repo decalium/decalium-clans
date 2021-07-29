@@ -1,0 +1,150 @@
+--- a/net/minecraft/world/level/lighting/BlockLightEngine.java
++++ b/net/minecraft/world/level/lighting/BlockLightEngine.java
+@@ -10,24 +10,28 @@
+ import net.minecraft.world.level.chunk.LightChunkGetter;
+ import net.minecraft.world.phys.shapes.Shapes;
+ import net.minecraft.world.phys.shapes.VoxelShape;
+-import org.apache.commons.lang3.mutable.MutableInt;
++import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.mutable.MutableInt;
+ 
+ public final class BlockLightEngine extends LayerLightEngine<BlockLightSectionStorage.BlockDataLayerStorageMap, BlockLightSectionStorage> {
+     private static final Direction[] DIRECTIONS = Direction.values();
+     private final BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
++    private final MutableInt mutableInt = new MutableInt(); // Paper
+ 
+     public BlockLightEngine(LightChunkGetter chunkProvider) {
+         super(chunkProvider, LightLayer.BLOCK, new BlockLightSectionStorage(chunkProvider));
+     }
+ 
+     private int getLightEmission(long blockPos) {
+-        int i = BlockPos.getX(blockPos);
+-        int j = BlockPos.getY(blockPos);
+-        int k = BlockPos.getZ(blockPos);
++        // Paper start - inline math
++        int i = (int) (blockPos >> 38);
++        int j = (int) ((blockPos << 52) >> 52);
++        int k = (int) ((blockPos << 26) >> 38);
++        // Paper end
+         BlockGetter blockGetter = this.chunkSource.getChunkForLighting(SectionPos.blockToSectionCoord(i), SectionPos.blockToSectionCoord(k));
+         return blockGetter != null ? blockGetter.getLightEmission(this.pos.set(i, j, k)) : 0;
+     }
+ 
++    @Override
+     protected int computeLevelFromNeighbor(long sourceId, long targetId, int level) {
+         if (targetId == Long.MAX_VALUE) {
+             return 15;
+@@ -36,32 +40,49 @@
+         } else if (level >= 15) {
+             return level;
+         } else {
+-            int i = Integer.signum(BlockPos.getX(targetId) - BlockPos.getX(sourceId));
+-            int j = Integer.signum(BlockPos.getY(targetId) - BlockPos.getY(sourceId));
+-            int k = Integer.signum(BlockPos.getZ(targetId) - BlockPos.getZ(sourceId));
++            // Paper start
++            int ix = (int) (targetId >> 38);
++            int iy = (int) ((targetId << 52) >> 52);
++            int iz = (int) ((targetId << 26) >> 38);
++            int jx = (int) (sourceId >> 38);
++            int jy = (int) ((sourceId << 52) >> 52);
++            int jz = (int) ((sourceId << 26) >> 38);
++            int i = Integer.signum(ix - jx);
++            int j = Integer.signum(iy - jy);
++            int k = Integer.signum(iz - jz);
++            // Paper end
+             Direction direction = Direction.fromNormal(i, j, k);
+             if (direction == null) {
+                 return 15;
+             } else {
+-                MutableInt mutableInt = new MutableInt();
+-                BlockState blockState = this.getStateAndOpacity(targetId, mutableInt);
+-                if (mutableInt.getValue() >= 15) {
++                //MutableInt mutableint = new MutableInt(); // Paper - share mutableint, single threaded
++                // Paper start
++                BlockState blockState = this.getBlockOptimized(ix, iy, iz, mutableInt);
++                int blockdLight = mutableInt.getValue();
++                if (blockdLight >= 15) {
++                // Paper end
+                     return 15;
+                 } else {
+-                    BlockState blockState2 = this.getStateAndOpacity(sourceId, (MutableInt)null);
++                    BlockState blockState2 = this.getBlockOptimized(jx, jy, jz); // Paper
+                     VoxelShape voxelShape = this.getShape(blockState2, sourceId, direction);
+                     VoxelShape voxelShape2 = this.getShape(blockState, targetId, direction.getOpposite());
+-                    return Shapes.faceShapeOccludes(voxelShape, voxelShape2) ? 15 : level + Math.max(1, mutableInt.getValue());
++                    return Shapes.faceShapeOccludes(voxelShape, voxelShape2) ? 15 : level + Math.max(1, blockdLight); // Paper
+                 }
+             }
+         }
+     }
+ 
++    @Override
+     protected void checkNeighborsAfterUpdate(long id, int level, boolean decrease) {
+-        long l = SectionPos.blockToSection(id);
++        // Paper start - reuse unpacking, credit to JellySquid (Didn't do full optimization though)
++        int x = (int) (id >> 38);
++        int y = (int) ((id << 52) >> 52);
++        int z = (int) ((id << 26) >> 38);
++        long l = SectionPos.blockPosAsSectionLong(x, y, z);
++        // Paper end
+ 
+         for(Direction direction : DIRECTIONS) {
+-            long m = BlockPos.offset(id, direction);
++            long m = BlockPos.getAdjacent(x, y, z, direction); // Paper
+             long n = SectionPos.blockToSection(m);
+             if (l == n || this.storage.storingLightForSection(n)) {
+                 this.checkNeighbor(id, m, level, decrease);
+@@ -70,6 +91,7 @@
+ 
+     }
+ 
++    @Override
+     protected int getComputedLevel(long id, long excludedId, int maxLevel) {
+         int i = maxLevel;
+         if (Long.MAX_VALUE != excludedId) {
+@@ -83,22 +105,32 @@
+             }
+         }
+ 
+-        long l = SectionPos.blockToSection(id);
+-        DataLayer dataLayer = this.storage.getDataLayer(l, true);
++        // Paper start
++        int baseX = (int) (id >> 38);
++        int baseY = (int) ((id << 52) >> 52);
++        int baseZ = (int) ((id << 26) >> 38);
++        long l = SectionPos.blockPosAsSectionLong(baseX, baseY, baseZ);
++        DataLayer dataLayer = this.storage.updating.getUpdatingOptimized(l);
++        // Paper end
+ 
+         for(Direction direction : DIRECTIONS) {
+-            long m = BlockPos.offset(id, direction);
++            // Paper start
++            int newX = baseX + direction.getStepX();
++            int newY = baseY + direction.getStepY();
++            int newZ = baseZ + direction.getStepZ();
++            long m = BlockPos.asLong(newX, newY, newZ);
+             if (m != excludedId) {
+-                long n = SectionPos.blockToSection(m);
++                long n = SectionPos.blockPosAsSectionLong(newX, newY, newZ);
++                // Paper end
+                 DataLayer dataLayer2;
+                 if (l == n) {
+                     dataLayer2 = dataLayer;
+                 } else {
+-                    dataLayer2 = this.storage.getDataLayer(n, true);
++                    dataLayer2 = this.storage.updating.getUpdatingOptimized(n); // Paper
+                 }
+ 
+                 if (dataLayer2 != null) {
+-                    int k = this.computeLevelFromNeighbor(m, id, this.getLevel(dataLayer2, m));
++                    int k = this.computeLevelFromNeighbor(m, id, this.getLevel(dataLayer2, newX, newY, newZ)); // Paper
+                     if (i > k) {
+                         i = k;
+                     }
+@@ -113,6 +145,7 @@
+         return i;
+     }
+ 
++    @Override
+     public void onBlockEmissionIncrease(BlockPos pos, int level) {
+         this.storage.runAllUpdates();
+         this.checkEdge(Long.MAX_VALUE, pos.asLong(), 15 - level, true);

@@ -1,0 +1,139 @@
+--- a/net/minecraft/world/item/crafting/UpgradeRecipe.java
++++ b/net/minecraft/world/item/crafting/UpgradeRecipe.java
+@@ -1,5 +1,6 @@
+ package net.minecraft.world.item.crafting;
+ 
++import com.google.gson.JsonElement;
+ import com.google.gson.JsonObject;
+ import java.util.stream.Stream;
+ import net.minecraft.nbt.CompoundTag;
+@@ -11,7 +12,16 @@
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.block.Blocks;
+ 
+-public class UpgradeRecipe implements Recipe<Container> {
++// CraftBukkit start
++import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
++import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftRecipe;
++import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftSmithingRecipe;
++import org.bukkit.craftbukkit.v1_17_R1.util.CraftNamespacedKey;
++import org.bukkit.inventory.Recipe;
++// CraftBukkit end
++
++public class UpgradeRecipe implements net.minecraft.world.item.crafting.Recipe<Container> {
++
+     final Ingredient base;
+     final Ingredient addition;
+     final ItemStack result;
+@@ -24,24 +34,29 @@
+         this.result = result;
+     }
+ 
++    @Override
+     public boolean matches(Container inventory, Level world) {
+         return this.base.test(inventory.getItem(0)) && this.addition.test(inventory.getItem(1));
+     }
+ 
++    @Override
+     public ItemStack assemble(Container inventory) {
+-        ItemStack itemStack = this.result.copy();
+-        CompoundTag compoundTag = inventory.getItem(0).getTag();
+-        if (compoundTag != null) {
+-            itemStack.setTag(compoundTag.copy());
++        ItemStack itemstack = this.result.copy();
++        CompoundTag nbttagcompound = inventory.getItem(0).getTag();
++
++        if (nbttagcompound != null) {
++            itemstack.setTag(nbttagcompound.copy());
+         }
+ 
+-        return itemStack;
++        return itemstack;
+     }
+ 
++    @Override
+     public boolean canCraftInDimensions(int width, int height) {
+         return width * height >= 2;
+     }
+ 
++    @Override
+     public ItemStack getResultItem() {
+         return this.result;
+     }
+@@ -50,41 +65,64 @@
+         return this.addition.test(stack);
+     }
+ 
++    @Override
+     public ItemStack getToastSymbol() {
+         return new ItemStack(Blocks.SMITHING_TABLE);
+     }
+ 
++    @Override
+     public ResourceLocation getId() {
+         return this.id;
+     }
+ 
++    @Override
+     public RecipeSerializer<?> getSerializer() {
+         return RecipeSerializer.SMITHING;
+     }
+ 
++    @Override
+     public RecipeType<?> getType() {
+         return RecipeType.SMITHING;
+     }
+ 
++    @Override
+     public boolean isIncomplete() {
+-        return Stream.of(this.base, this.addition).anyMatch((ingredient) -> {
+-            return ingredient.getItems().length == 0;
++        return Stream.of(this.base, this.addition).anyMatch((recipeitemstack) -> {
++            return recipeitemstack.getItems().length == 0;
+         });
+     }
+ 
++    // CraftBukkit start
++    @Override
++    public Recipe toBukkitRecipe() {
++        CraftItemStack result = CraftItemStack.asCraftMirror(this.result);
++
++        CraftSmithingRecipe recipe = new CraftSmithingRecipe(CraftNamespacedKey.fromMinecraft(this.id), result, CraftRecipe.toBukkit(this.base), CraftRecipe.toBukkit(this.addition));
++
++        return recipe;
++    }
++    // CraftBukkit end
++
+     public static class Serializer implements RecipeSerializer<UpgradeRecipe> {
+-        public UpgradeRecipe fromJson(ResourceLocation resourceLocation, JsonObject jsonObject) {
+-            Ingredient ingredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(jsonObject, "base"));
+-            Ingredient ingredient2 = Ingredient.fromJson(GsonHelper.getAsJsonObject(jsonObject, "addition"));
+-            ItemStack itemStack = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(jsonObject, "result"));
+-            return new UpgradeRecipe(resourceLocation, ingredient, ingredient2, itemStack);
++
++        public Serializer() {}
++
++        @Override
++        public UpgradeRecipe fromJson(ResourceLocation minecraftkey, JsonObject jsonobject) {
++            Ingredient recipeitemstack = Ingredient.fromJson((JsonElement) GsonHelper.getAsJsonObject(jsonobject, "base"));
++            Ingredient recipeitemstack1 = Ingredient.fromJson((JsonElement) GsonHelper.getAsJsonObject(jsonobject, "addition"));
++            ItemStack itemstack = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(jsonobject, "result"));
++
++            return new UpgradeRecipe(minecraftkey, recipeitemstack, recipeitemstack1, itemstack);
+         }
+ 
+-        public UpgradeRecipe fromNetwork(ResourceLocation resourceLocation, FriendlyByteBuf friendlyByteBuf) {
+-            Ingredient ingredient = Ingredient.fromNetwork(friendlyByteBuf);
+-            Ingredient ingredient2 = Ingredient.fromNetwork(friendlyByteBuf);
+-            ItemStack itemStack = friendlyByteBuf.readItem();
+-            return new UpgradeRecipe(resourceLocation, ingredient, ingredient2, itemStack);
++        @Override
++        public UpgradeRecipe fromNetwork(ResourceLocation minecraftkey, FriendlyByteBuf packetdataserializer) {
++            Ingredient recipeitemstack = Ingredient.fromNetwork(packetdataserializer);
++            Ingredient recipeitemstack1 = Ingredient.fromNetwork(packetdataserializer);
++            ItemStack itemstack = packetdataserializer.readItem();
++
++            return new UpgradeRecipe(minecraftkey, recipeitemstack, recipeitemstack1, itemstack);
+         }
+ 
+         public void toNetwork(FriendlyByteBuf buf, UpgradeRecipe recipe) {

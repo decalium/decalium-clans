@@ -1,0 +1,95 @@
+--- a/net/minecraft/world/entity/vehicle/MinecartTNT.java
++++ b/net/minecraft/world/entity/vehicle/MinecartTNT.java
+@@ -31,17 +31,26 @@
+         super(EntityType.TNT_MINECART, world, x, y, z);
+     }
+ 
++    @Override
+     public AbstractMinecart.Type getMinecartType() {
+         return AbstractMinecart.Type.TNT;
+     }
+ 
++    @Override
+     public BlockState getDefaultDisplayBlockState() {
+         return Blocks.TNT.defaultBlockState();
+     }
+ 
++    @Override
+     public void tick() {
+         super.tick();
+         if (this.fuse > 0) {
++            // Paper start - Configurable TNT entity height nerf
++            if (this.level.paperConfig.entityTNTHeightNerf != 0 && this.getY() > this.level.paperConfig.entityTNTHeightNerf) {
++                this.discard();
++                return;
++            }
++            // Paper end
+             --this.fuse;
+             this.level.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY() + 0.5D, this.getZ(), 0.0D, 0.0D, 0.0D);
+         } else if (this.fuse == 0) {
+@@ -57,6 +66,7 @@
+ 
+     }
+ 
++    @Override
+     public boolean hurt(DamageSource source, float amount) {
+         Entity entity = source.getDirectEntity();
+         if (entity instanceof AbstractArrow) {
+@@ -69,6 +79,7 @@
+         return super.hurt(source, amount);
+     }
+ 
++    @Override
+     public void destroy(DamageSource damageSource) {
+         double d = this.getDeltaMovement().horizontalDistanceSqr();
+         if (!damageSource.isFire() && !damageSource.isExplosion() && !(d >= (double)0.01F)) {
+@@ -99,6 +110,7 @@
+ 
+     }
+ 
++    @Override
+     public boolean causeFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
+         if (fallDistance >= 3.0F) {
+             float f = fallDistance / 10.0F;
+@@ -108,6 +120,7 @@
+         return super.causeFallDamage(fallDistance, damageMultiplier, damageSource);
+     }
+ 
++    @Override
+     public void activateMinecart(int x, int y, int z, boolean powered) {
+         if (powered && this.fuse < 0) {
+             this.primeFuse();
+@@ -115,6 +128,7 @@
+ 
+     }
+ 
++    @Override
+     public void handleEntityEvent(byte status) {
+         if (status == 10) {
+             this.primeFuse();
+@@ -143,14 +157,17 @@
+         return this.fuse > -1;
+     }
+ 
++    @Override
+     public float getBlockExplosionResistance(Explosion explosion, BlockGetter world, BlockPos pos, BlockState blockState, FluidState fluidState, float max) {
+         return !this.isPrimed() || !blockState.is(BlockTags.RAILS) && !world.getBlockState(pos.above()).is(BlockTags.RAILS) ? super.getBlockExplosionResistance(explosion, world, pos, blockState, fluidState, max) : 0.0F;
+     }
+ 
++    @Override
+     public boolean shouldBlockExplode(Explosion explosion, BlockGetter world, BlockPos pos, BlockState state, float explosionPower) {
+         return !this.isPrimed() || !state.is(BlockTags.RAILS) && !world.getBlockState(pos.above()).is(BlockTags.RAILS) ? super.shouldBlockExplode(explosion, world, pos, state, explosionPower) : false;
+     }
+ 
++    @Override
+     protected void readAdditionalSaveData(CompoundTag nbt) {
+         super.readAdditionalSaveData(nbt);
+         if (nbt.contains("TNTFuse", 99)) {
+@@ -159,6 +176,7 @@
+ 
+     }
+ 
++    @Override
+     protected void addAdditionalSaveData(CompoundTag nbt) {
+         super.addAdditionalSaveData(nbt);
+         nbt.putInt("TNTFuse", this.fuse);

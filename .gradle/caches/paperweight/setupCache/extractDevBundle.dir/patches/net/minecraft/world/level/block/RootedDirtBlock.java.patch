@@ -1,0 +1,27 @@
+--- a/net/minecraft/world/level/block/RootedDirtBlock.java
++++ b/net/minecraft/world/level/block/RootedDirtBlock.java
+@@ -9,19 +9,23 @@
+ import net.minecraft.world.level.block.state.BlockState;
+ 
+ public class RootedDirtBlock extends Block implements BonemealableBlock {
++
+     public RootedDirtBlock(BlockBehaviour.Properties settings) {
+         super(settings);
+     }
+ 
++    @Override
+     public boolean isValidBonemealTarget(BlockGetter world, BlockPos pos, BlockState state, boolean isClient) {
+         return world.getBlockState(pos.below()).isAir();
+     }
+ 
++    @Override
+     public boolean isBonemealSuccess(Level world, Random random, BlockPos pos, BlockState state) {
+         return true;
+     }
+ 
++    @Override
+     public void performBonemeal(ServerLevel world, Random random, BlockPos pos, BlockState state) {
+-        world.setBlockAndUpdate(pos.below(), Blocks.HANGING_ROOTS.defaultBlockState());
++        org.bukkit.craftbukkit.v1_17_R1.event.CraftEventFactory.handleBlockSpreadEvent(world, pos, pos.below(), Blocks.HANGING_ROOTS.defaultBlockState()); // CraftBukkit
+     }
+ }

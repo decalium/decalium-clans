@@ -1,0 +1,87 @@
+--- a/net/minecraft/world/entity/animal/horse/AbstractChestedHorse.java
++++ b/net/minecraft/world/entity/animal/horse/AbstractChestedHorse.java
+@@ -27,10 +27,12 @@
+         this.canGallop = false;
+     }
+ 
++    @Override
+     protected void randomizeAttributes() {
+         this.getAttribute(Attributes.MAX_HEALTH).setBaseValue((double)this.generateRandomMaxHealth());
+     }
+ 
++    @Override
+     protected void defineSynchedData() {
+         super.defineSynchedData();
+         this.entityData.define(DATA_ID_CHEST, false);
+@@ -48,14 +50,17 @@
+         this.entityData.set(DATA_ID_CHEST, hasChest);
+     }
+ 
++    @Override
+     protected int getInventorySize() {
+         return this.hasChest() ? 17 : super.getInventorySize();
+     }
+ 
++    @Override
+     public double getPassengersRidingOffset() {
+         return super.getPassengersRidingOffset() - 0.25D;
+     }
+ 
++    @Override
+     protected void dropEquipment() {
+         super.dropEquipment();
+         if (this.hasChest()) {
+@@ -63,11 +68,20 @@
+                 this.spawnAtLocation(Blocks.CHEST);
+             }
+ 
+-            this.setChest(false);
++            //this.setCarryingChest(false); // Paper - moved to post death logic
+         }
+ 
+     }
+ 
++    // Paper start
++    protected void postDeathDropItems(org.bukkit.event.entity.EntityDeathEvent event) {
++        if (this.hasChest() && (event == null || !event.isCancelled())) {
++            this.setChest(false);
++        }
++    }
++    // Paper end
++
++    @Override
+     public void addAdditionalSaveData(CompoundTag nbt) {
+         super.addAdditionalSaveData(nbt);
+         nbt.putBoolean("ChestedHorse", this.hasChest());
+@@ -89,6 +103,7 @@
+ 
+     }
+ 
++    @Override
+     public void readAdditionalSaveData(CompoundTag nbt) {
+         super.readAdditionalSaveData(nbt);
+         this.setChest(nbt.getBoolean("ChestedHorse"));
+@@ -108,12 +123,15 @@
+         this.updateContainerEquipment();
+     }
+ 
++    @Override
+     public SlotAccess getSlot(int mappedIndex) {
+         return mappedIndex == 499 ? new SlotAccess() {
++            @Override
+             public ItemStack get() {
+                 return AbstractChestedHorse.this.hasChest() ? new ItemStack(Items.CHEST) : ItemStack.EMPTY;
+             }
+ 
++            @Override
+             public boolean set(ItemStack stack) {
+                 if (stack.isEmpty()) {
+                     if (AbstractChestedHorse.this.hasChest()) {
+@@ -136,6 +154,7 @@
+         } : super.getSlot(mappedIndex);
+     }
+ 
++    @Override
+     public InteractionResult mobInteract(Player player, InteractionHand hand) {
+         ItemStack itemStack = player.getItemInHand(hand);
+         if (!this.isBaby()) {

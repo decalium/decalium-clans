@@ -1,0 +1,52 @@
+--- a/net/minecraft/world/entity/projectile/SpectralArrow.java
++++ b/net/minecraft/world/entity/projectile/SpectralArrow.java
+@@ -11,7 +11,8 @@
+ import net.minecraft.world.level.Level;
+ 
+ public class SpectralArrow extends AbstractArrow {
+-    private int duration = 200;
++
++    public int duration = 200;
+ 
+     public SpectralArrow(EntityType<? extends SpectralArrow> type, Level world) {
+         super(type, world);
+@@ -25,6 +26,7 @@
+         super(EntityType.SPECTRAL_ARROW, x, y, z, world);
+     }
+ 
++    @Override
+     public void tick() {
+         super.tick();
+         if (this.level.isClientSide && !this.inGround) {
+@@ -33,16 +35,20 @@
+ 
+     }
+ 
+-    protected ItemStack getPickupItem() {
++    @Override
++    public ItemStack getPickupItem() {
+         return new ItemStack(Items.SPECTRAL_ARROW);
+     }
+ 
++    @Override
+     protected void doPostHurtEffects(LivingEntity target) {
+         super.doPostHurtEffects(target);
+-        MobEffectInstance mobEffectInstance = new MobEffectInstance(MobEffects.GLOWING, this.duration, 0);
+-        target.addEffect(mobEffectInstance, this.getEffectSource());
++        MobEffectInstance mobeffect = new MobEffectInstance(MobEffects.GLOWING, this.duration, 0);
++
++        target.addEffect(mobeffect, this.getEffectSource(), org.bukkit.event.entity.EntityPotionEffectEvent.Cause.ARROW); // CraftBukkit
+     }
+ 
++    @Override
+     public void readAdditionalSaveData(CompoundTag nbt) {
+         super.readAdditionalSaveData(nbt);
+         if (nbt.contains("Duration")) {
+@@ -51,6 +57,7 @@
+ 
+     }
+ 
++    @Override
+     public void addAdditionalSaveData(CompoundTag nbt) {
+         super.addAdditionalSaveData(nbt);
+         nbt.putInt("Duration", this.duration);

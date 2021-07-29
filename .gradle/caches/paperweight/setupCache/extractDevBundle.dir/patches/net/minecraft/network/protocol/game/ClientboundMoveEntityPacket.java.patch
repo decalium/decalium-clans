@@ -1,0 +1,53 @@
+--- a/net/minecraft/network/protocol/game/ClientboundMoveEntityPacket.java
++++ b/net/minecraft/network/protocol/game/ClientboundMoveEntityPacket.java
+@@ -21,11 +21,11 @@
+     protected final boolean hasPos;
+ 
+     public static long entityToPacket(double coord) {
+-        return Mth.lfloor(coord * 4096.0D);
++        return Mth.lfloor(coord * 4096.0D); // Paper - check ItemEntity#setPosRaw on update
+     }
+ 
+     public static double packetToEntity(long coord) {
+-        return (double)coord / 4096.0D;
++        return (double)coord / 4096.0D; // Paper - check ItemEntity#setPosRaw on update
+     }
+ 
+     public Vec3 updateEntityPosition(Vec3 orig) {
+@@ -51,10 +51,12 @@
+         this.hasPos = positionChanged;
+     }
+ 
++    @Override
+     public void handle(ClientGamePacketListener listener) {
+         listener.handleMoveEntity(this);
+     }
+ 
++    @Override
+     public String toString() {
+         return "Entity_" + super.toString();
+     }
+@@ -110,6 +112,7 @@
+             return new ClientboundMoveEntityPacket.Pos(i, s, t, u, bl);
+         }
+ 
++        @Override
+         public void write(FriendlyByteBuf buf) {
+             buf.writeVarInt(this.entityId);
+             buf.writeShort(this.xa);
+@@ -135,6 +138,7 @@
+             return new ClientboundMoveEntityPacket.PosRot(i, s, t, u, b, c, bl);
+         }
+ 
++        @Override
+         public void write(FriendlyByteBuf buf) {
+             buf.writeVarInt(this.entityId);
+             buf.writeShort(this.xa);
+@@ -159,6 +163,7 @@
+             return new ClientboundMoveEntityPacket.Rot(i, b, c, bl);
+         }
+ 
++        @Override
+         public void write(FriendlyByteBuf buf) {
+             buf.writeVarInt(this.entityId);
+             buf.writeByte(this.yRot);

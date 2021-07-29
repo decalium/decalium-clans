@@ -1,0 +1,145 @@
+--- a/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java
++++ b/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java
+@@ -130,10 +130,12 @@
+         return this.settings.get().isAquifersEnabled();
+     }
+ 
++    @Override
+     protected Codec<? extends ChunkGenerator> codec() {
+         return CODEC;
+     }
+ 
++    @Override
+     public ChunkGenerator withSeed(long seed) {
+         return new NoiseBasedChunkGenerator(this.biomeSource.withSeed(seed), seed, this.settings);
+     }
+@@ -153,6 +155,7 @@
+         this.sampler.fillNoiseColumn(buffer, x, z, noiseSettings, this.getSeaLevel(), minY, noiseSizeY);
+     }
+ 
++    @Override
+     public int getBaseHeight(int x, int z, Heightmap.Types heightmap, LevelHeightAccessor world) {
+         int i = Math.max(this.settings.get().noiseSettings().minY(), world.getMinBuildHeight());
+         int j = Math.min(this.settings.get().noiseSettings().minY() + this.settings.get().noiseSettings().height(), world.getMaxBuildHeight());
+@@ -161,6 +164,7 @@
+         return l <= 0 ? world.getMinBuildHeight() : this.iterateNoiseColumn(x, z, (BlockState[])null, heightmap.isOpaque(), k, l).orElse(world.getMinBuildHeight());
+     }
+ 
++    @Override
+     public NoiseColumn getBaseColumn(int x, int z, LevelHeightAccessor world) {
+         int i = Math.max(this.settings.get().noiseSettings().minY(), world.getMinBuildHeight());
+         int j = Math.min(this.settings.get().noiseSettings().minY() + this.settings.get().noiseSettings().height(), world.getMaxBuildHeight());
+@@ -175,6 +179,7 @@
+         }
+     }
+ 
++    @Override
+     public BaseStoneSource getBaseStoneSource() {
+         return this.baseStoneSource;
+     }
+@@ -232,6 +237,7 @@
+         return aquiferSampler.computeState(blockInterpolator, i, j, k, e);
+     }
+ 
++    @Override
+     public void buildSurfaceAndBedrock(WorldGenRegion region, ChunkAccess chunk) {
+         ChunkPos chunkPos = chunk.getPos();
+         int i = chunkPos.x;
+@@ -275,7 +281,7 @@
+             for(BlockPos blockPos : BlockPos.betweenClosed(i, 0, j, i + 15, 0, j + 15)) {
+                 if (bl) {
+                     for(int q = 0; q < 5; ++q) {
+-                        if (q <= random.nextInt(5)) {
++                        if (q <= (chunk.generateFlatBedrock() ? 0 : random.nextInt(5))) { // Paper - Configurable flat bedrock roof
+                             chunk.setBlockState(mutableBlockPos.set(blockPos.getX(), m - q, blockPos.getZ()), Blocks.BEDROCK.defaultBlockState(), false);
+                         }
+                     }
+@@ -283,7 +289,7 @@
+ 
+                 if (bl2) {
+                     for(int r = 4; r >= 0; --r) {
+-                        if (r <= random.nextInt(5)) {
++                        if (r <= (chunk.generateFlatBedrock() ? 0 : random.nextInt(5))) { // Paper - Configurable flat bedrock floor
+                             chunk.setBlockState(mutableBlockPos.set(blockPos.getX(), l + r, blockPos.getZ()), Blocks.BEDROCK.defaultBlockState(), false);
+                         }
+                     }
+@@ -293,6 +299,7 @@
+         }
+     }
+ 
++    @Override
+     public CompletableFuture<ChunkAccess> fillFromNoise(Executor executor, StructureFeatureManager accessor, ChunkAccess chunk) {
+         NoiseSettings noiseSettings = this.settings.get().noiseSettings();
+         int i = Math.max(noiseSettings.minY(), chunk.getMinBuildHeight());
+@@ -302,14 +309,14 @@
+         if (l <= 0) {
+             return CompletableFuture.completedFuture(chunk);
+         } else {
+-            int m = chunk.getSectionIndex(l * this.cellHeight - 1 + i);
++            int mStart = chunk.getSectionIndex(l * this.cellHeight - 1 + i); // Paper - decompile fix
+             int n = chunk.getSectionIndex(i);
+             return CompletableFuture.supplyAsync(() -> {
+                 Set<LevelChunkSection> set = Sets.newHashSet();
+ 
+                 ChunkAccess var16;
+                 try {
+-                    for(int m = m; m >= n; --m) {
++                    for(int m = mStart; m >= n; --m) { // Paper - decompile fix
+                         LevelChunkSection levelChunkSection = chunk.getOrCreateSection(m);
+                         levelChunkSection.acquire();
+                         set.add(levelChunkSection);
+@@ -444,6 +451,7 @@
+         }
+     }
+ 
++    @Override
+     protected Aquifer createAquifer(ChunkAccess chunk) {
+         ChunkPos chunkPos = chunk.getPos();
+         int i = Math.max(this.settings.get().noiseSettings().minY(), chunk.getMinBuildHeight());
+@@ -451,18 +459,22 @@
+         return this.getAquifer(j, this.cellCountY, chunkPos);
+     }
+ 
++    @Override
+     public int getGenDepth() {
+         return this.height;
+     }
+ 
++    @Override
+     public int getSeaLevel() {
+         return this.settings.get().seaLevel();
+     }
+ 
++    @Override
+     public int getMinY() {
+         return this.settings.get().noiseSettings().minY();
+     }
+ 
++    @Override
+     public WeightedRandomList<MobSpawnSettings.SpawnerData> getMobsAt(Biome biome, StructureFeatureManager accessor, MobCategory group, BlockPos pos) {
+         if (accessor.getStructureAt(pos, true, StructureFeature.SWAMP_HUT).isValid()) {
+             if (group == MobCategory.MONSTER) {
+@@ -491,6 +503,7 @@
+         return group == MobCategory.UNDERGROUND_WATER_CREATURE && accessor.getStructureAt(pos, false, StructureFeature.OCEAN_MONUMENT).isValid() ? StructureFeature.OCEAN_MONUMENT.getSpecialUndergroundWaterAnimals() : super.getMobsAt(biome, accessor, group, pos);
+     }
+ 
++    @Override
+     public void spawnOriginalMobs(WorldGenRegion region) {
+         if (!this.settings.get().disableMobGeneration()) {
+             ChunkPos chunkPos = region.getCenter();
+@@ -520,6 +533,7 @@
+             return this;
+         }
+ 
++        @Override
+         public double modifyNoise(double weight, int x, int y, int z) {
+             double d = this.toggle.calculateValue(this.factorZ);
+             double e = this.thickness.calculateValue(this.factorZ);
+@@ -561,6 +575,7 @@
+             this.factorZ = deltaZ;
+         }
+ 
++        @Override
+         public BlockState getBaseBlock(int x, int y, int z) {
+             double d = this.veininess.calculateValue(this.factorZ);
+             double e = this.veinA.calculateValue(this.factorZ);

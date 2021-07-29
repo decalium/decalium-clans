@@ -1,0 +1,77 @@
+--- a/net/minecraft/world/level/block/entity/SkullBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/SkullBlockEntity.java
+@@ -11,6 +11,7 @@
+ import net.minecraft.Util;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.nbt.CompoundTag;
++import net.minecraft.nbt.ListTag;
+ import net.minecraft.nbt.NbtUtils;
+ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+ import net.minecraft.server.players.GameProfileCache;
+@@ -27,7 +28,7 @@
+     @Nullable
+     private static Executor mainThreadExecutor;
+     @Nullable
+-    private GameProfile owner;
++    public GameProfile owner;
+     private int mouthTickCount;
+     private boolean isMovingMouth;
+ 
+@@ -47,6 +48,7 @@
+         mainThreadExecutor = executor;
+     }
+ 
++    @Override
+     public CompoundTag save(CompoundTag nbt) {
+         super.save(nbt);
+         if (this.owner != null) {
+@@ -58,6 +60,7 @@
+         return nbt;
+     }
+ 
++    @Override
+     public void load(CompoundTag nbt) {
+         super.load(nbt);
+         if (nbt.contains("SkullOwner", 10)) {
+@@ -91,10 +94,40 @@
+     }
+ 
+     @Nullable
++    @Override
+     public ClientboundBlockEntityDataPacket getUpdatePacket() {
+-        return new ClientboundBlockEntityDataPacket(this.worldPosition, 4, this.getUpdateTag());
++        return new ClientboundBlockEntityDataPacket(this.worldPosition, 4, sanitizeTileEntityUUID(this.getUpdateTag())); // Paper
+     }
+ 
++    // Paper start
++    public static CompoundTag sanitizeTileEntityUUID(CompoundTag cmp) {
++        CompoundTag owner = cmp.getCompound("Owner");
++        if (!owner.isEmpty()) {
++            sanitizeUUID(owner);
++        }
++        return cmp;
++    }
++
++    public static void sanitizeUUID(CompoundTag owner) {
++        CompoundTag properties = owner.getCompound("Properties");
++        ListTag list = null;
++        if (!properties.isEmpty()) {
++            list = properties.getList("textures", 10);
++        }
++
++        if (list != null && !list.isEmpty()) {
++            String textures = ((CompoundTag)list.get(0)).getString("Value");
++            if (textures != null && textures.length() > 3) {
++                UUID uuid = UUID.nameUUIDFromBytes(textures.getBytes());
++                owner.putUUID("Id", uuid);
++                return;
++            }
++        }
++        owner.putUUID("Id", UUID.randomUUID());
++    }
++    // Paper end
++
++    @Override
+     public CompoundTag getUpdateTag() {
+         return this.save(new CompoundTag());
+     }

@@ -1,0 +1,89 @@
+--- a/net/minecraft/network/protocol/game/ClientboundLightUpdatePacket.java
++++ b/net/minecraft/network/protocol/game/ClientboundLightUpdatePacket.java
+@@ -2,11 +2,14 @@
+ 
+ import com.google.common.collect.Lists;
+ import java.util.BitSet;
++import io.netty.channel.ChannelFuture; // Paper
+ import java.util.List;
+ import javax.annotation.Nullable;
+ import net.minecraft.core.SectionPos;
+ import net.minecraft.network.FriendlyByteBuf;
+ import net.minecraft.network.protocol.Packet;
++import net.minecraft.server.MCUtil;
++import net.minecraft.server.level.ServerPlayer;
+ import net.minecraft.world.level.ChunkPos;
+ import net.minecraft.world.level.LightLayer;
+ import net.minecraft.world.level.chunk.DataLayer;
+@@ -22,6 +25,35 @@
+     private final List<byte[]> skyUpdates;
+     private final List<byte[]> blockUpdates;
+     private final boolean trustEdges;
++    // Paper start
++    java.lang.Runnable cleaner1;
++    java.lang.Runnable cleaner2;
++    java.util.concurrent.atomic.AtomicInteger remainingSends = new java.util.concurrent.atomic.AtomicInteger(0);
++
++    @Override
++    public void onPacketDispatch(ServerPlayer player) {
++        remainingSends.incrementAndGet();
++    }
++
++    @Override
++    public void onPacketDispatchFinish(ServerPlayer player, ChannelFuture future) {
++        if (remainingSends.decrementAndGet() <= 0) {
++            // incase of any race conditions, schedule this delayed
++            MCUtil.scheduleTask(5, () -> {
++                if (remainingSends.get() == 0) {
++                    cleaner1.run();
++                    cleaner2.run();
++                }
++            }, "Light Packet Release");
++        }
++    }
++
++    @Override
++    public boolean hasFinishListener() {
++        return true;
++    }
++
++    // Paper end
+ 
+     public ClientboundLightUpdatePacket(ChunkPos chunkPos, LevelLightEngine lightProvider, @Nullable BitSet bitSet, @Nullable BitSet bitSet2, boolean nonEdge) {
+         this.x = chunkPos.x;
+@@ -31,8 +63,8 @@
+         this.blockYMask = new BitSet();
+         this.emptySkyYMask = new BitSet();
+         this.emptyBlockYMask = new BitSet();
+-        this.skyUpdates = Lists.newArrayList();
+-        this.blockUpdates = Lists.newArrayList();
++        this.skyUpdates = Lists.newArrayList();this.cleaner1 = MCUtil.registerListCleaner(this, this.skyUpdates, DataLayer::releaseBytes); // Paper
++        this.blockUpdates = Lists.newArrayList();this.cleaner2 = MCUtil.registerListCleaner(this, this.blockUpdates, DataLayer::releaseBytes); // Paper
+ 
+         for(int i = 0; i < lightProvider.getLightSectionCount(); ++i) {
+             if (bitSet == null || bitSet.get(i)) {
+@@ -53,7 +85,7 @@
+                 bitSet2.set(i);
+             } else {
+                 bitSet.set(i);
+-                list.add((byte[])dataLayer.getData().clone());
++                list.add((byte[])dataLayer.getCloneIfSet()); // Paper
+             }
+         }
+ 
+@@ -75,6 +107,7 @@
+         });
+     }
+ 
++    @Override
+     public void write(FriendlyByteBuf buf) {
+         buf.writeVarInt(this.x);
+         buf.writeVarInt(this.z);
+@@ -87,6 +120,7 @@
+         buf.writeCollection(this.blockUpdates, FriendlyByteBuf::writeByteArray);
+     }
+ 
++    @Override
+     public void handle(ClientGamePacketListener listener) {
+         listener.handleLightUpdatePacked(this);
+     }

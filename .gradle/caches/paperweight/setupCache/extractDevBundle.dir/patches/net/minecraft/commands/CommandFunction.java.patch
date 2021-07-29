@@ -1,0 +1,50 @@
+--- a/net/minecraft/commands/CommandFunction.java
++++ b/net/minecraft/commands/CommandFunction.java
+@@ -16,6 +16,15 @@
+ public class CommandFunction {
+     private final CommandFunction.Entry[] entries;
+     final ResourceLocation id;
++    // Paper start
++    public co.aikar.timings.Timing timing;
++    public co.aikar.timings.Timing getTiming() {
++        if (timing == null) {
++            timing = co.aikar.timings.MinecraftTimings.getCommandFunctionTiming(this);
++        }
++        return timing;
++    }
++    // Paper end
+ 
+     public CommandFunction(ResourceLocation id, CommandFunction.Entry[] elements) {
+         this.id = id;
+@@ -108,6 +117,7 @@
+             this.parse = parsed;
+         }
+ 
++        @Override
+         public void execute(ServerFunctionManager manager, CommandSourceStack source, Deque<ServerFunctionManager.QueuedCommand> entries, int maxChainLength, int depth, @Nullable ServerFunctionManager.TraceCallbacks tracer) throws CommandSyntaxException {
+             if (tracer != null) {
+                 String string = this.parse.getReader().getString();
+@@ -124,6 +134,7 @@
+             return manager.getDispatcher().execute(new ParseResults<>(this.parse.getContext().withSource(source), this.parse.getReader(), this.parse.getExceptions()));
+         }
+ 
++        @Override
+         public String toString() {
+             return this.parse.getReader().getString();
+         }
+@@ -141,6 +152,7 @@
+             this.function = new CommandFunction.CacheableFunction(function);
+         }
+ 
++        @Override
+         public void execute(ServerFunctionManager manager, CommandSourceStack source, Deque<ServerFunctionManager.QueuedCommand> entries, int maxChainLength, int depth, @Nullable ServerFunctionManager.TraceCallbacks tracer) {
+             Util.ifElse(this.function.get(manager), (f) -> {
+                 CommandFunction.Entry[] entrys = f.getEntries();
+@@ -163,6 +175,7 @@
+             });
+         }
+ 
++        @Override
+         public String toString() {
+             return "function " + this.function.getId();
+         }

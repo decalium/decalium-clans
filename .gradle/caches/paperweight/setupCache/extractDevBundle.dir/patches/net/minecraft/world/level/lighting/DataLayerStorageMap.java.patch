@@ -1,0 +1,132 @@
+--- a/net/minecraft/world/level/lighting/DataLayerStorageMap.java
++++ b/net/minecraft/world/level/lighting/DataLayerStorageMap.java
+@@ -6,13 +6,33 @@
+ 
+ public abstract class DataLayerStorageMap<M extends DataLayerStorageMap<M>> {
+     private static final int CACHE_SIZE = 2;
+-    private final long[] lastSectionKeys = new long[2];
+-    private final DataLayer[] lastSections = new DataLayer[2];
++    // private final long[] b = new long[2]; // Paper - unused
++    private final DataLayer[] lastSections = new DataLayer[]{DataLayer.EMPTY_NIBBLE_ARRAY, DataLayer.EMPTY_NIBBLE_ARRAY}; private final DataLayer[] cache = lastSections; // Paper - OBFHELPER
+     private boolean cacheEnabled;
+-    protected final Long2ObjectOpenHashMap<DataLayer> map;
++    protected final com.destroystokyo.paper.util.map.QueuedChangesMapLong2Object<DataLayer> data; // Paper - avoid copying light data
++    protected final boolean isVisible; // Paper - avoid copying light data
+ 
+-    protected DataLayerStorageMap(Long2ObjectOpenHashMap<DataLayer> arrays) {
+-        this.map = arrays;
++    // Paper start - faster lookups with less branching, use interface to avoid boxing instead of Function
++    public final NibbleArrayAccess lookup;
++    public interface NibbleArrayAccess {
++        DataLayer apply(long id);
++    }
++    // Paper end
++    // Paper start - avoid copying light data
++    protected DataLayerStorageMap(com.destroystokyo.paper.util.map.QueuedChangesMapLong2Object<DataLayer> data, boolean isVisible) {
++        if (isVisible) {
++            data.performUpdatesLockMap();
++        }
++        this.data = data;
++        this.isVisible = isVisible;
++        // Paper end - avoid copying light data
++        // Paper start - faster lookups with less branching
++        if (isVisible) {
++            lookup = data::getVisibleAsync;
++        } else {
++            lookup = data.getUpdatingMap()::get; // jump straight the sub map
++        }
++        // Paper end
+         this.clearCache();
+         this.cacheEnabled = true;
+     }
+@@ -20,55 +40,64 @@
+     public abstract M copy();
+ 
+     public void copyDataLayer(long pos) {
+-        this.map.put(pos, this.map.get(pos).copy());
++        if (this.isVisible) { throw new IllegalStateException("writing to visible data"); } // Paper - avoid copying light data
++        DataLayer updating = this.data.getUpdating(pos); // Paper - pool nibbles
++        DataLayer nibblearray = new DataLayer().markPoolSafe(updating.getCloneIfSet()); // Paper
++        nibblearray.lightCacheKey = pos; // Paper
++        this.data.queueUpdate(pos, nibblearray); // Paper - avoid copying light data - pool safe clone
++        if (updating.cleaner != null) net.minecraft.server.MCUtil.scheduleTask(2, updating.cleaner, "Light Engine Release"); // Paper - delay clean incase anything holding ref was still using it
+         this.clearCache();
+     }
+ 
+     public boolean hasLayer(long chunkPos) {
+-        return this.map.containsKey(chunkPos);
++        return lookup.apply(chunkPos) != null; // Paper - avoid copying light data
+     }
+ 
+-    @Nullable
+-    public DataLayer getLayer(long chunkPos) {
+-        if (this.cacheEnabled) {
+-            for(int i = 0; i < 2; ++i) {
+-                if (chunkPos == this.lastSectionKeys[i]) {
+-                    return this.lastSections[i];
+-                }
+-            }
+-        }
++    // Paper start - less branching as we know we are using cache and updating
++    public final DataLayer getUpdatingOptimized(final long chunkPos) { // Paper - final
++        final DataLayer[] cache = this.cache;
++        if (cache[0].lightCacheKey == chunkPos) return cache[0];
++        if (cache[1].lightCacheKey == chunkPos) return cache[1];
+ 
+-        DataLayer dataLayer = this.map.get(chunkPos);
++        final DataLayer dataLayer = this.lookup.apply(chunkPos); // Paper - avoid copying light data
+         if (dataLayer == null) {
+             return null;
+         } else {
+-            if (this.cacheEnabled) {
+-                for(int j = 1; j > 0; --j) {
+-                    this.lastSectionKeys[j] = this.lastSectionKeys[j - 1];
+-                    this.lastSections[j] = this.lastSections[j - 1];
+-                }
+-
+-                this.lastSectionKeys[0] = chunkPos;
+-                this.lastSections[0] = dataLayer;
+-            }
+-
++            cache[1] = cache[0];
++            cache[0] = dataLayer;
+             return dataLayer;
+         }
+     }
++    // Paper end
++
++    @Nullable
++    public final DataLayer getLayer(final long chunkPos) { // Paper - final
++        // Paper start - optimize visible case or missed updating cases
++        if (this.cacheEnabled) {
++            // short circuit to optimized
++            return getUpdatingOptimized(chunkPos);
++        }
++
++        return this.lookup.apply(chunkPos);
++        // Paper end
++    }
+ 
+     @Nullable
+     public DataLayer removeLayer(long chunkPos) {
+-        return this.map.remove(chunkPos);
++        if (this.isVisible) { throw new IllegalStateException("writing to visible data"); } // Paper - avoid copying light data
++        return (DataLayer) this.data.queueRemove(chunkPos); // Paper - avoid copying light data
+     }
+ 
+     public void setLayer(long pos, DataLayer data) {
+-        this.map.put(pos, data);
++        if (this.isVisible) { throw new IllegalStateException("writing to visible data"); } // Paper - avoid copying light data
++        data.lightCacheKey = pos; // Paper
++        this.data.queueUpdate(pos, data); // Paper - avoid copying light data
+     }
+ 
+     public void clearCache() {
+         for(int i = 0; i < 2; ++i) {
+-            this.lastSectionKeys[i] = Long.MAX_VALUE;
+-            this.lastSections[i] = null;
++            // this.b[i] = Long.MAX_VALUE; // Paper - Unused
++            this.lastSections[i] = DataLayer.EMPTY_NIBBLE_ARRAY; // Paper
+         }
+ 
+     }

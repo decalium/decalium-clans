@@ -1,0 +1,12 @@
+--- a/net/minecraft/world/level/CollisionGetter.java
++++ b/net/minecraft/world/level/CollisionGetter.java
+@@ -55,7 +55,9 @@
+     }
+ 
+     default boolean noCollision(@Nullable Entity entity, AABB box, Predicate<Entity> filter) {
++        try { if (entity != null) entity.collisionLoadChunks = true; // Paper
+         return this.getCollisions(entity, box, filter).allMatch(VoxelShape::isEmpty);
++        } finally { if (entity != null) entity.collisionLoadChunks = false; } // Paper
+     }
+ 
+     Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, AABB box, Predicate<Entity> predicate);

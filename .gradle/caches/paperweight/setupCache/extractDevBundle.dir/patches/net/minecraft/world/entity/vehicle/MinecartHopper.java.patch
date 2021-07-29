@@ -1,0 +1,91 @@
+--- a/net/minecraft/world/entity/vehicle/MinecartHopper.java
++++ b/net/minecraft/world/entity/vehicle/MinecartHopper.java
+@@ -31,22 +31,27 @@
+         super(EntityType.HOPPER_MINECART, x, y, z, world);
+     }
+ 
++    @Override
+     public AbstractMinecart.Type getMinecartType() {
+         return AbstractMinecart.Type.HOPPER;
+     }
+ 
++    @Override
+     public BlockState getDefaultDisplayBlockState() {
+         return Blocks.HOPPER.defaultBlockState();
+     }
+ 
++    @Override
+     public int getDefaultDisplayOffset() {
+         return 1;
+     }
+ 
++    @Override
+     public int getContainerSize() {
+         return 5;
+     }
+ 
++    @Override
+     public void activateMinecart(int x, int y, int z, boolean powered) {
+         boolean bl = !powered;
+         if (bl != this.isEnabled()) {
+@@ -63,18 +68,29 @@
+         this.enabled = enabled;
+     }
+ 
++    // Paper start - add back getLevel
++    @Override
++    public net.minecraft.world.level.Level getLevel() {
++        return this.level;
++    }
++    // Paper end
++
++    @Override
+     public double getLevelX() {
+         return this.getX();
+     }
+ 
++    @Override
+     public double getLevelY() {
+         return this.getY() + 0.5D;
+     }
+ 
++    @Override
+     public double getLevelZ() {
+         return this.getZ();
+     }
+ 
++    @Override
+     public void tick() {
+         super.tick();
+         if (!this.level.isClientSide && this.isAlive() && this.isEnabled()) {
+@@ -109,6 +125,7 @@
+         }
+     }
+ 
++    @Override
+     public void destroy(DamageSource damageSource) {
+         super.destroy(damageSource);
+         if (this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+@@ -117,12 +134,14 @@
+ 
+     }
+ 
++    @Override
+     protected void addAdditionalSaveData(CompoundTag nbt) {
+         super.addAdditionalSaveData(nbt);
+         nbt.putInt("TransferCooldown", this.cooldownTime);
+         nbt.putBoolean("Enabled", this.enabled);
+     }
+ 
++    @Override
+     protected void readAdditionalSaveData(CompoundTag nbt) {
+         super.readAdditionalSaveData(nbt);
+         this.cooldownTime = nbt.getInt("TransferCooldown");
+@@ -137,6 +156,7 @@
+         return this.cooldownTime > 0;
+     }
+ 
++    @Override
+     public AbstractContainerMenu createMenu(int syncId, Inventory playerInventory) {
+         return new HopperMenu(syncId, playerInventory, this);
+     }
