@@ -36,6 +36,7 @@ public class ClanMember {
     }
     public boolean hasPermission(ClanPermission perm) {
         return role.hasPermission(perm);
+
     }
 
     public void setRole(ClanRole role) {

@@ -23,7 +23,6 @@ import org.gepron1x.clans.config.serializer.ClanPermissionSerializer;
 import org.gepron1x.clans.config.serializer.ComponentSerializer;
 import org.gepron1x.clans.storage.converters.ClanMemberMapper;
 import org.gepron1x.clans.storage.converters.uuid.UuidArgumentFactory;
-import org.gepron1x.clans.util.Testt;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.util.Index;
@@ -65,7 +64,6 @@ public final class DecaliumClans extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        Testt.main(new String[]{});
         this.commandManager = new PaperCommandManager(this);
         scheduler = new TaskScheduler(this);
         ConfigurationOptions defaultOptions = new ConfigurationOptions.Builder()
