@@ -2,9 +2,9 @@ package org.gepron1x.clans;
 
 import co.aikar.commands.PaperCommandManager;
 import org.gepron1x.clans.config.serializer.ClanRoleSerializer;
-import org.gepron1x.clans.helper.ClanHelper;
 import org.gepron1x.clans.hook.ClanPlaceholderExpansion;
 import org.gepron1x.clans.command.InviteCommand;
+import org.gepron1x.clans.manager.ClanManager;
 import org.gepron1x.clans.statistic.StatisticType;
 import org.gepron1x.clans.storage.ClanLoader;
 import org.gepron1x.clans.storage.converters.StatisticRowMapper;
@@ -52,10 +52,10 @@ public final class DecaliumClans extends JavaPlugin {
     private ClanRole defaultRole, ownerRole;
     private ConfigManager<MessagesConfig> messagesConfigManager;
     private Jdbi jdbi;
-    private ClanHelper clanHelper;
+    private ClanManager clanManager;
     private final Path dataFolder = getDataFolder().toPath();
     private ConfigManager<ClansConfig> configManager;
-    private final ClanLoader loader = new ClanLoader();
+    private ClanLoader loader;
     private MiniMessage miniMessage;
     private PaperCommandManager commandManager;
     private ClanCommand command;
@@ -64,6 +64,8 @@ public final class DecaliumClans extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        this.loader = new ClanLoader(this);
+        this.clanManager = new ClanManager();
         this.commandManager = new PaperCommandManager(this);
         scheduler = new TaskScheduler(this);
         ConfigurationOptions defaultOptions = new ConfigurationOptions.Builder()
@@ -94,8 +96,8 @@ public final class DecaliumClans extends JavaPlugin {
             else return null;
         }).build();
         roleRegistry = Index.create(ClanRole::getName, cfg.roles());
-        command = new ClanCommand(this, messagesConfigManager.getConfigData());
-        inviteCommand = new InviteCommand(this, messagesConfigManager.getConfigData());
+        command = new ClanCommand(this, clanManager, messagesConfigManager.getConfigData());
+        inviteCommand = new InviteCommand(this, clanManager, messagesConfigManager.getConfigData());
         this.commandManager.registerCommand(command);
         commandManager.registerCommand(inviteCommand);
         defaultRole = roleRegistry.value(cfg.defaultRole());
@@ -107,7 +109,7 @@ public final class DecaliumClans extends JavaPlugin {
                     sqlCfg.user(),
                     sqlCfg.password());
             jdbi.installPlugin(new SqlObjectPlugin());
-            jdbi.registerRowMapper(new ClanMapper())
+            jdbi.registerRowMapper(new ClanMapper(this))
                     .registerRowMapper(new ClanMemberMapper(getRoleRegistry()))
                     .registerRowMapper(new StatisticRowMapper(getStatisticTypeRegistry()));
             jdbi.registerColumnMapper(new UuidMapper()).registerColumnMapper(new ComponentMapper());
@@ -115,9 +117,8 @@ public final class DecaliumClans extends JavaPlugin {
             List<Clan> clans = loader.load(jdbi);
             Tasks.sync(this, t -> {
                 this.jdbi = jdbi;
-                this.clanHelper = new ClanHelper(scheduler, jdbi);
-                clans.forEach(clan -> clanHelper.addClan(clan));
-                new ClanPlaceholderExpansion(clanHelper).register();
+                clans.forEach(clan -> clanManager.insertClan(clan));
+                new ClanPlaceholderExpansion(clanManager).register();
             }
             );
         });
@@ -156,7 +157,4 @@ public final class DecaliumClans extends JavaPlugin {
         return statisticTypeRegistry;
     }
 
-    public ClanHelper getClanHelper() {
-        return clanHelper;
-    }
 }

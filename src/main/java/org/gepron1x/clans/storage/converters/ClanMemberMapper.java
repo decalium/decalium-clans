@@ -1,6 +1,5 @@
 package org.gepron1x.clans.storage.converters;
 
-import org.gepron1x.clans.storage.converters.uuid.UuidMapper;
 import org.gepron1x.clans.clan.member.ClanMember;
 import org.gepron1x.clans.clan.role.ClanRole;
 import net.kyori.adventure.util.Index;
@@ -20,8 +19,7 @@ public class ClanMemberMapper implements RowMapper<ClanMember> {
     @Override
     public ClanMember map(ResultSet rs, StatementContext ctx) throws SQLException {
         return new ClanMember(
-                UuidMapper.INSTANCE.map(rs, UUID, ctx),
-                rs.getString(NAME),
+                Mappers.UUID.map(rs, UUID, ctx),
                 roles.value(rs.getString(ROLE))
         );
     }

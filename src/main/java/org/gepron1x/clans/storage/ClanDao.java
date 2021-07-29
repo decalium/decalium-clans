@@ -3,6 +3,7 @@ package org.gepron1x.clans.storage;
 
 import org.gepron1x.clans.clan.Clan;
 import net.kyori.adventure.text.Component;
+import org.gepron1x.clans.clan.ClanBuilder;
 import org.jdbi.v3.sqlobject.customizer.BindMethods;
 import org.jdbi.v3.sqlobject.customizer.BindMethodsList;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
@@ -44,7 +45,7 @@ public interface ClanDao {
     void removeClan(Clan clan);
 
     @SqlQuery("SELECT * FROM clans")
-    List<Clan> loadClans();
+    List<ClanBuilder> loadClans();
 
     @SqlUpdate("UPDATE clans SET `display_name`=:displayName WHERE `tag`=:clan.getTag")
     void setDisplayName(@BindMethods Clan clan, Component displayName);

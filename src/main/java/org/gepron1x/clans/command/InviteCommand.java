@@ -12,10 +12,10 @@ import org.gepron1x.clans.clan.Clan;
 import org.gepron1x.clans.clan.member.ClanMember;
 import org.gepron1x.clans.clan.role.ClanPermission;
 import org.gepron1x.clans.config.MessagesConfig;
-import org.gepron1x.clans.helper.ClanHelper;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import org.bukkit.entity.Player;
+import org.gepron1x.clans.manager.ClanManager;
 
 import java.util.UUID;
 
@@ -24,27 +24,27 @@ import java.util.UUID;
 @Subcommand("invite")
 public final class InviteCommand extends BaseCommand {
     private final DecaliumClans plugin;
-
     private final MiniMessage mm;
+    private final ClanManager manager;
     private final MessagesConfig messages;
     private final Table<UUID, String, Clan> clanInvitations = HashBasedTable.create();
 
-    public InviteCommand(DecaliumClans plugin, MessagesConfig messages) {
+    public InviteCommand(DecaliumClans plugin, ClanManager manager, MessagesConfig messages) {
         this.plugin = plugin;
         this.mm = plugin.getMiniMessage();
+        this.manager = manager;
         this.messages = messages;
     }
     @Default
     public void createInvitation(Player sender, OnlinePlayer onlineReceiver) {
-        ClanHelper helper = plugin.getClanHelper();
         Player receiver = onlineReceiver.getPlayer();
         UUID senderUniqueId = sender.getUniqueId();
-        Clan clan = helper.getUserClan(senderUniqueId);
+        Clan clan = manager.getUserClan(senderUniqueId);
         if(clan == null) {
             sender.sendMessage(mm.parse(messages.notInClan()));
             return;
         }
-        if(!clan.getMemberList().getMember(senderUniqueId).hasPermission(ClanPermission.INVITE_MEMBER)) {
+        if(!clan.getMember(senderUniqueId).hasPermission(ClanPermission.INVITE_MEMBER)) {
             sender.sendMessage(mm.parse(messages.noClanPermission()));
             return;
         }
@@ -52,7 +52,7 @@ public final class InviteCommand extends BaseCommand {
             sender.sendMessage(mm.parse(messages.invite().cannotInviteSelf()));
             return;
         }
-        if(helper.getUserClan(receiver.getUniqueId()) != null) {
+        if(manager.getUserClan(receiver.getUniqueId()) != null) {
             sender.sendMessage(mm.parse(messages.alreadyInClan(), Template.of("player", receiver.displayName())));
             return;
         }
@@ -68,11 +68,10 @@ public final class InviteCommand extends BaseCommand {
     }
     @Subcommand("accept")
     public void acceptInvite(Player receiver, String senderName) {
-        ClanHelper helper = plugin.getClanHelper();
         UUID receiverUniqueId = receiver.getUniqueId();
         Clan clan = clanInvitations.get(receiverUniqueId, senderName);
         if(check(receiver, senderName)) return;
-        helper.addMember(clan, new ClanMember(receiver, plugin.getDefaultRole()));
+        clan.addMember(new ClanMember(receiver, plugin.getDefaultRole()));
         receiver.sendMessage( mm.parse(messages.invite().accepted()) );
 
 
@@ -86,7 +85,6 @@ public final class InviteCommand extends BaseCommand {
 
     }
     private boolean check(Player receiver, String senderName) {
-        ClanHelper helper = plugin.getClanHelper();
         UUID receiverUniqueId = receiver.getUniqueId();
         Clan clan = clanInvitations.get(receiverUniqueId, senderName);
 
@@ -94,7 +92,7 @@ public final class InviteCommand extends BaseCommand {
             receiver.sendMessage(mm.parse(messages.invite().noInvitesFromThisPlayer()));
             return true;
         }
-        if(!helper.getClans().contains(clan)) {
+        if(!manager.getClans().contains(clan)) {
             receiver.sendMessage(mm.parse(messages.invite().clanGotDeleted()));
             return true;
         }

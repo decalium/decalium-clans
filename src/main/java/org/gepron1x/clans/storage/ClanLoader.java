@@ -1,34 +1,46 @@
 package org.gepron1x.clans.storage;
 
+import org.gepron1x.clans.DecaliumClans;
 import org.gepron1x.clans.clan.Clan;
+import org.gepron1x.clans.clan.ClanBuilder;
 import org.jdbi.v3.core.Jdbi;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ClanLoader implements Loader<List<Clan>> {
+    private final DecaliumClans plugin;
+
+    public ClanLoader(DecaliumClans plugin) {
+        this.plugin = plugin;
+    }
     @Override
     public List<Clan> load(Jdbi jdbi) {
-        Map<String, Clan> clans = jdbi.withExtension(ClanDao.class, dao -> {
+        Map<String, ClanBuilder> clans = jdbi.withExtension(ClanDao.class, dao -> {
             dao.createTable();
             return dao.loadClans();
-        }).stream().collect(Collectors.toMap(Clan::getTag, c -> c));
+        }).stream().collect(Collectors.toMap(ClanBuilder::tag, Function.identity()));
         jdbi.withExtension(ClanMemberDao.class, dao -> {
             dao.createTable();
             return dao.loadMembers();
         }).forEach((key, value) -> {
-            Clan clan = clans.get(key);
-            if(clan != null) clan.addMember(value);
+            ClanBuilder clan = clans.get(value);
+            if(clan == null) return;
+            clan.addMember(key);
         });
         jdbi.withExtension(StatisticDao.class, dao -> {
             dao.createTable();
             return dao.getStats();
         }).forEach(row -> {
-            Clan clan = clans.get(row.clanTag());
-            if(clan != null) clan.getStatistics().setValue(row.statType(), row.value());
+            ClanBuilder clan = clans.get(row.clanTag());
+            if(clan != null) {
+                clan.setStatistic(row.statType(), row.value());
+            }
         });
-        return new ArrayList<>(clans.values());
+
+        return clans.values().stream().map(ClanBuilder::build).collect(Collectors.toList());
     }
 }

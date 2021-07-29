@@ -3,23 +3,15 @@ package org.gepron1x.clans.statistic;
 
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.OptionalInt;
 
-public final class IntStatisticContainer {
-    private final Map<StatisticType, Integer> values = new HashMap<>();
-
-    public void setValue(StatisticType type, int value) {
-        values.put(type, value);
-    }
-    public Integer getValue(@NotNull StatisticType type) {
-        return values.get(type);
-    }
-    public void remove(@NotNull StatisticType type) {
-        values.remove(type);
-    }
-
-
-
+public interface IntStatisticContainer {
+    void setStatistic(StatisticType type, int value);
+    boolean hasStatistic(StatisticType type);
+    OptionalInt getStatistic(StatisticType type);
+    void removeStatistic(StatisticType type);
 }

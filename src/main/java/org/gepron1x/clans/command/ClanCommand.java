@@ -5,9 +5,9 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Subcommand;
 import org.gepron1x.clans.DecaliumClans;
+import org.gepron1x.clans.clan.ClanBuilder;
 import org.gepron1x.clans.clan.member.ClanMember;
 import org.gepron1x.clans.config.MessagesConfig;
-import org.gepron1x.clans.helper.ClanHelper;
 import org.gepron1x.clans.clan.Clan;
 import org.gepron1x.clans.clan.role.ClanPermission;
 import net.kyori.adventure.text.Component;
@@ -17,6 +17,7 @@ import net.kyori.adventure.text.minimessage.Template;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.gepron1x.clans.manager.ClanManager;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -33,62 +34,60 @@ public class ClanCommand extends BaseCommand {
 
     private final Set<UUID> deletionConfirmations = new HashSet<>();
 
+    private final ClanManager manager;
     private final MessagesConfig messages;
 
-    public ClanCommand(DecaliumClans plugin, MessagesConfig messages) {
+    public ClanCommand(DecaliumClans plugin, ClanManager manager, MessagesConfig messages) {
         this.plugin = plugin;
         this.mm = plugin.getMiniMessage();
-
+        this.manager = manager;
         this.messages = messages;
     }
 
     @Subcommand("create")
     public void createClan(Player player, String tag) {
-        ClanHelper helper = plugin.getClanHelper();
-        if(helper.getUserClan(player.getUniqueId()) != null) {
+
+        if(manager.getUserClan(player.getUniqueId()) != null) {
             player.sendMessage(mm.parse(messages.alreadyInClan()));
             return;
         }
-        if(helper.getClan(tag) != null) {
+        if(manager.getClan(tag) != null) {
             player.sendMessage(mm.parse(messages.creation().clanWithTagAlreadyExists()));
             return;
         }
-        Clan clan = new Clan(tag, player.getUniqueId(), text(tag).color(NamedTextColor.GRAY));
-        helper.createClan(clan);
-        helper.addMember(clan, new ClanMember(player, plugin.getOwnerRole()));
+        Clan clan = new ClanBuilder(tag).creator(new ClanMember(player, plugin.getOwnerRole()))
+                .emptyMembers().emptyStatistics().displayName(text(tag, NamedTextColor.GRAY)).build();
+        manager.addClan(clan);
         player.sendMessage(mm.parse(messages.creation().success(), Template.of("clan", clan.getDisplayName())));
 
     }
     @Subcommand("delete")
     public void deleteClan(Player player) {
-        ClanHelper helper = plugin.getClanHelper();
         UUID uuid = player.getUniqueId();
-        Clan clan = helper.getUserClan(uuid);
+        Clan clan = manager.getUserClan(uuid);
         if(clan == null) {
             player.sendMessage(mm.parse(messages.notInClan()));
             return;
         }
-        if(!clan.getMemberList().getMember(uuid).getRole().hasPermission(ClanPermission.DELETE_CLAN)) {
+        if(!clan.getMember(uuid).hasPermission(ClanPermission.DELETE_CLAN)) {
             player.sendMessage(mm.parse(messages.noClanPermission()));
             return;
         }
         player.sendMessage(mm.parse(messages.deletion().confirm()));
-
         deletionConfirmations.add(uuid);
         Bukkit.getScheduler().runTaskLater(plugin, () -> deletionConfirmations.remove(uuid), 60 * 20L);
 
     }
     @Subcommand("delete confirm")
     public void confirmDeletion(Player player) {
-        ClanHelper helper = plugin.getClanHelper();
         UUID uuid = player.getUniqueId();
         if(!deletionConfirmations.contains(uuid)) {
             player.sendMessage(mm.parse(messages.deletion().nothingToConfirm()));
             return;
         }
-        Clan clan = helper.getUserClan(uuid);
+        Clan clan = manager.getUserClan(uuid);
         if(clan != null) {
-            helper.removeClan(clan);
+            manager.removeClan(clan);
             player.sendMessage(mm.parse(messages.deletion().success()));
         } else {
             player.sendMessage(mm.parse(messages.notInClan()));
@@ -98,10 +97,10 @@ public class ClanCommand extends BaseCommand {
 
     @Subcommand("list")
     public void clanList(Player player) {
-        plugin.getClanHelper().getClans().stream().map(clan -> {
-            Component members = clan.getMemberList()
+        manager.getClans().stream().map(clan -> {
+            Component members = clan
                     .getMembers().stream()
-                    .map(member -> mm.parse(messages.clanList().memberFormat(), Template.of("name", member.getName()),
+                    .map(member -> mm.parse(messages.clanList().memberFormat(), Template.of("name", member.asOffline().getName()),
                             Template.of("role", member.getRole().getDisplayName())
                     )).collect(Component.toComponent(newline()));
 
@@ -117,18 +116,18 @@ public class ClanCommand extends BaseCommand {
 
     @Subcommand("set displayname")
     public void setDisplayName(Player player, String[] args) {
-        ClanHelper helper = plugin.getClanHelper();
-        Clan clan = helper.getUserClan(player.getUniqueId());
+
+        Clan clan = manager.getUserClan(player.getUniqueId());
         if(clan == null) {
             player.sendMessage(mm.parse(messages.notInClan()));
             return;
         }
-        if(!clan.getMemberList().getMember(player).hasPermission(ClanPermission.SET_DISPLAY_NAME)) {
+        if(!clan.getMember(player).hasPermission(ClanPermission.SET_DISPLAY_NAME)) {
             player.sendMessage(mm.parse(messages.noClanPermission()));
         }
         try {
             Component displayName = MiniMessage.get().parse(String.join(" ", args));
-            helper.setClanDisplayName(clan, displayName);
+            clan.setDisplayName(displayName);
             player.sendMessage(mm.parse(messages.displayName().success(), "name", displayName));
         } catch (Exception e) {
             player.sendMessage(mm.parse(messages.displayName().errorInSyntax()));

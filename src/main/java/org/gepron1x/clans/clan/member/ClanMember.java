@@ -11,24 +11,19 @@ import java.util.UUID;
 
 public class ClanMember {
     private final UUID uniqueId;
-    private final String name;
     private ClanRole role;
 
-    public ClanMember(UUID uniqueId, String name, ClanRole role) {
+    public ClanMember(UUID uniqueId, ClanRole role) {
         this.uniqueId = uniqueId;
-        this.name = name;
+
         this.role = role;
     }
     public ClanMember(OfflinePlayer player, ClanRole role) {
-        this(player.getUniqueId(), player.getName(), role);
+        this(player.getUniqueId(), role);
     }
 
     public UUID getUniqueId() {
         return uniqueId;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public ClanRole getRole() {
@@ -45,5 +40,6 @@ public class ClanMember {
     public @Nullable Player asPlayer() {
         return Bukkit.getPlayer(uniqueId);
     }
+    public @Nullable OfflinePlayer asOffline() {return Bukkit.getOfflinePlayer(uniqueId); }
 
 }

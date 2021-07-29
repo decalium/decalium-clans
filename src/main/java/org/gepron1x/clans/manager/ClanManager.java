@@ -1,6 +1,7 @@
 package org.gepron1x.clans.manager;
 
 import com.google.common.base.Preconditions;
+import org.bukkit.OfflinePlayer;
 import org.gepron1x.clans.clan.Clan;
 import org.gepron1x.clans.clan.member.ClanMember;
 import org.gepron1x.clans.events.ClanCreatedEvent;
@@ -48,6 +49,7 @@ public final class ClanManager {
         if(clan != null) userClans.put(uuid, clan);
         return clan;
     }
+    @Nullable public Clan getUserClan(@NotNull OfflinePlayer player) {return getUserClan(player.getUniqueId()); }
 
     public void removeClan(@NotNull Clan clan) {
         Preconditions.checkArgument(clans.containsValue(clan), "clan is not registered");
