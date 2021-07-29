@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ivy-module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd" version="2.0">
-    <info organisation="io.papermc.paper" module="paper-server" revision="1.17.1-R0.1-SNAPSHOT" status="release">
-    </info>
-    <dependencies>
-    </dependencies>
-</ivy-module>
