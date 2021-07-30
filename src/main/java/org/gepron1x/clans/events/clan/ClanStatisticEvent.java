@@ -1,4 +1,4 @@
-package org.gepron1x.clans.events;
+package org.gepron1x.clans.events.clan;
 
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;

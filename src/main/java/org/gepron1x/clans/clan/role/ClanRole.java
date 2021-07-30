@@ -10,9 +10,6 @@ import java.util.List;
 import java.util.Objects;
 
 public final class ClanRole {
-    public static final ClanRole
-            OWNER = new ClanRole("owner", Component.text("Владелец"), 10, ClanPermission.REGISTRY.values()),
-            USER = new ClanRole("user", Component.text("Участник"), 1, Collections.emptyList());
 
     private final String name;
     private Component displayName;

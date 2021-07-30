@@ -113,7 +113,13 @@ public final class DecaliumClans extends JavaPlugin {
         ownerRole = roleRegistry.value(cfg.ownerRole());
         Executor executor = getServer().getScheduler().getMainThreadExecutor(this);
 
-
+        Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+         Bukkit.getScheduler().runTask(this, () -> {
+             Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+                 Bukkit.getScheduler().runTask(this, () -> {});
+             });
+         });
+        });
         CompletableFuture.supplyAsync(() -> {
             ClansConfig.SqlConfig sqlCfg = cfg.mysql();
             Jdbi jdbi = Jdbi.create("jdbc:mysql://" + sqlCfg.host() + "/" + sqlCfg.database(),
@@ -127,8 +133,11 @@ public final class DecaliumClans extends JavaPlugin {
             jdbi.registerArgument(new UuidArgumentFactory()).registerArgument(new ComponentArgumentFactory());
             return jdbi;
         })
+
                 .thenAccept(jdbi -> this.jdbi = jdbi)
+
                 .thenApplyAsync(v -> loader.load(jdbi))
+
                 .thenAccept(clans -> {
             clans.forEach(clan -> clanManager.insertClan(clan));
             new ClanPlaceholderExpansion(clanManager).register();

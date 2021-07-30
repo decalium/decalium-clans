@@ -1,4 +1,4 @@
-package org.gepron1x.clans.events;
+package org.gepron1x.clans.events.clan;
 
 import org.gepron1x.clans.clan.Clan;
 import org.gepron1x.clans.clan.member.ClanMember;

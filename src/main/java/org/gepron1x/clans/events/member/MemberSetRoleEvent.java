@@ -1,20 +1,18 @@
-package org.gepron1x.clans.events;
+package org.gepron1x.clans.events.member;
 
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
-import org.gepron1x.clans.clan.Clan;
 import org.gepron1x.clans.clan.member.ClanMember;
+import org.gepron1x.clans.clan.role.ClanRole;
 import org.jetbrains.annotations.NotNull;
 
-
-public class ClanAddMemberEvent extends ClanMemberEvent implements Cancellable {
-
+public class MemberSetRoleEvent extends MemberEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
-
-    private boolean cancelled = false;
-
-    public ClanAddMemberEvent(@NotNull Clan clan, @NotNull ClanMember member) {
-        super(clan, member);
+    private ClanRole newRole;
+    private boolean cancelled;
+    public MemberSetRoleEvent(@NotNull ClanMember member, @NotNull ClanRole newRole) {
+        super(member);
+        this.newRole = newRole;
     }
 
     @Override
@@ -33,5 +31,13 @@ public class ClanAddMemberEvent extends ClanMemberEvent implements Cancellable {
     @Override
     public void setCancelled(boolean cancel) {
         this.cancelled = cancel;
+    }
+    @NotNull
+    public ClanRole getNewRole() {
+        return newRole;
+    }
+
+    public void setNewRole(@NotNull ClanRole newRole) {
+        this.newRole = newRole;
     }
 }

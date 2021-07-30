@@ -17,9 +17,9 @@ public interface StatisticDao {
     List<StatisticRow> getStats();
 
     @SqlUpdate("INSERT INTO stats (`clan_tag`, `statistic_type`, `value`) VALUES (:clan.getTag, :type.getName, :value) ON DUPLICATE KEY UPDATE `value`=:value")
-    void set(@BindMethods("clan") Clan clan, @BindMethods("type") StatisticType type, @Bind("value") int value);
+    void set(@BindMethods Clan clan, @BindMethods StatisticType type, @Bind int value);
 
 
     @SqlUpdate("DELETE FROM stats WHERE `clan_tag`=:clan.getTag AND `statistic_type`=:type.getName")
-    void remove(@BindMethods("clan") Clan clan, @BindMethods("type") StatisticType type);
+    void remove(@BindMethods Clan clan, @BindMethods StatisticType type);
 }

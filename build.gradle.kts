@@ -52,6 +52,7 @@ java.sourceCompatibility = JavaVersion.VERSION_16
 tasks {
     compileJava {
         options.encoding = "UTF-8"
+        options.compilerArgs.add("-parameters")
     }
   /*  build {
         dependsOn(reobfJar)

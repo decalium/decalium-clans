@@ -2,6 +2,7 @@ package org.gepron1x.clans.storage;
 
 import org.gepron1x.clans.clan.Clan;
 import org.gepron1x.clans.clan.member.ClanMember;
+import org.gepron1x.clans.clan.role.ClanRole;
 import org.jdbi.v3.sqlobject.config.KeyColumn;
 import org.jdbi.v3.sqlobject.config.ValueColumn;
 import org.jdbi.v3.sqlobject.customizer.Bind;
@@ -17,26 +18,27 @@ import java.util.UUID;
 public interface ClanMemberDao {
     @SqlUpdate("CREATE TABLE IF NOT EXISTS members (" +
             "`uuid` BINARY(16) NOT NULL UNIQUE, " +
-            "`name` VARCHAR(16) NOT NULL UNIQUE, " +
             "`clan` VARCHAR(16) NOT NULL UNIQUE, " +
             "`role` VARCHAR(16) NOT NULL, " +
             "PRIMARY KEY(`uuid`)" +
             ")")
     void createTable();
-    @SqlUpdate("INSERT INTO members (`uuid`, `name`, `clan`, `role`) VALUES (:member.getUniqueId, :member.getName, :clan.getTag, :member.getRole.getName)")
-    void addMember(@BindMethods("member") ClanMember member, @BindMethods("clan") Clan clan);
+    @SqlUpdate("INSERT INTO members (`uuid`, `clan`, `role`) VALUES (:member.getUniqueId, :clan.getTag, :member.getRole.getName)")
+    void addMember(@BindMethods ClanMember member, @BindMethods Clan clan);
 
     default void removeMember(ClanMember member) {
         removeMember(member.getUniqueId());
     }
     @SqlUpdate("DELETE FROM members WHERE `uuid`=:uuid")
-    void removeMember(@Bind("uuid") UUID uuid);
+    void removeMember(@Bind UUID uuid);
 
     @ValueColumn("clan")
     @SqlQuery("SELECT * FROM members")
     Map<ClanMember, String> loadMembers();
+    @SqlUpdate("UPDATE members SET `role`=:role.getName WHERE `uuid`=:member.getUniqueId")
+    void setRole(@BindMethods ClanMember member, @BindMethods ClanRole role);
 
     @SqlUpdate("DELETE FROM members WHERE `clan`=:clan.getTag")
-    void clearMembers(@BindMethods("clan") Clan clan);
+    void clearMembers(@BindMethods Clan clan);
 
 }
