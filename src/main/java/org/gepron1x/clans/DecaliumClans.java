@@ -1,6 +1,8 @@
 package org.gepron1x.clans;
 
 import co.aikar.commands.PaperCommandManager;
+import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.gepron1x.clans.config.serializer.ClanRoleSerializer;
 import org.gepron1x.clans.config.serializer.DurationSerializer;
 import org.gepron1x.clans.hook.ClanPlaceholderExpansion;
@@ -37,6 +39,8 @@ import space.arim.dazzleconf.ConfigurationOptions;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 public final class DecaliumClans extends JavaPlugin {
     public static final String AUTHOR = "gepron1x";
@@ -107,8 +111,10 @@ public final class DecaliumClans extends JavaPlugin {
         commandManager.registerCommand(inviteCommand);
         defaultRole = roleRegistry.value(cfg.defaultRole());
         ownerRole = roleRegistry.value(cfg.ownerRole());
+        Executor executor = getServer().getScheduler().getMainThreadExecutor(this);
 
-        scheduler.async(task -> {
+
+        CompletableFuture.supplyAsync(() -> {
             ClansConfig.SqlConfig sqlCfg = cfg.mysql();
             Jdbi jdbi = Jdbi.create("jdbc:mysql://" + sqlCfg.host() + "/" + sqlCfg.database(),
                     sqlCfg.user(),
@@ -119,17 +125,17 @@ public final class DecaliumClans extends JavaPlugin {
                     .registerRowMapper(new StatisticRowMapper(getStatisticTypeRegistry()));
             jdbi.registerColumnMapper(new UuidMapper()).registerColumnMapper(new ComponentMapper());
             jdbi.registerArgument(new UuidArgumentFactory()).registerArgument(new ComponentArgumentFactory());
-            List<Clan> clans = loader.load(jdbi);
-            Tasks.sync(this, t -> {
-                this.jdbi = jdbi;
-                clans.forEach(clan -> clanManager.insertClan(clan));
-                new ClanPlaceholderExpansion(clanManager).register();
-                this.dataSyncTask = new DataSyncTask(scheduler, jdbi, updateListener);
-                getServer().getPluginManager().registerEvents(updateListener, this);
-                long syncPeriod = Tasks.asTicks(cfg.mysql().saveTaskPeriod());
-                this.dataSyncTask.runTaskTimer(this, syncPeriod, syncPeriod);
-            }
-            );
+            return jdbi;
+        })
+                .thenAccept(jdbi -> this.jdbi = jdbi)
+                .thenApplyAsync(v -> loader.load(jdbi))
+                .thenAccept(clans -> {
+            clans.forEach(clan -> clanManager.insertClan(clan));
+            new ClanPlaceholderExpansion(clanManager).register();
+            this.dataSyncTask = new DataSyncTask(scheduler, jdbi, updateListener);
+            getServer().getPluginManager().registerEvents(updateListener, this);
+            long syncPeriod = Tasks.asTicks(cfg.mysql().saveTaskPeriod());
+            this.dataSyncTask.runTaskTimer(this, syncPeriod, syncPeriod);
         });
     }
 
