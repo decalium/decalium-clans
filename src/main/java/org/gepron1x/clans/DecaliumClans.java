@@ -2,15 +2,18 @@ package org.gepron1x.clans;
 
 import co.aikar.commands.PaperCommandManager;
 import org.gepron1x.clans.config.serializer.ClanRoleSerializer;
+import org.gepron1x.clans.config.serializer.DurationSerializer;
 import org.gepron1x.clans.hook.ClanPlaceholderExpansion;
 import org.gepron1x.clans.command.InviteCommand;
 import org.gepron1x.clans.manager.ClanManager;
 import org.gepron1x.clans.statistic.StatisticType;
 import org.gepron1x.clans.storage.ClanLoader;
+import org.gepron1x.clans.storage.UpdateListener;
 import org.gepron1x.clans.storage.converters.StatisticRowMapper;
 import org.gepron1x.clans.storage.converters.component.ComponentArgumentFactory;
 import org.gepron1x.clans.storage.converters.component.ComponentMapper;
 import org.gepron1x.clans.storage.converters.uuid.UuidMapper;
+import org.gepron1x.clans.storage.task.DataSyncTask;
 import org.gepron1x.clans.util.TaskScheduler;
 import org.gepron1x.clans.util.Tasks;
 import org.gepron1x.clans.clan.Clan;
@@ -60,18 +63,22 @@ public final class DecaliumClans extends JavaPlugin {
     private PaperCommandManager commandManager;
     private ClanCommand command;
     private InviteCommand inviteCommand;
+    private UpdateListener updateListener;
+    private DataSyncTask dataSyncTask;
 
     @Override
     public void onEnable() {
         instance = this;
         this.loader = new ClanLoader(this);
         this.clanManager = new ClanManager();
+        this.updateListener = new UpdateListener();
+
         this.commandManager = new PaperCommandManager(this);
         scheduler = new TaskScheduler(this);
         ConfigurationOptions defaultOptions = new ConfigurationOptions.Builder()
-                .addSerialisers(ComponentSerializer.INSTANCE,
-                ClanRoleSerializer.INSTANCE,
-                ClanPermissionSerializer.INSTANCE).build();
+                .addSerialisers(new ComponentSerializer(),
+                new ClanRoleSerializer(),
+                new ClanPermissionSerializer(), new DurationSerializer()).build();
 
         saveResource("messages.yml", false);
         saveDefaultConfig();
@@ -119,6 +126,10 @@ public final class DecaliumClans extends JavaPlugin {
                 this.jdbi = jdbi;
                 clans.forEach(clan -> clanManager.insertClan(clan));
                 new ClanPlaceholderExpansion(clanManager).register();
+                this.dataSyncTask = new DataSyncTask(scheduler, jdbi, updateListener);
+                getServer().getPluginManager().registerEvents(updateListener, this);
+                long syncPeriod = Tasks.asTicks(cfg.mysql().saveTaskPeriod());
+                this.dataSyncTask.runTaskTimer(this, syncPeriod, syncPeriod);
             }
             );
         });

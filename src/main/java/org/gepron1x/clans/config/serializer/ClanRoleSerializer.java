@@ -11,7 +11,6 @@ import space.arim.dazzleconf.serialiser.ValueSerialiser;
 import java.util.Map;
 
 public class ClanRoleSerializer implements ValueSerialiser<ClanRole> {
-    public static final ClanRoleSerializer INSTANCE = new ClanRoleSerializer();
     public static final String ID = "id", WEIGHT = "weight", DISPLAY_NAME = "displayName", PERMISSIONS = "permissions";
 
     @Override

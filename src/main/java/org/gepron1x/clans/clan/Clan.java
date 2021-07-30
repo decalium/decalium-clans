@@ -27,7 +27,7 @@ public class Clan implements IntStatisticContainer, Buildable<Clan, ClanBuilder>
     private final Object2IntMap<StatisticType> stats;
 
 
-    Clan(String tag, // specially for builder
+    public Clan(String tag, // specially for builder
          Component displayName,
          ClanMember creator,
          Set<ClanMember> members,
@@ -68,12 +68,12 @@ public class Clan implements IntStatisticContainer, Buildable<Clan, ClanBuilder>
     }
     public void removeMember(@NotNull UUID uniqueId) {
         Preconditions.checkArgument(isMember(uniqueId), String.format("no member with %s uuid", uniqueId));
-        Preconditions.checkArgument(!creator.getUniqueId().equals(uniqueId), "cannot remove owner");
        removeMember(members.get(uniqueId));
     }
     public void removeMember(@NotNull ClanMember member) {
         Preconditions.checkArgument(members.containsKey(member.getUniqueId()),
                 String.format("user %s is not in a clan", member));
+        Preconditions.checkArgument(!member.equals(creator), "cannot remove owner");
         if(Events.callCancellableEvent(new ClanRemoveMemberEvent(this, member)))
         removeMember(member.getUniqueId());
     }
@@ -82,7 +82,7 @@ public class Clan implements IntStatisticContainer, Buildable<Clan, ClanBuilder>
     }
     @NotNull
     public Collection<ClanMember> getMembers() {
-        return members.values();
+        return Collections.unmodifiableCollection(members.values());
     }
     @NotNull
     public String getTag() {
@@ -128,8 +128,30 @@ public class Clan implements IntStatisticContainer, Buildable<Clan, ClanBuilder>
         stats.removeInt(type);
     }
 
+
     @Override
     public @NotNull ClanBuilder toBuilder() {
-        throw new UnsupportedOperationException("no");
+        return new ClanBuilder(tag)
+                .creator(creator)
+                .displayName(displayName)
+                .members(members.values())
+                .statistics(stats);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Clan clan = (Clan) o;
+        return tag.equals(clan.tag) &&
+                displayName.equals(clan.displayName) &&
+                creator.equals(clan.creator) &&
+                members.equals(clan.members) &&
+                stats.equals(clan.stats);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(tag, displayName, creator, members, stats);
     }
 }

@@ -7,7 +7,7 @@ import space.arim.dazzleconf.serialiser.FlexibleType;
 import space.arim.dazzleconf.serialiser.ValueSerialiser;
 
 public class ClanPermissionSerializer implements ValueSerialiser<ClanPermission> {
-    public static final ClanPermissionSerializer INSTANCE = new ClanPermissionSerializer();
+
 
     @Override
     public Class<ClanPermission> getTargetClass() {
@@ -24,7 +24,5 @@ public class ClanPermissionSerializer implements ValueSerialiser<ClanPermission>
     public String serialise(ClanPermission value, Decomposer decomposer) {
         return value.value();
     }
-    public static ClanPermissionSerializer getInstance() {
-        return INSTANCE;
-    }
+
 }

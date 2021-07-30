@@ -10,10 +10,7 @@ import org.gepron1x.clans.util.Events;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public final class ClanManager {
     private final Map<UUID, Clan> userClans = new HashMap<>();
@@ -55,10 +52,8 @@ public final class ClanManager {
         Preconditions.checkArgument(clans.containsValue(clan), "clan is not registered");
         if(!Events.callCancellableEvent(new ClanDeletedEvent(clan))) return;
         clans.remove(clan.getTag(), clan);
-        userClans.replaceAll((key, value) -> {
-            if(value.equals(clan)) return null;
-            return value;
-        });
+        userClans.entrySet().removeIf(entry -> entry.getValue().equals(clan));
+
     }
 
 

@@ -39,7 +39,7 @@ public final class Tasks {
         return Bukkit.getScheduler().callSyncMethod(plugin, callable);
     }
 
-    private static long asTicks(Duration duration) {
+    public static long asTicks(Duration duration) {
         return duration.toMillis() / MILLIS_TICK_LENGTH;
     }
     

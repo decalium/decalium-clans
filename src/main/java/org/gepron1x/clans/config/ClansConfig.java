@@ -4,9 +4,11 @@ import org.gepron1x.clans.clan.role.ClanPermission;
 import org.gepron1x.clans.clan.role.ClanRole;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import space.arim.dazzleconf.annote.ConfComments;
 import space.arim.dazzleconf.annote.ConfDefault;
 import space.arim.dazzleconf.annote.SubSection;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,6 +23,7 @@ public interface ClansConfig {
     String ownerRole();
 
     @SubSection SqlConfig mysql();
+
 
 
 
@@ -44,5 +47,8 @@ public interface ClansConfig {
         String password();
         @ConfDefault.DefaultString("clans")
         String database();
+        @ConfDefault.DefaultString("10m")
+        @ConfComments({"sets the period between database sync.", "use this format: 3d1h30m20s"})
+        Duration saveTaskPeriod();
     }
 }

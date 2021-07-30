@@ -26,17 +26,6 @@ public interface ClanDao {
             PRIMARY KEY(`tag`))
             """)
     void createTable();
-    @SqlUpdate("DELETE FROM clans WHERE `tag` NOT IN (<ignored>)")
-    void clearClans(@BindMethodsList(methodNames = {"getTag"}) Collection<Clan> ignored);
-    @SqlUpdate("""
-            INSERT INTO clans
-            (`tag`, `creator_uuid`, `display_name`)
-            VALUES <clans>
-            ON DUPLICATE KEY UPDATE
-            `creator_uuid`=VALUES(`creator_uuid`)
-            `display_name`=VALUES(`display_name`)
-            """)
-    void updateClans(@BindMethodsList(methodNames = {"getTag", "getCreator", "getDisplayName"}) Collection<Clan> clans);
 
     @SqlUpdate("INSERT INTO clans (`tag`, `creator_uuid`, `display_name`) VALUES (:getTag, :getCreator, :getDisplayName)")
     void insertClan(@BindMethods Clan clan);

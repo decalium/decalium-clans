@@ -6,7 +6,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.0.0"
     java
     id ("maven-publish")
-    id ("io.papermc.paperweight.userdev") version "1.1.10-LOCAL-SNAPSHOT"
+   // id ("io.papermc.paperweight.userdev") version "1.1.10-LOCAL-SNAPSHOT"
 }
 
 
@@ -25,7 +25,7 @@ repositories {
 }
 
 dependencies {
-    paperDevBundle("1.17.1-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.17.1-R0.1-SNAPSHOT")
     implementation("co.aikar:acf-paper:0.5.0-SNAPSHOT")
     implementation("space.arim.dazzleconf:dazzleconf-ext-snakeyaml:1.2.0-M2") {
         exclude(group = "org.yaml", module = "snakeyaml")
@@ -53,9 +53,9 @@ tasks {
     compileJava {
         options.encoding = "UTF-8"
     }
-    build {
+  /*  build {
         dependsOn(reobfJar)
-    }
+    } */
     shadowJar {
         relocate("org.jdbi", "$libsPackage.jdbi")
         relocate("space.arim.dazzleconf", "$libsPackage.dazzleconf")

@@ -7,6 +7,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class ClanMember {
@@ -31,8 +32,9 @@ public class ClanMember {
     }
     public boolean hasPermission(ClanPermission perm) {
         return role.hasPermission(perm);
-
     }
+
+
 
     public void setRole(ClanRole role) {
         this.role = role;
@@ -42,4 +44,16 @@ public class ClanMember {
     }
     public @Nullable OfflinePlayer asOffline() {return Bukkit.getOfflinePlayer(uniqueId); }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClanMember that = (ClanMember) o;
+        return uniqueId.equals(that.uniqueId) && role.equals(that.role);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uniqueId, role);
+    }
 }

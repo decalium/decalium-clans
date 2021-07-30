@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public final class ClanRole {
     public static final ClanRole
@@ -57,8 +58,23 @@ public final class ClanRole {
         return permissions.contains(permission);
     }
 
-
     public void setPermissions(List<ClanPermission> permissions) {
         this.permissions = permissions;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClanRole clanRole = (ClanRole) o;
+        return weight == clanRole.weight &&
+                name.equals(clanRole.name) &&
+                displayName.equals(clanRole.displayName) &&
+                permissions.equals(clanRole.permissions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, displayName, weight, permissions);
     }
 }
