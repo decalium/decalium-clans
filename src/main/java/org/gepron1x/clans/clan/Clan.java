@@ -100,6 +100,9 @@ public class Clan implements IntStatisticContainer, Buildable<Clan, ClanBuilder>
         if(!event.isCancelled())
             this.displayName = event.getNewDisplayName();
     }
+    public ClanMember getCreator() {
+        return creator;
+    }
 
 
     @Override

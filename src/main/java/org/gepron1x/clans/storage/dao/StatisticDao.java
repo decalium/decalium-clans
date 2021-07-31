@@ -1,8 +1,8 @@
-package org.gepron1x.clans.storage;
+package org.gepron1x.clans.storage.dao;
 
 import org.gepron1x.clans.clan.Clan;
 import org.gepron1x.clans.statistic.StatisticType;
-import org.gepron1x.clans.storage.converters.StatisticRow;
+import org.gepron1x.clans.storage.mappers.row.StatisticRow;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindMethods;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;

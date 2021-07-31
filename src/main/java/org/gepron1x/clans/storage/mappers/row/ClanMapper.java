@@ -1,12 +1,9 @@
-package org.gepron1x.clans.storage;
+package org.gepron1x.clans.storage.mappers.row;
 
 import org.gepron1x.clans.DecaliumClans;
 import org.gepron1x.clans.clan.ClanBuilder;
 import org.gepron1x.clans.clan.member.ClanMember;
-import org.gepron1x.clans.storage.converters.Mappers;
-import org.gepron1x.clans.storage.converters.component.ComponentMapper;
-import org.gepron1x.clans.clan.Clan;
-import org.gepron1x.clans.storage.converters.uuid.UuidMapper;
+import org.gepron1x.clans.storage.Mappers;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
 

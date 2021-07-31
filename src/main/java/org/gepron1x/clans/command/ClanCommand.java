@@ -18,6 +18,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.manager.ClanManager;
+import org.gepron1x.clans.util.Components;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -35,7 +36,7 @@ public class ClanCommand extends BaseCommand {
     private final Set<UUID> deletionConfirmations = new HashSet<>();
 
     private final ClanManager manager;
-    private final MessagesConfig messages;
+    private MessagesConfig messages;
 
     public ClanCommand(DecaliumClans plugin, ClanManager manager, MessagesConfig messages) {
         this.plugin = plugin;
@@ -43,7 +44,10 @@ public class ClanCommand extends BaseCommand {
         this.manager = manager;
         this.messages = messages;
     }
-
+    public void setMessages(MessagesConfig config) {
+        this.messages = config;
+    }
+    @CommandPermission("clans.create")
     @Subcommand("create")
     public void createClan(Player player, String tag) {
 
@@ -61,6 +65,7 @@ public class ClanCommand extends BaseCommand {
         player.sendMessage(mm.parse(messages.creation().success(), Template.of("clan", clan.getDisplayName())));
 
     }
+    @CommandPermission("clans.delete")
     @Subcommand("delete")
     public void deleteClan(Player player) {
         UUID uuid = player.getUniqueId();
@@ -78,6 +83,7 @@ public class ClanCommand extends BaseCommand {
         Bukkit.getScheduler().runTaskLater(plugin, () -> deletionConfirmations.remove(uuid), 60 * 20L);
 
     }
+    @CommandPermission("clans.delete")
     @Subcommand("delete confirm")
     public void confirmDeletion(Player player) {
         UUID uuid = player.getUniqueId();
@@ -94,7 +100,7 @@ public class ClanCommand extends BaseCommand {
         }
         deletionConfirmations.remove(uuid);
     }
-
+    @CommandPermission("clans.list")
     @Subcommand("list")
     public void clanList(Player player) {
         manager.getClans().stream().map(clan -> {
@@ -113,7 +119,7 @@ public class ClanCommand extends BaseCommand {
         }).forEach(player::sendMessage);
 
     }
-
+    @CommandPermission("clans.set.displayname")
     @Subcommand("set displayname")
     public void setDisplayName(Player player, String[] args) {
 
@@ -133,16 +139,21 @@ public class ClanCommand extends BaseCommand {
             player.sendMessage(mm.parse(messages.displayName().errorInSyntax()));
         }
     }
-    @Subcommand("drop tables")
+    @Subcommand("drop tables confirm")
     @CommandPermission("decaliumclans.admin.droptables")
-    public void dropTables(CommandSender sender) {
-        sender.sendMessage(text("dropping tables...."));
-        sender.sendMessage(text("please note that this would reqiure restart! clans wouldnt work anymore!"));
+    public void confirmDropTables(CommandSender sender) {
+        if(!sender.equals(Bukkit.getConsoleSender())) {
+            sender.sendMessage(Components.of(text("WARNING!", NamedTextColor.DARK_RED), text("this command can be executed only from console!")));
+            sender.sendMessage(text("if you dont understand what are you doing, please dont."));
+            sender.sendMessage(text("this command is only for debug purposes."));
+            return;
+        }
+        sender.sendMessage(text("Dropping tables..."));
         plugin.getScheduler().async(task -> {
             plugin.getJdbi().useHandle(handle -> {
-                for(String table : Arrays.asList("clans", "members", "stats")) handle.execute("DELETE FROM " + table);
+                for(String table : Arrays.asList("clans", "members", "stats")) handle.execute("DROP TABLE "+table);
             });
-            sender.sendMessage(text("success!"));
+            sender.sendMessage(text("Dropped successfully. Please restart your server!"));
         });
 
     }

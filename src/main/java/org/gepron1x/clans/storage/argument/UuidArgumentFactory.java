@@ -1,4 +1,4 @@
-package org.gepron1x.clans.storage.converters.uuid;
+package org.gepron1x.clans.storage.argument;
 
 import org.jdbi.v3.core.argument.AbstractArgumentFactory;
 import org.jdbi.v3.core.argument.Argument;

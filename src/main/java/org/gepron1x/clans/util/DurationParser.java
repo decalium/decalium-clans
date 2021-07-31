@@ -12,45 +12,13 @@ import java.util.concurrent.TimeUnit;
  */
 public final class DurationParser {
 
-    /**
-     * Private constructor.
-     * @param units
-     */
+
     public DurationParser(Map<Character, TimeUnit> units) {
         this.units = units;
     }
 
-    /**
-     * Used for readability in other constants.
-     */
-    private static final int SECONDS = 1;
 
-    /**
-     * Number of seconds in a minute.
-     */
-    private static final int MINUTES = 60 * SECONDS;
 
-    /**
-     * Number of seconds in an hour.
-     */
-    private static final int HOURS = 60 * MINUTES;
-
-    /**
-     * Number of seconds in a day.
-     */
-    private static final int DAYS = 24 * HOURS;
-
-    /**
-     * Parses the specified duration string to a total number of seconds.
-     * The string must be numbers followed by a suffix, separated by zero or more whitespace characters, e.g. "2h 30m".
-     * Allowed suffixes are 'd', 'h', 'm' and 's'.
-     * Decimals are supported, but the final result is rounded to the nearest second.
-     *
-     * @param duration a duration string to convert
-     * @return the total number of seconds represented by the duration string
-     * @throws ParseException if the input string could not be successfully parsed
-     *
-     */
     private final Map<Character, TimeUnit> units;
     public long parseToSeconds(final String duration) throws ParseException {
 

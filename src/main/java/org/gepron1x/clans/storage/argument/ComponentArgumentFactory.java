@@ -1,4 +1,4 @@
-package org.gepron1x.clans.storage.converters.component;
+package org.gepron1x.clans.storage.argument;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -11,11 +11,7 @@ import java.sql.Types;
 import static net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.*;
 
 public class ComponentArgumentFactory extends AbstractArgumentFactory<Component> {
-    /**
-     * Constructs an {@link ArgumentFactory} for type {@code T}.
-     *
-     * @param sqlType the {@link Types} constant to use when the argument value is {@code null}.
-     */
+
     public ComponentArgumentFactory() {
         super(Types.BLOB);
     }

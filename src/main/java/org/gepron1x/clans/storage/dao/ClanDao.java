@@ -1,4 +1,4 @@
-package org.gepron1x.clans.storage;
+package org.gepron1x.clans.storage.dao;
 
 
 import org.gepron1x.clans.clan.Clan;
@@ -28,14 +28,14 @@ public interface ClanDao {
             """)
     void createTable();
 
-    @SqlUpdate("INSERT INTO clans (`tag`, `creator_uuid`, `display_name`) VALUES (:getTag, :getCreator, :getDisplayName)")
+    @SqlUpdate("INSERT INTO clans (`tag`, `creator_uuid`, `display_name`) VALUES (:getTag, :getCreator.getUniqueId, :getDisplayName)")
     void insertClan(@BindMethods Clan clan);
 
     @SqlUpdate("DELETE FROM clans WHERE `tag`=:getTag")
     void removeClan(@BindMethods Clan clan);
 
     @SqlQuery("SELECT * FROM clans")
-    List<ClanBuilder> loadClans();
+    List<ClanBuilder> getClans();
 
     @SqlUpdate("UPDATE clans SET `display_name`=:displayName WHERE `tag`=:clan.getTag")
     void setDisplayName(@BindMethods Clan clan, @Bind Component displayName);

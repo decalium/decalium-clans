@@ -2,6 +2,7 @@ package org.gepron1x.clans.storage.task;
 
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.gepron1x.clans.DecaliumClans;
 import org.gepron1x.clans.storage.UpdateListener;
 import org.gepron1x.clans.util.TaskScheduler;
 import org.gepron1x.clans.util.Tasks;
@@ -11,23 +12,27 @@ import java.util.*;
 
 
 public class DataSyncTask extends BukkitRunnable {
+    private final DecaliumClans plugin;
     private final UpdateListener updateListener;
-    private final TaskScheduler scheduler;
     private final Jdbi jdbi;
 
-    public DataSyncTask(TaskScheduler scheduler, Jdbi jdbi, UpdateListener updateListener) {
-        this.scheduler = scheduler;
-        this.jdbi = jdbi;
-        this.updateListener = updateListener;
+    public DataSyncTask(DecaliumClans plugin, UpdateListener listener) {
+        this.jdbi = plugin.getJdbi();
+        this.plugin = plugin;
+        this.updateListener = listener;
     }
 
 
     @Override
     public void run() {
-        Queue<DatabaseUpdate> updates = new ArrayDeque<>(updateListener.getUpdates());
-        updateListener.clearUpdates();
-        scheduler.async(task -> updates.forEach(upd -> upd.accept(jdbi)));
-
+        plugin.getLogger().info("Save task started.");
+        Queue<DatabaseUpdate> updates;
+         synchronized (updateListener) {
+             updates = new ArrayDeque<>(updateListener.getUpdates());
+             updateListener.clearUpdates();
+         }
+        updates.forEach(upd -> upd.accept(jdbi));
+        plugin.getLogger().info("Saved data successfully.");
     }
 
 }

@@ -10,9 +10,11 @@ import java.time.Duration;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public final class Tasks {
     private static final byte MILLIS_TICK_LENGTH = 50;
+
 
     private Tasks() {
         throw new UnsupportedOperationException("instantiation of util class is like sex without condom; can cause something unexpected");
@@ -41,6 +43,12 @@ public final class Tasks {
 
     public static long asTicks(Duration duration) {
         return duration.toMillis() / MILLIS_TICK_LENGTH;
+    }
+    public static <T extends Throwable> Function<T, Void> defaultExceptionally() {
+        return t -> {
+            t.printStackTrace();
+            return null;
+        };
     }
     
 }

@@ -17,7 +17,6 @@ public class ClanPermissionSerializer implements ValueSerialiser<ClanPermission>
     @Override
     public ClanPermission deserialise(FlexibleType flexibleType) throws BadValueException {
         return new ClanPermission(flexibleType.getString());
-
     }
 
     @Override

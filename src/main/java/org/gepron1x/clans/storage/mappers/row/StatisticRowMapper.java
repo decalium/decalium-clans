@@ -1,4 +1,4 @@
-package org.gepron1x.clans.storage.converters;
+package org.gepron1x.clans.storage.mappers.row;
 
 import org.gepron1x.clans.statistic.StatisticType;
 import net.kyori.adventure.util.Index;

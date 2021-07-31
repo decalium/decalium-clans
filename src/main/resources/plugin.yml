@@ -1,5 +1,5 @@
 name: DecaliumClans
-version: ${project.version}
+version: ${version}
 main: org.gepron1x.clans.DecaliumClans
 api-version: 1.16
 authors: [ objectwebasm ]

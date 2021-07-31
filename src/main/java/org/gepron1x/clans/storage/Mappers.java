@@ -1,7 +1,7 @@
-package org.gepron1x.clans.storage.converters;
+package org.gepron1x.clans.storage;
 
-import org.gepron1x.clans.storage.converters.component.ComponentMapper;
-import org.gepron1x.clans.storage.converters.uuid.UuidMapper;
+import org.gepron1x.clans.storage.mappers.column.ComponentMapper;
+import org.gepron1x.clans.storage.mappers.column.UuidMapper;
 
 public final class Mappers {
     private Mappers() {throw new UnsupportedOperationException("no isntances"); }

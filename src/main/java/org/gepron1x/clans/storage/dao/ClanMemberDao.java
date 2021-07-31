@@ -1,4 +1,4 @@
-package org.gepron1x.clans.storage;
+package org.gepron1x.clans.storage.dao;
 
 import org.gepron1x.clans.clan.Clan;
 import org.gepron1x.clans.clan.member.ClanMember;

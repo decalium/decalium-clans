@@ -1,4 +1,4 @@
-package org.gepron1x.clans.storage.converters.component;
+package org.gepron1x.clans.storage.mappers.column;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;

@@ -1,4 +1,4 @@
-package org.gepron1x.clans.storage.converters.uuid;
+package org.gepron1x.clans.storage.mappers.column;
 
 import org.jdbi.v3.core.mapper.ColumnMapper;
 import org.jdbi.v3.core.statement.StatementContext;

@@ -26,13 +26,16 @@ public final class InviteCommand extends BaseCommand {
     private final DecaliumClans plugin;
     private final MiniMessage mm;
     private final ClanManager manager;
-    private final MessagesConfig messages;
+    private MessagesConfig messages;
     private final Table<UUID, String, Clan> clanInvitations = HashBasedTable.create();
 
     public InviteCommand(DecaliumClans plugin, ClanManager manager, MessagesConfig messages) {
         this.plugin = plugin;
         this.mm = plugin.getMiniMessage();
         this.manager = manager;
+        this.messages = messages;
+    }
+    public void setMessages(MessagesConfig messages) {
         this.messages = messages;
     }
     @Default

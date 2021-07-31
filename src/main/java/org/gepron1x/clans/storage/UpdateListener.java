@@ -6,6 +6,8 @@ import org.bukkit.event.Listener;
 import org.gepron1x.clans.clan.Clan;
 import org.gepron1x.clans.events.clan.*;
 import org.gepron1x.clans.events.member.MemberSetRoleEvent;
+import org.gepron1x.clans.storage.dao.ClanDao;
+import org.gepron1x.clans.storage.dao.ClanMemberDao;
 import org.gepron1x.clans.storage.task.DatabaseUpdate;
 
 import java.util.ArrayDeque;
@@ -50,9 +52,9 @@ public class UpdateListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void on(MemberSetRoleEvent event) {
         if(event.isCancelled()) return;
-        updates.add(jdbi -> {
-            jdbi.useExtension(ClanMemberDao.class, dao -> dao.setRole(event.getMember(), event.getNewRole()));
-        });
+        updates.add(jdbi ->
+                jdbi.useExtension(ClanMemberDao.class, dao -> dao.setRole(event.getMember(), event.getNewRole()))
+        );
     }
 
     public Queue<DatabaseUpdate> getUpdates() {
