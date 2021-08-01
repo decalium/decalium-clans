@@ -66,6 +66,8 @@ tasks {
         dependsOn(reobfJar)
     } */
     shadowJar {
+        relocate("org.h2", "$libsPackage.h2")
+        relocate("com.zaxxer.hikari", "$libsPackage.hikari")
         relocate("org.jdbi", "$libsPackage.jdbi")
         relocate("space.arim.dazzleconf", "$libsPackage.dazzleconf")
         relocate("net.kyori.adventure.text.minimessage", "$libsPackage.minimessage")
