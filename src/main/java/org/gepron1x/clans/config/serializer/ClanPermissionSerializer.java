@@ -1,6 +1,6 @@
 package org.gepron1x.clans.config.serializer;
 
-import org.gepron1x.clans.clan.role.ClanPermission;
+import org.gepron1x.clans.clan.member.role.ClanPermission;
 import space.arim.dazzleconf.error.BadValueException;
 import space.arim.dazzleconf.serialiser.Decomposer;
 import space.arim.dazzleconf.serialiser.FlexibleType;

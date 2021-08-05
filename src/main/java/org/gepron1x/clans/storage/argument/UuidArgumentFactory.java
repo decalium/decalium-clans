@@ -1,5 +1,6 @@
 package org.gepron1x.clans.storage.argument;
 
+import org.gepron1x.clans.util.UuidUtil;
 import org.jdbi.v3.core.argument.AbstractArgumentFactory;
 import org.jdbi.v3.core.argument.Argument;
 import org.jdbi.v3.core.config.ConfigRegistry;
@@ -18,10 +19,7 @@ public class UuidArgumentFactory extends AbstractArgumentFactory<UUID> {
     protected Argument build(UUID value, ConfigRegistry config) {
 
         return ((position, statement, ctx) -> {
-            ByteBuffer buf = ByteBuffer.allocate(16);
-            buf.putLong(value.getMostSignificantBits());
-            buf.putLong(value.getLeastSignificantBits());
-            statement.setBytes(position, buf.array());
+            statement.setBytes(position, UuidUtil.toByteArray(value));
         });
     }
 }

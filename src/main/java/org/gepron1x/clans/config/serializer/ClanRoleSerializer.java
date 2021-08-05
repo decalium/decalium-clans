@@ -1,7 +1,7 @@
 package org.gepron1x.clans.config.serializer;
 
-import org.gepron1x.clans.clan.role.ClanPermission;
-import org.gepron1x.clans.clan.role.ClanRole;
+import org.gepron1x.clans.clan.member.role.ClanPermission;
+import org.gepron1x.clans.clan.member.role.ClanRole;
 import net.kyori.adventure.text.Component;
 import space.arim.dazzleconf.error.BadValueException;
 import space.arim.dazzleconf.serialiser.Decomposer;

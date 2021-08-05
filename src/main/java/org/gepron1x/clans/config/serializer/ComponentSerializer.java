@@ -24,13 +24,6 @@ public class ComponentSerializer implements ValueSerialiser<Component> {
 
         return miniMessage.parse(flexibleType.getString());
     }
-    public Component deserialise(FlexibleType value, Map<String, Object> args) throws BadValueException {
-        List<Template> templates = args.entrySet().stream()
-                .map(entry ->
-                        Template.of(entry.getKey(), (Component) entry.getValue())
-                ).toList();
-        return miniMessage.parse(value.getString(), templates);
-    }
 
     @Override
     public Object serialise(Component value, Decomposer decomposer) {

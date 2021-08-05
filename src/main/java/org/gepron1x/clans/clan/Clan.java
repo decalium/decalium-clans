@@ -1,17 +1,21 @@
 package org.gepron1x.clans.clan;
 
 import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.kyori.adventure.util.Buildable;
+import org.gepron1x.clans.clan.home.ClanHome;
 import org.gepron1x.clans.clan.member.ClanMember;
-import org.gepron1x.clans.events.clan.ClanAddMemberEvent;
-import org.gepron1x.clans.events.clan.ClanRemoveMemberEvent;
-import org.gepron1x.clans.events.clan.ClanSetDisplayNameEvent;
+import org.gepron1x.clans.events.DefaultProperty;
+import org.gepron1x.clans.events.Property;
+import org.gepron1x.clans.events.member.ClanAddMemberEvent;
+import org.gepron1x.clans.events.member.ClanRemoveMemberEvent;
 import net.kyori.adventure.text.Component;
 import org.bukkit.OfflinePlayer;
 import org.gepron1x.clans.events.clan.ClanStatisticEvent;
 import org.gepron1x.clans.statistic.IntStatisticContainer;
 import org.gepron1x.clans.statistic.StatisticType;
+import org.gepron1x.clans.util.CollectionUtils;
 import org.gepron1x.clans.util.Events;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,10 +24,19 @@ import java.util.*;
 
 
 public class Clan implements IntStatisticContainer, Buildable<Clan, ClanBuilder> {
+
+    public static Property<Clan, Component> DISPLAY_NAME = new DefaultProperty<>("display_name",
+            Clan.class,
+            Component.class,
+            clan -> clan.displayName,
+            ((clan, component) -> clan.displayName = component));
+
+
     private final String tag;
     private Component displayName;
     private final ClanMember creator;
     private final Map<UUID, ClanMember> members;
+    private final Map<String, ClanHome> homes;
     private final Object2IntMap<StatisticType> stats;
 
 
@@ -31,21 +44,22 @@ public class Clan implements IntStatisticContainer, Buildable<Clan, ClanBuilder>
          Component displayName,
          ClanMember creator,
          Set<ClanMember> members,
-         Object2IntMap<StatisticType> statistics) {
+         Map<StatisticType, Integer> statistics, Set<ClanHome> homes) {
         this.tag = tag;
         this.displayName = displayName;
-        this.members = new HashMap<>(members.size() + 1);
-        for(ClanMember member : members) this.members.put(member.getUniqueId(), member);
+
+        this.members = CollectionUtils.toMap(members, ClanMember::getUniqueId);
+        this.homes = CollectionUtils.toMap(homes, ClanHome::getName);
+
         this.creator = creator;
         this.members.put(creator.getUniqueId(), creator);
-        this.stats = statistics;
+        this.stats = new Object2IntArrayMap<>(statistics);
 
     }
 
 
     public void addMember(@NotNull ClanMember member) {
         Preconditions.checkArgument(!isMember(member), "player is already in a clan");
-
         if(Events.callCancellableEvent(new ClanAddMemberEvent(this, member)))
             members.put(member.getUniqueId(), member);
     }
@@ -58,6 +72,7 @@ public class Clan implements IntStatisticContainer, Buildable<Clan, ClanBuilder>
     public boolean isMember(@NotNull OfflinePlayer player) {
         return isMember(player.getUniqueId());
     }
+
     @Nullable
     public ClanMember getMember(@NotNull UUID uuid) {
         return members.get(uuid);
@@ -66,6 +81,7 @@ public class Clan implements IntStatisticContainer, Buildable<Clan, ClanBuilder>
     public ClanMember getMember(@NotNull OfflinePlayer player) {
         return getMember(player.getUniqueId());
     }
+
     public void removeMember(@NotNull UUID uniqueId) {
         Preconditions.checkArgument(isMember(uniqueId), String.format("no member with %s uuid", uniqueId));
        removeMember(members.get(uniqueId));
@@ -74,16 +90,40 @@ public class Clan implements IntStatisticContainer, Buildable<Clan, ClanBuilder>
         Preconditions.checkArgument(members.containsKey(member.getUniqueId()),
                 String.format("user %s is not in a clan", member));
         Preconditions.checkArgument(!member.equals(creator), "cannot remove owner");
-        if(Events.callCancellableEvent(new ClanRemoveMemberEvent(this, member)))
+        if(!Events.callCancellableEvent(new ClanRemoveMemberEvent(this, member))) return;
         removeMember(member.getUniqueId());
     }
     public void removeMember(@NotNull OfflinePlayer player) {
         removeMember(player.getUniqueId());
     }
+
     @NotNull
     public Collection<ClanMember> getMembers() {
         return Collections.unmodifiableCollection(members.values());
     }
+
+    public void addHome(ClanHome home) {
+        Preconditions.checkArgument(!homes.containsValue(home), "home is already added");
+        homes.put(home.getName(), home);
+    }
+    public void removeHome(String name) {
+        Preconditions.checkArgument(homes.containsKey(name), "no home with name "+name);
+        homes.remove(name);
+    }
+
+    @Nullable public ClanHome getHome(String name) {
+        return homes.get(name);
+    }
+    @NotNull
+    public Collection<ClanHome> getHomes() {
+        return Collections.unmodifiableCollection(homes.values());
+    }
+    public boolean hasHome(String name) {
+        return homes.containsKey(name);
+    }
+
+
+
     @NotNull
     public String getTag() {
         return tag;
@@ -96,9 +136,7 @@ public class Clan implements IntStatisticContainer, Buildable<Clan, ClanBuilder>
 
 
     public void setDisplayName(@NotNull Component displayName) {
-        ClanSetDisplayNameEvent event = Events.callEvent(new ClanSetDisplayNameEvent(this, displayName));
-        if(!event.isCancelled())
-            this.displayName = event.getNewDisplayName();
+        DISPLAY_NAME.set(this, displayName);
     }
     public ClanMember getCreator() {
         return creator;

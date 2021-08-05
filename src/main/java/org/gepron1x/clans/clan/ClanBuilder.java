@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.Buildable;
+import org.gepron1x.clans.clan.home.ClanHome;
 import org.gepron1x.clans.clan.member.ClanMember;
 import org.gepron1x.clans.statistic.StatisticType;
 import org.jetbrains.annotations.NotNull;
@@ -18,6 +19,7 @@ public class ClanBuilder implements Buildable.Builder<Clan> {
     private Component displayName;
     private final Object2IntMap<StatisticType> statistics = new Object2IntArrayMap<>();
     private final Set<ClanMember> members = new HashSet<>();
+    private final Set<ClanHome> homes = new HashSet<>();
 
     public ClanBuilder(String tag) {
         this.tag = tag;
@@ -85,7 +87,8 @@ public class ClanBuilder implements Buildable.Builder<Clan> {
                 requireNonNull(displayName, "displayName"),
                 requireNonNull(creator, "creator"),
                 members,
-                statistics
+                statistics,
+                homes
         );
     }
 }

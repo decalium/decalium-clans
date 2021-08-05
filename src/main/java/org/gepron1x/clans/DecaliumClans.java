@@ -3,39 +3,40 @@ package org.gepron1x.clans;
 import co.aikar.commands.PaperCommandManager;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import net.kyori.adventure.text.ComponentLike;
+import org.bukkit.Location;
 import org.bukkit.event.HandlerList;
-import org.gepron1x.clans.config.serializer.ClanRoleSerializer;
-import org.gepron1x.clans.config.serializer.DurationSerializer;
+import org.bukkit.inventory.ItemStack;
+import org.gepron1x.clans.clan.ClanBuilder;
+import org.gepron1x.clans.clan.home.ClanHome;
+import org.gepron1x.clans.clan.member.ClanMember;
+import org.gepron1x.clans.config.serializer.*;
 import org.gepron1x.clans.hook.ClanPlaceholderExpansion;
 import org.gepron1x.clans.command.InviteCommand;
 import org.gepron1x.clans.manager.ClanManager;
 import org.gepron1x.clans.statistic.StatisticType;
 import org.gepron1x.clans.storage.ClanLoader;
+import org.gepron1x.clans.storage.Mappers;
 import org.gepron1x.clans.storage.StorageType;
 import org.gepron1x.clans.storage.UpdateListener;
-import org.gepron1x.clans.storage.mappers.row.StatisticRowMapper;
+import org.gepron1x.clans.storage.argument.ItemStackArgumentFactory;
+import org.gepron1x.clans.storage.argument.LocationArgumentFactory;
+import org.gepron1x.clans.storage.mappers.row.*;
 import org.gepron1x.clans.storage.argument.ComponentArgumentFactory;
-import org.gepron1x.clans.storage.mappers.column.ComponentMapper;
-import org.gepron1x.clans.storage.mappers.column.UuidMapper;
 import org.gepron1x.clans.storage.task.DataSyncTask;
 import org.gepron1x.clans.util.Functions;
-import org.gepron1x.clans.util.TaskScheduler;
 import org.gepron1x.clans.util.Tasks;
 import org.gepron1x.clans.clan.Clan;
-import org.gepron1x.clans.clan.role.ClanRole;
+import org.gepron1x.clans.clan.member.role.ClanRole;
 import org.gepron1x.clans.command.ClanCommand;
 import org.gepron1x.clans.config.ClansConfig;
 import org.gepron1x.clans.config.ConfigManager;
 import org.gepron1x.clans.config.MessagesConfig;
-import org.gepron1x.clans.config.serializer.ClanPermissionSerializer;
-import org.gepron1x.clans.config.serializer.ComponentSerializer;
-import org.gepron1x.clans.storage.mappers.row.ClanMemberMapper;
 import org.gepron1x.clans.storage.argument.UuidArgumentFactory;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.util.Index;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.gepron1x.clans.storage.mappers.row.ClanMapper;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 import space.arim.dazzleconf.ConfigurationOptions;
@@ -44,6 +45,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -53,7 +55,6 @@ public final class DecaliumClans extends JavaPlugin {
     public static final String VERSION = "1.0.0";
 
 
-    private TaskScheduler scheduler;
     private Index<String, ClanRole> roleRegistry;
     private Index<String, StatisticType> statisticTypeRegistry = Index.create(StatisticType::getName,
             StatisticType.KILLS,
@@ -80,14 +81,17 @@ public final class DecaliumClans extends JavaPlugin {
         this.loader = new ClanLoader(this);
         this.clanManager = new ClanManager();
         this.updateListener = new UpdateListener();
-        scheduler = new TaskScheduler(this);
+        this.miniMessage = MiniMessage.builder().placeholderResolver(s ->
+        {
+            if(s.equals("prefix")) return getPrefix();
+            else return null;
+        }).build();
+
         ConfigurationOptions defaultOptions = new ConfigurationOptions.Builder()
                 .addSerialisers(new ComponentSerializer(),
+                new MiniComponentSerializer(miniMessage),
                 new ClanRoleSerializer(),
                 new ClanPermissionSerializer(), new DurationSerializer()).build();
-
-        saveResource("messages.yml", false);
-        saveDefaultConfig();
 
         configManager = ConfigManager.create(dataFolder,
                 "config.yml",
@@ -102,12 +106,8 @@ public final class DecaliumClans extends JavaPlugin {
         messagesConfigManager.reloadConfig();
 
         ClansConfig cfg = configManager.getConfigData();
-        Component prefix = MiniMessage.get().parse(messagesConfigManager.getConfigData().prefix());
-        this.miniMessage = MiniMessage.builder().placeholderResolver(s ->
-        {
-            if(s.equals("prefix")) return prefix;
-            else return null;
-        }).build();
+
+
         roleRegistry = Index.create(ClanRole::getName, cfg.roles());
 
 
@@ -140,12 +140,15 @@ public final class DecaliumClans extends JavaPlugin {
             new ClanPlaceholderExpansion(clanManager).register();
             this.dataSyncTask = new DataSyncTask(this, updateListener);
             getServer().getPluginManager().registerEvents(updateListener, this);
-            long syncPeriod = Tasks.asTicks(cfg.mysql().saveTaskPeriod());
+            long syncPeriod = Tasks.asTicks(cfg.storage().saveTaskPeriod());
             this.dataSyncTask.runTaskTimerAsynchronously(this, syncPeriod, syncPeriod);
             getLogger().info("Yay! Plugin successfully enabled, clans are loaded.");
 
         }, mainThreadExecutor).exceptionally(Tasks.defaultExceptionally());
 
+    }
+    public ComponentLike getPrefix() {
+        return messagesConfigManager.getConfigData().prefix();
     }
 
     private CompletableFuture<Jdbi> setupStorage(ClansConfig cfg) {
@@ -153,10 +156,10 @@ public final class DecaliumClans extends JavaPlugin {
             getLogger().info("connecting to mysql");
             HikariConfig hikariConfig = new HikariConfig();
 
-            ClansConfig.SqlConfig sqlCfg = cfg.mysql();
+            ClansConfig.Storage sqlCfg = cfg.storage();
             String url, password, user;
             if(sqlCfg.storageType() == StorageType.MYSQL) {
-                ClansConfig.SqlConfig.AuthDetails details = sqlCfg.authDetails();
+                ClansConfig.Storage.AuthDetails details = sqlCfg.authDetails();
                 url = MessageFormat.format("jdbc:mysql://{0}/{1}?useSSL=false", details.host(), details.database());
                 password = details.password();
                 user = details.user();
@@ -179,11 +182,22 @@ public final class DecaliumClans extends JavaPlugin {
 
             Jdbi jdbi = Jdbi.create(new HikariDataSource(hikariConfig));
             jdbi.installPlugin(new SqlObjectPlugin());
-            jdbi.registerRowMapper(new ClanMapper(this))
-                    .registerRowMapper(new ClanMemberMapper(getRoleRegistry()))
-                    .registerRowMapper(new StatisticRowMapper(getStatisticTypeRegistry()));
-            jdbi.registerColumnMapper(new UuidMapper()).registerColumnMapper(new ComponentMapper());
-            jdbi.registerArgument(new UuidArgumentFactory()).registerArgument(new ComponentArgumentFactory());
+            jdbi.registerRowMapper(ClanBuilder.class, new ClanMapper(this))
+                    .registerRowMapper(ClanMember.class, new ClanMemberMapper(getRoleRegistry()))
+                    .registerRowMapper(StatisticRow.class, new StatisticRowMapper(getStatisticTypeRegistry()))
+                    .registerRowMapper(ClanHome.class, new ClanHomeMapper());
+
+
+            jdbi.registerColumnMapper(UUID.class, Mappers.UUID)
+                    .registerColumnMapper(Component.class, Mappers.COMPONENT)
+                    .registerColumnMapper(ItemStack.class, Mappers.ITEM_STACK)
+                    .registerColumnMapper(Location.class, Mappers.LOCATION);
+
+            jdbi.registerArgument(new UuidArgumentFactory())
+                    .registerArgument(new ComponentArgumentFactory())
+                    .registerArgument(new ItemStackArgumentFactory())
+                    .registerArgument(new LocationArgumentFactory());
+
             return jdbi;
 
         });
@@ -198,6 +212,13 @@ public final class DecaliumClans extends JavaPlugin {
         command.setMessages(messagesConfigManager.getConfigData());
         inviteCommand.setMessages(messagesConfigManager.getConfigData());
 
+    }
+
+    private void registerContexts() {
+        commandManager.getCommandContexts().registerContext(ClanRole.class, ctx -> {
+            String name = ctx.popFirstArg();
+            return getRoleRegistry().value(name);
+        });
     }
 
 
@@ -219,9 +240,6 @@ public final class DecaliumClans extends JavaPlugin {
         return jdbi;
     }
 
-    public TaskScheduler getScheduler() {
-        return scheduler;
-    }
 
 
     public ClanRole getOwnerRole() {

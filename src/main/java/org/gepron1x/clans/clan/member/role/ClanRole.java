@@ -1,4 +1,4 @@
-package org.gepron1x.clans.clan.role;
+package org.gepron1x.clans.clan.member.role;
 
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;

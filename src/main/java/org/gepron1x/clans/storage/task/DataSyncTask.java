@@ -1,11 +1,8 @@
 package org.gepron1x.clans.storage.task;
 
-import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.gepron1x.clans.DecaliumClans;
 import org.gepron1x.clans.storage.UpdateListener;
-import org.gepron1x.clans.util.TaskScheduler;
-import org.gepron1x.clans.util.Tasks;
 import org.jdbi.v3.core.Jdbi;
 
 import java.util.*;

@@ -33,6 +33,7 @@ public final class ClanManager {
     }
     @Nullable
     public Clan getUserClan(@NotNull UUID uuid) {
+
         Clan clan = userClans.get(uuid);
         if(clan != null) {
             if(clan.isMember(uuid)) return clan;

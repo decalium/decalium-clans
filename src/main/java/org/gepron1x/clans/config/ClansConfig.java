@@ -1,7 +1,7 @@
 package org.gepron1x.clans.config;
 
-import org.gepron1x.clans.clan.role.ClanPermission;
-import org.gepron1x.clans.clan.role.ClanRole;
+import org.gepron1x.clans.clan.member.role.ClanPermission;
+import org.gepron1x.clans.clan.member.role.ClanRole;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.gepron1x.clans.storage.StorageType;
@@ -23,7 +23,7 @@ public interface ClansConfig {
     @ConfDefault.DefaultString("owner")
     String ownerRole();
 
-    @SubSection SqlConfig mysql();
+    @SubSection Storage storage();
 
 
 
@@ -39,7 +39,7 @@ public interface ClansConfig {
                 ClanPermission.REGISTRY.values());
         return List.of(user, owner);
     }
-    interface SqlConfig {
+    interface Storage {
         @ConfDefault.DefaultString("H2")
         StorageType storageType();
         @SubSection AuthDetails authDetails();

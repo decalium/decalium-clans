@@ -25,21 +25,16 @@ public class MiniComponent implements ComponentLike {
     public MiniComponent(String value) {
         this(value, MiniMessage.get());
     }
-    public Component parse(@Nullable Player player, Template... templates) {
-        return parse(player, Arrays.asList(templates));
-    }
-    public Component parse(@Nullable Player player, List<Template> templates) {
-        String toParse = player == null ? value : PlaceholderAPI.setPlaceholders(player, value);
 
+    public Component parse(@Nullable Player player, Object... templates) {
+        String toParse = player == null ? value : PlaceholderAPI.setPlaceholders(player, value);
         return miniMessage.parse(toParse, templates);
 
     }
-    public Component parse(Template... templates) {
+    public Component parse(Object... templates) {
         return parse(null, templates);
     }
-    public Component parse(List<Template> templates) {
-        return parse(null, templates);
-    }
+
     public String getValue() {
         return value;
     }

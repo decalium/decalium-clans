@@ -4,12 +4,13 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Subcommand;
+import net.kyori.adventure.text.minimessage.ParseException;
 import org.gepron1x.clans.DecaliumClans;
 import org.gepron1x.clans.clan.ClanBuilder;
 import org.gepron1x.clans.clan.member.ClanMember;
 import org.gepron1x.clans.config.MessagesConfig;
 import org.gepron1x.clans.clan.Clan;
-import org.gepron1x.clans.clan.role.ClanPermission;
+import org.gepron1x.clans.clan.member.role.ClanPermission;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -30,7 +31,6 @@ import static net.kyori.adventure.text.Component.*;
 @CommandAlias("clan")
 public class ClanCommand extends BaseCommand {
     private final DecaliumClans plugin;
-    private final MiniMessage mm;
 
 
     private final Set<UUID> deletionConfirmations = new HashSet<>();
@@ -40,7 +40,6 @@ public class ClanCommand extends BaseCommand {
 
     public ClanCommand(DecaliumClans plugin, ClanManager manager, MessagesConfig messages) {
         this.plugin = plugin;
-        this.mm = plugin.getMiniMessage();
         this.manager = manager;
         this.messages = messages;
     }
@@ -52,17 +51,17 @@ public class ClanCommand extends BaseCommand {
     public void createClan(Player player, String tag) {
 
         if(manager.getUserClan(player.getUniqueId()) != null) {
-            player.sendMessage(mm.parse(messages.alreadyInClan()));
+            player.sendMessage(messages.alreadyInClan());
             return;
         }
         if(manager.getClan(tag) != null) {
-            player.sendMessage(mm.parse(messages.creation().clanWithTagAlreadyExists()));
+            player.sendMessage(messages.creation().clanWithTagAlreadyExists().parse("tag", tag));
             return;
         }
         Clan clan = new ClanBuilder(tag).creator(new ClanMember(player, plugin.getOwnerRole()))
                 .emptyMembers().emptyStatistics().displayName(text(tag, NamedTextColor.GRAY)).build();
         manager.addClan(clan);
-        player.sendMessage(mm.parse(messages.creation().success(), Template.of("clan", clan.getDisplayName())));
+        player.sendMessage(messages.creation().success().parse("name", clan.getDisplayName()));
 
     }
     @CommandPermission("clans.delete")
@@ -71,14 +70,14 @@ public class ClanCommand extends BaseCommand {
         UUID uuid = player.getUniqueId();
         Clan clan = manager.getUserClan(uuid);
         if(clan == null) {
-            player.sendMessage(mm.parse(messages.notInClan()));
+            player.sendMessage(messages.notInClan());
             return;
         }
         if(!clan.getMember(uuid).hasPermission(ClanPermission.DELETE_CLAN)) {
-            player.sendMessage(mm.parse(messages.noClanPermission()));
+            player.sendMessage(messages.noClanPermission());
             return;
         }
-        player.sendMessage(mm.parse(messages.deletion().confirm()));
+        player.sendMessage(messages.deletion().confirm());
         deletionConfirmations.add(uuid);
         Bukkit.getScheduler().runTaskLater(plugin, () -> deletionConfirmations.remove(uuid), 60 * 20L);
 
@@ -88,15 +87,15 @@ public class ClanCommand extends BaseCommand {
     public void confirmDeletion(Player player) {
         UUID uuid = player.getUniqueId();
         if(!deletionConfirmations.contains(uuid)) {
-            player.sendMessage(mm.parse(messages.deletion().nothingToConfirm()));
+            player.sendMessage(messages.deletion().nothingToConfirm());
             return;
         }
         Clan clan = manager.getUserClan(uuid);
         if(clan != null) {
             manager.removeClan(clan);
-            player.sendMessage(mm.parse(messages.deletion().success()));
+            player.sendMessage(messages.deletion().success());
         } else {
-            player.sendMessage(mm.parse(messages.notInClan()));
+            player.sendMessage(messages.notInClan());
         }
         deletionConfirmations.remove(uuid);
     }
@@ -106,15 +105,15 @@ public class ClanCommand extends BaseCommand {
         manager.getClans().stream().map(clan -> {
             Component members = clan
                     .getMembers().stream()
-                    .map(member -> mm.parse(messages.clanList().memberFormat(), Template.of("name", member.asOffline().getName()),
-                            Template.of("role", member.getRole().getDisplayName())
-                    )).collect(Component.toComponent(newline()));
+                    .map(member -> messages.clanList().memberFormat()
+                            .parse("name", member.asOffline().getName(), "role", member.getRole()))
+                    .collect(Component.toComponent(newline()));
 
             return
                     messages.clanList().clanFormat()
-                    .stream().map(c -> mm.parse(c, Template.of("clan_tag", clan.getTag()),
-                    Template.of("clan_name", clan.getDisplayName()),
-                    Template.of("members", members)))
+                    .stream().map(c -> c.parse("tag", clan.getTag(),
+                            "name", clan.getDisplayName(),
+                            "members", members))
                     .collect(Component.toComponent(newline()));
         }).forEach(player::sendMessage);
 
@@ -125,18 +124,18 @@ public class ClanCommand extends BaseCommand {
 
         Clan clan = manager.getUserClan(player.getUniqueId());
         if(clan == null) {
-            player.sendMessage(mm.parse(messages.notInClan()));
+            player.sendMessage(messages.notInClan());
             return;
         }
         if(!clan.getMember(player).hasPermission(ClanPermission.SET_DISPLAY_NAME)) {
-            player.sendMessage(mm.parse(messages.noClanPermission()));
+            player.sendMessage(messages.noClanPermission());
         }
         try {
             Component displayName = MiniMessage.get().parse(String.join(" ", args));
             clan.setDisplayName(displayName);
-            player.sendMessage(mm.parse(messages.displayName().success(), "name", displayName));
-        } catch (Exception e) {
-            player.sendMessage(mm.parse(messages.displayName().errorInSyntax()));
+            player.sendMessage(messages.displayName().success().parse("name", displayName));
+        } catch (ParseException e) {
+            player.sendMessage(messages.displayName().errorInSyntax());
         }
     }
     @Subcommand("drop tables confirm")
@@ -149,12 +148,10 @@ public class ClanCommand extends BaseCommand {
             return;
         }
         sender.sendMessage(text("Dropping tables..."));
-        plugin.getScheduler().async(task -> {
             plugin.getJdbi().useHandle(handle -> {
                 for(String table : Arrays.asList("clans", "members", "stats")) handle.execute("DROP TABLE "+table);
             });
             sender.sendMessage(text("Dropped successfully. Please restart your server!"));
-        });
 
     }
 

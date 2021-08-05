@@ -1,24 +1,33 @@
 package org.gepron1x.clans.clan.member;
 
-import org.gepron1x.clans.clan.role.ClanPermission;
-import org.gepron1x.clans.clan.role.ClanRole;
+import org.gepron1x.clans.clan.member.role.ClanPermission;
+import org.gepron1x.clans.clan.member.role.ClanRole;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.gepron1x.clans.events.DefaultProperty;
+import org.gepron1x.clans.events.Property;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.UUID;
 
 public class ClanMember {
+    public static final Property<ClanMember, ClanRole> ROLE = new DefaultProperty<>("role",
+            ClanMember.class,
+            ClanRole.class,
+            member -> member.role,
+            (clanMember, clanRole) -> clanMember.role = clanRole);
+
+
     private final UUID uniqueId;
     private ClanRole role;
 
     public ClanMember(UUID uniqueId, ClanRole role) {
         this.uniqueId = uniqueId;
-
         this.role = role;
     }
+
     public ClanMember(OfflinePlayer player, ClanRole role) {
         this(player.getUniqueId(), role);
     }
@@ -37,7 +46,7 @@ public class ClanMember {
 
 
     public void setRole(ClanRole role) {
-        this.role = role;
+        ROLE.set(this, role);
     }
     public @Nullable Player asPlayer() {
         return Bukkit.getPlayer(uniqueId);
@@ -56,4 +65,6 @@ public class ClanMember {
     public int hashCode() {
         return Objects.hash(uniqueId, role);
     }
+
+
 }

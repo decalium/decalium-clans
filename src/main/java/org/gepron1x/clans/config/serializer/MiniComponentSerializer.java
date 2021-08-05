@@ -21,7 +21,7 @@ public class MiniComponentSerializer implements ValueSerialiser<MiniComponent> {
 
     @Override
     public MiniComponent deserialise(FlexibleType flexibleType) throws BadValueException {
-        return new MiniComponent(flexibleType.getString());
+        return new MiniComponent(flexibleType.getString(), miniMessage);
 
     }
 

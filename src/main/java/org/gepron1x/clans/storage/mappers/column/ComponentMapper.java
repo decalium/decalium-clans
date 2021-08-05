@@ -9,7 +9,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ComponentMapper implements ColumnMapper<Component> {
-    public static final ComponentMapper INSTANCE = new ComponentMapper();
     @Override
     public Component map(ResultSet r, int columnNumber, StatementContext ctx) throws SQLException {
         return GsonComponentSerializer.gson().deserialize(r.getString(columnNumber));

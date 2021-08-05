@@ -1,7 +1,7 @@
 package org.gepron1x.clans.storage.mappers.row;
 
 import org.gepron1x.clans.clan.member.ClanMember;
-import org.gepron1x.clans.clan.role.ClanRole;
+import org.gepron1x.clans.clan.member.role.ClanRole;
 import net.kyori.adventure.util.Index;
 import org.gepron1x.clans.storage.Mappers;
 import org.jdbi.v3.core.mapper.RowMapper;
