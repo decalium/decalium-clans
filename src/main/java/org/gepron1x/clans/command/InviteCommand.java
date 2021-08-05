@@ -36,7 +36,6 @@ public final class InviteCommand extends BaseCommand {
     public void setMessages(MessagesConfig messages) {
         this.messages = messages;
     }
-    @
     @Default
     public void createInvitation(Player sender, OnlinePlayer onlineReceiver) {
         Player receiver = onlineReceiver.getPlayer();
