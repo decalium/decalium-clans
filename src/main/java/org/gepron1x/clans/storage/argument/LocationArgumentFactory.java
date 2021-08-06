@@ -21,7 +21,6 @@ public class LocationArgumentFactory extends AbstractArgumentFactory<Location> {
 
         return ((position, statement, ctx) -> {
             ByteBuffer buffer = ByteBuffer.allocate(LOCATION_SIZE);
-
             buffer.put(UuidUtil.toByteArray(value.getWorld().getUID()));
             buffer.putDouble(value.getX());
             buffer.putDouble(value.getY());

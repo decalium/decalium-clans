@@ -18,6 +18,6 @@ public class StatisticRowMapper implements RowMapper<StatisticRow> {
     }
     @Override
     public StatisticRow map(ResultSet rs, StatementContext ctx) throws SQLException {
-        return new StatisticRow(rs.getString(CLAN_TAG), statTypes.value(rs.getString("statistic_type")), rs.getInt(VALUE));
+        return new StatisticRow(rs.getString(CLAN_TAG), statTypes.value(rs.getString(STATISTIC_TYPE)), rs.getInt(VALUE));
     }
 }

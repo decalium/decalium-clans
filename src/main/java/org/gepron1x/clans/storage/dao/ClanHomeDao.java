@@ -1,18 +1,16 @@
 package org.gepron1x.clans.storage.dao;
 
-import net.kyori.adventure.text.Component;
-import org.bukkit.Location;
-import org.bukkit.inventory.ItemStack;
+
 import org.gepron1x.clans.clan.Clan;
 import org.gepron1x.clans.clan.home.ClanHome;
-import org.gepron1x.clans.events.Property;
-import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindMethods;
+import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 
-import java.text.MessageFormat;
+import java.util.List;
 
-public interface ClanHomeDao extends PropertyDao {
+
+public interface ClanHomeDao {
     @SqlUpdate("""
             CREATE TABLE IF NOT EXISTS homes
             (
@@ -43,19 +41,9 @@ public interface ClanHomeDao extends PropertyDao {
     @SqlUpdate("DELETE FROM homes WHERE `clan`=:clan.getTag")
     void removeHomes(@BindMethods Clan clan);
 
-    @SqlUpdate("UPDATE homes SET `display_name`=:displayName WHERE `name`=:home.getName")
-    void setDisplayName(@BindMethods ClanHome home, @Bind Component displayName);
+    @SqlQuery("SELECT * FROM homes")
+    List<ClanHome> homes();
 
-    @SqlUpdate("UPDATE homes SET `icon`=:icon WHERE `name`=:home.getName")
-    void setIcon(@BindMethods ClanHome home, @Bind ItemStack icon);
 
-    @SqlUpdate("UPDATE homes SET `location`=:location WHERE `name`=:home.getName")
-    void setLocation(@BindMethods ClanHome home, @Bind Location location);
 
-    @Override
-    default void updateProperty(Property<?, ?> property, Object target, Object value) {
-        getHandle().createUpdate(MessageFormat.format("UPDATE homes SET `{0}`=:value WHERE `name`=:name", property.getName()))
-                .bind("value", value)
-                .bind("name", ((ClanHome) target).getName()).execute();
-    }
 }

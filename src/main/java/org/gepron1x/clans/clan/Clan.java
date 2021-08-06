@@ -6,8 +6,8 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.kyori.adventure.util.Buildable;
 import org.gepron1x.clans.clan.home.ClanHome;
 import org.gepron1x.clans.clan.member.ClanMember;
-import org.gepron1x.clans.events.DefaultProperty;
-import org.gepron1x.clans.events.Property;
+import org.gepron1x.clans.storage.property.DefaultProperty;
+import org.gepron1x.clans.storage.property.Property;
 import org.gepron1x.clans.events.member.ClanAddMemberEvent;
 import org.gepron1x.clans.events.member.ClanRemoveMemberEvent;
 import net.kyori.adventure.text.Component;
@@ -48,8 +48,8 @@ public class Clan implements IntStatisticContainer, Buildable<Clan, ClanBuilder>
         this.tag = tag;
         this.displayName = displayName;
 
-        this.members = CollectionUtils.toMap(members, ClanMember::getUniqueId);
-        this.homes = CollectionUtils.toMap(homes, ClanHome::getName);
+        this.members = CollectionUtils.toMap(ClanMember::getUniqueId, members);
+        this.homes = CollectionUtils.toMap(ClanHome::getName, homes);
 
         this.creator = creator;
         this.members.put(creator.getUniqueId(), creator);

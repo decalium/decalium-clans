@@ -17,9 +17,7 @@ public class LocationMapper implements ColumnMapper<Location> {
     public Location map(ResultSet r, int columnNumber, StatementContext ctx) throws SQLException {
         ByteBuffer buffer = ByteBuffer.wrap(r.getBytes(columnNumber));
 
-        byte[] serializedUuid = new byte[16];
-        buffer.get(serializedUuid);
-        UUID uuid = UuidUtil.fromByteArray(serializedUuid);
+        UUID uuid = UuidUtil.fromByteArray(get(buffer, 16));
         double x = buffer.getDouble();
         double y = buffer.getDouble();
         double z = buffer.getDouble();
@@ -27,5 +25,10 @@ public class LocationMapper implements ColumnMapper<Location> {
         float pitch = buffer.getFloat();
 
         return new Location(Bukkit.getWorld(uuid), x, y, z, yaw, pitch);
+    }
+    private byte[] get(ByteBuffer buf, int size) {
+        byte[] result = new byte[size];
+        buf.get(result);
+        return result;
     }
 }

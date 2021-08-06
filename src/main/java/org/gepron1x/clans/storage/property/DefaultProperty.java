@@ -1,4 +1,4 @@
-package org.gepron1x.clans.events;
+package org.gepron1x.clans.storage.property;
 
 import org.gepron1x.clans.util.Events;
 import org.jetbrains.annotations.NotNull;

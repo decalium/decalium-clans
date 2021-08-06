@@ -13,14 +13,16 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
+import static space.arim.dazzleconf.annote.ConfDefault.*;
+
 
 public interface ClansConfig {
-    @ConfDefault.DefaultObject("defaultRoles")
+    @DefaultObject("defaultRoles")
     List<ClanRole> roles();
 
-    @ConfDefault.DefaultString("user")
+    @DefaultString("user")
     String defaultRole();
-    @ConfDefault.DefaultString("owner")
+    @DefaultString("owner")
     String ownerRole();
 
     @SubSection Storage storage();
@@ -40,22 +42,44 @@ public interface ClansConfig {
         return List.of(user, owner);
     }
     interface Storage {
-        @ConfDefault.DefaultString("H2")
+        @ConfComments({"storage service.", "H2 and MYSQL are supported."})
+        @DefaultString("H2")
         StorageType storageType();
+
+        @ConfComments("auth details. you dont need this with H2")
         @SubSection AuthDetails authDetails();
+
+        @ConfComments({"advanced settings of pooling.", "don't touch it if you dont know what is it."})
+        @SubSection HikariPool hikariPool();
         interface AuthDetails {
-            @ConfDefault.DefaultString("127.0.0.1")
+            @DefaultString("127.0.0.1")
             String host();
-            @ConfDefault.DefaultString("minecraft")
+            @DefaultString("minecraft")
             String user();
-            @ConfDefault.DefaultString("pass")
+            @DefaultString("pass")
             String password();
-            @ConfDefault.DefaultString("clans")
+            @DefaultString("clans")
             String database();
+            @DefaultBoolean(false)
+            boolean useSSL();
+        }
+
+        interface HikariPool {
+            @DefaultString("ClansPool")
+            String poolName();
+            @DefaultInteger(6)
+            int maxPoolSize();
+            @DefaultInteger(10)
+            int maximumIdle();
+            @DefaultInteger(1800000)
+            int maxLifeTime();
+            @DefaultInteger(5000)
+            int connectionTimeOut();
+
         }
 
 
-        @ConfDefault.DefaultString("10m")
+        @DefaultString("10m")
         @ConfComments({"sets the period between database sync.", "use this format: 3d1h30m20s"})
         Duration saveTaskPeriod();
     }

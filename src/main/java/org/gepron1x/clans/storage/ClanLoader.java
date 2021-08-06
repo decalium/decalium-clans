@@ -6,6 +6,7 @@ import org.gepron1x.clans.clan.ClanBuilder;
 import org.gepron1x.clans.storage.dao.ClanDao;
 import org.gepron1x.clans.storage.dao.ClanMemberDao;
 import org.gepron1x.clans.storage.dao.StatisticDao;
+import org.gepron1x.clans.util.CollectionUtils;
 import org.jdbi.v3.core.Jdbi;
 
 import java.util.List;
@@ -23,8 +24,8 @@ public class ClanLoader implements Loader<List<Clan>> {
     public List<Clan> load(Jdbi jdbi) {
         Map<String, ClanBuilder> clans = jdbi.withExtension(ClanDao.class, dao -> {
             dao.createTable();
-            return dao.getClans();
-        }).stream().collect(Collectors.toMap(ClanBuilder::tag, Function.identity()));
+            return CollectionUtils.toMap(ClanBuilder::tag, dao.getClans());
+        });
         jdbi.withExtension(ClanMemberDao.class, dao -> {
             dao.createTable();
             return dao.loadMembers();

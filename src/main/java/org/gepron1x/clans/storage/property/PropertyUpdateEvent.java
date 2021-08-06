@@ -1,4 +1,4 @@
-package org.gepron1x.clans.events;
+package org.gepron1x.clans.storage.property;
 
 import com.google.common.base.Preconditions;
 import org.bukkit.event.Cancellable;
@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.text.MessageFormat;
 
 public class PropertyUpdateEvent extends Event implements Cancellable {
-    private static HandlerList handlers = new HandlerList();
+    private final static HandlerList handlers = new HandlerList();
     private boolean cancelled;
     private final Property<?, ?> property;
     private final Object target;

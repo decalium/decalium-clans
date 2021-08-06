@@ -56,7 +56,7 @@ public final class DecaliumClans extends JavaPlugin {
 
 
     private Index<String, ClanRole> roleRegistry;
-    private Index<String, StatisticType> statisticTypeRegistry = Index.create(StatisticType::getName,
+    private final Index<String, StatisticType> statisticTypeRegistry = Index.create(StatisticType::getName,
             StatisticType.KILLS,
             StatisticType.DEATHS,
             StatisticType.CLAN_WAR_LOSES,
@@ -156,28 +156,30 @@ public final class DecaliumClans extends JavaPlugin {
             getLogger().info("connecting to mysql");
             HikariConfig hikariConfig = new HikariConfig();
 
-            ClansConfig.Storage sqlCfg = cfg.storage();
+            ClansConfig.Storage storageCfg = cfg.storage();
             String url, password, user;
-            if(sqlCfg.storageType() == StorageType.MYSQL) {
-                ClansConfig.Storage.AuthDetails details = sqlCfg.authDetails();
-                url = MessageFormat.format("jdbc:mysql://{0}/{1}?useSSL=false", details.host(), details.database());
+            if(storageCfg.storageType() == StorageType.MYSQL) {
+                ClansConfig.Storage.AuthDetails details = storageCfg.authDetails();
+                url = MessageFormat.format("jdbc:mysql://{0}/{1}?useSSL={2}", details.host(), details.database(), details.useSSL());
                 password = details.password();
                 user = details.user();
             } else {
                 File file = new File(getDataFolder(), "clans");
                 hikariConfig.setDriverClassName(org.h2.Driver.class.getName());
-                url = "jdbc:h2:file:." + File.separator + file.toPath() + ";mode=MySQL";
+                url = MessageFormat.format("jdbc:h2:file:.{0}{1};mode=MySQL", File.separator, file.toPath());
                 password = "";
                 user = "sa";
             }
             hikariConfig.setJdbcUrl(url);
             hikariConfig.setPassword(password);
             hikariConfig.setUsername(user);
-            hikariConfig.setPoolName("ClansPool");
-            hikariConfig.setMaximumPoolSize(6);
-            hikariConfig.setMinimumIdle(10);
-            hikariConfig.setMaxLifetime(1800000);
-            hikariConfig.setConnectionTimeout(5000);
+
+            ClansConfig.Storage.HikariPool hikariSettings = storageCfg.hikariPool();
+            hikariConfig.setPoolName(hikariSettings.poolName());
+            hikariConfig.setMaximumPoolSize(hikariSettings.maxPoolSize());
+            hikariConfig.setMinimumIdle(hikariSettings.maximumIdle());
+            hikariConfig.setMaxLifetime(hikariSettings.maxLifeTime());
+            hikariConfig.setConnectionTimeout(hikariSettings.connectionTimeOut());
             hikariConfig.setInitializationFailTimeout(-1);
 
             Jdbi jdbi = Jdbi.create(new HikariDataSource(hikariConfig));

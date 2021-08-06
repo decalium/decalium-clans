@@ -6,23 +6,34 @@ import org.bukkit.event.Listener;
 import org.gepron1x.clans.clan.Clan;
 import org.gepron1x.clans.clan.home.ClanHome;
 import org.gepron1x.clans.clan.member.ClanMember;
-import org.gepron1x.clans.events.PropertyUpdateEvent;
+import org.gepron1x.clans.storage.property.PropertyUpdateEvent;
 import org.gepron1x.clans.events.clan.*;
 import org.gepron1x.clans.events.member.ClanAddMemberEvent;
 import org.gepron1x.clans.events.member.ClanRemoveMemberEvent;
 import org.gepron1x.clans.storage.dao.ClanDao;
 import org.gepron1x.clans.storage.dao.ClanHomeDao;
 import org.gepron1x.clans.storage.dao.ClanMemberDao;
-import org.gepron1x.clans.storage.dao.PropertyDao;
 import org.gepron1x.clans.storage.task.DatabaseUpdate;
+import org.gepron1x.clans.util.CollectionUtils;
 
+import java.text.MessageFormat;
 import java.util.ArrayDeque;
 import java.util.Map;
 import java.util.Queue;
+import java.util.function.Function;
 
 public class UpdateListener implements Listener {
-    private final Map<Class<?>, Class<? extends PropertyDao>> propertyDaoMap =
-            Map.of(ClanMember.class, ClanMemberDao.class, ClanHome.class, ClanHomeDao.class, Clan.class, ClanDao.class);
+    private final Map<Class<?>, TableProperties<?>> tableProperties = CollectionUtils.toMap(TableProperties::target,
+            new TableProperties<>(Clan.class, "clans", "tag", Clan::getTag),
+            new TableProperties<>(ClanMember.class, "members", "uuid", ClanMember::getUniqueId),
+            new TableProperties<>(ClanHome.class, "homes", "name", ClanHome::getName)
+    );
+
+    private record TableProperties<T>(Class<T> target, String name, String primaryKey, Function<T, Object> keyMapper) {
+        public Object getKey(Object object) {
+            return keyMapper.apply(target.cast(object));
+        }
+    }
     private final Queue<DatabaseUpdate> updates = new ArrayDeque<>();
     @EventHandler(priority = EventPriority.MONITOR)
     public void on(ClanCreatedEvent event) {
@@ -55,13 +66,15 @@ public class UpdateListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void on(PropertyUpdateEvent event) {
         if(event.isCancelled()) return;
-        DatabaseUpdate update;
-        Class<? extends PropertyDao> daoClass = propertyDaoMap.get(event.getProperty().getTargetType());
-        if(daoClass == null) return;
-        updates.add(jdbi -> {
-            jdbi.useExtension(daoClass, dao -> dao.updateProperty(event.getProperty(), event.getTarget(), event.getValue()));
-        });
+        TableProperties<?> tableProperties = this.tableProperties.get(event.getProperty().getTargetType());
+        if(tableProperties == null) return;
+        String query = MessageFormat.format("UPDATE {0} SET `{1}`=:value WHERE `{2}`=:key",
+                tableProperties.name(), event.getProperty().getName(), tableProperties.primaryKey());
+
+        updates.add(jdbi -> jdbi.useHandle(handle -> handle.createUpdate(query).bind("value", event.getValue())
+                .bind("key", tableProperties.getKey(event.getValue())).execute()));
     }
+
 
     public Queue<DatabaseUpdate> getUpdates() {
         return updates;

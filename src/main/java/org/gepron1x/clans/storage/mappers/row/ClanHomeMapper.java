@@ -19,7 +19,6 @@ public class ClanHomeMapper implements RowMapper<ClanHome> {
 
     @Override
     public ClanHome map(ResultSet rs, StatementContext ctx) throws SQLException {
-
         return ClanHome.builder()
                 .name(rs.getString(NAME))
                 .displayName(Mappers.COMPONENT.map(rs, DISPLAY_NAME, ctx))

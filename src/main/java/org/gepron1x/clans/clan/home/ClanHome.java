@@ -6,8 +6,8 @@ import net.kyori.adventure.util.Buildable;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.gepron1x.clans.events.DefaultProperty;
-import org.gepron1x.clans.events.Property;
+import org.gepron1x.clans.storage.property.DefaultProperty;
+import org.gepron1x.clans.storage.property.Property;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
