@@ -3,9 +3,10 @@ package org.gepron1x.clans.util;
 import java.util.UUID;
 
 public final class UuidUtil {
+    public static final int BYTES = 16;
     private UuidUtil() {}
     public static byte[] toByteArray(UUID uuid) {
-        byte[] result = new byte[16];
+        byte[] result = new byte[BYTES];
         toByteArray(uuid, result, 0);
         return result;
     }
@@ -22,6 +23,7 @@ public final class UuidUtil {
             lsb >>= 8;
         }
     }
+
     public static UUID fromByteArray(byte[] byteArray) {
         return fromByteArray(byteArray, 0);
     }

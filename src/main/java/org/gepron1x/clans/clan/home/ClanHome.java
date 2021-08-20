@@ -13,9 +13,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-import static java.util.Objects.*;
+import static java.util.Objects.requireNonNull;
 
-public class ClanHome {
+public class ClanHome implements Buildable<ClanHome, ClanHome.Builder> {
+
+
+
     public static final Property<ClanHome, Component> DISPLAY_NAME = new DefaultProperty<>(
             "display_name",
             ClanHome.class,
@@ -94,6 +97,16 @@ public class ClanHome {
 
     public UUID getOwner() {
         return owner;
+    }
+
+    @Override
+    public @NotNull ClanHome.Builder toBuilder() {
+        return new Builder()
+                .location(location)
+                .displayName(displayName)
+                .name(name)
+                .icon(icon)
+                .owner(owner);
     }
 
     public static class Builder implements Buildable.Builder<ClanHome> {

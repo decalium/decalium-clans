@@ -1,4 +1,4 @@
-package org.gepron1x.clans.events.clan;
+package org.gepron1x.clans.event.clan;
 
 import org.bukkit.event.Event;
 import org.gepron1x.clans.clan.Clan;

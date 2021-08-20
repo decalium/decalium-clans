@@ -3,18 +3,20 @@ package org.gepron1x.clans.clan;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.Buildable;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.gepron1x.clans.clan.home.ClanHome;
 import org.gepron1x.clans.clan.member.ClanMember;
-import org.gepron1x.clans.storage.property.DefaultProperty;
-import org.gepron1x.clans.storage.property.Property;
-import org.gepron1x.clans.events.member.ClanAddMemberEvent;
-import org.gepron1x.clans.events.member.ClanRemoveMemberEvent;
-import net.kyori.adventure.text.Component;
-import org.bukkit.OfflinePlayer;
-import org.gepron1x.clans.events.clan.ClanStatisticEvent;
+import org.gepron1x.clans.event.clan.ClanStatisticEvent;
+import org.gepron1x.clans.event.member.ClanAddMemberEvent;
+import org.gepron1x.clans.event.member.ClanRemoveMemberEvent;
 import org.gepron1x.clans.statistic.IntStatisticContainer;
 import org.gepron1x.clans.statistic.StatisticType;
+import org.gepron1x.clans.storage.property.DefaultProperty;
+import org.gepron1x.clans.storage.property.Property;
 import org.gepron1x.clans.util.CollectionUtils;
 import org.gepron1x.clans.util.Events;
 import org.jetbrains.annotations.NotNull;
@@ -142,6 +144,15 @@ public class Clan implements IntStatisticContainer, Buildable<Clan, ClanBuilder>
         return creator;
     }
 
+    //makes life easier :)
+    @NotNull
+    public Set<Player> getOnlineMembers() {
+        Set<Player> players = new HashSet<>();
+        for(Player player : Bukkit.getOnlinePlayers()) {
+            if(isMember(player)) players.add(player);
+        }
+        return players;
+    }
 
     @Override
     public void setStatistic(StatisticType type, int value) {
@@ -175,7 +186,8 @@ public class Clan implements IntStatisticContainer, Buildable<Clan, ClanBuilder>
         return new ClanBuilder(tag)
                 .creator(creator)
                 .displayName(displayName)
-                .members(members.values())
+                .members(getMembers())
+                .homes(getHomes())
                 .statistics(stats);
     }
 
@@ -188,11 +200,12 @@ public class Clan implements IntStatisticContainer, Buildable<Clan, ClanBuilder>
                 displayName.equals(clan.displayName) &&
                 creator.equals(clan.creator) &&
                 members.equals(clan.members) &&
+                homes.equals(clan.homes) &&
                 stats.equals(clan.stats);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(tag, displayName, creator, members, stats);
+        return Objects.hash(tag, displayName, creator, members, homes, stats);
     }
 }

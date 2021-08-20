@@ -1,9 +1,7 @@
 package org.gepron1x.clans.command;
 
-import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.Subcommand;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.clan.Clan;
@@ -11,29 +9,28 @@ import org.gepron1x.clans.clan.member.ClanMember;
 import org.gepron1x.clans.clan.member.role.ClanPermission;
 import org.gepron1x.clans.clan.member.role.ClanRole;
 import org.gepron1x.clans.config.MessagesConfig;
-import org.gepron1x.clans.manager.ClanManager;
+import org.gepron1x.clans.ClanManager;
 
 import java.util.Objects;
 
 @CommandAlias("clan")
 @Subcommand("member")
-public class MemberCommand extends BaseCommand {
+public class MemberCommand extends BaseClanCommand {
 
-    private final ClanManager manager;
-    private final MessagesConfig messages;
 
     public MemberCommand(ClanManager manager, MessagesConfig messages) {
+        super(manager, messages);
 
-        this.manager = manager;
-        this.messages = messages;
     }
     @Subcommand("set role")
     public void setRole(Player executor, OfflinePlayer target, ClanRole role) {
-        if(clanCheck(executor, ClanPermission.SET_ROLE)) return;
-        Clan clan = manager.getUserClan(executor);
-        ClanMember member = clan.getMember(executor);
-        if(!isMember(executor, target, clan)) return;
 
+        Clan clan = getClanIfPresent(executor);
+        if(clan == null) return;
+        if(!isMember(executor, target, clan)) return;
+        if(!hasPermission(executor, clan, ClanPermission.SET_ROLE)) return;
+
+        ClanMember member = clan.getMember(executor);
         ClanMember targetMember = Objects.requireNonNull(clan.getMember(target));
         if(targetMember.getRole().getWeight() >= member.getRole().getWeight()) {
             executor.sendMessage(messages.member().memberHasBiggerWeight().parse("target", target.getName()));
@@ -42,7 +39,6 @@ public class MemberCommand extends BaseCommand {
         if(role.getWeight() >= member.getRole().getWeight()) {
             executor.sendMessage(messages.member().weightIsBigger());
             return;
-
         }
 
         targetMember.setRole(role);
@@ -51,8 +47,9 @@ public class MemberCommand extends BaseCommand {
     }
     @Subcommand("kick")
     public void kick(Player executor, OfflinePlayer target) {
-        if(!clanCheck(executor, ClanPermission.KICK_MEMBERS)) return;
-        Clan clan = Objects.requireNonNull(manager.getUserClan(executor));
+        Clan clan = getClanIfPresent(executor);
+        if(clan == null) return;
+        if(!hasPermission(executor, clan, ClanPermission.KICK)) return;
         if(!isMember(executor, target, clan)) return;
 
 
@@ -67,25 +64,6 @@ public class MemberCommand extends BaseCommand {
 
 
 
-    private boolean clanCheck(Player executor, ClanPermission permission) {
-        Clan clan = manager.getUserClan(executor);
-        if(clan == null) {
-            executor.sendMessage(messages.notInClan());
-            return false;
-        }
-        if(!clan.getMember(executor).hasPermission(permission)) {
-            executor.sendMessage(messages.noClanPermission());
-            return false;
-        }
-        return true;
-    }
 
 
-    private boolean isMember(Player executor, OfflinePlayer player, Clan clan) {
-        if(!clan.isMember(player)) {
-            executor.sendMessage(messages.targetIsNotInClan());
-            return false;
-        }
-        return true;
-    }
 }

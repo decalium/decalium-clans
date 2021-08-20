@@ -1,7 +1,7 @@
 package org.gepron1x.clans.storage.mappers.row;
 
-import org.gepron1x.clans.statistic.StatisticType;
 import net.kyori.adventure.util.Index;
+import org.gepron1x.clans.statistic.StatisticType;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
 

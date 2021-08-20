@@ -1,10 +1,10 @@
 package org.gepron1x.clans.clan.member;
 
-import org.gepron1x.clans.clan.member.role.ClanPermission;
-import org.gepron1x.clans.clan.member.role.ClanRole;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.gepron1x.clans.clan.member.role.ClanPermission;
+import org.gepron1x.clans.clan.member.role.ClanRole;
 import org.gepron1x.clans.storage.property.DefaultProperty;
 import org.gepron1x.clans.storage.property.Property;
 import org.jetbrains.annotations.Nullable;

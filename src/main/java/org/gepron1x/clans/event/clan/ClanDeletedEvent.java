@@ -1,22 +1,18 @@
-package org.gepron1x.clans.events.member;
+package org.gepron1x.clans.event.clan;
 
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.gepron1x.clans.clan.Clan;
-import org.gepron1x.clans.clan.member.ClanMember;
-import org.gepron1x.clans.events.clan.ClanEvent;
-import org.gepron1x.clans.events.member.MemberEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class ClanRemoveMemberEvent extends ClanEvent implements Cancellable, MemberEvent {
+public class ClanDeletedEvent extends ClanEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
-    private final ClanMember member;
 
     private boolean cancelled = false;
-    public ClanRemoveMemberEvent(@NotNull Clan clan, @NotNull ClanMember member) {
+
+    public ClanDeletedEvent(@NotNull Clan clan) {
         super(clan);
-        this.member = member;
     }
 
     @Override
@@ -35,10 +31,5 @@ public class ClanRemoveMemberEvent extends ClanEvent implements Cancellable, Mem
     @Override
     public void setCancelled(boolean cancel) {
         this.cancelled = cancel;
-    }
-
-    @Override
-    public ClanMember getMember() {
-        return member;
     }
 }

@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-import static java.util.Objects.*;
+import static java.util.Objects.requireNonNull;
 
 public class ClanBuilder implements Buildable.Builder<Clan> {
     private String tag;
@@ -35,18 +35,29 @@ public class ClanBuilder implements Buildable.Builder<Clan> {
         return this;
     }
 
-
-    public ClanBuilder members(Iterable<? extends ClanMember> members) {
-        this.members.clear();
-        members.forEach(this.members::add);
-        return this;
-    }
-
     public ClanBuilder members(Collection<? extends ClanMember> members) {
         this.members.clear();
         this.members.addAll(members);
         return this;
     }
+    public ClanBuilder homes(Collection<? extends ClanHome> homes) {
+        this.homes.clear();
+        this.homes.addAll(homes);
+        return this;
+    }
+    public ClanBuilder addHome(ClanHome home) {
+        this.homes.add(home);
+        return this;
+    }
+
+    public ClanBuilder emptyHomes() {
+        this.homes.clear();
+        return this;
+    }
+    public ClanBuilder homes(ClanHome... homes) {
+        return homes(Arrays.asList(homes));
+    }
+
     public ClanBuilder emptyMembers() {
         this.members.clear();
         return this;

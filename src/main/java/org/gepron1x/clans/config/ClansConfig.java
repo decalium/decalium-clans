@@ -1,12 +1,11 @@
 package org.gepron1x.clans.config;
 
-import org.gepron1x.clans.clan.member.role.ClanPermission;
-import org.gepron1x.clans.clan.member.role.ClanRole;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.gepron1x.clans.clan.member.role.ClanPermission;
+import org.gepron1x.clans.clan.member.role.ClanRole;
 import org.gepron1x.clans.storage.StorageType;
 import space.arim.dazzleconf.annote.ConfComments;
-import space.arim.dazzleconf.annote.ConfDefault;
 import space.arim.dazzleconf.annote.SubSection;
 
 import java.time.Duration;
@@ -26,6 +25,9 @@ public interface ClansConfig {
     String ownerRole();
 
     @SubSection Storage storage();
+
+    @DefaultString("Клан >> <role> <name> > <message>")
+    MiniComponent clanChatFormat();
 
 
 

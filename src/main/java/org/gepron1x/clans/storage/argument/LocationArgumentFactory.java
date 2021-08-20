@@ -10,8 +10,10 @@ import java.nio.ByteBuffer;
 import java.sql.Types;
 
 public class LocationArgumentFactory extends AbstractArgumentFactory<Location> {
-    private static final int UUID_SIZE = 16;
-    private static final int LOCATION_SIZE = UUID_SIZE + Double.BYTES * 3 + Float.BYTES * 2;
+    private static final int LOCATION_SIZE =
+            UuidUtil.BYTES + // world uuid
+            Double.BYTES * 3 + // x, y and z
+            Float.BYTES * 2; // pitch and yaw
     public LocationArgumentFactory() {
         super(Types.BINARY);
     }
@@ -22,11 +24,13 @@ public class LocationArgumentFactory extends AbstractArgumentFactory<Location> {
         return ((position, statement, ctx) -> {
             ByteBuffer buffer = ByteBuffer.allocate(LOCATION_SIZE);
             buffer.put(UuidUtil.toByteArray(value.getWorld().getUID()));
+
             buffer.putDouble(value.getX());
             buffer.putDouble(value.getY());
             buffer.putDouble(value.getZ());
             buffer.putFloat(value.getYaw());
             buffer.putFloat(value.getPitch());
+
             statement.setBytes(position, buffer.array());
         });
     }

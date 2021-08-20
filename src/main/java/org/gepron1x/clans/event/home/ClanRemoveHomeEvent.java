@@ -1,10 +1,10 @@
-package org.gepron1x.clans.events.home;
+package org.gepron1x.clans.event.home;
 
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.gepron1x.clans.clan.Clan;
 import org.gepron1x.clans.clan.home.ClanHome;
-import org.gepron1x.clans.events.clan.ClanEvent;
+import org.gepron1x.clans.event.clan.ClanEvent;
 import org.jetbrains.annotations.NotNull;
 
 public class ClanRemoveHomeEvent extends ClanEvent implements HomeEvent, Cancellable {

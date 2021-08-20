@@ -1,14 +1,25 @@
 package org.gepron1x.clans.config;
 
 
+import net.kyori.adventure.text.Component;
+import org.gepron1x.clans.clan.Clan;
 import space.arim.dazzleconf.annote.ConfKey;
 import space.arim.dazzleconf.annote.SubSection;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.List;
 
-import static space.arim.dazzleconf.annote.ConfDefault.*;
+import static space.arim.dazzleconf.annote.ConfDefault.DefaultString;
+import static space.arim.dazzleconf.annote.ConfDefault.DefaultStrings;
 
 public interface MessagesConfig {
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.TYPE_PARAMETER, ElementType.TYPE_USE})
+    @interface Placeholder {}
+
     @DefaultString("<aqua>DecaliumClans")
     MiniComponent prefix();
     @DefaultString("<red>У вас нету права на это действие!")
@@ -27,6 +38,7 @@ public interface MessagesConfig {
     @SubSection ClanList clanList();
     @SubSection DisplayName displayName();
     @SubSection Member member();
+    @SubSection Homes homes();
 
 
     interface DisplayName {
@@ -72,8 +84,9 @@ public interface MessagesConfig {
     interface ClanInvite {
         @DefaultString("<receiver> поулчил ваше приглашение.")
         MiniComponent invitationSent();
-        @DefaultString("<sender> приглашает вас в клан <clan> Используйте /clan invite accept <sender> Для того, чтобы его принять!")
+        @DefaultString("<sender> invites you to the <clan> Use /clan invite accept <sender> to accept")
         MiniComponent invitationMessage();
+
         @DefaultString("Вы приняли приглашение.")
         MiniComponent accepted();
         @DefaultString("Вы отклонили приглашение.")
@@ -96,5 +109,11 @@ public interface MessagesConfig {
                 "Участники: \n<members>"
         })
         List<MiniComponent> clanFormat();
+    }
+    interface Homes {
+        @DefaultString("<prefix> Ошибка! Дом с названием <name> уже существует. Придумайте что-то другое!")
+        MiniComponent homeWithNameAlreadyExists();
+        @DefaultString("<prefix>Дом успешно создан.")
+        MiniComponent success();
     }
 }

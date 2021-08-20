@@ -2,7 +2,6 @@ package org.gepron1x.clans.storage.dao;
 
 import org.gepron1x.clans.clan.Clan;
 import org.gepron1x.clans.clan.member.ClanMember;
-import org.gepron1x.clans.clan.member.role.ClanRole;
 import org.jdbi.v3.sqlobject.config.ValueColumn;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindMethods;
@@ -31,7 +30,7 @@ public interface ClanMemberDao {
 
     @ValueColumn("clan")
     @SqlQuery("SELECT * FROM members")
-    Map<ClanMember, String> loadMembers();
+    Map<ClanMember, String> getMembers();
 
     @SqlUpdate("DELETE FROM members WHERE `clan`=:clan.getTag")
     void clearMembers(@BindMethods Clan clan);

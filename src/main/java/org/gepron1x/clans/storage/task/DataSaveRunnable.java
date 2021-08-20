@@ -5,15 +5,16 @@ import org.gepron1x.clans.DecaliumClans;
 import org.gepron1x.clans.storage.UpdateListener;
 import org.jdbi.v3.core.Jdbi;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
 
-public class DataSyncTask extends BukkitRunnable {
+public class DataSaveRunnable extends BukkitRunnable {
     private final DecaliumClans plugin;
     private final UpdateListener updateListener;
     private final Jdbi jdbi;
 
-    public DataSyncTask(DecaliumClans plugin, UpdateListener listener) {
+    public DataSaveRunnable(DecaliumClans plugin, UpdateListener listener) {
         this.jdbi = plugin.getJdbi();
         this.plugin = plugin;
         this.updateListener = listener;
@@ -31,5 +32,6 @@ public class DataSyncTask extends BukkitRunnable {
         updates.forEach(upd -> upd.accept(jdbi));
         plugin.getLogger().info("Saved data successfully.");
     }
+
 
 }

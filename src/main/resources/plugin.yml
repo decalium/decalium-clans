@@ -5,3 +5,4 @@ api-version: 1.16
 authors: [ objectwebasm ]
 description: another try.
 softdepend: [ PlaceholderAPI ]
+depend: [ WorldGuard ]

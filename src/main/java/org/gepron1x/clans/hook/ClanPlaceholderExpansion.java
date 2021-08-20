@@ -1,11 +1,11 @@
 package org.gepron1x.clans.hook;
 
-import org.gepron1x.clans.DecaliumClans;
-import org.gepron1x.clans.clan.Clan;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.OfflinePlayer;
-import org.gepron1x.clans.manager.ClanManager;
+import org.gepron1x.clans.DecaliumClans;
+import org.gepron1x.clans.clan.Clan;
+import org.gepron1x.clans.ClanManager;
 
 public class ClanPlaceholderExpansion extends PlaceholderExpansion {
 

@@ -3,11 +3,12 @@ package org.gepron1x.clans.storage.dao;
 
 import org.gepron1x.clans.clan.Clan;
 import org.gepron1x.clans.clan.home.ClanHome;
+import org.jdbi.v3.sqlobject.config.ValueColumn;
 import org.jdbi.v3.sqlobject.customizer.BindMethods;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 
-import java.util.List;
+import java.util.Map;
 
 
 public interface ClanHomeDao {
@@ -42,7 +43,8 @@ public interface ClanHomeDao {
     void removeHomes(@BindMethods Clan clan);
 
     @SqlQuery("SELECT * FROM homes")
-    List<ClanHome> homes();
+    @ValueColumn("clan")
+    Map<ClanHome, String> homes();
 
 
 

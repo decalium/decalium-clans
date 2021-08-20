@@ -8,10 +8,11 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class MiniComponent implements ComponentLike {
@@ -27,12 +28,26 @@ public class MiniComponent implements ComponentLike {
     }
 
     public Component parse(@Nullable Player player, Object... templates) {
-        String toParse = player == null ? value : PlaceholderAPI.setPlaceholders(player, value);
-        return miniMessage.parse(toParse, templates);
+        return miniMessage.parse(papi(player, value), templates);
 
     }
     public Component parse(Object... templates) {
-        return parse(null, templates);
+        return miniMessage.parse(value, templates);
+    }
+
+    public Component parse(@Nullable Player player, Template... templates) {
+        return miniMessage.parse(papi(player, value), templates);
+    }
+    public Component parse(Template... templates) {
+        return miniMessage.parse(value, templates);
+    }
+    public Component parse(Collection<? extends Template> templates) {
+        return miniMessage.parse(value, List.copyOf(templates));
+    }
+
+
+    private static String papi(@Nullable Player player, String input) {
+        return player == null ? input : PlaceholderAPI.setPlaceholders(player, input);
     }
 
     public String getValue() {
@@ -40,7 +55,7 @@ public class MiniComponent implements ComponentLike {
     }
 
     @Override
-    public @NonNull Component asComponent() {
+    public @NonNull @NotNull Component asComponent() {
         return parse();
     }
 }

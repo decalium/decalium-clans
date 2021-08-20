@@ -1,4 +1,4 @@
-package org.gepron1x.clans.events.home;
+package org.gepron1x.clans.event.home;
 
 import org.gepron1x.clans.clan.home.ClanHome;
 

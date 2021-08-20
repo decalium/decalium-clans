@@ -1,20 +1,33 @@
-package org.gepron1x.clans.manager;
+package org.gepron1x.clans;
 
 import com.google.common.base.Preconditions;
 import org.bukkit.OfflinePlayer;
 import org.gepron1x.clans.clan.Clan;
 import org.gepron1x.clans.clan.member.ClanMember;
-import org.gepron1x.clans.events.clan.ClanCreatedEvent;
-import org.gepron1x.clans.events.clan.ClanDeletedEvent;
+import org.gepron1x.clans.event.clan.ClanCreatedEvent;
+import org.gepron1x.clans.event.clan.ClanDeletedEvent;
+import org.gepron1x.clans.util.CollectionUtils;
 import org.gepron1x.clans.util.Events;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public final class ClanManager {
-    private final Map<UUID, Clan> userClans = new HashMap<>();
-    private final Map<String, Clan> clans = new HashMap<>();
+    private final Map<UUID, Clan> userClans;
+    private final Map<String, Clan> clans;
+
+    public ClanManager(Collection<Clan> clans) {
+        this.userClans = new HashMap<>();
+        this.clans = CollectionUtils.toMap(Clan::getTag, clans);
+
+        for(Clan clan : clans) for(ClanMember member : clan.getMembers()) {
+            userClans.put(member.getUniqueId(), clan);
+        }
+    }
 
     public Collection<Clan> getClans() {
         return clans.values();
@@ -43,8 +56,8 @@ public final class ClanManager {
         for(Clan c : getClans()) {
             if (!c.isMember(uuid)) continue;
             clan = c;
+            userClans.put(uuid, clan);
         }
-        if(clan != null) userClans.put(uuid, clan);
         return clan;
     }
     @Nullable public Clan getUserClan(@NotNull OfflinePlayer player) {return getUserClan(player.getUniqueId()); }
@@ -54,7 +67,6 @@ public final class ClanManager {
         if(!Events.callCancellableEvent(new ClanDeletedEvent(clan))) return;
         clans.remove(clan.getTag(), clan);
         userClans.entrySet().removeIf(entry -> entry.getValue().equals(clan));
-
     }
 
 

@@ -1,20 +1,23 @@
-package org.gepron1x.clans.events.home;
+package org.gepron1x.clans.event.member;
 
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.gepron1x.clans.clan.Clan;
-import org.gepron1x.clans.clan.home.ClanHome;
-import org.gepron1x.clans.events.clan.ClanEvent;
+import org.gepron1x.clans.clan.member.ClanMember;
+import org.gepron1x.clans.event.clan.ClanEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class ClanAddHomeEvent extends ClanEvent implements HomeEvent, Cancellable {
-    private static final HandlerList handlers = new HandlerList();
-    private final ClanHome home;
-    private boolean cancelled;
 
-    public ClanAddHomeEvent(@NotNull Clan clan, @NotNull ClanHome home) {
+public class ClanAddMemberEvent extends ClanEvent implements Cancellable, MemberEvent {
+
+    private static final HandlerList handlers = new HandlerList();
+    private final ClanMember member;
+
+    private boolean cancelled = false;
+
+    public ClanAddMemberEvent(@NotNull Clan clan, @NotNull ClanMember member) {
         super(clan);
-        this.home = home;
+        this.member = member;
     }
 
     @Override
@@ -26,11 +29,6 @@ public class ClanAddHomeEvent extends ClanEvent implements HomeEvent, Cancellabl
     }
 
     @Override
-    public ClanHome getHome() {
-        return home;
-    }
-
-    @Override
     public boolean isCancelled() {
         return cancelled;
     }
@@ -38,5 +36,10 @@ public class ClanAddHomeEvent extends ClanEvent implements HomeEvent, Cancellabl
     @Override
     public void setCancelled(boolean cancel) {
         this.cancelled = cancel;
+    }
+
+    @Override
+    public ClanMember getMember() {
+        return member;
     }
 }
