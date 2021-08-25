@@ -22,7 +22,7 @@ public class ClanRoleSerializer implements ValueSerialiser<ClanRole> {
     public ClanRole deserialise(FlexibleType flexibleType) throws BadValueException {
         Map<String, FlexibleType> serialized = flexibleType.getMap((key, value) -> Map.entry(key.getString(), value));
 
-        return new ClanRole(serialized.get(ID).getString(), // role identifier (user, owner)
+        return new ClanRole(serialized.get(ID).getString(),
                 serialized.get(DISPLAY_NAME).getObject(Component.class),
                 serialized.get(WEIGHT).getInteger(),
                 serialized.get(PERMISSIONS).getCollection(element -> element.getObject(ClanPermission.class)));

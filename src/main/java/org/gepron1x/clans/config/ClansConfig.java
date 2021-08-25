@@ -40,9 +40,10 @@ public interface ClansConfig {
         ClanRole owner = new ClanRole("owner",
                 Component.text("Владелец").color(NamedTextColor.DARK_RED),
                 10,
-                ClanPermission.REGISTRY.values());
+                ClanPermission.registry().values());
         return List.of(user, owner);
     }
+
     interface Storage {
         @ConfComments({"storage service.", "H2 and MYSQL are supported."})
         @DefaultString("H2")
@@ -79,7 +80,6 @@ public interface ClansConfig {
             int connectionTimeOut();
 
         }
-
 
         @DefaultString("10m")
         @ConfComments({"sets the period between database sync.", "use this format: 3d1h30m20s"})

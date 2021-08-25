@@ -52,55 +52,29 @@ public final class DecaliumClans extends JavaPlugin {
 
     @Override
     public void onEnable() {
-
-
+        setupConfigurations();
         this.miniMessage = MiniMessage.builder().placeholderResolver(s ->
         {
             if(s.equals("prefix")) return getPrefix();
             else return null;
         }).build();
 
-        ConfigurationOptions defaultOptions = new ConfigurationOptions.Builder()
-                .addSerialisers(new ComponentSerializer(),
-                new MiniComponentSerializer(miniMessage),
-                new ClanRoleSerializer(),
-                new ClanPermissionSerializer(), new DurationSerializer()).build();
-
-        configManager = ConfigManager.create(dataFolder,
-                "config.yml",
-                ClansConfig.class,
-                defaultOptions);
-        configManager.reloadConfig();
-
-        messagesConfigManager = ConfigManager.create(dataFolder,
-                "messages.yml",
-                MessagesConfig.class,
-                defaultOptions);
-        messagesConfigManager.reloadConfig();
-
         Storage storage = new StorageCreator(this).create();
         this.clanManager = new ClanManager(storage.loadClans());
-
         storage.start();
 
-
-        ClansConfig cfg = configManager.getConfigData();
-
-
+        ClansConfig cfg = getClansConfig();
         roleRegistry = Index.create(ClanRole::getName, cfg.roles());
 
-
         commandManager = new PaperCommandManager(this);
-        command = new ClanCommand(this, clanManager, messagesConfigManager.getConfigData());
-        inviteCommand = new InviteCommand(this, clanManager, messagesConfigManager.getConfigData());
+        command = new ClanCommand(this, clanManager, getMessages());
+        inviteCommand = new InviteCommand(this, clanManager, getMessages());
         commandManager.registerCommand(command);
         commandManager.registerCommand(inviteCommand);
         worldGuard = WorldGuard.getInstance();
 
         defaultRole = roleRegistry.value(cfg.defaultRole());
         ownerRole = roleRegistry.value(cfg.ownerRole());
-
-
 
     }
 
@@ -138,7 +112,26 @@ public final class DecaliumClans extends JavaPlugin {
         commandManager.getCommandCompletions().registerCompletion("clans",
                 ctx -> clanManager.getClans().stream().map(Clan::getTag).collect(Collectors.toList()));
 
+    }
 
+    private void setupConfigurations() {
+        ConfigurationOptions defaultOptions = new ConfigurationOptions.Builder()
+                .addSerialisers(new ComponentSerializer(),
+                        new MiniComponentSerializer(miniMessage),
+                        new ClanRoleSerializer(),
+                        new ClanPermissionSerializer(), new DurationSerializer()).build();
+
+        configManager = ConfigManager.create(dataFolder,
+                "config.yml",
+                ClansConfig.class,
+                defaultOptions);
+        configManager.reloadConfig();
+
+        messagesConfigManager = ConfigManager.create(dataFolder,
+                "messages.yml",
+                MessagesConfig.class,
+                defaultOptions);
+        messagesConfigManager.reloadConfig();
 
     }
 

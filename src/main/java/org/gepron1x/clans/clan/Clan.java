@@ -1,5 +1,6 @@
 package org.gepron1x.clans.clan;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -207,5 +208,15 @@ public class Clan implements IntStatisticContainer, Buildable<Clan, ClanBuilder>
     @Override
     public int hashCode() {
         return Objects.hash(tag, displayName, creator, members, homes, stats);
+    }
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("tag", tag)
+                .add("displayName", displayName)
+                .add("creator", creator)
+                .add("members", members.values())
+                .add("homes", homes.values())
+                .add("stats", stats).toString();
     }
 }

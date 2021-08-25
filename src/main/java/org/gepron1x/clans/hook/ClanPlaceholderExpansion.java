@@ -7,6 +7,8 @@ import org.gepron1x.clans.DecaliumClans;
 import org.gepron1x.clans.clan.Clan;
 import org.gepron1x.clans.ClanManager;
 
+import static net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.*;
+
 public class ClanPlaceholderExpansion extends PlaceholderExpansion {
 
     public static final String IDENTIFIER = "decaliumclans";
@@ -41,7 +43,7 @@ public class ClanPlaceholderExpansion extends PlaceholderExpansion {
         if(clan == null) return "";
         return switch (params) {
             case CLAN_TAG -> clan.getTag();
-            case CLAN_DISPLAY_NAME -> LegacyComponentSerializer.legacySection().serialize(clan.getDisplayName());
+            case CLAN_DISPLAY_NAME -> legacySection().serialize(clan.getDisplayName()); // caves mad
             default -> "";
         };
     }

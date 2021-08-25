@@ -1,5 +1,6 @@
 package org.gepron1x.clans.clan.member;
 
+import com.google.common.base.MoreObjects;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -65,6 +66,11 @@ public class ClanMember {
     public int hashCode() {
         return Objects.hash(uniqueId, role);
     }
-
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("uniqueId", uniqueId)
+                .add("role", role).toString();
+    }
 
 }

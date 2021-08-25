@@ -26,7 +26,7 @@ public class ChatListener implements Listener {
     public void onChat(AsyncChatEvent event) {
 
     }
-    private static class ClanChatRenderer
+  
 
 
 }

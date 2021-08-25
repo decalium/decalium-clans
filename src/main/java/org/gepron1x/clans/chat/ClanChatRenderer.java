@@ -1,5 +1,6 @@
 package org.gepron1x.clans.chat;
 
+import com.google.common.base.MoreObjects;
 import io.papermc.paper.chat.ChatRenderer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
@@ -27,6 +28,7 @@ public class ClanChatRenderer implements ChatRenderer {
                                      @NotNull Audience viewer) {
         Clan clan = Objects.requireNonNull(manager.getUserClan(source));
         ClanMember member = clan.getMember(source);
+
 
 
         return format.parse(source,

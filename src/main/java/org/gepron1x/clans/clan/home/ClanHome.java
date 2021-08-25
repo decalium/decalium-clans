@@ -1,5 +1,6 @@
 package org.gepron1x.clans.clan.home;
 
+import com.google.common.base.MoreObjects;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.util.Buildable;
@@ -11,31 +12,36 @@ import org.gepron1x.clans.storage.property.Property;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import static java.util.Objects.requireNonNull;
 
 public class ClanHome implements Buildable<ClanHome, ClanHome.Builder> {
 
 
-
-    public static final Property<ClanHome, Component> DISPLAY_NAME = new DefaultProperty<>(
+    private static class ClanHomeProperty<V> extends DefaultProperty<ClanHome, V> {
+        public ClanHomeProperty(String name, Class<V> valueType, Function<ClanHome, V> getter, BiConsumer<ClanHome, V> setter) {
+            super(name, ClanHome.class, valueType, getter, setter);
+        }
+    }
+    public static final Property<ClanHome, Component> DISPLAY_NAME = new ClanHomeProperty<>(
             "display_name",
-            ClanHome.class,
             Component.class,
             home -> home.displayName,
             (home, component) -> home.displayName = component
-            );
-    public static final Property<ClanHome, Location> LOCATION = new DefaultProperty<>(
+
+    );
+    public static final Property<ClanHome, Location> LOCATION = new ClanHomeProperty<>(
             "location",
-            ClanHome.class,
             Location.class,
             home -> home.location,
             (home, location) -> home.location = location
     );
-    public static final Property<ClanHome, ItemStack> ICON = new DefaultProperty<>(
+    public static final Property<ClanHome, ItemStack> ICON = new ClanHomeProperty<>(
             "icon",
-            ClanHome.class,
             ItemStack.class,
             home -> home.icon,
             (home, icon) -> home.icon = icon
@@ -98,6 +104,15 @@ public class ClanHome implements Buildable<ClanHome, ClanHome.Builder> {
     public UUID getOwner() {
         return owner;
     }
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("location", location)
+                .add("displayName", displayName)
+                .add("name", name)
+                .add("icon", icon)
+                .add("owner", owner).toString();
+    }
 
     @Override
     public @NotNull ClanHome.Builder toBuilder() {
@@ -107,6 +122,23 @@ public class ClanHome implements Buildable<ClanHome, ClanHome.Builder> {
                 .name(name)
                 .icon(icon)
                 .owner(owner);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClanHome clanHome = (ClanHome) o;
+        return owner.equals(clanHome.owner) &&
+                name.equals(clanHome.name) &&
+                displayName.equals(clanHome.displayName) &&
+                location.equals(clanHome.location) &&
+                Objects.equals(icon, clanHome.icon);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(owner, name, displayName, location, icon);
     }
 
     public static class Builder implements Buildable.Builder<ClanHome> {
@@ -152,5 +184,6 @@ public class ClanHome implements Buildable<ClanHome, ClanHome.Builder> {
                     icon
             );
         }
+
     }
 }

@@ -5,7 +5,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.gepron1x.clans.ClanManager;
 import org.gepron1x.clans.clan.Clan;
-import org.gepron1x.clans.clan.home.ClanHome;
 import org.gepron1x.clans.event.clan.ClanDeletedEvent;
 import org.gepron1x.clans.event.home.ClanAddHomeEvent;
 import org.gepron1x.clans.event.home.ClanRemoveHomeEvent;

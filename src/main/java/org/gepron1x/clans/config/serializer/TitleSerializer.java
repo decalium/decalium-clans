@@ -2,14 +2,14 @@ package org.gepron1x.clans.config.serializer;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
+import org.gepron1x.clans.util.Configs;
 import space.arim.dazzleconf.error.BadValueException;
-import space.arim.dazzleconf.serialiser.Decomposer;
-import space.arim.dazzleconf.serialiser.FlexibleType;
-import space.arim.dazzleconf.serialiser.ValueSerialiser;
+import space.arim.dazzleconf.serialiser.*;
 
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 public class TitleSerializer implements ValueSerialiser<Title> {
     private static final String TITLE = "title", SUBTITLE = "subtitle", TIMES = "times";
@@ -22,7 +22,7 @@ public class TitleSerializer implements ValueSerialiser<Title> {
 
     @Override
     public Title deserialise(FlexibleType flexibleType) throws BadValueException {
-        Map<String, FlexibleType> map = flexibleType.getMap((key, value) -> Map.entry(key.getString(), value));
+        Map<String, FlexibleType> map = flexibleType.getMap(Configs.section());
         Component title = map.get(TITLE).getObject(Component.class);
         Component subtitle = map.get(SUBTITLE).getObject(Component.class);
         String times = map.get(TIMES).getString();
@@ -48,5 +48,9 @@ public class TitleSerializer implements ValueSerialiser<Title> {
                 String.valueOf(times.fadeOut().toSeconds()));
         map.put(TIMES, rawTimes);
         return map;
+    }
+    private <K, V> FlexibleTypeMapEntryFunction<? extends K, ? extends V> entryProcessor(FlexibleTypeFunction<? extends K> keyProcessor,
+                                                                             FlexibleTypeFunction<? extends V> valueProcessor) {
+        return (key, value) -> Map.entry(keyProcessor.getResult(key), valueProcessor.getResult(value));
     }
 }

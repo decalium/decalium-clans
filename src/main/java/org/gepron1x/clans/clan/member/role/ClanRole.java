@@ -1,5 +1,6 @@
 package org.gepron1x.clans.clan.member.role;
 
+import com.google.common.base.MoreObjects;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
@@ -73,5 +74,15 @@ public final class ClanRole {
     @Override
     public int hashCode() {
         return Objects.hash(name, displayName, weight, permissions);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("name", name)
+                .add("displayName", displayName)
+                .add("weight", weight)
+                .add("permissions", permissions)
+                .toString();
     }
 }
