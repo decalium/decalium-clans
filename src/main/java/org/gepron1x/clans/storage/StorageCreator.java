@@ -93,8 +93,7 @@ public final class StorageCreator {
         } else {
 
             Path path = plugin.getDataFolder().toPath().resolve("clans");
-            url = MessageFormat.format("jdbc:h2:file:.{0};mode=MySQL", path);
-
+            url = MessageFormat.format("jdbc:h2:file:./{0};mode=MySQL", path);
             password = "";
             user = "sa";
         }

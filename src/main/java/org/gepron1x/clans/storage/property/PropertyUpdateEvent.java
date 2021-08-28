@@ -13,10 +13,10 @@ public class PropertyUpdateEvent extends Event implements Cancellable {
     private boolean cancelled;
     private final Property<?, ?> property;
     private final Object target;
-    private final Object value;
+    private Object value;
 
-    public PropertyUpdateEvent(Property<?, ?> property, Object target, Object value) {
-
+    public <T, V> PropertyUpdateEvent(Property<T, V> property, T target, V value) {
+        Preconditions.checkArgument(property.getTargetType().isInstance(target));
         this.property = property;
         this.target = target;
         this.value = value;
@@ -53,5 +53,6 @@ public class PropertyUpdateEvent extends Event implements Cancellable {
     public void setValue(Object value) {
         Preconditions.checkArgument(property.getTargetType().isInstance(value),
                 MessageFormat.format("value {0} is not an instance of target class {1}", value, property.getTargetType()));
+        this.value = value;
     }
 }

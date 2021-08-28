@@ -1,5 +1,6 @@
 package org.gepron1x.clans.util;
 
+
 import java.util.UUID;
 
 public final class UuidUtil {

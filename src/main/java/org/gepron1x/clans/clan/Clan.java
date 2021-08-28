@@ -19,9 +19,9 @@ import org.gepron1x.clans.statistic.StatisticType;
 import org.gepron1x.clans.storage.property.DefaultProperty;
 import org.gepron1x.clans.storage.property.Property;
 import org.gepron1x.clans.util.CollectionUtils;
-import org.gepron1x.clans.util.Events;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.*;
 
@@ -43,11 +43,11 @@ public class Clan implements IntStatisticContainer, Buildable<Clan, ClanBuilder>
     private final Object2IntMap<StatisticType> stats;
 
 
-    public Clan(String tag, // specially for builder
-         Component displayName,
-         ClanMember creator,
-         Set<ClanMember> members,
-         Map<StatisticType, Integer> statistics, Set<ClanHome> homes) {
+    public Clan(@NotNull String tag, // specially for builder
+         @NotNull Component displayName,
+         @NotNull ClanMember creator, @NotNull Set<ClanMember> members,
+         @NotNull Map<StatisticType, Integer> statistics, @NotNull Set<ClanHome> homes) {
+
         this.tag = tag;
         this.displayName = displayName;
 
@@ -57,14 +57,14 @@ public class Clan implements IntStatisticContainer, Buildable<Clan, ClanBuilder>
         this.creator = creator;
         this.members.put(creator.getUniqueId(), creator);
         this.stats = new Object2IntArrayMap<>(statistics);
-
     }
 
 
     public void addMember(@NotNull ClanMember member) {
         Preconditions.checkArgument(!isMember(member), "player is already in a clan");
-        if(Events.callCancellableEvent(new ClanAddMemberEvent(this, member)))
-            members.put(member.getUniqueId(), member);
+        if(!new ClanAddMemberEvent(this, member).callEvent()) return;
+        members.put(member.getUniqueId(), member);
+
     }
     public boolean isMember(@NotNull ClanMember member) {
         return members.containsValue(member);
@@ -93,7 +93,7 @@ public class Clan implements IntStatisticContainer, Buildable<Clan, ClanBuilder>
         Preconditions.checkArgument(members.containsKey(member.getUniqueId()),
                 String.format("user %s is not in a clan", member));
         Preconditions.checkArgument(!member.equals(creator), "cannot remove owner");
-        if(!Events.callCancellableEvent(new ClanRemoveMemberEvent(this, member))) return;
+        if(!new ClanRemoveMemberEvent(this, member).callEvent()) return;
         removeMember(member.getUniqueId());
     }
     public void removeMember(@NotNull OfflinePlayer player) {
@@ -156,27 +156,32 @@ public class Clan implements IntStatisticContainer, Buildable<Clan, ClanBuilder>
     }
 
     @Override
-    public void setStatistic(StatisticType type, int value) {
-        ClanStatisticEvent event = Events.callEvent(new ClanStatisticEvent(this, type, value));
-        if(event.isCancelled() || event.getValue().isEmpty()) return;
+    public void setStatistic(@NotNull StatisticType type, int value) {
+        ClanStatisticEvent event = new ClanStatisticEvent(this, type, value);
+        if(!event.callEvent() || event.getValue().isEmpty()) return;
         stats.put(type, event.getValue().getAsInt());
     }
 
     @Override
-    public boolean hasStatistic(StatisticType type) {
+    public boolean hasStatistic(@NotNull StatisticType type) {
         return stats.containsKey(type);
     }
 
     @Override
-    public OptionalInt getStatistic(StatisticType type) {
+    public OptionalInt getStatistic(@NotNull StatisticType type) {
         int value = stats.getInt(type);
         return value == stats.defaultReturnValue() ? OptionalInt.empty() : OptionalInt.of(value);
     }
+    @Override
+    @UnmodifiableView
+    public @NotNull Map<StatisticType, Integer> getStatistics() {
+        return Collections.unmodifiableMap(stats);
+    }
 
     @Override
-    public void removeStatistic(StatisticType type) {
-        ClanStatisticEvent event = Events.callEvent(new ClanStatisticEvent(this, type, null));
-        if(event.isCancelled()) return;
+    public void removeStatistic(@NotNull StatisticType type) {
+        ClanStatisticEvent event = new ClanStatisticEvent(this, type, null);
+        if(!event.callEvent()) return;
         event.getValue().ifPresentOrElse(value -> stats.put(type, value), () -> stats.removeInt(type));
         stats.removeInt(type);
     }

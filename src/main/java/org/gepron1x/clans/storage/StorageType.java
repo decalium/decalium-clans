@@ -1,14 +1,13 @@
 package org.gepron1x.clans.storage;
 
 
-import com.zaxxer.hikari.HikariConfig;
 import org.jdbi.v3.core.Jdbi;
 
 import java.util.function.Consumer;
 
 public enum StorageType {
     MYSQL("com.mysql.jdbc.Driver"),
-    H2(jdbi -> jdbi.useHandle(handle -> handle.createUpdate("SHUTDOWN")), org.h2.Driver.class.getName());
+    H2(jdbi -> jdbi.useHandle(handle -> handle.execute("SHUTDOWN")), org.h2.Driver.class.getName());
 
 
     private final Consumer<Jdbi> onDisable;

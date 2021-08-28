@@ -14,7 +14,6 @@ public final class ReflectionUtils {
     public static  <T> List<T> getConstants(Class<?> target, Class<T> valueType) {
         List<T> values = new ArrayList<>();
         for(Field field : target.getFields()) {
-
             if(Modifier.isStatic(field.getModifiers())) continue;
             if(!field.getType().equals(valueType)) continue;
 

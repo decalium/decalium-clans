@@ -29,20 +29,18 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.17.1-R0.1-SNAPSHOT")
     implementation("co.aikar:acf-paper:0.5.0-SNAPSHOT")
     implementation("com.zaxxer:HikariCP:5.0.0")
-    implementation("com.google.inject:guice:4.1.0")
     implementation("com.h2database:h2:1.4.200")
-    implementation("space.arim.dazzleconf:dazzleconf-ext-snakeyaml:1.2.0-M2") {
+    implementation("space.arim.dazzleconf:dazzleconf-ext-snakeyaml:1.2.1") {
         exclude(group = "org.yaml", module = "snakeyaml")
     }
     implementation ("net.kyori:adventure-text-minimessage:4.1.0-SNAPSHOT") {
         exclude(group = "net.kyori", module = "adventure-api")
     }
-    implementation("org.jdbi:jdbi3-core:3.20.1")
-    implementation("org.jdbi:jdbi3-sqlobject:3.20.1")
+    implementation("org.jdbi:jdbi3-core:3.21.0")
+    implementation("org.jdbi:jdbi3-sqlobject:3.21.0")
     compileOnly("me.clip:placeholderapi:2.10.0")
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.6-SNAPSHOT")
-
-    compileOnly("org.slf4j:slf4j-api:1.7.30")
+    compileOnly("org.slf4j:slf4j-api:1.7.32")
 }
 
 

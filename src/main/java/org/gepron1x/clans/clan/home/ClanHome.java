@@ -22,26 +22,23 @@ import static java.util.Objects.requireNonNull;
 public class ClanHome implements Buildable<ClanHome, ClanHome.Builder> {
 
 
-    private static class ClanHomeProperty<V> extends DefaultProperty<ClanHome, V> {
-        public ClanHomeProperty(String name, Class<V> valueType, Function<ClanHome, V> getter, BiConsumer<ClanHome, V> setter) {
-            super(name, ClanHome.class, valueType, getter, setter);
-        }
-    }
-    public static final Property<ClanHome, Component> DISPLAY_NAME = new ClanHomeProperty<>(
+    public static final Property<ClanHome, Component> DISPLAY_NAME = new DefaultProperty<>(
             "display_name",
+            ClanHome.class,
             Component.class,
             home -> home.displayName,
             (home, component) -> home.displayName = component
-
     );
-    public static final Property<ClanHome, Location> LOCATION = new ClanHomeProperty<>(
+    public static final Property<ClanHome, Location> LOCATION = new DefaultProperty<>(
             "location",
+            ClanHome.class,
             Location.class,
             home -> home.location,
             (home, location) -> home.location = location
     );
-    public static final Property<ClanHome, ItemStack> ICON = new ClanHomeProperty<>(
+    public static final Property<ClanHome, ItemStack> ICON = new DefaultProperty<>(
             "icon",
+            ClanHome.class,
             ItemStack.class,
             home -> home.icon,
             (home, icon) -> home.icon = icon

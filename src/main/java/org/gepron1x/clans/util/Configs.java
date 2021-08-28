@@ -6,10 +6,9 @@ import space.arim.dazzleconf.serialiser.FlexibleTypeMapEntryFunction;
 
 import java.util.Map;
 
-public class Configs {
-
-    public static <K, V> FlexibleTypeMapEntryFunction<? extends K, ? extends V> entryProcessor(FlexibleTypeFunction<? extends K> keyProcessor,
-                                                                                               FlexibleTypeFunction<? extends V> valueProcessor) {
+public final class Configs {
+    private Configs() {throw new UnsupportedOperationException("no instances"); }
+    public static <K, V> FlexibleTypeMapEntryFunction<? extends K, ? extends V> entryProcessor(FlexibleTypeFunction<? extends K> keyProcessor, FlexibleTypeFunction<? extends V> valueProcessor) {
         return (key, value) -> Map.entry(keyProcessor.getResult(key), valueProcessor.getResult(value));
     }
 

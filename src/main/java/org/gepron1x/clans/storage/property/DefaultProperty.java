@@ -1,6 +1,6 @@
 package org.gepron1x.clans.storage.property;
 
-import org.gepron1x.clans.util.Events;
+import com.google.common.base.MoreObjects;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -40,8 +40,8 @@ public class DefaultProperty<T, V> implements Property<T, V> {
 
     @Override
     public void set(@NotNull T target, V value) {
-        PropertyUpdateEvent event = Events.callEvent(new PropertyUpdateEvent(this, target, value));
-        if(event.isCancelled()) return;
+        PropertyUpdateEvent event = new PropertyUpdateEvent(this, target, value);
+        if(!event.callEvent()) return;
         setter.accept(target, valueType.cast(event.getValue()));
     }
 
@@ -61,5 +61,14 @@ public class DefaultProperty<T, V> implements Property<T, V> {
     @Override
     public int hashCode() {
         return Objects.hash(name, targetType, valueType);
+    }
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("name", name)
+                .add("targetType", targetType)
+                .add("valueType", valueType)
+                .add("getter", getter)
+                .add("setter", setter).toString();
     }
 }

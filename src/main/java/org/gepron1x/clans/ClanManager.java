@@ -6,17 +6,18 @@ import org.gepron1x.clans.clan.Clan;
 import org.gepron1x.clans.clan.member.ClanMember;
 import org.gepron1x.clans.event.clan.ClanCreatedEvent;
 import org.gepron1x.clans.event.clan.ClanDeletedEvent;
-import org.gepron1x.clans.util.Events;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 public final class ClanManager {
+
     private final Map<UUID, Clan> userClansMap;
     private final Map<String, Clan> clansMap;
 
-    public ClanManager(Collection<Clan> clans) {
+    public ClanManager(@NotNull Collection<Clan> clans) {
         this.userClansMap = new HashMap<>();
         this.clansMap = new HashMap<>(clans.size());
         for(Clan clan : clans) {
@@ -28,9 +29,10 @@ public final class ClanManager {
     }
 
     public Collection<Clan> getClans() {
-        return clansMap.values();
+        return Collections.unmodifiableCollection(clansMap.values());
     }
-    public void insertClan(@NotNull Clan clan) {
+    @ApiStatus.Internal
+    void insertClan(@NotNull Clan clan) {
         Preconditions.checkArgument(!clansMap.containsValue(clan), "clan already added");
         clansMap.put(clan.getTag(), clan);
         for(ClanMember member : clan.getMembers()) userClansMap.put(member.getUniqueId(), clan);
@@ -55,6 +57,7 @@ public final class ClanManager {
             if (!c.isMember(uuid)) continue;
             clan = c;
             userClansMap.put(uuid, clan);
+            break;
         }
         return clan;
     }

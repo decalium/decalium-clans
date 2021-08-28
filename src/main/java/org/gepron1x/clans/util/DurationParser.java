@@ -5,6 +5,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -40,7 +41,11 @@ public final class DurationParser {
             if (duration.length() <= parsePosition.getIndex())
                 throw new ParseException("Number '" + number + "' must be followed by a suffix.", parsePosition.getIndex());
             final char suffix = duration.charAt(parsePosition.getIndex());
-            total += Math.round(TimeUnit.SECONDS.convert(Math.round(number), units.get(suffix)));
+            TimeUnit unit = units.get(suffix);
+            if(unit == null) {
+                throw new ParseException("unknown suffix: " + suffix, parsePosition.getIndex());
+            }
+            total += Math.round(TimeUnit.SECONDS.convert(Math.round(number), unit));
 
             // Advance and consume whitespace
             parsePosition.setIndex(parsePosition.getIndex() + 1);
