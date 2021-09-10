@@ -26,7 +26,7 @@ public class Storage {
         this.jdbi = jdbi;
         this.updatePeriod = updatePeriod;
         this.updateListener = new UpdateListener();
-        this.dataSaveRunnable = new DataSaveRunnable(plugin, updateListener);
+        this.dataSaveRunnable = new DataSaveRunnable(plugin, jdbi, updateListener);
     }
     public void start() {
         plugin.getServer().getPluginManager()

@@ -8,8 +8,14 @@ import space.arim.dazzleconf.serialiser.FlexibleType;
 import space.arim.dazzleconf.serialiser.ValueSerialiser;
 
 public class ComponentSerializer implements ValueSerialiser<Component> {
-    private final MiniMessage miniMessage = MiniMessage.get();
-    public static final ComponentSerializer INSTANCE = new ComponentSerializer();
+    private final MiniMessage miniMessage;
+    public ComponentSerializer(MiniMessage miniMessage) {
+        this.miniMessage = miniMessage;
+    }
+    public ComponentSerializer() {
+        this(MiniMessage.get());
+    }
+
     @Override
     public Class<Component> getTargetClass() {
         return Component.class;
@@ -25,7 +31,5 @@ public class ComponentSerializer implements ValueSerialiser<Component> {
     public Object serialise(Component value, Decomposer decomposer) {
         return miniMessage.serialize(value);
     }
-    public static ComponentSerializer getInstance() {
-        return INSTANCE;
-    }
+
 }

@@ -86,7 +86,7 @@ public class ClanCommand extends BaseClanCommand {
         }
         Clan clan = getClanIfPresent(player);
         if(clan != null) {
-            manager.removeClan(clan);
+            manager.deleteClan(clan);
             player.sendMessage(messages.deletion().success());
         }
         deletionConfirmations.remove(uuid);

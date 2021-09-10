@@ -55,7 +55,6 @@ public class UpdateListener implements Listener {
     }
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void on(ClanAddMemberEvent event) {
-
         updates.add(jdbi -> jdbi.useExtension(ClanMemberDao.class,
                 dao -> dao.addMember(event.getMember(), event.getClan()))
         );
@@ -72,8 +71,6 @@ public class UpdateListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void on(ClanRemoveHomeEvent event) {
-        if(event.isCancelled()) return;
-
         updates.add(jdbi -> jdbi.useExtension(ClanHomeDao.class, dao -> dao.removeHome(event.getHome())));
     }
 
@@ -85,8 +82,10 @@ public class UpdateListener implements Listener {
         String query = MessageFormat.format("UPDATE {0} SET `{1}`=:value WHERE `{2}`=:key",
                 tableProperties.name(), event.getProperty().getName(), tableProperties.primaryKey());
 
-        updates.add(jdbi -> jdbi.useHandle(handle -> handle.createUpdate(query).bind("value", event.getValue())
-                .bind("key", tableProperties.getKey(event.getValue())).execute()));
+        updates.add(jdbi ->
+                jdbi.useHandle(handle -> handle.createUpdate(query).bind("value", event.getValue())
+                .bind("key", tableProperties.getKey(event.getValue())).execute())
+        );
     }
 
 

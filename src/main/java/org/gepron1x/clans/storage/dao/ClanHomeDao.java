@@ -21,7 +21,7 @@ public interface ClanHomeDao {
             `display_name` JSON,
             `icon` BLOB,
             `location` BIGINT NOT NULL,
-            PRIMARY KEY(`id`)
+            PRIMARY KEY(`name`)
             )
             """)
     void createTable();

@@ -6,7 +6,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.0.0"
     java
     id ("maven-publish")
-   // id ("io.papermc.paperweight.userdev") version "1.1.10-LOCAL-SNAPSHOT"
+    id("io.papermc.paperweight.userdev") version "1.1.11"
 }
 
 
@@ -26,7 +26,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.17.1-R0.1-SNAPSHOT")
+    //compileOnly("io.papermc.paper:paper-api:1.17.1-R0.1-SNAPSHOT")
+    paperDevBundle("1.17.1-R0.1-SNAPSHOT")
     implementation("co.aikar:acf-paper:0.5.0-SNAPSHOT")
     implementation("com.zaxxer:HikariCP:5.0.0")
     implementation("com.h2database:h2:1.4.200")
@@ -63,9 +64,10 @@ tasks {
     processResources {
         expand("version" to version)
     }
-  /*  build {
+    build {
         dependsOn(reobfJar)
-    } */
+        dependsOn(shadowJar)
+    }
     shadowJar {
         relocate("org.h2", "$libsPackage.h2")
         relocate("com.zaxxer.hikari", "$libsPackage.hikari")
@@ -76,5 +78,6 @@ tasks {
         relocate("co.aikar.locales", "$libsPackage.locales")
         relocate("com.github.benmanes.caffeine", "$libsPackage.caffeine")
         relocate("io.leangen.geantyref", "$libsPackage.geantyref")
+
     }
 }

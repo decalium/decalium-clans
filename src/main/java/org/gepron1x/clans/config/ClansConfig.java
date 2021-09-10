@@ -11,6 +11,7 @@ import space.arim.dazzleconf.annote.SubSection;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static space.arim.dazzleconf.annote.ConfDefault.*;
 
@@ -28,6 +29,12 @@ public interface ClansConfig {
 
     @DefaultString("Клан >> <role> <name> > <message>")
     MiniComponent clanChatFormat();
+
+    @DefaultMap({"kills", "Убийства",
+            "deaths", "Смерти",
+            "clan_war_wins", "Победы в кв",
+            "clan_war_loses", "Проигрыши в кв"})
+    Map<String, MiniComponent> statisticTypes();
 
 
 

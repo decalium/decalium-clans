@@ -47,13 +47,10 @@ public class Clan implements IntStatisticContainer, Buildable<Clan, ClanBuilder>
          @NotNull Component displayName,
          @NotNull ClanMember creator, @NotNull Set<ClanMember> members,
          @NotNull Map<StatisticType, Integer> statistics, @NotNull Set<ClanHome> homes) {
-
         this.tag = tag;
         this.displayName = displayName;
-
         this.members = CollectionUtils.toMap(ClanMember::getUniqueId, members);
         this.homes = CollectionUtils.toMap(ClanHome::getName, homes);
-
         this.creator = creator;
         this.members.put(creator.getUniqueId(), creator);
         this.stats = new Object2IntArrayMap<>(statistics);
@@ -149,8 +146,9 @@ public class Clan implements IntStatisticContainer, Buildable<Clan, ClanBuilder>
     @NotNull
     public Set<Player> getOnlineMembers() {
         Set<Player> players = new HashSet<>();
-        for(Player player : Bukkit.getOnlinePlayers()) {
-            if(isMember(player)) players.add(player);
+        for(ClanMember member : members.values()) {
+            Player player = member.asPlayer();
+            if(player != null) players.add(player);
         }
         return players;
     }

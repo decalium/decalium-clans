@@ -17,7 +17,7 @@ import java.util.Random;
 import java.util.function.Consumer;
 
 
-public class BlockPlaceListener implements Listener {
+public final class BlockPlaceListener implements Listener {
     private final NamespacedKey key;
     private final Random random = new Random();
     public BlockPlaceListener(Plugin plugin) {

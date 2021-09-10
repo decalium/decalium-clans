@@ -1,5 +1,7 @@
 package org.gepron1x.clans.storage.task;
 
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.gepron1x.clans.DecaliumClans;
 import org.gepron1x.clans.storage.UpdateListener;
@@ -10,12 +12,12 @@ import java.util.Queue;
 
 
 public class DataSaveRunnable extends BukkitRunnable {
-    private final DecaliumClans plugin;
+    private final Plugin plugin;
     private final UpdateListener updateListener;
     private final Jdbi jdbi;
 
-    public DataSaveRunnable(DecaliumClans plugin, UpdateListener listener) {
-        this.jdbi = plugin.getJdbi();
+    public DataSaveRunnable(Plugin plugin, Jdbi jdbi, UpdateListener listener) {
+        this.jdbi = jdbi;
         this.plugin = plugin;
         this.updateListener = listener;
     }

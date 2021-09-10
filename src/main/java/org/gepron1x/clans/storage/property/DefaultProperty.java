@@ -67,8 +67,6 @@ public class DefaultProperty<T, V> implements Property<T, V> {
         return MoreObjects.toStringHelper(this)
                 .add("name", name)
                 .add("targetType", targetType)
-                .add("valueType", valueType)
-                .add("getter", getter)
-                .add("setter", setter).toString();
+                .add("valueType", valueType).toString();
     }
 }

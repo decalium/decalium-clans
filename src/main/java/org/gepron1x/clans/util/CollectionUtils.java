@@ -31,10 +31,12 @@ public final class CollectionUtils {
         return toMap(keyMapper, Arrays.asList(values));
     }
     @SuppressWarnings("unchecked")
-    public static <K, V, M extends Map<K, V>> M createMap(IntFunction<M> mapFactory, Object... input) {
+    public static <K, V, M extends Map<K, V>> M createMap(IntFunction<M> mapFactory, K k, V v, Object... input) {
         Objects.requireNonNull(mapFactory, "mapFactory");
         Preconditions.checkArgument(input.length % 2 == 0, "length is odd");
-        M map = mapFactory.apply(input.length / 2);
+        M map = mapFactory.apply(input.length / 2 + 2);
+        map.put(k, v);
+
         for(int i = 0; i < input.length - 1; i++) {
             K key = Objects.requireNonNull((K) input[i]);
             V value = Objects.requireNonNull((V) input[i + 1]);
@@ -42,9 +44,10 @@ public final class CollectionUtils {
         }
         return map;
     }
-    public static <K, V> HashMap<K, V> createMap(Object... input) {
-        return createMap(HashMap::new, input);
+    public static <K, V> HashMap<K, V> createMap(K k, V v, Object... input) {
+        return createMap(HashMap::new, k, v, input);
     }
+
 
 
 

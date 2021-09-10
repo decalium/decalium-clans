@@ -6,7 +6,7 @@ import org.jdbi.v3.core.Jdbi;
 import java.util.function.Consumer;
 
 public enum StorageType {
-    MYSQL("com.mysql.jdbc.Driver"),
+    MYSQL("com.mysql.cj.jdbc.Driver"),
     H2(jdbi -> jdbi.useHandle(handle -> handle.execute("SHUTDOWN")), org.h2.Driver.class.getName());
 
 

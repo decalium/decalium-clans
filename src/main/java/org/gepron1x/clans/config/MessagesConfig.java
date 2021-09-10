@@ -32,6 +32,7 @@ public interface MessagesConfig {
     MiniComponent targetIsNotInClan();
     @DefaultString("Вы уже состоите в клане!")
     MiniComponent alreadyInClan();
+
     @SubSection ClanCreation creation();
     @SubSection ClanDeletion deletion();
     @SubSection ClanInvite invite();
@@ -57,6 +58,7 @@ public interface MessagesConfig {
             MiniComponent success();
         }
         @ConfKey("kick.success")
+        @DefaultString("<prefix> <target> исключен из состава клана!")
         MiniComponent kickSuccess();
         @SubSection SetRole setRole();
 

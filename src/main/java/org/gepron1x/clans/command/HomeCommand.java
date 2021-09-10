@@ -5,7 +5,9 @@ import co.aikar.commands.annotation.Subcommand;
 import com.sk89q.worldguard.WorldGuard;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.gepron1x.clans.clan.Clan;
 import org.gepron1x.clans.clan.home.ClanHome;
 import org.gepron1x.clans.clan.member.role.ClanPermission;
@@ -40,7 +42,7 @@ public class HomeCommand extends BaseClanCommand {
         }
         ClanHome ch = ClanHome.builder().name(homeName)
                 .displayName(Component.text(homeName, NamedTextColor.GRAY))
-                .icon()
+                .icon(new ItemStack(Material.AIR)).build();
 
 
 

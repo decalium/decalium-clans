@@ -4,7 +4,7 @@ package org.gepron1x.clans.util;
 import java.util.UUID;
 
 public final class UuidUtil {
-    public static final int BYTES = 16;
+    public static final int BYTES = Long.BYTES * 2;
     private UuidUtil() {}
     public static byte[] toByteArray(UUID uuid) {
         byte[] result = new byte[BYTES];
