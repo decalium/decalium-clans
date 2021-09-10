@@ -38,6 +38,7 @@ public final class ClanManager {
 
     void insertClan(@NotNull Clan clan) {
         clansMap.put(clan.getTag(), clan);
+
         for(ClanMember member : clan.getMembers()) userClansMap.put(member.getUniqueId(), clan);
     }
     public void addClan(@NotNull Clan clan) {
