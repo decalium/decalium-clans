@@ -20,7 +20,6 @@ repositories {
     maven { url = uri("https://papermc.io/repo/repository/maven-public/") }
     maven { url = uri("https://oss.sonatype.org/content/groups/public/") }
     maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
-    maven { url = uri("https://repo.aikar.co/content/groups/aikar/") }
     maven { url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/") }
     maven { url = uri("https://repo.maven.apache.org/maven2/") }
 }
@@ -28,7 +27,6 @@ repositories {
 dependencies {
     //compileOnly("io.papermc.paper:paper-api:1.17.1-R0.1-SNAPSHOT")
     paperDevBundle("1.17.1-R0.1-SNAPSHOT")
-    implementation("co.aikar:acf-paper:0.5.0-SNAPSHOT")
     implementation("com.zaxxer:HikariCP:5.0.0")
     implementation("com.h2database:h2:1.4.200")
     implementation("space.arim.dazzleconf:dazzleconf-ext-snakeyaml:1.2.1") {
@@ -38,6 +36,7 @@ dependencies {
         exclude(group = "net.kyori", module = "adventure-api")
     }
     implementation("org.jdbi:jdbi3-core:3.21.0")
+    implementation("cloud.commandframework", "cloud-paper", "1.5.0")
     implementation("org.jdbi:jdbi3-sqlobject:3.21.0")
     compileOnly("me.clip:placeholderapi:2.10.0")
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.6-SNAPSHOT")
@@ -70,12 +69,11 @@ tasks {
     }
     shadowJar {
         relocate("org.h2", "$libsPackage.h2")
+        relocate("cloud.commandframework", "$libsPackage.cloud.commandframework")
         relocate("com.zaxxer.hikari", "$libsPackage.hikari")
         relocate("org.jdbi", "$libsPackage.jdbi")
         relocate("space.arim.dazzleconf", "$libsPackage.dazzleconf")
         relocate("net.kyori.adventure.text.minimessage", "$libsPackage.minimessage")
-        relocate("co.aikar.commands", "$libsPackage.acf")
-        relocate("co.aikar.locales", "$libsPackage.locales")
         relocate("com.github.benmanes.caffeine", "$libsPackage.caffeine")
         relocate("io.leangen.geantyref", "$libsPackage.geantyref")
 

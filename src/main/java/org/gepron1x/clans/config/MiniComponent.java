@@ -44,6 +44,18 @@ public class MiniComponent implements ComponentLike {
     public Component parse(Collection<? extends Template> templates) {
         return miniMessage.parse(value, List.copyOf(templates));
     }
+    public MiniComponent withPlaceholder(Template template) {
+        return new MutableMiniComponent(value, miniMessage, template);
+    }
+    public MiniComponent withPlaceholder(String key, String value) {
+        return withPlaceholder(Template.of(key, value));
+    }
+    public MiniComponent withPlaceholder(String key, Component value) {
+        return withPlaceholder(Template.of(key, value));
+    }
+    public MiniComponent withPlaceholder(String key, ComponentLike like) {
+        return withPlaceholder(key, like.asComponent());
+    }
 
 
     private static String papi(@Nullable Player player, String input) {
@@ -58,4 +70,5 @@ public class MiniComponent implements ComponentLike {
     public @NonNull @NotNull Component asComponent() {
         return parse();
     }
+
 }

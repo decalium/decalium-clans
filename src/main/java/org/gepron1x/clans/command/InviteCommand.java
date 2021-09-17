@@ -1,25 +1,31 @@
 package org.gepron1x.clans.command;
 
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.Default;
-import co.aikar.commands.annotation.Subcommand;
-import co.aikar.commands.bukkit.contexts.OnlinePlayer;
+import cloud.commandframework.Command;
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.arguments.standard.StringArgument;
+import cloud.commandframework.bukkit.parsers.PlayerArgument;
+import cloud.commandframework.context.CommandContext;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import net.kyori.adventure.text.minimessage.Template;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.DecaliumClans;
+import org.gepron1x.clans.Permissions;
 import org.gepron1x.clans.clan.Clan;
 import org.gepron1x.clans.clan.member.ClanMember;
 import org.gepron1x.clans.clan.member.role.ClanPermission;
 import org.gepron1x.clans.config.MessagesConfig;
 import org.gepron1x.clans.ClanManager;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
 
-@CommandAlias("clan")
-@Subcommand("invite")
+
 public final class InviteCommand extends BaseClanCommand {
+    private static final String RECEIVER = "receiver";
+    private static final String SENDER = "sender";
     private final DecaliumClans plugin;
     private final Table<UUID, String, Clan> clanInvitations = HashBasedTable.create();
 
@@ -30,13 +36,13 @@ public final class InviteCommand extends BaseClanCommand {
     public void setMessages(MessagesConfig messages) {
         this.messages = messages;
     }
-    @Default
-    public void createInvitation(Player sender, OnlinePlayer onlineReceiver) {
-        Player receiver = onlineReceiver.getPlayer();
+
+    public void createInvitation(CommandContext<CommandSender> ctx) {
+        Player receiver = ctx.get(RECEIVER);
+        Player sender = (Player) ctx.getSender();
+        Template receiverTemplate = Template.of("receiver", receiver.displayName());
         UUID senderUniqueId = sender.getUniqueId();
-        Clan clan = getClanIfPresent(sender);
-        if(clan == null) return;
-        if(!hasPermission(sender, clan, ClanPermission.INVITE)) return;
+        Clan clan = getClan(senderUniqueId);
 
 
         if(receiver.getUniqueId().equals(senderUniqueId)) {
@@ -44,33 +50,44 @@ public final class InviteCommand extends BaseClanCommand {
             return;
         }
         if(manager.getUserClan(receiver.getUniqueId()) != null) {
-            sender.sendMessage(messages.alreadyInClan().parse("name", receiver.displayName()));
+            sender.sendMessage(messages.alreadyInClan().withPlaceholder(receiverTemplate));
             return;
         }
         String senderName = sender.getName();
 
         sender.sendMessage(messages.invite().invitationMessage()
-                .parse("sender", sender.displayName(), "clan", clan.getDisplayName()));
+                .withPlaceholder("sender", sender.displayName())
+                .withPlaceholder("clan", clan.getDisplayName())
+        );
 
         clanInvitations.put(receiver.getUniqueId(), senderName, clan);
-        sender.sendMessage(messages.invite().invitationSent().parse("receiver", receiver.displayName()));
+        sender.sendMessage(messages.invite().invitationSent().withPlaceholder(receiverTemplate));
 
     }
-    @Subcommand("accept")
-    public void acceptInvite(Player receiver, String senderName) {
+
+    public void acceptInvite(CommandContext<CommandSender> ctx) {
+        Player receiver = (Player) ctx.getSender();
+        String senderName = ctx.get(SENDER);
         UUID receiverUniqueId = receiver.getUniqueId();
         Clan clan = clanInvitations.get(receiverUniqueId, senderName);
         if(checkInvites(receiver, senderName)) return;
         clan.addMember(new ClanMember(receiver, plugin.getDefaultRole()));
-        receiver.sendMessage(messages.invite().accepted().parse("sender", senderName, "clan", clan.getDisplayName()));
+
+        receiver.sendMessage(messages.invite().accepted()
+                .withPlaceholder("sender", senderName)
+                .withPlaceholder("clan", clan.getDisplayName())
+        );
 
 
 
     }
-    @Subcommand("deny")
-    public void denyInvite(Player receiver, String senderName) {
+
+    public void denyInvite(CommandContext<CommandSender> ctx) {
+        Player receiver = (Player) ctx.getSender();
+        String senderName = ctx.get(SENDER);
+
         if(checkInvites(receiver, senderName)) return;
-        receiver.sendMessage(messages.invite().denied().parse("sender", senderName));
+        receiver.sendMessage(messages.invite().denied().withPlaceholder("sender", senderName));
         clanInvitations.remove(receiver.getUniqueId(), senderName);
 
     }
@@ -79,7 +96,7 @@ public final class InviteCommand extends BaseClanCommand {
         Clan clan = clanInvitations.get(receiverUniqueId, senderName);
 
         if(clan == null) {
-            receiver.sendMessage(messages.invite().noInvitesFromThisPlayer().parse("sender", senderName));
+            receiver.sendMessage(messages.invite().noInvitesFromThisPlayer().withPlaceholder("receiver", receiver.displayName()));
             return true;
         }
         if(!manager.getClans().contains(clan)) {
@@ -87,5 +104,33 @@ public final class InviteCommand extends BaseClanCommand {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void register(@NotNull CommandManager<CommandSender> manager) {
+        Command.Builder<CommandSender> invite = manager.commandBuilder("clan").literal("invite");
+
+        manager.command(invite
+                .senderType(Player.class)
+                .permission(Permissions.INVITE)
+                .meta(ClanPermission.CLAN_PERMISSION, ClanPermission.INVITE)
+                .argument(PlayerArgument.of(RECEIVER))
+                .handler(this::createInvitation)
+        );
+
+        manager.command(invite.literal("accept")
+                .senderType(Player.class)
+                .permission(Permissions.INVITE)
+                .argument(StringArgument.of(SENDER))
+                .handler(this::acceptInvite)
+        );
+
+        manager.command(invite.literal("deny")
+                .senderType(Player.class)
+                .permission(Permissions.INVITE)
+                .argument(StringArgument.of(SENDER))
+                .handler(this::denyInvite)
+        );
+
     }
 }

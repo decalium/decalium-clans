@@ -1,40 +1,43 @@
 package org.gepron1x.clans;
 
-import co.aikar.commands.PaperCommandManager;
-import com.google.common.collect.ImmutableList;
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.bukkit.BukkitCommandManager;
+import cloud.commandframework.execution.CommandExecutionCoordinator;
 import com.sk89q.worldguard.WorldGuard;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.util.Index;
-import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.event.HandlerList;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.clan.Clan;
 import org.gepron1x.clans.clan.member.ClanMember;
 import org.gepron1x.clans.clan.member.role.ClanRole;
 import org.gepron1x.clans.command.ClanCommand;
 import org.gepron1x.clans.command.InviteCommand;
+import org.gepron1x.clans.command.MemberCommand;
+import org.gepron1x.clans.command.postprocessors.ClanMemberCommandPostprocessor;
+import org.gepron1x.clans.command.postprocessors.ClanPermissionPostprocessor;
 import org.gepron1x.clans.config.ClansConfig;
 import org.gepron1x.clans.config.ConfigManager;
 import org.gepron1x.clans.config.MessagesConfig;
 import org.gepron1x.clans.config.serializer.*;
 import org.gepron1x.clans.statistic.StatisticType;
 import org.gepron1x.clans.storage.*;
-import org.gepron1x.clans.util.pdc.DataTypes;
-import org.gepron1x.clans.util.pdc.collection.CollectionDataType;
+
 import org.jdbi.v3.core.Jdbi;
 import org.jetbrains.annotations.NotNull;
 import space.arim.dazzleconf.ConfigurationOptions;
 
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public final class DecaliumClans extends JavaPlugin {
+
+
     public static final String AUTHOR = "gepron1x";
     public static final String NAME = "decaliumclans";
     public static final String VERSION = "1.0.0";
@@ -55,9 +58,11 @@ public final class DecaliumClans extends JavaPlugin {
     private ConfigManager<ClansConfig> configManager;
     private Storage storage;
     private MiniMessage miniMessage;
-    private PaperCommandManager commandManager;
+    private CommandManager<CommandSender> commandManager;
+
     private ClanCommand command;
     private InviteCommand inviteCommand;
+    private MemberCommand memberCommand;
 
 
     @Override
@@ -68,6 +73,8 @@ public final class DecaliumClans extends JavaPlugin {
 
         getLogger().info("Plugin enabled.");
     }
+
+
 
     private void enable() {
         setupConfigurations();
@@ -87,14 +94,7 @@ public final class DecaliumClans extends JavaPlugin {
         ClansConfig cfg = getClansConfig();
         roleRegistry = Index.create(ClanRole::getName, cfg.roles());
 
-        commandManager = new PaperCommandManager(this);
-        registerCompletions();
-        registerContexts();
-
-        command = new ClanCommand(this, clanManager, getMessages());
-        inviteCommand = new InviteCommand(this, clanManager, getMessages());
-
-        Arrays.asList(command, inviteCommand).forEach(commandManager::registerCommand);
+        setupCommands();
 
         worldGuard = WorldGuard.getInstance();
 
@@ -108,11 +108,13 @@ public final class DecaliumClans extends JavaPlugin {
     }
     private void disable() {
         HandlerList.unregisterAll(this);
-        commandManager.unregisterCommands();
         getLogger().info("Saving clans");
         storage.shutdown();
         getLogger().info("Saved successfully.");
     }
+
+
+
 
 
     public ComponentLike getPrefix() {
@@ -129,30 +131,29 @@ public final class DecaliumClans extends JavaPlugin {
 
     }
 
-    private void registerContexts() {
-        var commandContexts = commandManager.getCommandContexts();
-
-        commandContexts.registerContext(ClanRole.class, ctx -> {
-            String name = ctx.popFirstArg();
-            return getRoleRegistry().value(name);
-        });
-        commandContexts.registerContext(Clan.class, ctx -> clanManager.getClan(ctx.popFirstArg()));
-
-
+    private void registerPreprocessors() {
+        commandManager.registerCommandPostProcessor(new ClanMemberCommandPostprocessor(clanManager, getMessages()));
+        commandManager.registerCommandPostProcessor(new ClanPermissionPostprocessor(clanManager, getMessages()));
     }
-    private void registerCompletions() {
-        var commandCompletions = commandManager.getCommandCompletions();
-        commandCompletions.registerCompletion("roles", ctx -> roleRegistry.keys());
 
-        commandCompletions.registerCompletion("clans",
-                ctx -> clanManager.getClans().stream().map(Clan::getTag).collect(Collectors.toList()));
-        commandCompletions.registerCompletion("members", ctx -> {
-            Clan clan = clanManager.getUserClan(ctx.getPlayer());
-            if(clan == null) return Collections.emptyList();
-            return clan.getMembers().stream().map(ClanMember::asOffline)
-                    .filter(Objects::nonNull).map(OfflinePlayer::getName)
-                    .collect(Collectors.toList());
-        });
+    private void setupCommands() {
+        try {
+            commandManager = new BukkitCommandManager<>(
+                    this,
+                    CommandExecutionCoordinator.simpleCoordinator(),
+                    Function.identity(),
+                    Function.identity()
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        registerPreprocessors();
+        command = new ClanCommand(this, clanManager, getMessages());
+        inviteCommand = new InviteCommand(this, clanManager, getMessages());
+        memberCommand = new MemberCommand(clanManager, getMessages());
+        Arrays.asList(command, inviteCommand, memberCommand).forEach(cmd -> cmd.register(commandManager));
     }
 
     private void setupConfigurations() {
@@ -162,13 +163,15 @@ public final class DecaliumClans extends JavaPlugin {
                         new ClanRoleSerializer(),
                         new ClanPermissionSerializer(), new DurationSerializer()).build();
 
-        configManager = ConfigManager.create(dataFolder,
+        configManager = ConfigManager.create(
+                dataFolder,
                 "config.yml",
                 ClansConfig.class,
                 defaultOptions);
         configManager.reloadConfig();
 
-        messagesConfigManager = ConfigManager.create(dataFolder,
+        messagesConfigManager = ConfigManager.create(
+                dataFolder,
                 "messages.yml",
                 MessagesConfig.class,
                 defaultOptions);

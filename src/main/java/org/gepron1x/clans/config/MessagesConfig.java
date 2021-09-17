@@ -33,6 +33,9 @@ public interface MessagesConfig {
     @DefaultString("Вы уже состоите в клане!")
     MiniComponent alreadyInClan();
 
+    @DefaultString("<prefix> Эта команда предназначена исключительно для игроков.")
+    MiniComponent commandIsOnlyForPlayers();
+
     @SubSection ClanCreation creation();
     @SubSection ClanDeletion deletion();
     @SubSection ClanInvite invite();

@@ -158,7 +158,7 @@ public class Clan implements IntStatisticContainer, Buildable<Clan, ClanBuilder>
         ClanStatisticEvent event = new ClanStatisticEvent(this, type, value);
         if(!event.callEvent() || event.getValue().isEmpty()) return;
         stats.put(type, event.getValue().getAsInt());
-        
+
     }
 
     @Override

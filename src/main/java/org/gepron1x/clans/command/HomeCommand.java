@@ -1,13 +1,17 @@
 package org.gepron1x.clans.command;
 
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.Subcommand;
+import cloud.commandframework.Command;
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.arguments.standard.StringArgument;
+import cloud.commandframework.context.CommandContext;
 import com.sk89q.worldguard.WorldGuard;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.gepron1x.clans.Permissions;
 import org.gepron1x.clans.clan.Clan;
 import org.gepron1x.clans.clan.home.ClanHome;
 import org.gepron1x.clans.clan.member.role.ClanPermission;
@@ -15,10 +19,10 @@ import org.gepron1x.clans.config.MessagesConfig;
 import org.gepron1x.clans.clan.home.ClanHomeCache;
 import org.gepron1x.clans.ClanManager;
 import org.gepron1x.clans.util.BlockPlaceListener;
+import org.jetbrains.annotations.NotNull;
 
-@CommandAlias("clan")
-@Subcommand("home")
 public class HomeCommand extends BaseClanCommand {
+    private static final String HOME_NAME = "home_name";
     private final BlockPlaceListener blockPlaceListener;
     private final ClanHomeCache homeCache;
     private final WorldGuard worldGuard;
@@ -31,24 +35,30 @@ public class HomeCommand extends BaseClanCommand {
         this.worldGuard = worldGuard;
     }
 
-    @Subcommand("create")
-    public void create(Player executor, String homeName) {
-        Clan clan = getClanIfPresent(executor);
-        if(clan == null) return;
-        if(!hasPermission(executor, clan, ClanPermission.CREATE_HOME)) return;
+    public void create(CommandContext<CommandSender> ctx) {
+        Player executor = (Player) ctx.getSender();
+        String homeName = ctx.get(HOME_NAME);
+        Clan clan = getClan(executor);
         if(homeCache.getOwningClan(homeName) != null) {
-            executor.sendMessage(messages.homes().homeWithNameAlreadyExists().parse("home", homeName));
+            executor.sendMessage(messages.homes().homeWithNameAlreadyExists().withPlaceholder("name", homeName));
             return;
         }
         ClanHome ch = ClanHome.builder().name(homeName)
                 .displayName(Component.text(homeName, NamedTextColor.GRAY))
                 .icon(new ItemStack(Material.AIR)).build();
 
-
-
     }
 
 
-
-
+    @Override
+    public void register(@NotNull CommandManager<CommandSender> manager) {
+        Command.Builder<CommandSender> home = manager.commandBuilder("clan").literal("home");
+        manager.command(home.literal("create")
+                .senderType(Player.class)
+                .permission(Permissions.CREATE_HOME)
+                .meta(ClanPermission.CLAN_PERMISSION, ClanPermission.CREATE_HOME)
+                .argument(StringArgument.of(HOME_NAME))
+                .handler(this::create)
+        );
+    }
 }

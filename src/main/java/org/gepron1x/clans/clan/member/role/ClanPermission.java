@@ -1,11 +1,14 @@
 package org.gepron1x.clans.clan.member.role;
 
+import cloud.commandframework.meta.CommandMeta;
 import net.kyori.adventure.util.Index;
 import org.gepron1x.clans.util.ReflectionUtils;
 
 import java.util.Collection;
 
 public record ClanPermission(String value) {
+    public static final CommandMeta.Key<ClanPermission> CLAN_PERMISSION =
+            CommandMeta.Key.of(ClanPermission.class, "clan_permission");
     public static final ClanPermission INVITE = new ClanPermission("invite_member");
     public static final ClanPermission DELETE_CLAN = new ClanPermission("delete_clan");
     public static final ClanPermission SET_ROLE = new ClanPermission("set_role");
@@ -21,6 +24,6 @@ public record ClanPermission(String value) {
         return REGISTRY;
     }
 
-    public static Collection<ClanPermission> all() { return registry().values(); }
+    public static Collection<ClanPermission> all() { return REGISTRY.values(); }
 
 }
