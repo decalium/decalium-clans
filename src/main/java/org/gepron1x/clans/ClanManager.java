@@ -35,6 +35,11 @@ public final class ClanManager {
     public Collection<Clan> getClans() {
         return Collections.unmodifiableCollection(clansMap.values());
     }
+    @NotNull
+    @UnmodifiableView
+    public Set<String> getTags() {
+        return Collections.unmodifiableSet(clansMap.keySet());
+    }
 
     void insertClan(@NotNull Clan clan) {
         clansMap.put(clan.getTag(), clan);
@@ -51,7 +56,6 @@ public final class ClanManager {
     }
     @Nullable
     public Clan getUserClan(@NotNull UUID uuid) {
-
         Clan clan = userClansMap.get(uuid);
         if(clan != null) {
             if(clan.isMember(uuid)) return clan;
@@ -65,7 +69,6 @@ public final class ClanManager {
             userClansMap.put(uuid, clan);
             break;
         }
-
         return clan;
     }
     @Nullable

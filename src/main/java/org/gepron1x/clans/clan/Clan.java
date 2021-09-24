@@ -19,6 +19,7 @@ import org.gepron1x.clans.statistic.StatisticType;
 import org.gepron1x.clans.storage.property.DefaultProperty;
 import org.gepron1x.clans.storage.property.Property;
 import org.gepron1x.clans.util.CollectionUtils;
+import org.gepron1x.clans.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;

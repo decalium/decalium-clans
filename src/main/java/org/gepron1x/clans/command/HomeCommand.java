@@ -35,12 +35,12 @@ public class HomeCommand extends BaseClanCommand {
         this.worldGuard = worldGuard;
     }
 
-    public void create(CommandContext<CommandSender> ctx) {
+    private void create(CommandContext<CommandSender> ctx) {
         Player executor = (Player) ctx.getSender();
         String homeName = ctx.get(HOME_NAME);
         Clan clan = getClan(executor);
         if(homeCache.getOwningClan(homeName) != null) {
-            executor.sendMessage(messages.homes().homeWithNameAlreadyExists().withPlaceholder("name", homeName));
+            executor.sendMessage(messages.homes().homeWithNameAlreadyExists().with("name", homeName));
             return;
         }
         ClanHome ch = ClanHome.builder().name(homeName)

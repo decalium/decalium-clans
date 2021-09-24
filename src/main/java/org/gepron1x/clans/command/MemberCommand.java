@@ -18,8 +18,6 @@ import org.gepron1x.clans.config.MessagesConfig;
 import org.gepron1x.clans.ClanManager;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
 
 public class MemberCommand extends BaseClanCommand {
 
@@ -51,7 +49,7 @@ public class MemberCommand extends BaseClanCommand {
         );
     }
 
-    public void setRole(CommandContext<CommandSender> ctx) {
+    private void setRole(CommandContext<CommandSender> ctx) {
         Player executor = (Player) ctx.getSender();
         Clan clan = getClan(executor);
         OfflinePlayer target = ctx.get(TARGET);
@@ -61,26 +59,26 @@ public class MemberCommand extends BaseClanCommand {
         ClanMember member = getMember(clan, executor);
         ClanMember targetMember = clan.getMember(target);
         if(targetMember == null) {
-            executor.sendMessage(messages.targetIsNotInClan().withPlaceholder(targetTemplate));
+            executor.sendMessage(messages.targetIsNotInClan().with(targetTemplate));
             return;
         }
 
         if(targetMember.getRole().getWeight() >= member.getRole().getWeight()) {
-            executor.sendMessage(messages.member().memberHasBiggerWeight().withPlaceholder(targetTemplate));
+            executor.sendMessage(messages.member().memberHasBiggerWeight().with(targetTemplate));
             return;
         }
         if(role.getWeight() >= member.getRole().getWeight()) {
-            executor.sendMessage(messages.member().weightIsBigger().withPlaceholder(targetTemplate));
+            executor.sendMessage(messages.member().weightIsBigger().with(targetTemplate));
             return;
         }
 
         targetMember.setRole(role);
         executor.sendMessage(messages.member().setRole().success()
-                .withPlaceholder(targetTemplate).withPlaceholder(ROLE, role.getDisplayName()));
+                .with(targetTemplate).with(ROLE, role.getDisplayName()));
 
     }
 
-    public void kick(CommandContext<CommandSender> ctx) {
+    private void kick(CommandContext<CommandSender> ctx) {
         Player executor = (Player) ctx.getSender();
         OfflinePlayer target = ctx.get(TARGET);
         Clan clan = getClan(executor);
@@ -90,11 +88,11 @@ public class MemberCommand extends BaseClanCommand {
 
 
         if(getMember(clan, executor).getRole().getWeight() <= getMember(clan, target).getRole().getWeight()) {
-            executor.sendMessage(messages.member().memberHasBiggerWeight().withPlaceholder(targetTemplate));
+            executor.sendMessage(messages.member().memberHasBiggerWeight().with(targetTemplate));
             return;
         }
         clan.removeMember(target);
-        executor.sendMessage(messages.member().kickSuccess().withPlaceholder(targetTemplate));
+        executor.sendMessage(messages.member().kickSuccess().with(targetTemplate));
     }
 
 

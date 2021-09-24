@@ -1,8 +1,6 @@
 package org.gepron1x.clans.config;
 
 
-import net.kyori.adventure.text.Component;
-import org.gepron1x.clans.clan.Clan;
 import space.arim.dazzleconf.annote.ConfKey;
 import space.arim.dazzleconf.annote.SubSection;
 
@@ -16,25 +14,22 @@ import static space.arim.dazzleconf.annote.ConfDefault.DefaultString;
 import static space.arim.dazzleconf.annote.ConfDefault.DefaultStrings;
 
 public interface MessagesConfig {
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.TYPE_PARAMETER, ElementType.TYPE_USE})
-    @interface Placeholder {}
 
     @DefaultString("<aqua>DecaliumClans")
-    MiniComponent prefix();
+    Message prefix();
     @DefaultString("<red>У вас нету права на это действие!")
-    MiniComponent noPermission();
+    Message noPermission();
     @DefaultString("<red>Ваша роль не позволяет испольнить это!")
-    MiniComponent noClanPermission();
+    Message noClanPermission();
     @DefaultString("<red>Вы не состоите в клане!")
-    MiniComponent notInClan();
+    Message notInClan();
     @DefaultString("<prefix><red>Этот человек уже состоит в клане!")
-    MiniComponent targetIsNotInClan();
+    Message targetIsNotInClan();
     @DefaultString("Вы уже состоите в клане!")
-    MiniComponent alreadyInClan();
+    Message alreadyInClan();
 
     @DefaultString("<prefix> Эта команда предназначена исключительно для игроков.")
-    MiniComponent commandIsOnlyForPlayers();
+    Message commandIsOnlyForPlayers();
 
     @SubSection ClanCreation creation();
     @SubSection ClanDeletion deletion();
@@ -47,22 +42,22 @@ public interface MessagesConfig {
 
     interface DisplayName {
         @DefaultString("<prefix> Вы успешно изменили название на <name>")
-        MiniComponent success();
+        Message success();
         @DefaultString("<prefix>Ошибка в синтаксисе!")
-        MiniComponent errorInSyntax();
+        Message errorInSyntax();
     }
     interface Member {
         @DefaultString("<prefix> Ошибка! у этого пользователя вес больше, чем у вас.")
-        MiniComponent memberHasBiggerWeight();
+        Message memberHasBiggerWeight();
         @DefaultString("<prefix>Вы не можете выдать роль с весом больше, чем у вас.")
-        MiniComponent weightIsBigger();
+        Message weightIsBigger();
         interface SetRole {
             @DefaultString("<prefix>Вы успешно изменили роль <target>")
-            MiniComponent success();
+            Message success();
         }
         @ConfKey("kick.success")
         @DefaultString("<prefix> <target> исключен из состава клана!")
-        MiniComponent kickSuccess();
+        Message kickSuccess();
         @SubSection SetRole setRole();
 
     }
@@ -70,55 +65,55 @@ public interface MessagesConfig {
 
     interface ClanCreation {
         @DefaultString("<green>Поздравляем! Клан <clan> успешно создан.")
-        MiniComponent success();
+        Message success();
         @DefaultString("<red>Клан с таким тегом уже существует!")
-        MiniComponent clanWithTagAlreadyExists();
+        Message clanWithTagAlreadyExists();
         @DefaultString("")
-        MiniComponent notEnoughMoney();
+        Message notEnoughMoney();
     }
 
     interface ClanDeletion {
         @DefaultString("<red>Вы уверены? Напишите /clan delete confirm чтобы подтвердить действие.")
-        MiniComponent confirm();
+        Message confirm();
         @DefaultString("<red>Вам нечего подтверждать!")
-        MiniComponent nothingToConfirm();
+        Message nothingToConfirm();
         @DefaultString("клан успешно удалён.")
-        MiniComponent success();
+        Message success();
     }
 
     interface ClanInvite {
         @DefaultString("<receiver> поулчил ваше приглашение.")
-        MiniComponent invitationSent();
+        Message invitationSent();
         @DefaultString("<sender> invites you to the <clan> Use /clan invite accept <sender> to accept")
-        MiniComponent invitationMessage();
+        Message invitationMessage();
 
         @DefaultString("Вы приняли приглашение.")
-        MiniComponent accepted();
+        Message accepted();
         @DefaultString("Вы отклонили приглашение.")
-        MiniComponent denied();
+        Message denied();
         @DefaultString("Вы не можете пригласить самого себя! :D")
-        MiniComponent cannotInviteSelf();
+        Message cannotInviteSelf();
         @DefaultString("Вы не получали приглашений от этого игрока.")
-        MiniComponent noInvitesFromThisPlayer();
+        Message noInvitesFromThisPlayer();
         @DefaultString("Упс! Видимо, клан удалили!")
-        MiniComponent clanGotDeleted();
+        Message clanGotDeleted();
     }
 
     interface ClanList {
         @DefaultString("<role> <name>")
-        MiniComponent memberFormat();
+        Message memberFormat();
         @DefaultStrings({
                 "----------------------",
                 "Клан <clan_name> (<clan_tag>)",
                 "Создатель: <clan_creator>",
                 "Участники: \n<members>"
         })
-        List<MiniComponent> clanFormat();
+        List<Message> clanFormat();
     }
     interface Homes {
         @DefaultString("<prefix> Ошибка! Дом с названием <name> уже существует. Придумайте что-то другое!")
-        MiniComponent homeWithNameAlreadyExists();
+        Message homeWithNameAlreadyExists();
         @DefaultString("<prefix>Дом успешно создан.")
-        MiniComponent success();
+        Message success();
     }
 }

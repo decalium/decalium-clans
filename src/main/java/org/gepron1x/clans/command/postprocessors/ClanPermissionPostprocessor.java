@@ -37,7 +37,6 @@ public class ClanPermissionPostprocessor implements CommandPostprocessor<Command
             ConsumerService.interrupt();
         }
         ClanMember member = Objects.requireNonNull(clan.getMember(sender));
-
         if(!member.hasPermission(permission)) {
             sender.sendMessage(messages.noClanPermission());
             ConsumerService.interrupt();

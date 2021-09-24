@@ -9,6 +9,7 @@ import java.util.Collection;
 public record ClanPermission(String value) {
     public static final CommandMeta.Key<ClanPermission> CLAN_PERMISSION =
             CommandMeta.Key.of(ClanPermission.class, "clan_permission");
+
     public static final ClanPermission INVITE = new ClanPermission("invite_member");
     public static final ClanPermission DELETE_CLAN = new ClanPermission("delete_clan");
     public static final ClanPermission SET_ROLE = new ClanPermission("set_role");

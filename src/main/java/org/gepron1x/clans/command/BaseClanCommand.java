@@ -15,11 +15,11 @@ import java.util.Objects;
 import java.util.UUID;
 
 public abstract class BaseClanCommand {
-    protected final ClanManager manager;
+    protected final ClanManager clanManager;
     protected MessagesConfig messages;
 
     public BaseClanCommand(@NotNull ClanManager clanManager, @NotNull MessagesConfig messages) {
-        this.manager = clanManager;
+        this.clanManager = clanManager;
         this.messages = messages;
     }
 
@@ -27,13 +27,13 @@ public abstract class BaseClanCommand {
 
     @Nullable
     protected Clan getClanIfPresent(@NotNull Player player) {
-        Clan clan = manager.getUserClan(player);
+        Clan clan = clanManager.getUserClan(player);
         if(clan == null) player.sendMessage(messages.notInClan());
         return clan;
     }
     @NotNull
     protected Clan getClan(@NotNull UUID uuid) {
-        return Objects.requireNonNull(manager.getUserClan(uuid));
+        return Objects.requireNonNull(clanManager.getUserClan(uuid));
     }
     @NotNull
     protected Clan getClan(@NotNull OfflinePlayer player) {

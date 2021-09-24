@@ -5,16 +5,18 @@ import com.zaxxer.hikari.HikariDataSource;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
-import org.gepron1x.clans.DecaliumClans;
+import org.bukkit.plugin.Plugin;
 import org.gepron1x.clans.clan.ClanBuilder;
 import org.gepron1x.clans.clan.home.ClanHome;
 import org.gepron1x.clans.clan.member.ClanMember;
 import org.gepron1x.clans.config.ClansConfig;
+import org.gepron1x.clans.statistic.StatisticRegistry;
 import org.gepron1x.clans.storage.argument.ComponentArgumentFactory;
 import org.gepron1x.clans.storage.argument.ItemStackArgumentFactory;
 import org.gepron1x.clans.storage.argument.LocationArgumentFactory;
 import org.gepron1x.clans.storage.argument.UuidArgumentFactory;
 import org.gepron1x.clans.storage.mappers.row.*;
+import org.gepron1x.clans.util.registry.ClanRoleRegistry;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 
@@ -22,17 +24,15 @@ import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.UUID;
 
-public final class StorageCreator {
-    private final DecaliumClans plugin;
+public record StorageCreator(Plugin plugin,
+                             ClansConfig.Storage storageConfig,
+                             ClanRoleRegistry roles,
+                             StatisticRegistry statisticTypes) {
 
-    public StorageCreator(DecaliumClans plugin) {
-        this.plugin = plugin;
-    }
 
-    public Storage create() {
+    public StorageService create() {
 
         HikariConfig config = new HikariConfig();
-        ClansConfig.Storage storageConfig = plugin.getClansConfig().storage();
 
 
         setupConnection(config, storageConfig);
@@ -45,13 +45,13 @@ public final class StorageCreator {
         registerColumnMappers(jdbi);
         registerArguments(jdbi);
 
-        return new Storage(plugin, storageConfig.storageType(), jdbi, storageConfig.saveTaskPeriod());
+        return new StorageService(plugin, storageConfig.storageType(), jdbi, storageConfig.saveTaskPeriod());
     }
 
     private void registerRowMappers(Jdbi jdbi) {
-        jdbi.registerRowMapper(ClanBuilder.class, new ClanMapper(plugin))
-                .registerRowMapper(ClanMember.class, new ClanMemberMapper(plugin.getRoleRegistry()))
-                .registerRowMapper(StatisticRow.class, new StatisticRowMapper(plugin.getStatisticTypeRegistry()))
+        jdbi.registerRowMapper(ClanBuilder.class, new ClanMapper(roles))
+                .registerRowMapper(ClanMember.class, new ClanMemberMapper(roles))
+                .registerRowMapper(StatisticRow.class, new StatisticRowMapper(statisticTypes))
                 .registerRowMapper(ClanHome.class, new ClanHomeMapper());
     }
 
@@ -102,7 +102,6 @@ public final class StorageCreator {
         hikariConfig.setPassword(password);
         hikariConfig.setUsername(user);
     }
-
 
 
 }

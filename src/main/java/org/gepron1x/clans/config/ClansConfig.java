@@ -5,6 +5,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.gepron1x.clans.clan.member.role.ClanPermission;
 import org.gepron1x.clans.clan.member.role.ClanRole;
 import org.gepron1x.clans.storage.StorageType;
+import org.gepron1x.clans.util.registry.ClanRoleRegistry;
 import space.arim.dazzleconf.annote.ConfComments;
 import space.arim.dazzleconf.annote.SubSection;
 
@@ -18,7 +19,7 @@ import static space.arim.dazzleconf.annote.ConfDefault.*;
 
 public interface ClansConfig {
     @DefaultObject("defaultRoles")
-    List<ClanRole> roles();
+    ClanRoleRegistry roles();
 
     @DefaultString("user")
     String defaultRole();
@@ -28,18 +29,18 @@ public interface ClansConfig {
     @SubSection Storage storage();
 
     @DefaultString("Клан >> <role> <name> > <message>")
-    MiniComponent clanChatFormat();
+    Message clanChatFormat();
 
     @DefaultMap({"kills", "Убийства",
             "deaths", "Смерти",
             "clan_war_wins", "Победы в кв",
             "clan_war_loses", "Проигрыши в кв"})
-    Map<String, MiniComponent> statisticTypes();
+    Map<String, Message> statisticTypes();
 
 
 
 
-    static List<ClanRole> defaultRoles() {
+    static ClanRoleRegistry defaultRoles() {
         ClanRole user = new ClanRole("user",
                 Component.text("Участник").color(NamedTextColor.GRAY),
                 1,
@@ -48,7 +49,7 @@ public interface ClansConfig {
                 Component.text("Владелец").color(NamedTextColor.DARK_RED),
                 10,
                 ClanPermission.registry().values());
-        return List.of(user, owner);
+        return ClanRoleRegistry.create(user, owner);
     }
 
     interface Storage {

@@ -7,7 +7,10 @@ public final class Permissions {
     public static final String SEPARATOR = ".";
     public static final String PREFIX = "clans";
     private static String clan(String... value) {
-        return permission(PREFIX, permission(value));
+        String[] array = new String[value.length + 1];
+        array[0] = PREFIX;
+        System.arraycopy(value, 0, array, 1, array.length - 1);
+        return permission(array);
     }
     private static String permission(String... args) {
         return String.join(SEPARATOR, args);

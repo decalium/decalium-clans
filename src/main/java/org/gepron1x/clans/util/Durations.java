@@ -23,6 +23,7 @@ public final class Durations {
         }
         return Duration.ofNanos(val);
     }
+
     public static Duration ofTicks(long ticks) { return Duration.ofMillis(ticks * MILLIS_TICK_LENGTH); }
 
     

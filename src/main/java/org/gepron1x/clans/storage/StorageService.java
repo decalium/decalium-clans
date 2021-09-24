@@ -3,6 +3,7 @@ package org.gepron1x.clans.storage;
 
 import org.bukkit.event.HandlerList;
 
+import org.bukkit.plugin.Plugin;
 import org.gepron1x.clans.DecaliumClans;
 import org.gepron1x.clans.clan.Clan;
 import org.gepron1x.clans.storage.task.DataSaveRunnable;
@@ -12,15 +13,15 @@ import org.jdbi.v3.core.Jdbi;
 import java.time.Duration;
 import java.util.List;
 
-public class Storage {
+public class StorageService {
     private final ClanLoader loader = new ClanLoader();
-    private final DecaliumClans plugin;
+    private final Plugin plugin;
     private final Jdbi jdbi;
     private final Duration updatePeriod;
     private final DataSaveRunnable dataSaveRunnable;
     private final UpdateListener updateListener;
     private final StorageType type;
-    public Storage(DecaliumClans plugin, StorageType type, Jdbi jdbi, Duration updatePeriod) {
+    public StorageService(Plugin plugin, StorageType type, Jdbi jdbi, Duration updatePeriod) {
         this.plugin = plugin;
         this.type = type;
         this.jdbi = jdbi;

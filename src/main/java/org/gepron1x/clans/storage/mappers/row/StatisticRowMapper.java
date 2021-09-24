@@ -1,7 +1,6 @@
 package org.gepron1x.clans.storage.mappers.row;
 
-import net.kyori.adventure.util.Index;
-import org.gepron1x.clans.statistic.StatisticType;
+import org.gepron1x.clans.statistic.StatisticRegistry;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
 
@@ -10,14 +9,13 @@ import java.sql.SQLException;
 
 public class StatisticRowMapper implements RowMapper<StatisticRow> {
     private static final String CLAN_TAG = "clan_tag", STATISTIC_TYPE = "statistic_type", VALUE = "value";
-    private final Index<String, StatisticType> statTypes;
+    private final StatisticRegistry statTypes;
 
-    public StatisticRowMapper(Index<String, StatisticType> statTypes) {
-
+    public StatisticRowMapper(StatisticRegistry statTypes) {
         this.statTypes = statTypes;
     }
     @Override
     public StatisticRow map(ResultSet rs, StatementContext ctx) throws SQLException {
-        return new StatisticRow(rs.getString(CLAN_TAG), statTypes.value(rs.getString(STATISTIC_TYPE)), rs.getInt(VALUE));
+        return new StatisticRow(rs.getString(CLAN_TAG), statTypes.get(rs.getString(STATISTIC_TYPE)), rs.getInt(VALUE));
     }
 }

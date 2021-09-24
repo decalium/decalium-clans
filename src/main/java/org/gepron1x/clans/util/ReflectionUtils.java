@@ -14,14 +14,14 @@ public final class ReflectionUtils {
     public static  <T> List<T> getConstants(Class<?> target, Class<T> valueType) {
         List<T> values = new ArrayList<>();
         for(Field field : target.getFields()) {
-            if(Modifier.isStatic(field.getModifiers())) continue;
+            int modifiers = field.getModifiers();
+            if(!(Modifier.isStatic(modifiers) || Modifier.isFinal(modifiers))) continue;
             if(!field.getType().equals(valueType)) continue;
-
-            values.add(valueType.cast(getConstant(field)));
+            values.add(valueType.cast(getStaticValue0(field)));
         }
         return values;
-
     }
+
     public static Object getValue(Field field, Object target) {
         try {
             return field.get(target);
@@ -30,8 +30,11 @@ public final class ReflectionUtils {
         }
         return null;
     }
-    public static Object getConstant(Field field) {
+    public static Object getStaticValue(Field field) {
         Preconditions.checkArgument(Modifier.isStatic(field.getModifiers()), "field is not static");
+        return getStaticValue0(field);
+    }
+    private static Object getStaticValue0(Field field) {
         return getValue(field, null);
     }
     public static Class<?> findClass(String name) {
@@ -73,10 +76,15 @@ public final class ReflectionUtils {
     public static boolean equals(Object fst, Object snd) {
         List<Function<Object, ?>> fields = new ArrayList<>();
         for(Field field : fst.getClass().getDeclaredFields()) {
-            if(Modifier.isStatic(field.getModifiers())) continue;
+            int modifiers = field.getModifiers();
+            if(Modifier.isStatic(modifiers) || Modifier.isTransient(modifiers)) continue;
             fields.add(obj -> getValue(field, obj));
         }
         return equals(fst, snd, fields);
+    }
+    @SuppressWarnings("unchecked")
+    public static <T> T cast(Object obj) {
+        return (T) obj;
     }
     @SuppressWarnings("unchecked")
     public static <T> Class<T> typeToken() {

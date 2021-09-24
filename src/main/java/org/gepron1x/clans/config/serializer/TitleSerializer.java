@@ -49,8 +49,4 @@ public class TitleSerializer implements ValueSerialiser<Title> {
         map.put(TIMES, rawTimes);
         return map;
     }
-    private <K, V> FlexibleTypeMapEntryFunction<? extends K, ? extends V> entryProcessor(FlexibleTypeFunction<? extends K> keyProcessor,
-                                                                             FlexibleTypeFunction<? extends V> valueProcessor) {
-        return (key, value) -> Map.entry(keyProcessor.getResult(key), valueProcessor.getResult(value));
-    }
 }

@@ -1,13 +1,12 @@
 package org.gepron1x.clans.chat;
 
-import com.google.common.base.MoreObjects;
 import io.papermc.paper.chat.ChatRenderer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.clan.Clan;
 import org.gepron1x.clans.clan.member.ClanMember;
-import org.gepron1x.clans.config.MiniComponent;
+import org.gepron1x.clans.config.Message;
 import org.gepron1x.clans.ClanManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,9 +14,9 @@ import java.util.Objects;
 
 public class ClanChatRenderer implements ChatRenderer {
     private final ClanManager manager;
-    private final MiniComponent format;
+    private final Message format;
 
-    public ClanChatRenderer(ClanManager manager, MiniComponent format) {
+    public ClanChatRenderer(ClanManager manager, Message format) {
         this.manager = manager;
         this.format = format;
     }
@@ -31,10 +30,7 @@ public class ClanChatRenderer implements ChatRenderer {
 
 
 
-        return format.parse(source,
-                "clan", clan.getDisplayName(),
-                "player", sourceDisplayName,
-                "role", member.getRole().getDisplayName(),
-                "message", message);
+        return format.with("clan_name", clan.getDisplayName())
+                .with("clan_tag", clan.getTag()).asComponent();
     }
 }

@@ -4,17 +4,16 @@ import cloud.commandframework.Command;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.context.CommandContext;
+import cloud.commandframework.extra.confirmation.CommandConfirmationManager;
 import cloud.commandframework.meta.CommandMeta;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.ParseException;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.gepron1x.clans.DecaliumClans;
+import org.bukkit.plugin.Plugin;
 import org.gepron1x.clans.Permissions;
 import org.gepron1x.clans.clan.Clan;
 import org.gepron1x.clans.clan.ClanBuilder;
@@ -22,10 +21,11 @@ import org.gepron1x.clans.clan.member.ClanMember;
 import org.gepron1x.clans.clan.member.role.ClanPermission;
 import org.gepron1x.clans.config.MessagesConfig;
 import org.gepron1x.clans.ClanManager;
+import org.gepron1x.clans.util.registry.ClanRoleRegistry;
 import org.jetbrains.annotations.NotNull;
 
-import java.text.MessageFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static net.kyori.adventure.text.Component.newline;
 import static net.kyori.adventure.text.Component.text;
@@ -34,118 +34,104 @@ public class ClanCommand extends BaseClanCommand {
     private static final String CLAN_TAG = "clan_tag";
     private static final String DISPLAY_NAME = "display_name";
     public static final CommandMeta.Key<Boolean> CLAN_MEMBERS_ONLY = CommandMeta.Key.of(boolean.class, "clan_members_only");
-    private final DecaliumClans plugin;
+    private final Plugin plugin;
+    private final ClanRoleRegistry roles;
 
 
     private final Set<UUID> deletionConfirmations = new HashSet<>();
 
 
-    public ClanCommand(DecaliumClans plugin, ClanManager manager, MessagesConfig messages) {
+    public ClanCommand(Plugin plugin, ClanManager manager, MessagesConfig messages, ClanRoleRegistry roles) {
         super(manager, messages);
         this.plugin = plugin;
+        this.roles = roles;
     }
 
     public void setMessages(MessagesConfig config) {
         this.messages = config;
     }
 
-    public void createClan(CommandContext<CommandSender> ctx) {
+    private void createClan(CommandContext<CommandSender> ctx) {
         String tag = ctx.get(CLAN_TAG);
         Player player = (Player) ctx.getSender();
 
-        if (manager.getUserClan(player.getUniqueId()) != null) {
+        if (clanManager.getUserClan(player.getUniqueId()) != null) {
             player.sendMessage(messages.alreadyInClan());
             return;
         }
-        if (manager.getClan(tag) != null) {
-            player.sendMessage(messages.creation().clanWithTagAlreadyExists().withPlaceholder("tag", tag));
+        if (clanManager.getClan(tag) != null) {
+            player.sendMessage(messages.creation().clanWithTagAlreadyExists().with("tag", tag));
             return;
         }
         Component displayName = text(tag, NamedTextColor.GRAY);
-        Clan clan = new ClanBuilder(tag).creator(new ClanMember(player, plugin.getOwnerRole()))
+        Clan clan = new ClanBuilder(tag).creator(new ClanMember(player, roles.getOwnerRole()))
                 .emptyMembers().emptyStatistics().displayName(displayName).build();
-        manager.addClan(clan);
-        player.sendMessage(messages.creation().success().withPlaceholder("name", displayName));
+        clanManager.addClan(clan);
+        player.sendMessage(messages.creation().success().with("name", displayName));
 
     }
 
-    public void deleteClan(CommandContext<CommandSender> ctx) {
+    private void deleteClan(CommandContext<CommandSender> ctx) {
         CommandSender sender = ctx.getSender();
         Player player = (Player) sender;
         player.sendMessage(messages.deletion().confirm());
         UUID uuid = player.getUniqueId();
         deletionConfirmations.add(uuid);
-        Bukkit.getScheduler().runTaskLater(plugin, () -> deletionConfirmations.remove(uuid), 60 * 20L);
+        plugin.getServer().getScheduler().runTaskLater(plugin, () -> deletionConfirmations.remove(uuid), 60 * 20L);
 
     }
 
-    public void confirmDeletion(CommandContext<CommandSender> ctx) {
+    private void confirmDeletion(CommandContext<CommandSender> ctx) {
         Player player = (Player) ctx.getSender();
         UUID uuid = player.getUniqueId();
         if (!deletionConfirmations.contains(uuid)) {
             player.sendMessage(messages.deletion().nothingToConfirm());
             return;
         }
-        Clan clan = manager.getUserClan(player);
+        Clan clan = clanManager.getUserClan(player);
         if (clan != null) {
-            manager.deleteClan(clan);
+            clanManager.deleteClan(clan);
             player.sendMessage(messages.deletion().success());
         }
         deletionConfirmations.remove(uuid);
     }
 
-    public void clanList(CommandContext<CommandSender> ctx) {
+    private void clanList(CommandContext<CommandSender> ctx) {
         CommandSender sender = ctx.getSender();
-        manager.getClans().stream().map(clan -> {
+        clanManager.getClans().stream().map(clan -> {
             Component members = clan
                     .getMembers().stream()
                     .map(member -> messages.clanList().memberFormat()
-                            .withPlaceholder("name", member.asOffline().getName())
-                            .withPlaceholder("role", member.getRole().getDisplayName()))
+                            .with("name", member.asOffline().getName())
+                            .with("role", member.getRole().getDisplayName()))
                     .map(ComponentLike::asComponent)
                     .collect(Component.toComponent(newline()));
 
             return
                     messages.clanList().clanFormat()
                             .stream().map(c ->
-                                    c.withPlaceholder("tag", clan.getTag())
-                                            .withPlaceholder("display_name", clan.getDisplayName())
-                                            .withPlaceholder("members", members))
+                                    c.with("tag", clan.getTag())
+                                            .with("display_name", clan.getDisplayName())
+                                            .with("members", members))
                             .map(ComponentLike::asComponent)
                             .collect(Component.toComponent(newline()));
         }).forEach(sender::sendMessage);
 
     }
 
-    public void setDisplayName(CommandContext<CommandSender> ctx) {
+    private void setDisplayName(CommandContext<CommandSender> ctx) {
         Player player = (Player) ctx.getSender();
         String name = ctx.get(DISPLAY_NAME);
         Clan clan = getClan(player);
         try {
             Component displayName = MiniMessage.get().parse(name);
             clan.setDisplayName(displayName);
-            player.sendMessage(messages.displayName().success().withPlaceholder("name", displayName));
+            player.sendMessage(messages.displayName().success().with("name", displayName));
         } catch (ParseException e) {
             player.sendMessage(messages.displayName().errorInSyntax());
         }
     }
 
-    public void confirmDropTables(CommandSender sender) {
-        if (!sender.equals(Bukkit.getConsoleSender())) {
-            sender.sendMessage(TextComponent.ofChildren(text("WARNING!", NamedTextColor.DARK_RED), text("this command can be executed only from console!")));
-            sender.sendMessage(text("if you dont understand what are you doing, please dont."));
-            sender.sendMessage(text("this command is only for debug purposes."));
-            return;
-        }
-        sender.sendMessage(text("Dropping tables..."));
-        plugin.getJdbi().useHandle(handle -> {
-            for (String table : Arrays.asList("clans", "members", "stats")) {
-                handle.execute(MessageFormat.format("DROP TABLE {0}", table));
-            }
-        });
-        sender.sendMessage(text("Dropped successfully. Please restart your server!"));
-
-    }
 
 
     @Override
@@ -158,21 +144,31 @@ public class ClanCommand extends BaseClanCommand {
                 .handler(this::createClan)
         );
 
-        manager.command(builder.literal("delete")
+        CommandConfirmationManager<CommandSender> deleteConfirmationManager = new CommandConfirmationManager<>(
+                1L,
+                TimeUnit.MINUTES,
+                ctx -> ctx.getCommandContext().getSender().sendMessage(messages.deletion().confirm()),
+                sender -> sender.sendMessage(messages.deletion().nothingToConfirm())
+        );
+
+        Command.Builder<CommandSender> delete = builder.literal("delete");
+
+        manager.command(delete
                 .senderType(Player.class)
                 .meta(ClanPermission.CLAN_PERMISSION, ClanPermission.DELETE_CLAN)
+                .meta(CommandConfirmationManager.META_CONFIRMATION_REQUIRED, true)
                 .handler(this::deleteClan)
         );
-        manager.command(builder.literal("delete").literal("confirm")
+        manager.command(delete.literal("confirm")
                 .permission(Permissions.DELETE)
                 .meta(ClanPermission.CLAN_PERMISSION, ClanPermission.DELETE_CLAN)
-                .handler(this::confirmDeletion)
+                .handler(deleteConfirmationManager.createConfirmationExecutionHandler())
         );
         manager.command(builder.literal("set").literal("displayname")
                 .permission(Permissions.SET_DISPLAY_NAME)
                 .senderType(Player.class)
                 .meta(ClanPermission.CLAN_PERMISSION, ClanPermission.SET_DISPLAY_NAME)
-                .argument(StringArgument.greedy(DISPLAY_NAME))
+                .argument(StringArgument.of(DISPLAY_NAME, StringArgument.StringMode.GREEDY))
                 .handler(this::setDisplayName)
         );
         manager.command(builder.literal("list")
