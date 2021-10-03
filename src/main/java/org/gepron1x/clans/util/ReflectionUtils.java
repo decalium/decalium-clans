@@ -40,7 +40,7 @@ public final class ReflectionUtils {
     public static Class<?> findClass(String name) {
         try {
             return Class.forName(name);
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException ignored) {
             return null;
         }
     }
@@ -89,6 +89,12 @@ public final class ReflectionUtils {
     @SuppressWarnings("unchecked")
     public static <T> Class<T> typeToken() {
         return (Class<T>) new TypeToken<T>(){}.getRawType();
+    }
+    @SuppressWarnings("unchecked")
+    public static <T> Class<T> typeToken(Class<?> clazz) {
+        return (Class<T>) new TypeToken<T>(clazz){}.getRawType();
+
+
     }
 
 

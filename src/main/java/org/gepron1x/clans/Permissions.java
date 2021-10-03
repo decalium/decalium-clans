@@ -4,17 +4,25 @@ public final class Permissions {
     private Permissions() {
         throw new UnsupportedOperationException();
     }
-    public static final String SEPARATOR = ".";
+    public static final char SEPARATOR = '.';
     public static final String PREFIX = "clans";
+
     private static String clan(String... value) {
-        String[] array = new String[value.length + 1];
-        array[0] = PREFIX;
-        System.arraycopy(value, 0, array, 1, array.length - 1);
-        return permission(array);
+        return permission(new StringBuilder().append(PREFIX).append(SEPARATOR), value);
+    }
+
+    private static String permission(StringBuilder sb, String... args) {
+        int lastIndex = args.length - 1;
+        for(int i = 0; i < lastIndex; i++) {
+            sb.append(args[i]).append(SEPARATOR);
+        }
+        sb.append(args[lastIndex]);
+        return sb.toString();
     }
     private static String permission(String... args) {
-        return String.join(SEPARATOR, args);
+        return permission(new StringBuilder(), args);
     }
+
     public static final String CREATE = clan("create");
     public static final String DELETE = clan("delete");
     public static final String FORCE_DELETE = clan("admin", "delete");

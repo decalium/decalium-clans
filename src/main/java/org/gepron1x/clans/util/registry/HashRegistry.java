@@ -1,6 +1,8 @@
 package org.gepron1x.clans.util.registry;
 
 import com.google.common.base.Preconditions;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -69,7 +71,9 @@ public class HashRegistry<K, V> implements Registry<K, V> {
     }
     @SafeVarargs
     public static <K, V> HashRegistry<K, V> create(Function<V, K> keyMapper, V... values) {
+        Component withFont = Component.text().content("Hello").font(Key.key("minecraft", "idk")).build();
         return create(keyMapper, Arrays.asList(values));
+
     }
     public static <K, V> HashRegistry<K, V> create(Function<V, K> keyMapper, Iterable<V> values) {
         if(values instanceof Collection) {

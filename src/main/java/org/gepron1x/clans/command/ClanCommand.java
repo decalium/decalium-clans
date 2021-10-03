@@ -19,6 +19,7 @@ import org.gepron1x.clans.clan.Clan;
 import org.gepron1x.clans.clan.ClanBuilder;
 import org.gepron1x.clans.clan.member.ClanMember;
 import org.gepron1x.clans.clan.member.role.ClanPermission;
+import org.gepron1x.clans.command.argument.ComponentArgument;
 import org.gepron1x.clans.config.MessagesConfig;
 import org.gepron1x.clans.ClanManager;
 import org.gepron1x.clans.util.registry.ClanRoleRegistry;
@@ -41,7 +42,7 @@ public class ClanCommand extends BaseClanCommand {
     private final Set<UUID> deletionConfirmations = new HashSet<>();
 
 
-    public ClanCommand(Plugin plugin, ClanManager manager, MessagesConfig messages, ClanRoleRegistry roles) {
+    public ClanCommand(@NotNull Plugin plugin, @NotNull ClanManager manager, @NotNull MessagesConfig messages, @NotNull ClanRoleRegistry roles) {
         super(manager, messages);
         this.plugin = plugin;
         this.roles = roles;
@@ -51,7 +52,7 @@ public class ClanCommand extends BaseClanCommand {
         this.messages = config;
     }
 
-    private void createClan(CommandContext<CommandSender> ctx) {
+    private void createClan(@NotNull CommandContext<CommandSender> ctx) {
         String tag = ctx.get(CLAN_TAG);
         Player player = (Player) ctx.getSender();
 
@@ -65,13 +66,13 @@ public class ClanCommand extends BaseClanCommand {
         }
         Component displayName = text(tag, NamedTextColor.GRAY);
         Clan clan = new ClanBuilder(tag).creator(new ClanMember(player, roles.getOwnerRole()))
-                .emptyMembers().emptyStatistics().displayName(displayName).build();
+                .displayName(displayName).build();
         clanManager.addClan(clan);
         player.sendMessage(messages.creation().success().with("name", displayName));
 
     }
 
-    private void deleteClan(CommandContext<CommandSender> ctx) {
+    private void deleteClan(@NotNull CommandContext<CommandSender> ctx) {
         CommandSender sender = ctx.getSender();
         Player player = (Player) sender;
         player.sendMessage(messages.deletion().confirm());
@@ -81,7 +82,7 @@ public class ClanCommand extends BaseClanCommand {
 
     }
 
-    private void confirmDeletion(CommandContext<CommandSender> ctx) {
+    private void confirmDeletion(@NotNull CommandContext<CommandSender> ctx) {
         Player player = (Player) ctx.getSender();
         UUID uuid = player.getUniqueId();
         if (!deletionConfirmations.contains(uuid)) {
@@ -96,7 +97,7 @@ public class ClanCommand extends BaseClanCommand {
         deletionConfirmations.remove(uuid);
     }
 
-    private void clanList(CommandContext<CommandSender> ctx) {
+    private void clanList(@NotNull CommandContext<CommandSender> ctx) {
         CommandSender sender = ctx.getSender();
         clanManager.getClans().stream().map(clan -> {
             Component members = clan
@@ -121,15 +122,11 @@ public class ClanCommand extends BaseClanCommand {
 
     private void setDisplayName(CommandContext<CommandSender> ctx) {
         Player player = (Player) ctx.getSender();
-        String name = ctx.get(DISPLAY_NAME);
+        Component name = ctx.get(DISPLAY_NAME);
         Clan clan = getClan(player);
-        try {
-            Component displayName = MiniMessage.get().parse(name);
-            clan.setDisplayName(displayName);
-            player.sendMessage(messages.displayName().success().with("name", displayName));
-        } catch (ParseException e) {
-            player.sendMessage(messages.displayName().errorInSyntax());
-        }
+        clan.setDisplayName(name);
+        player.sendMessage(messages.displayName().success().with("name", name));
+
     }
 
 
@@ -150,6 +147,7 @@ public class ClanCommand extends BaseClanCommand {
                 ctx -> ctx.getCommandContext().getSender().sendMessage(messages.deletion().confirm()),
                 sender -> sender.sendMessage(messages.deletion().nothingToConfirm())
         );
+        deleteConfirmationManager.registerConfirmationProcessor(manager);
 
         Command.Builder<CommandSender> delete = builder.literal("delete");
 
@@ -168,7 +166,7 @@ public class ClanCommand extends BaseClanCommand {
                 .permission(Permissions.SET_DISPLAY_NAME)
                 .senderType(Player.class)
                 .meta(ClanPermission.CLAN_PERMISSION, ClanPermission.SET_DISPLAY_NAME)
-                .argument(StringArgument.of(DISPLAY_NAME, StringArgument.StringMode.GREEDY))
+                .argument(ComponentArgument.greedy(DISPLAY_NAME))
                 .handler(this::setDisplayName)
         );
         manager.command(builder.literal("list")

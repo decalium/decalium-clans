@@ -1,6 +1,7 @@
 package org.gepron1x.clans;
 
 import cloud.commandframework.CommandManager;
+import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.bukkit.BukkitCommandManager;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import com.sk89q.worldguard.WorldGuard;

@@ -26,7 +26,7 @@ public class ClanRoleRegistry extends HashRegistry<String, ClanRole> {
         HashSet<ClanRole> roles = new HashSet<>(others);
         roles.add(defaultRole);
         roles.add(ownerRole);
-        ClanRoleRegistry registry = new ClanRoleRegistry(others.size(), defaultRole, ownerRole);
+        ClanRoleRegistry registry = new ClanRoleRegistry(roles.size(), defaultRole, ownerRole);
         registry.addAll(roles);
         return registry;
     }
