@@ -100,7 +100,7 @@ public final class ClanHomeImpl implements ClanHome {
         return new BuilderImpl();
     }
 
-    public static class BuilderImpl implements ClanHome.Builder {
+    public static class BuilderImpl implements Builder {
 
         private String name;
         private Component displayName;

@@ -33,7 +33,7 @@ public record ClanMemberImpl(UUID uuid,
         return new BuilderImpl();
     }
 
-    public static class BuilderImpl implements ClanMember.Builder {
+    public static class BuilderImpl implements Builder {
         private UUID uuid;
         private ClanRole role;
 

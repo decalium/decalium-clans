@@ -37,7 +37,12 @@ public record ClanImpl(String tag, UUID owner,
 
     @Override
     public @NotNull @Unmodifiable Collection<ClanMember> getMembers() {
-        return Collections.unmodifiableCollection(members.values());
+        return members.values();
+    }
+
+    @Override
+    public @NotNull @Unmodifiable Map<UUID, ClanMember> memberMap() {
+        return members;
     }
 
     @Override
@@ -47,7 +52,12 @@ public record ClanImpl(String tag, UUID owner,
 
     @Override
     public @NotNull @Unmodifiable Collection<ClanHome> getHomes() {
-        return Collections.unmodifiableCollection(homes.values());
+        return homes.values();
+    }
+
+    @Override
+    public @NotNull @Unmodifiable Map<String, ClanHome> homeMap() {
+        return homes;
     }
 
     @Override
@@ -61,7 +71,7 @@ public record ClanImpl(String tag, UUID owner,
         return Collections.unmodifiableMap(statistics);
     }
 
-    public static ClanImpl.BuilderImpl builder() {
+    public static BuilderImpl builder() {
         return new BuilderImpl();
     }
 
@@ -75,7 +85,7 @@ public record ClanImpl(String tag, UUID owner,
                 .statistics(statistics);
     }
 
-    public static class BuilderImpl implements Clan.Builder {
+    public static class BuilderImpl implements Builder {
         private String tag;
         private UUID owner;
         private Component displayName;

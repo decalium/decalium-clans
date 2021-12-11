@@ -25,6 +25,8 @@ public interface Clan extends Buildable<Clan, Clan.Builder>, StatisticHolder {
 
     @NotNull @Unmodifiable Collection<ClanMember> getMembers();
 
+    @NotNull @Unmodifiable Map<UUID, ClanMember> memberMap();
+
     @Nullable ClanMember getMember(@NotNull UUID uuid);
 
     @Nullable
@@ -33,6 +35,8 @@ public interface Clan extends Buildable<Clan, Clan.Builder>, StatisticHolder {
     }
 
     @NotNull @Unmodifiable Collection<ClanHome> getHomes();
+
+    @NotNull @Unmodifiable Map<String, ClanHome> homeMap();
     
     interface Builder extends Buildable.Builder<Clan> {
 
