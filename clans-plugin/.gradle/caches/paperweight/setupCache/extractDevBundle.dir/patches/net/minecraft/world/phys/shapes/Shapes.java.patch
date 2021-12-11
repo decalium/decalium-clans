@@ -1,0 +1,50 @@
+--- a/net/minecraft/world/phys/shapes/Shapes.java
++++ b/net/minecraft/world/phys/shapes/Shapes.java
+@@ -247,9 +247,21 @@
+     }
+ 
+     @VisibleForTesting
+-    protected static IndexMerger createIndexMerger(int size, DoubleList first, DoubleList second, boolean includeFirst, boolean includeSecond) {
++    private static IndexMerger createIndexMerger(int size, DoubleList first, DoubleList second, boolean includeFirst, boolean includeSecond) { // Paper - private
++        // Paper start - fast track the most common scenario
++        // doublelist is usually a DoubleArrayList with Infinite head/tails that falls to the final else clause
++        // This is actually the most common path, so jump to it straight away
++        if (first.getDouble(0) == Double.NEGATIVE_INFINITY && first.getDouble(first.size() - 1) == Double.POSITIVE_INFINITY) {
++            return new IndirectMerger(first, second, includeFirst, includeSecond);
++        }
++        // Split out rest to hopefully inline the above
++        return lessCommonMerge(size, first, second, includeFirst, includeSecond);
++    }
++
++    private static IndexMerger lessCommonMerge(int size, DoubleList first, DoubleList second, boolean includeFirst, boolean includeSecond) {
+         int i = first.size() - 1;
+         int j = second.size() - 1;
++        // Paper note - Rewrite below as optimized order if instead of nasty ternary
+         if (first instanceof CubePointRange && second instanceof CubePointRange) {
+             long l = lcm(i, j);
+             if ((long)size * l <= 256L) {
+@@ -257,13 +269,22 @@
+             }
+         }
+ 
+-        if (first.getDouble(i) < second.getDouble(0) - 1.0E-7D) {
++        // Paper start - Identical happens more often than Disjoint
++        if (i == j && Objects.equals(first, second)) {
++            if (first instanceof IdenticalMerger) {
++                return (IndexMerger) first;
++            } else if (second instanceof IdenticalMerger) {
++                return (IndexMerger) second;
++            }
++            return new IdenticalMerger(first);
++        } else if (first.getDouble(i) < second.getDouble(0) - 1.0E-7D) {
+             return new NonOverlappingMerger(first, second, false);
+         } else if (second.getDouble(j) < first.getDouble(0) - 1.0E-7D) {
+             return new NonOverlappingMerger(second, first, true);
+         } else {
+-            return (IndexMerger)(i == j && Objects.equals(first, second) ? new IdenticalMerger(first) : new IndirectMerger(first, second, includeFirst, includeSecond));
++            return new IndirectMerger(first, second, includeFirst, includeSecond);
+         }
++        // Paper end
+     }
+ 
+     public interface DoubleLineConsumer {
