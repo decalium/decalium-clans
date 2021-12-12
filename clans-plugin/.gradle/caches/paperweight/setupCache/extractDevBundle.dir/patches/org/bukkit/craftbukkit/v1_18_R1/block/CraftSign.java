@@ -1,12 +1,15 @@
 package org.bukkit.craftbukkit.v1_18_R1.block;
 
+import com.google.common.base.Preconditions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import org.bukkit.DyeColor;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
+import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_18_R1.util.CraftChatMessage;
+import org.bukkit.entity.Player;
 
 public class CraftSign extends CraftBlockEntityState<SignBlockEntity> implements Sign {
 
@@ -116,6 +119,17 @@ public class CraftSign extends CraftBlockEntityState<SignBlockEntity> implements
         sign.isEditable = getSnapshot().isEditable; // Paper - copy manually
     }
 
+    public static void openSign(Sign sign, org.bukkit.entity.HumanEntity player) { // Paper - change move open sign to HumanEntity
+        Preconditions.checkArgument(sign != null, "sign == null");
+        // Preconditions.checkArgument(sign.isPlaced(), "Sign must be placed"); // Paper - don't require placed
+        Preconditions.checkArgument(sign.getWorld() == player.getWorld(), "Sign must be in same world as Player");
+
+        SignBlockEntity handle = ((CraftSign) sign).getTileEntity();
+        handle.isEditable = true;
+
+        ((org.bukkit.craftbukkit.v1_18_R1.entity.CraftHumanEntity) player).getHandle().openTextEdit(handle); // Paper - change move open sign to HumanEntity
+    }
+
     // Paper start
     public static Component[] sanitizeLines(java.util.List<net.kyori.adventure.text.Component> lines) {
         Component[] components = new Component[4];
@@ -129,6 +143,7 @@ public class CraftSign extends CraftBlockEntityState<SignBlockEntity> implements
         return components;
     }
     // Paper end
+
     public static Component[] sanitizeLines(String[] lines) {
         Component[] components = new Component[4];
 

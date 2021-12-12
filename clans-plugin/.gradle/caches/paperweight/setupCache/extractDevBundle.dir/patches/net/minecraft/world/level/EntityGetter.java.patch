@@ -19,6 +19,24 @@
      List<Entity> getEntities(@Nullable Entity except, AABB box, Predicate<? super Entity> predicate);
  
      <T extends Entity> List<T> getEntities(EntityTypeTest<Entity, T> filter, AABB box, Predicate<? super T> predicate);
+@@ -38,7 +50,7 @@
+             return true;
+         } else {
+             for(Entity entity2 : this.getEntities(entity, shape.bounds())) {
+-                if (!entity2.isRemoved() && entity2.blocksBuilding && (entity == null || !entity2.isPassengerOfSameVehicle(entity)) && Shapes.joinIsNotEmpty(shape, Shapes.create(entity2.getBoundingBox()), BooleanOp.AND)) {
++                if (!entity2.isRemoved() && entity2.blocksBuilding && (entity == null || !entity2.isPassengerOfSameVehicle(entity)) && shape.intersects(entity2.getBoundingBox())) { // Paper
+                     return false;
+                 }
+             }
+@@ -56,7 +68,7 @@
+             return List.of();
+         } else {
+             Predicate<Entity> predicate = entity == null ? EntitySelector.CAN_BE_COLLIDED_WITH : EntitySelector.NO_SPECTATORS.and(entity::canCollideWith);
+-            List<Entity> list = this.getEntities(entity, box.inflate(1.0E-7D), predicate);
++            List<Entity> list = this.getEntities(entity, box.inflate(-1.0E-7D), predicate); // Paper - needs to be negated, or else we get things we don't collide with
+             if (list.isEmpty()) {
+                 return List.of();
+             } else {
 @@ -71,8 +83,8 @@
          }
      }

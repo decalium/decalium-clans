@@ -50,7 +50,7 @@
      @Nullable
      private Supplier<ChunkHolder.FullChunkStatus> fullStatus;
      @Nullable
-@@ -82,51 +87,287 @@
+@@ -82,51 +87,286 @@
      private final Int2ObjectMap<GameEventDispatcher> gameEventDispatcherSections;
      private final LevelChunkTicks<Block> blockTicks;
      private final LevelChunkTicks<Fluid> fluidTicks;
@@ -112,7 +112,7 @@
 +
 +    // Paper start
 +    public final com.destroystokyo.paper.util.maplist.EntityList entities = new com.destroystokyo.paper.util.maplist.EntityList();
-+    public ChunkHolder playerChunk;
++    public @Nullable ChunkHolder playerChunk;
 +
 +    static final int NEIGHBOUR_CACHE_RADIUS = 3;
 +    public static int getNeighbourCacheRadius() {
@@ -346,12 +346,11 @@
 +        this.needsDecoration = true; // CraftBukkit
 +        // CraftBukkit start
 +        this.persistentDataContainer = protoChunk.persistentDataContainer; // SPIGOT-6814: copy PDC to account for 1.17 to 1.18 chunk upgrading.
-+        this.persistentDataContainer.setCallback(() -> setUnsaved(true)); // SPIGOT-6814: Handle cases were only persistentData is saved
 +        // CraftBukkit end
      }
  
      @Override
-@@ -144,132 +385,192 @@
+@@ -144,132 +384,193 @@
          return new ChunkAccess.TicksToSave(this.blockTicks, this.fluidTicks);
      }
  
@@ -376,16 +375,17 @@
 -        int i = pos.getX();
 -        int j = pos.getY();
 -        int k = pos.getZ();
-+        return this.getBlockData(pos.getX(), pos.getY(), pos.getZ());
++        return this.getBlockStateFinal(pos.getX(), pos.getY(), pos.getZ());
 +    }
 +
-+    public BlockState getType(final int x, final int y, final int z) {
-+        return this.getBlockData(x, y, z);
++    @Override
++    public BlockState getBlockState(final int x, final int y, final int z) {
++        return this.getBlockStateFinal(x, y, z);
 +    }
-+    public final BlockState getBlockData(final int x, final int y, final int z) {
++    public final BlockState getBlockStateFinal(final int x, final int y, final int z) {
 +        // Method body / logic copied from below
 +        final int i = this.getSectionIndex(y);
-+        if (i < 0 || i >= this.sections.length || this.sections[i] == null || this.sections[i].nonEmptyBlockCount == 0) {
++        if (i < 0 || i >= this.sections.length || this.sections[i].nonEmptyBlockCount == 0 || this.sections[i].hasOnlyAir()) {
 +            return Blocks.AIR.defaultBlockState();
 +        }
 +        // Inlined ChunkSection.getType() and DataPaletteBlock.a(int,int,int)
@@ -393,7 +393,7 @@
 +
 +    }
 +
-+    public BlockState getBlockData_unused(int i, int j, int k) {
++    public BlockState getBlockState_unused(int i, int j, int k) {
 +        // Paper end
          if (this.level.isDebug()) {
 -            BlockState blockState = null;
@@ -446,12 +446,12 @@
  
 +    // Paper start - If loaded util
 +    @Override
-+    public FluidState getFluidIfLoaded(BlockPos blockposition) {
++    public final FluidState getFluidIfLoaded(BlockPos blockposition) {
 +        return this.getFluidState(blockposition);
 +    }
 +
 +    @Override
-+    public BlockState getTypeIfLoaded(BlockPos blockposition) {
++    public final BlockState getBlockStateIfLoaded(BlockPos blockposition) {
 +        return this.getBlockState(blockposition);
 +    }
 +    // Paper end

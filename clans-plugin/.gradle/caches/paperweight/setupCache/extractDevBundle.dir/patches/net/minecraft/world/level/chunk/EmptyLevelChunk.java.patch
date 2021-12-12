@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/EmptyLevelChunk.java
 +++ b/net/minecraft/world/level/chunk/EmptyLevelChunk.java
-@@ -19,6 +19,43 @@
+@@ -19,6 +19,44 @@
      }
  
      @Override
@@ -36,7 +36,8 @@
 +    public void setBlockEmptinessMap(final boolean[] emptinessMap) {}
 +
 +    // Paper start
-+    @Override public BlockState getType(int x, int y, int z) {
++    @Override
++    public BlockState getBlockState(int x, int y, int z) {
 +        return Blocks.VOID_AIR.defaultBlockState();
 +    }
 +    // Paper end

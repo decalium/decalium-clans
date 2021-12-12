@@ -13,23 +13,20 @@
  
      private static Function<Vec3i, DataResult<Vec3i>> checkOffsetAxes(int maxAbsValue) {
          return (vec) -> {
-@@ -33,6 +33,15 @@
+@@ -33,6 +33,12 @@
          return CODEC.flatXmap(checkOffsetAxes(maxAbsValue), checkOffsetAxes(maxAbsValue));
      }
  
 +    // Paper start
-+    public boolean isValidLocation(net.minecraft.world.level.LevelHeightAccessor levelHeightAccessor) {
++    public final boolean isInsideBuildHeightAndWorldBoundsHorizontal(net.minecraft.world.level.LevelHeightAccessor levelHeightAccessor) {
 +        return getX() >= -30000000 && getZ() >= -30000000 && getX() < 30000000 && getZ() < 30000000 && !levelHeightAccessor.isOutsideBuildHeight(getY());
-+    }
-+    public boolean isInvalidYLocation(net.minecraft.world.level.LevelHeightAccessor levelHeightAccessor) {
-+        return levelHeightAccessor.isOutsideBuildHeight(getY());
 +    }
 +    // Paper end
 +
      public Vec3i(int x, int y, int z) {
          this.x = x;
          this.y = y;
-@@ -44,7 +53,7 @@
+@@ -44,7 +50,7 @@
      }
  
      @Override
@@ -38,7 +35,7 @@
          if (this == object) {
              return true;
          } else if (!(object instanceof Vec3i)) {
-@@ -62,7 +71,7 @@
+@@ -62,7 +68,7 @@
      }
  
      @Override
@@ -47,7 +44,7 @@
          return (this.getY() + this.getZ() * 31) * 31 + this.getX();
      }
  
-@@ -75,15 +84,15 @@
+@@ -75,15 +81,15 @@
          }
      }
  

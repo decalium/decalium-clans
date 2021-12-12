@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/level/entity/EntitySectionStorage.java
 +++ b/net/minecraft/world/level/entity/EntitySectionStorage.java
-@@ -111,13 +111,19 @@
+@@ -111,13 +111,20 @@
      }
  
      public void getEntities(AABB box, Consumer<T> action) {
 +        // Paper start
++        this.getEntities(box, action, false);
 +    }
 +    public void getEntities(AABB box, Consumer<T> action, boolean isContainerSearch) {
 +        // Paper end

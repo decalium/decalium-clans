@@ -286,8 +286,15 @@ public class CraftChunk implements Chunk {
         for (int i = 0; i < cs.length; i++) {
             CompoundTag data = new CompoundTag();
 
+            // Paper start
+            sectionEmpty[i] = cs[i].hasOnlyAir();
+            if (!sectionEmpty[i]) {
             data.put("block_states", ChunkSerializer.BLOCK_STATE_CODEC.encodeStart(NbtOps.INSTANCE, cs[i].getStates()).get().left().get());
             sectionBlockIDs[i] = ChunkSerializer.BLOCK_STATE_CODEC.parse(NbtOps.INSTANCE, data.getCompound("block_states")).get().left().get();
+            } else {
+                sectionBlockIDs[i] = CraftChunk.emptyBlockIDs;
+            }
+            // Paper end
 
             LevelLightEngine lightengine = chunk.level.getLightEngine();
             DataLayer skyLightArray = lightengine.getLayerListener(LightLayer.SKY).getDataLayerData(SectionPos.of(x, i, z));

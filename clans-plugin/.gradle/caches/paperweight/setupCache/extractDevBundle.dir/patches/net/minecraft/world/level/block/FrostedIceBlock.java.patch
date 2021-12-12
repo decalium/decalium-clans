@@ -11,7 +11,7 @@
              for(Direction direction : Direction.values()) {
                  mutableBlockPos.setWithOffset(pos, direction);
 -                BlockState blockState = world.getBlockState(mutableBlockPos);
-+                BlockState blockState = world.getTypeIfLoaded(mutableBlockPos); // Paper
++                BlockState blockState = world.getBlockStateIfLoaded(mutableBlockPos); // Paper
 +                if (blockState == null) { continue; } // Paper
                  if (blockState.is(this) && !this.slightlyMelt(blockState, world, mutableBlockPos)) {
 -                    world.scheduleTick(mutableBlockPos, this, Mth.nextInt(random, 20, 40));
@@ -31,7 +31,7 @@
              mutableBlockPos.setWithOffset(pos, direction);
 -            if (world.getBlockState(mutableBlockPos).is(this)) {
 +            // Paper start
-+            BlockState blockState = world.getTypeIfLoaded(mutableBlockPos);
++            BlockState blockState = world.getBlockStateIfLoaded(mutableBlockPos);
 +            if (blockState != null && blockState.is(this)) {
 +                // Paper end
                  ++i;

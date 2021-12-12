@@ -13,7 +13,7 @@
  
      protected abstract void onOpen(Level world, BlockPos pos, BlockState state);
  
-@@ -22,18 +26,42 @@
+@@ -22,18 +26,43 @@
      protected abstract boolean isOwnContainer(Player player);
  
      public void incrementOpeners(Player player, Level world, BlockPos pos, BlockState state) {
@@ -42,6 +42,7 @@
  
      public void decrementOpeners(Player player, Level world, BlockPos pos, BlockState state) {
 +        int oldPower = Math.max(0, Math.min(15, this.openCount)); // CraftBukkit - Get power before new viewer is added
++        if (this.openCount == 0) return; // Paper
          int i = this.openCount--;
 +
 +        // CraftBukkit start - Call redstone event
@@ -57,7 +58,7 @@
          if (this.openCount == 0) {
              this.onClose(world, pos, state);
              world.gameEvent(player, GameEvent.CONTAINER_CLOSE, pos);
-@@ -47,22 +75,26 @@
+@@ -47,22 +76,26 @@
          int j = pos.getY();
          int k = pos.getZ();
          float f = 5.0F;
@@ -92,7 +93,7 @@
              }
  
              this.openCount = i;
-@@ -70,7 +102,7 @@
+@@ -70,7 +103,7 @@
  
          this.openerCountChanged(world, pos, state, j, i);
          if (i > 0) {

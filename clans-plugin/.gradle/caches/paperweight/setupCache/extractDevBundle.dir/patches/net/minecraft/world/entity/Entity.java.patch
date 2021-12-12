@@ -150,7 +150,7 @@
      public float xRotO;
 -    private AABB bb = INITIAL_AABB;
 +    private AABB bb;
-     protected boolean onGround;
+     public boolean onGround;
      public boolean horizontalCollision;
      public boolean verticalCollision;
      public boolean minorHorizontalCollision;
@@ -229,7 +229,19 @@
 +    public org.bukkit.projectiles.ProjectileSource projectileSource; // For projectiles only
 +    public boolean forceExplosionKnockback; // SPIGOT-949
 +    public boolean persistentInvisibility = false;
++    public BlockPos lastLavaContact;
++    // Spigot start
++    public final org.spigotmc.ActivationRange.ActivationType activationType = org.spigotmc.ActivationRange.initializeEntityActivationType(this);
++    public final boolean defaultActivationState;
++    public long activatedTick = Integer.MIN_VALUE;
++    public void inactiveTick() { }
++    // Spigot end
 +    // Paper start
++    public long activatedImmunityTick = Integer.MIN_VALUE; // Paper
++    public boolean isTemporarilyActive = false; // Paper
++    public boolean fromNetherPortal; // Paper
++    protected int numCollisions = 0; // Paper
++    public boolean spawnedViaMobSpawner; // Paper - Yes this name is similar to above, upstream took the better one
 +    @javax.annotation.Nullable
 +    private org.bukkit.util.Vector origin;
 +    @javax.annotation.Nullable
@@ -250,18 +262,6 @@
 +        return this.originWorld;
 +    }
 +    // Paper end
-+    // Spigot start
-+    public final org.spigotmc.ActivationRange.ActivationType activationType = org.spigotmc.ActivationRange.initializeEntityActivationType(this);
-+    public final boolean defaultActivationState;
-+    public long activatedTick = Integer.MIN_VALUE;
-+    public long activatedImmunityTick = Integer.MIN_VALUE; // Paper
-+    public boolean isTemporarilyActive = false; // Paper
-+    public boolean spawnedViaMobSpawner; // Paper - Yes this name is similar to above, upstream took the better one
-+    public boolean fromNetherPortal; // Paper
-+    protected int numCollisions = 0; // Paper
-+    public void inactiveTick() { }
-+    // Spigot end
-+
 +    public float getBukkitYaw() {
 +        return this.yRot;
 +    }
@@ -605,7 +605,7 @@
          if (this.canSpawnSprintParticle()) {
              this.spawnSprintParticle();
          }
-@@ -448,7 +754,7 @@
+@@ -448,13 +754,17 @@
  
              if (this.getTicksFrozen() > 0) {
                  this.setTicksFrozen(0);
@@ -614,7 +614,17 @@
              }
          }
  
-@@ -471,7 +777,11 @@
+         if (this.isInLava()) {
+             this.lavaHurt();
+             this.fallDistance *= 0.5F;
++            // CraftBukkit start
++        } else {
++            this.lastLavaContact = null;
++            // CraftBukkit end
+         }
+ 
+         this.checkOutOfWorld();
+@@ -471,7 +781,11 @@
      }
  
      public void checkOutOfWorld() {
@@ -627,7 +637,7 @@
              this.outOfWorld();
          }
  
-@@ -498,7 +808,23 @@
+@@ -498,22 +812,56 @@
  
      public void lavaHurt() {
          if (!this.fireImmune()) {
@@ -635,8 +645,7 @@
 +            // CraftBukkit start - Fallen in lava TODO: this event spams!
 +            if (this instanceof net.minecraft.world.entity.LivingEntity && this.remainingFireTicks <= 0) {
 +                // not on fire yet
-+                // TODO: shouldn't be sending null for the block
-+                org.bukkit.block.Block damager = null; // ((WorldServer) this.l).getWorld().getBlockAt(i, j, k);
++                org.bukkit.block.Block damager = (this.lastLavaContact == null) ? null : org.bukkit.craftbukkit.v1_18_R1.block.CraftBlock.at(level, lastLavaContact);
 +                org.bukkit.entity.Entity damagee = this.getBukkitEntity();
 +                EntityCombustEvent combustEvent = new org.bukkit.event.entity.EntityCombustByBlockEvent(damager, damagee, 15);
 +                this.level.getCraftServer().getPluginManager().callEvent(combustEvent);
@@ -648,11 +657,14 @@
 +                // This will be called every single tick the entity is in lava, so don't throw an event
 +                this.setSecondsOnFire(15, false);
 +            }
-+            // CraftBukkit end - we also don't throw an event unless the object in lava is living, to save on some event calls
++            CraftEventFactory.blockDamage = (this.lastLavaContact) == null ? null : org.bukkit.craftbukkit.v1_18_R1.block.CraftBlock.at(level, lastLavaContact);
              if (this.hurt(DamageSource.LAVA, 4.0F)) {
                  this.playSound(SoundEvents.GENERIC_BURN, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
              }
-@@ -507,13 +833,30 @@
++            CraftEventFactory.blockDamage = null;
++            // CraftBukkit end - we also don't throw an event unless the object in lava is living, to save on some event calls
+ 
+         }
      }
  
      public void setSecondsOnFire(int seconds) {
@@ -688,7 +700,7 @@
          }
  
      }
-@@ -550,12 +893,49 @@
+@@ -550,12 +898,49 @@
          return this.onGround;
      }
  
@@ -738,7 +750,7 @@
                  movement = this.limitPistonMovement(movement);
                  if (movement.equals(Vec3.ZERO)) {
                      return;
-@@ -568,94 +948,131 @@
+@@ -568,95 +953,167 @@
                  this.stuckSpeedMultiplier = Vec3.ZERO;
                  this.setDeltaMovement(Vec3.ZERO);
              }
@@ -905,15 +917,52 @@
 -                this.setDeltaMovement(this.getDeltaMovement().multiply((double)i, 1.0D, (double)i));
 -                if (this.level.getBlockStatesIfLoaded(this.getBoundingBox().deflate(1.0E-6D)).noneMatch((state) -> {
 -                    return state.is(BlockTags.FIRE) || state.is(Blocks.LAVA);
+-                })) {
 +                float f2 = this.getBlockSpeedFactor();
 +
 +                this.setDeltaMovement(this.getDeltaMovement().multiply((double) f2, 1.0D, (double) f2));
-+                if (this.level.getBlockStatesIfLoaded(this.getBoundingBox().deflate(1.0E-6D)).noneMatch((iblockdata1) -> {
-+                    return iblockdata1.is((Tag) BlockTags.FIRE) || iblockdata1.is(Blocks.LAVA);
-                 })) {
++                // Paper start - remove expensive streams from here
++                boolean noneMatch = true;
++                AABB fireSearchBox = this.getBoundingBox().deflate(1.0E-6D);
++                {
++                    int minX = Mth.floor(fireSearchBox.minX);
++                    int minY = Mth.floor(fireSearchBox.minY);
++                    int minZ = Mth.floor(fireSearchBox.minZ);
++                    int maxX = Mth.floor(fireSearchBox.maxX);
++                    int maxY = Mth.floor(fireSearchBox.maxY);
++                    int maxZ = Mth.floor(fireSearchBox.maxZ);
++                    fire_search_loop:
++                    for (int fz = minZ; fz <= maxZ; ++fz) {
++                        for (int fx = minX; fx <= maxX; ++fx) {
++                            for (int fy = minY; fy <= maxY; ++fy) {
++                                net.minecraft.world.level.chunk.LevelChunk chunk = (net.minecraft.world.level.chunk.LevelChunk)this.level.getChunkIfLoadedImmediately(fx >> 4, fz >> 4);
++                                if (chunk == null) {
++                                    // Vanilla rets an empty stream if all the chunks are not loaded, so noneMatch will be true
++                                    // even if we're in lava/fire
++                                    noneMatch = true;
++                                    break fire_search_loop;
++                                }
++                                if (!noneMatch) {
++                                    // don't do get type, we already know we're in fire - we just need to check the chunks
++                                    // loaded state
++                                    continue;
++                                }
++
++                                BlockState type = chunk.getBlockStateFinal(fx, fy, fz);
++                                if (type.is((Tag) BlockTags.FIRE) || type.is(Blocks.LAVA)) {
++                                    noneMatch = false;
++                                    // can't break, we need to retain vanilla behavior by ensuring ALL chunks are loaded
++                                }
++                            }
++                        }
++                    }
++                }
++                if (noneMatch) {
++                    // Paper end - remove expensive streams from here
                      if (this.remainingFireTicks <= 0) {
                          this.setRemainingFireTicks(-this.getFireImmuneTicks());
-@@ -673,6 +1090,13 @@
+                     }
+@@ -673,6 +1130,13 @@
                  this.level.getProfiler().pop();
              }
          }
@@ -927,7 +976,7 @@
      }
  
      protected boolean isHorizontalCollisionMinor(Vec3 adjustedMovement) {
-@@ -682,11 +1106,12 @@
+@@ -682,11 +1146,12 @@
      protected void tryCheckInsideBlocks() {
          try {
              this.checkInsideBlocks();
@@ -945,7 +994,7 @@
          }
      }
  
-@@ -706,34 +1131,34 @@
+@@ -706,34 +1171,34 @@
  
      public BlockPos getOnPos() {
          int i = Mth.floor(this.position.x);
@@ -997,7 +1046,7 @@
      }
  
      protected BlockPos getBlockPosBelowThatAffectsMyMovement() {
-@@ -748,21 +1173,24 @@
+@@ -748,21 +1213,24 @@
          if (movement.lengthSqr() <= 1.0E-7D) {
              return movement;
          } else {
@@ -1031,7 +1080,7 @@
              } else {
                  return Vec3.ZERO;
              }
-@@ -771,93 +1199,101 @@
+@@ -771,93 +1239,147 @@
  
      private double applyPistonMovementRestriction(Direction.Axis axis, double offsetFactor) {
          int i = axis.ordinal();
@@ -1060,35 +1109,82 @@
 -                Vec3 vec34 = collideBoundingBox(this, new Vec3(movement.x, 0.0D, movement.z), aABB.move(vec33), this.level, list).add(vec33);
 -                if (vec34.horizontalDistanceSqr() > vec32.horizontalDistanceSqr()) {
 -                    vec32 = vec34;
-+        AABB axisalignedbb = this.getBoundingBox();
-+        List<VoxelShape> list = this.level.getEntityCollisions(this, axisalignedbb.expandTowards(movement));
-+        Vec3 vec3d1 = movement.lengthSqr() == 0.0D ? movement : Entity.collideBoundingBox(this, movement, axisalignedbb, this.level, list);
-+        boolean flag = movement.x != vec3d1.x;
-+        boolean flag1 = movement.y != vec3d1.y;
-+        boolean flag2 = movement.z != vec3d1.z;
-+        boolean flag3 = this.onGround || flag1 && movement.y < 0.0D;
++        // Paper start - optimise collisions
++        // This is a copy of vanilla's except that it uses strictly AABB math
++        if (movement.x == 0.0 && movement.y == 0.0 && movement.z == 0.0) {
++            return movement;
++        }
 +
-+        if (this.maxUpStep > 0.0F && flag3 && (flag || flag2)) {
-+            Vec3 vec3d2 = Entity.collideBoundingBox(this, new Vec3(movement.x, (double) this.maxUpStep, movement.z), axisalignedbb, this.level, list);
-+            Vec3 vec3d3 = Entity.collideBoundingBox(this, new Vec3(0.0D, (double) this.maxUpStep, 0.0D), axisalignedbb.expandTowards(movement.x, 0.0D, movement.z), this.level, list);
++        final Level world = this.level;
++        final AABB currBoundingBox = this.getBoundingBox();
 +
-+            if (vec3d3.y < (double) this.maxUpStep) {
-+                Vec3 vec3d4 = Entity.collideBoundingBox(this, new Vec3(movement.x, 0.0D, movement.z), axisalignedbb.move(vec3d3), this.level, list).add(vec3d3);
++        if (io.papermc.paper.util.CollisionUtil.isEmpty(currBoundingBox)) {
++            return movement;
++        }
 +
-+                if (vec3d4.horizontalDistanceSqr() > vec3d2.horizontalDistanceSqr()) {
-+                    vec3d2 = vec3d4;
++        final List<AABB> potentialCollisions = io.papermc.paper.util.CachedLists.getTempCollisionList();
++        try {
++            final double stepHeight = (double)this.maxUpStep;
++            final AABB collisionBox;
++
++            if (movement.x == 0.0 && movement.z == 0.0 && movement.y != 0.0) {
++                if (movement.y > 0.0) {
++                    collisionBox = io.papermc.paper.util.CollisionUtil.cutUpwards(currBoundingBox, movement.y);
++                } else {
++                    collisionBox = io.papermc.paper.util.CollisionUtil.cutDownwards(currBoundingBox, movement.y);
++                }
++            } else {
++                if (stepHeight > 0.0 && (this.onGround || (movement.y < 0.0)) && (movement.x != 0.0 || movement.z != 0.0)) {
++                    // don't bother getting the collisions if we don't need them.
++                    if (movement.y <= 0.0) {
++                        collisionBox = io.papermc.paper.util.CollisionUtil.expandUpwards(currBoundingBox.expandTowards(movement.x, movement.y, movement.z), stepHeight);
++                    } else {
++                        collisionBox = currBoundingBox.expandTowards(movement.x, Math.max(stepHeight, movement.y), movement.z);
++                    }
++                } else {
++                    collisionBox = currBoundingBox.expandTowards(movement.x, movement.y, movement.z);
                  }
              }
  
 -            if (vec32.horizontalDistanceSqr() > vec3.horizontalDistanceSqr()) {
 -                return vec32.add(collideBoundingBox(this, new Vec3(0.0D, -vec32.y + movement.y, 0.0D), aABB.move(vec32), this.level, list));
-+            if (vec3d2.horizontalDistanceSqr() > vec3d1.horizontalDistanceSqr()) {
-+                return vec3d2.add(Entity.collideBoundingBox(this, new Vec3(0.0D, -vec3d2.y + movement.y, 0.0D), axisalignedbb.move(vec3d2), this.level, list));
++            io.papermc.paper.util.CollisionUtil.getCollisions(world, this, collisionBox, potentialCollisions, false, true,
++                false, false, null, null);
++
++            if (io.papermc.paper.util.CollisionUtil.isCollidingWithBorderEdge(world.getWorldBorder(), collisionBox)) {
++                io.papermc.paper.util.CollisionUtil.addBoxesToIfIntersects(world.getWorldBorder().getCollisionShape(), collisionBox, potentialCollisions);
              }
-         }
+-        }
  
 -        return vec3;
-+        return vec3d1;
++            final Vec3 limitedMoveVector = io.papermc.paper.util.CollisionUtil.performCollisions(movement, currBoundingBox, potentialCollisions);
++
++            if (stepHeight > 0.0
++                && (this.onGround || (limitedMoveVector.y != movement.y && movement.y < 0.0))
++                && (limitedMoveVector.x != movement.x || limitedMoveVector.z != movement.z)) {
++                Vec3 vec3d2 = io.papermc.paper.util.CollisionUtil.performCollisions(new Vec3(movement.x, stepHeight, movement.z), currBoundingBox, potentialCollisions);
++                final Vec3 vec3d3 = io.papermc.paper.util.CollisionUtil.performCollisions(new Vec3(0.0, stepHeight, 0.0), currBoundingBox.expandTowards(movement.x, 0.0, movement.z), potentialCollisions);
++
++                if (vec3d3.y < stepHeight) {
++                    final Vec3 vec3d4 = io.papermc.paper.util.CollisionUtil.performCollisions(new Vec3(movement.x, 0.0D, movement.z), currBoundingBox.move(vec3d3), potentialCollisions).add(vec3d3);
++
++                    if (vec3d4.horizontalDistanceSqr() > vec3d2.horizontalDistanceSqr()) {
++                        vec3d2 = vec3d4;
++                    }
++                }
++
++                if (vec3d2.horizontalDistanceSqr() > limitedMoveVector.horizontalDistanceSqr()) {
++                    return vec3d2.add(io.papermc.paper.util.CollisionUtil.performCollisions(new Vec3(0.0D, -vec3d2.y + movement.y, 0.0D), currBoundingBox.move(vec3d2), potentialCollisions));
++                }
++
++                return limitedMoveVector;
++            } else {
++                return limitedMoveVector;
++            }
++        } finally {
++            io.papermc.paper.util.CachedLists.returnTempCollisionList(potentialCollisions);
++        }
++        // Paper end - optimise collisions
      }
  
      public static Vec3 collideBoundingBox(@Nullable Entity entity, Vec3 movement, AABB entityBoundingBox, Level world, List<VoxelShape> collisions) {
@@ -1178,7 +1274,7 @@
      }
  
      protected SoundEvent getSwimSound() {
-@@ -873,26 +1309,28 @@
+@@ -873,26 +1395,28 @@
      }
  
      protected void checkInsideBlocks() {
@@ -1224,7 +1320,7 @@
                          }
                      }
                  }
-@@ -901,8 +1339,7 @@
+@@ -901,8 +1425,7 @@
  
      }
  
@@ -1234,7 +1330,7 @@
  
      public void gameEvent(GameEvent event, @Nullable Entity entity, BlockPos pos) {
          this.level.gameEvent(entity, event, pos);
-@@ -922,19 +1359,21 @@
+@@ -922,19 +1445,21 @@
  
      protected void playStepSound(BlockPos pos, BlockState state) {
          if (!state.getMaterial().isLiquid()) {
@@ -1263,7 +1359,7 @@
              this.lastCrystalSoundPlayTick = this.tickCount;
          }
  
-@@ -944,8 +1383,7 @@
+@@ -944,8 +1469,7 @@
          this.playSound(this.getSwimSound(), volume, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
      }
  
@@ -1273,7 +1369,7 @@
  
      protected boolean isFlapping() {
          return false;
-@@ -953,25 +1391,25 @@
+@@ -953,25 +1477,25 @@
  
      public void playSound(SoundEvent sound, float volume, float pitch) {
          if (!this.isSilent()) {
@@ -1304,7 +1400,7 @@
      }
  
      protected Entity.MovementEmission getMovementEmission() {
-@@ -986,14 +1424,14 @@
+@@ -986,14 +1510,14 @@
          if (onGround) {
              if (this.fallDistance > 0.0F) {
                  landedState.getBlock().fallOn(this.level, landedState, landedPosition, this, this.fallDistance);
@@ -1321,7 +1417,7 @@
          }
  
      }
-@@ -1004,7 +1442,11 @@
+@@ -1004,7 +1528,11 @@
  
      public boolean causeFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
          if (this.isVehicle()) {
@@ -1334,7 +1430,7 @@
                  entity.causeFallDamage(fallDistance, damageMultiplier, damageSource);
              }
          }
-@@ -1017,8 +1459,9 @@
+@@ -1017,8 +1545,9 @@
      }
  
      public boolean isInRain() {
@@ -1346,7 +1442,7 @@
      }
  
      public boolean isInBubbleColumn() {
-@@ -1045,7 +1488,7 @@
+@@ -1045,7 +1574,7 @@
          if (this.isSwimming()) {
              this.setSwimming(this.isSprinting() && this.isInWater() && !this.isPassenger());
          } else {
@@ -1355,7 +1451,7 @@
          }
  
      }
-@@ -1053,9 +1496,10 @@
+@@ -1053,9 +1582,10 @@
      protected boolean updateInWaterStateAndDoFluidPushing() {
          this.fluidHeight.clear();
          this.updateInWaterStateAndDoWaterCurrentPushing();
@@ -1369,7 +1465,7 @@
      }
  
      void updateInWaterStateAndDoWaterCurrentPushing() {
-@@ -1078,27 +1522,35 @@
+@@ -1078,27 +1608,35 @@
      private void updateFluidOnEyes() {
          this.wasEyeInWater = this.isEyeInFluid(FluidTags.WATER);
          this.fluidOnEyes = null;
@@ -1416,7 +1512,7 @@
          }
  
      }
-@@ -1106,26 +1558,31 @@
+@@ -1106,26 +1644,31 @@
      protected void doWaterSplashEffect() {
          Entity entity = this.isVehicle() && this.getControllingPassenger() != null ? this.getControllingPassenger() : this;
          float f = entity == this ? 0.2F : 0.9F;
@@ -1462,7 +1558,7 @@
          }
  
          this.gameEvent(GameEvent.SPLASH);
-@@ -1141,13 +1598,15 @@
+@@ -1141,13 +1684,15 @@
  
      protected void spawnSprintParticle() {
          int i = Mth.floor(this.getX());
@@ -1484,7 +1580,7 @@
          }
  
      }
-@@ -1161,19 +1620,22 @@
+@@ -1161,19 +1706,22 @@
      }
  
      public void moveRelative(float speed, Vec3 movementInput) {
@@ -1515,7 +1611,7 @@
          }
      }
  
-@@ -1187,15 +1649,18 @@
+@@ -1187,15 +1735,18 @@
          this.setXRot(Mth.clamp(pitch, -90.0F, 90.0F) % 360.0F);
          this.yRotO = this.getYRot();
          this.xRotO = this.getXRot();
@@ -1539,7 +1635,7 @@
      }
  
      public void moveTo(Vec3 pos) {
-@@ -1207,43 +1672,54 @@
+@@ -1207,43 +1758,54 @@
      }
  
      public void moveTo(BlockPos pos, float yaw, float pitch) {
@@ -1612,7 +1708,7 @@
      }
  
      public double distanceToSqr(Entity entity) {
-@@ -1251,40 +1727,43 @@
+@@ -1251,40 +1813,43 @@
      }
  
      public double distanceToSqr(Vec3 vector) {
@@ -1678,7 +1774,7 @@
                      }
                  }
  
-@@ -1323,13 +1802,14 @@
+@@ -1323,13 +1888,14 @@
      }
  
      protected final Vec3 calculateViewVector(float pitch, float yaw) {
@@ -1700,7 +1796,7 @@
      }
  
      public final Vec3 getUpVector(float tickDelta) {
-@@ -1345,10 +1825,11 @@
+@@ -1345,10 +1911,11 @@
      }
  
      public final Vec3 getEyePosition(float tickDelta) {
@@ -1716,7 +1812,7 @@
      }
  
      public Vec3 getLightProbePosition(float tickDelta) {
-@@ -1356,17 +1837,19 @@
+@@ -1356,17 +1923,19 @@
      }
  
      public final Vec3 getPosition(float delta) {
@@ -1744,7 +1840,7 @@
      }
  
      public boolean isPickable() {
-@@ -1374,49 +1857,73 @@
+@@ -1374,49 +1943,73 @@
      }
  
      public boolean isPushable() {
@@ -1832,7 +1928,7 @@
      public boolean save(CompoundTag nbt) {
          return this.isPassenger() ? false : this.saveAsPassenger(nbt);
      }
-@@ -1429,19 +1936,46 @@
+@@ -1429,19 +2022,46 @@
                  nbt.put("Pos", this.newDoubleList(this.getX(), this.getY(), this.getZ()));
              }
  
@@ -1886,7 +1982,7 @@
              }
  
              if (this.isCustomNameVisible()) {
-@@ -1461,6 +1995,7 @@
+@@ -1461,6 +2081,7 @@
              }
  
              int i = this.getTicksFrozen();
@@ -1894,7 +1990,7 @@
              if (i > 0) {
                  nbt.putInt("TicksFrozen", this.getTicksFrozen());
              }
-@@ -1469,53 +2004,88 @@
+@@ -1469,53 +2090,88 @@
                  nbt.putBoolean("HasVisualFire", this.hasVisualFire);
              }
  
@@ -2009,7 +2105,7 @@
              this.setOldPosAndRot();
              this.setYHeadRot(this.getYRot());
              this.setYBodyRot(this.getYRot());
-@@ -1534,16 +2104,16 @@
+@@ -1534,16 +2190,16 @@
              }
  
              if (Double.isFinite(this.getX()) && Double.isFinite(this.getY()) && Double.isFinite(this.getZ())) {
@@ -2031,7 +2127,7 @@
                          }
                      }
  
-@@ -1555,11 +2125,11 @@
+@@ -1555,11 +2211,11 @@
                      this.hasVisualFire = nbt.getBoolean("HasVisualFire");
                      if (nbt.contains("Tags", 9)) {
                          this.tags.clear();
@@ -2047,7 +2143,7 @@
                          }
                      }
  
-@@ -1574,11 +2144,96 @@
+@@ -1574,11 +2230,96 @@
              } else {
                  throw new IllegalStateException("Entity has invalid position");
              }
@@ -2149,7 +2245,7 @@
          }
      }
  
-@@ -1586,11 +2241,32 @@
+@@ -1586,11 +2327,32 @@
          return true;
      }
  
@@ -2185,7 +2281,7 @@
      }
  
      protected abstract void readAdditionalSaveData(CompoundTag nbt);
-@@ -1598,23 +2274,31 @@
+@@ -1598,23 +2360,31 @@
      protected abstract void addAdditionalSaveData(CompoundTag nbt);
  
      protected ListTag newDoubleList(double... values) {
@@ -2225,7 +2321,7 @@
      }
  
      @Nullable
-@@ -1624,7 +2308,7 @@
+@@ -1624,7 +2394,7 @@
  
      @Nullable
      public ItemEntity spawnAtLocation(ItemLike item, int yOffset) {
@@ -2234,7 +2330,7 @@
      }
  
      @Nullable
-@@ -1639,10 +2323,25 @@
+@@ -1639,10 +2409,25 @@
          } else if (this.level.isClientSide) {
              return null;
          } else {
@@ -2264,7 +2360,7 @@
          }
      }
  
-@@ -1654,12 +2353,14 @@
+@@ -1654,13 +2439,16 @@
          if (this.noPhysics) {
              return false;
          } else {
@@ -2275,16 +2371,19 @@
 -            return this.level.getBlockStates(aABB).filter(Predicate.not(BlockBehaviour.BlockStateBase::isAir)).anyMatch((state) -> {
 -                BlockPos blockPos = new BlockPos(vec3);
 -                return state.isSuffocating(this.level, blockPos) && Shapes.joinIsNotEmpty(state.getCollisionShape(this.level, blockPos).move(vec3.x, vec3.y, vec3.z), Shapes.create(aABB), BooleanOp.AND);
+-            });
 +            AABB axisalignedbb = AABB.ofSize(vec3d, (double) f, 1.0E-6D, (double) f);
 +
-+            return this.level.getBlockStates(axisalignedbb).filter(Predicate.not(BlockBehaviour.BlockStateBase::isAir)).anyMatch((iblockdata) -> {
-+                BlockPos blockposition = new BlockPos(vec3d);
-+
-+                return iblockdata.isSuffocating(this.level, blockposition) && Shapes.joinIsNotEmpty(iblockdata.getCollisionShape(this.level, blockposition).move(vec3d.x, vec3d.y, vec3d.z), Shapes.create(axisalignedbb), BooleanOp.AND);
-             });
++            // Paper start
++            return io.papermc.paper.util.CollisionUtil.getCollisionsForBlocksOrWorldBorder(this.level, this, axisalignedbb, null,
++                false, false, false, true, (BlockState blockState, BlockPos blockPos) -> {
++                    return blockState.isSuffocating(this.level, blockPos);
++                });
++            // Paper end
          }
      }
-@@ -1668,11 +2369,11 @@
+ 
+@@ -1668,11 +2456,11 @@
          return InteractionResult.PASS;
      }
  
@@ -2298,7 +2397,7 @@
          return false;
      }
  
-@@ -1690,20 +2391,20 @@
+@@ -1690,20 +2478,20 @@
  
      private void positionRider(Entity passenger, Entity.MoveFunction positionUpdater) {
          if (this.hasPassenger(passenger)) {
@@ -2324,7 +2423,7 @@
      }
  
      public boolean startRiding(Entity entity) {
-@@ -1711,35 +2412,35 @@
+@@ -1711,35 +2499,35 @@
      }
  
      public boolean showVehicleHealth() {
@@ -2372,7 +2471,7 @@
              }
          }
      }
-@@ -1748,22 +2449,28 @@
+@@ -1748,22 +2536,28 @@
          return !this.isShiftKeyDown() && this.boardingCooldown <= 0;
      }
  
@@ -2405,7 +2504,7 @@
          }
  
      }
-@@ -1772,40 +2479,107 @@
+@@ -1772,40 +2566,107 @@
          this.removeVehicle();
      }
  
@@ -2525,7 +2624,7 @@
      }
  
      protected boolean canAddPassenger(Entity passenger) {
-@@ -1852,16 +2626,24 @@
+@@ -1852,16 +2713,24 @@
      protected void handleNetherPortal() {
          if (this.level instanceof ServerLevel) {
              int i = this.getPortalWaitTime();
@@ -2556,7 +2655,7 @@
                      this.level.getProfiler().pop();
                  }
  
-@@ -1877,6 +2659,7 @@
+@@ -1877,6 +2746,7 @@
              }
  
              this.processPortalCooldown();
@@ -2564,7 +2663,7 @@
          }
      }
  
-@@ -1889,34 +2672,33 @@
+@@ -1889,34 +2759,33 @@
      }
  
      public void handleEntityEvent(byte status) {
@@ -2610,7 +2709,7 @@
      }
  
      public boolean isPassenger() {
-@@ -1956,7 +2738,7 @@
+@@ -1956,7 +2825,7 @@
      }
  
      public boolean isCrouching() {
@@ -2619,7 +2718,7 @@
      }
  
      public boolean isSprinting() {
-@@ -1972,7 +2754,7 @@
+@@ -1972,7 +2841,7 @@
      }
  
      public boolean isVisuallySwimming() {
@@ -2628,7 +2727,7 @@
      }
  
      public boolean isVisuallyCrawling() {
-@@ -1980,6 +2762,13 @@
+@@ -1980,6 +2849,13 @@
      }
  
      public void setSwimming(boolean swimming) {
@@ -2642,7 +2741,7 @@
          this.setSharedFlag(4, swimming);
      }
  
-@@ -2004,8 +2793,9 @@
+@@ -2004,8 +2880,9 @@
          if (player.isSpectator()) {
              return false;
          } else {
@@ -2654,7 +2753,7 @@
          }
      }
  
-@@ -2016,6 +2806,7 @@
+@@ -2016,6 +2893,7 @@
  
      @Nullable
      public Team getTeam() {
@@ -2662,7 +2761,7 @@
          return this.level.getScoreboard().getPlayersTeam(this.getScoreboardName());
      }
  
-@@ -2027,20 +2818,25 @@
+@@ -2027,20 +2905,25 @@
          return this.getTeam() != null ? this.getTeam().isAlliedTo(team) : false;
      }
  
@@ -2693,7 +2792,7 @@
          }
  
      }
-@@ -2050,24 +2846,35 @@
+@@ -2050,24 +2933,35 @@
      }
  
      public int getAirSupply() {
@@ -2734,7 +2833,7 @@
      }
  
      public boolean isFullyFrozen() {
-@@ -2080,73 +2887,110 @@
+@@ -2080,73 +2974,110 @@
  
      public void thunderHit(ServerLevel world, LightningBolt lightning) {
          this.setRemainingFireTicks(this.remainingFireTicks + 1);
@@ -2881,7 +2980,7 @@
          }
  
      }
-@@ -2157,19 +3001,23 @@
+@@ -2157,19 +3088,23 @@
      }
  
      private static Component removeAction(Component textComponent) {
@@ -2911,7 +3010,7 @@
      }
  
      protected Component getTypeName() {
-@@ -2184,11 +3032,9 @@
+@@ -2184,11 +3119,9 @@
          return 0.0F;
      }
  
@@ -2925,7 +3024,7 @@
  
      public boolean isAttackable() {
          return true;
-@@ -2198,10 +3044,10 @@
+@@ -2198,10 +3131,10 @@
          return false;
      }
  
@@ -2939,7 +3038,7 @@
      }
  
      public boolean isInvulnerableTo(DamageSource damageSource) {
-@@ -2221,39 +3067,93 @@
+@@ -2221,39 +3154,93 @@
      }
  
      public void restoreFrom(Entity original) {
@@ -3047,7 +3146,7 @@
                  this.level.getProfiler().pop();
                  return entity;
              }
-@@ -2268,43 +3168,78 @@
+@@ -2268,43 +3255,78 @@
  
      @Nullable
      protected PortalInfo findDimensionEntryPoint(ServerLevel destination) {
@@ -3152,7 +3251,7 @@
          }
      }
  
-@@ -2312,12 +3247,27 @@
+@@ -2312,12 +3334,27 @@
          return PortalShape.getRelativePosition(portalRect, portalAxis, this.position(), this.getDimensions(this.getPose()));
      }
  
@@ -3183,7 +3282,7 @@
      }
  
      public float getBlockExplosionResistance(Explosion explosion, BlockGetter world, BlockPos pos, BlockState blockState, FluidState fluidState, float max) {
-@@ -2338,21 +3288,24 @@
+@@ -2338,21 +3375,24 @@
  
      public void fillCrashReportCategory(CrashReportCategory section) {
          section.setDetail("Entity Type", () -> {
@@ -3215,7 +3314,7 @@
          });
      }
  
-@@ -2383,48 +3336,49 @@
+@@ -2383,48 +3423,49 @@
      }
  
      public static double getViewScale() {
@@ -3277,7 +3376,7 @@
              this.teleportTo(destX, destY, destZ);
          }
      }
-@@ -2437,8 +3391,12 @@
+@@ -2437,8 +3478,12 @@
          if (this.level instanceof ServerLevel) {
              this.moveTo(destX, destY, destZ, this.getYRot(), this.getXRot());
              this.getSelfAndPassengers().forEach((entity) -> {
@@ -3292,7 +3391,7 @@
                  }
  
              });
-@@ -2450,34 +3408,37 @@
+@@ -2450,34 +3495,37 @@
      }
  
      public void onSyncedDataUpdated(EntityDataAccessor<?> data) {
@@ -3345,7 +3444,7 @@
      }
  
      public Direction getMotionDirection() {
-@@ -2501,23 +3462,43 @@
+@@ -2501,23 +3549,43 @@
          return this.getBoundingBox();
      }
  
@@ -3398,7 +3497,7 @@
          return this.getEyeHeight(pose, this.getDimensions(pose));
      }
  
-@@ -2526,7 +3507,7 @@
+@@ -2526,7 +3594,7 @@
      }
  
      public Vec3 getLeashOffset() {
@@ -3407,7 +3506,7 @@
      }
  
      public SlotAccess getSlot(int mappedIndex) {
-@@ -2534,8 +3515,7 @@
+@@ -2534,8 +3602,7 @@
      }
  
      @Override
@@ -3417,7 +3516,7 @@
  
      public Level getCommandSenderWorld() {
          return this.level;
-@@ -2554,43 +3534,43 @@
+@@ -2554,43 +3621,43 @@
          return false;
      }
  
@@ -3484,7 +3583,7 @@
          }
      }
  
-@@ -2609,7 +3589,7 @@
+@@ -2609,7 +3676,7 @@
  
      @Nullable
      public Entity getFirstPassenger() {
@@ -3493,7 +3592,7 @@
      }
  
      public boolean hasPassenger(Entity passenger) {
-@@ -2617,36 +3597,57 @@
+@@ -2617,36 +3684,57 @@
      }
  
      public boolean hasPassenger(Predicate<Entity> predicate) {
@@ -3556,7 +3655,7 @@
          return this.getIndirectPassengersStream().filter((entity) -> {
              return entity instanceof Player;
          }).count() == 1L;
-@@ -2654,7 +3655,9 @@
+@@ -2654,7 +3742,9 @@
  
      public Entity getRootVehicle() {
          Entity entity;
@@ -3567,7 +3666,7 @@
          }
  
          return entity;
-@@ -2665,29 +3668,27 @@
+@@ -2665,29 +3755,27 @@
      }
  
      public boolean hasIndirectPassenger(Entity passenger) {
@@ -3608,7 +3707,7 @@
          return new Vec3(this.getX(), this.getBoundingBox().maxY, this.getZ());
      }
  
-@@ -2709,7 +3710,7 @@
+@@ -2709,7 +3797,7 @@
      }
  
      public CommandSourceStack createCommandSourceStack() {
@@ -3617,7 +3716,7 @@
      }
  
      protected int getPermissionLevel() {
-@@ -2736,13 +3737,14 @@
+@@ -2736,13 +3824,14 @@
      }
  
      public void lookAt(EntityAnchorArgument.Anchor anchorPoint, Vec3 target) {
@@ -3639,7 +3738,7 @@
          this.setYHeadRot(this.getYRot());
          this.xRotO = this.getXRot();
          this.yRotO = this.getYRot();
-@@ -2752,38 +3754,41 @@
+@@ -2752,75 +3841,86 @@
          if (this.touchingUnloadedChunk()) {
              return false;
          } else {
@@ -3707,10 +3806,15 @@
 -                                    ++o;
 +                                    vec3d = vec3d.add(vec3d1);
 +                                    ++k1;
++                                }
++                                // CraftBukkit start - store last lava contact location
++                                if (tag == FluidTags.LAVA) {
++                                    this.lastLavaContact = blockposition_mutableblockposition.immutable();
                                  }
++                                // CraftBukkit end
                              }
                          }
-@@ -2791,36 +3796,39 @@
+                     }
                  }
              }
  
@@ -3767,7 +3871,7 @@
          return !this.level.hasChunksAt(i, k, j, l);
      }
  
-@@ -2829,7 +3837,7 @@
+@@ -2829,7 +3929,7 @@
      }
  
      public double getFluidJumpThreshold() {
@@ -3776,7 +3880,7 @@
      }
  
      public final float getBbWidth() {
-@@ -2842,7 +3850,7 @@
+@@ -2842,7 +3942,7 @@
  
      public abstract Packet<?> getAddEntityPacket();
  
@@ -3785,7 +3889,7 @@
          return this.type.getDimensions();
      }
  
-@@ -2876,7 +3884,9 @@
+@@ -2876,7 +3976,9 @@
      }
  
      public void setDeltaMovement(Vec3 velocity) {
@@ -3795,7 +3899,7 @@
      }
  
      public void setDeltaMovement(double x, double y, double z) {
-@@ -2892,7 +3902,7 @@
+@@ -2892,7 +3994,7 @@
      }
  
      public double getX(double widthScale) {
@@ -3804,7 +3908,7 @@
      }
  
      public double getRandomX(double widthScale) {
-@@ -2908,7 +3918,7 @@
+@@ -2908,7 +4010,7 @@
      }
  
      public double getY(double heightScale) {
@@ -3813,7 +3917,7 @@
      }
  
      public double getRandomY() {
-@@ -2916,7 +3926,7 @@
+@@ -2916,7 +4018,7 @@
      }
  
      public double getEyeY() {
@@ -3822,7 +3926,7 @@
      }
  
      public final int getBlockZ() {
-@@ -2928,7 +3938,7 @@
+@@ -2928,7 +4030,7 @@
      }
  
      public double getZ(double widthScale) {
@@ -3831,7 +3935,7 @@
      }
  
      public double getRandomZ(double widthScale) {
-@@ -2936,11 +3946,29 @@
+@@ -2936,11 +4038,29 @@
      }
  
      public final void setPosRaw(double x, double y, double z) {
@@ -3861,7 +3965,7 @@
              if (i != this.blockPosition.getX() || j != this.blockPosition.getY() || k != this.blockPosition.getZ()) {
                  this.blockPosition = new BlockPos(i, j, k);
                  this.feetBlockState = null;
-@@ -2950,30 +3978,37 @@
+@@ -2950,30 +4070,37 @@
              }
  
              this.levelCallback.onMove();
@@ -3912,7 +4016,7 @@
          this.setId(i);
          this.setUUID(packet.getUUID());
      }
-@@ -3049,13 +4084,7 @@
+@@ -3049,13 +4176,7 @@
  
      @Override
      public boolean shouldBeSaved() {
@@ -3927,7 +4031,7 @@
      }
  
      @Override
-@@ -3071,23 +4100,37 @@
+@@ -3071,23 +4192,37 @@
          return this.level;
      }
  
@@ -3975,7 +4079,7 @@
          }
  
          public boolean emitsAnything() {
-@@ -3103,27 +4146,19 @@
+@@ -3103,27 +4238,19 @@
          }
      }
  

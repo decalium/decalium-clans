@@ -13,7 +13,7 @@
      private final Long2ObjectMap<Optional<R>> storage = new Long2ObjectOpenHashMap<>();
      public final LongLinkedOpenHashSet dirty = new LongLinkedOpenHashSet();
      private final Function<Runnable, Codec<R>> codec;
-@@ -43,12 +43,13 @@
+@@ -43,14 +43,49 @@
      protected final LevelHeightAccessor levelHeightAccessor;
  
      public SectionStorage(Path path, Function<Runnable, Codec<R>> codecFactory, Function<Runnable, R> factory, DataFixer dataFixer, DataFixTypes dataFixTypes, boolean dsync, LevelHeightAccessor world) {
@@ -27,8 +27,44 @@
 +        // Paper - remove mojang I/O thread
      }
  
++    // Paper start - actually unload POI data
++    public void unloadData(long coordinate) {
++        ChunkPos chunkPos = new ChunkPos(coordinate);
++        this.flush(chunkPos);
++
++        Long2ObjectMap<Optional<R>> data = this.storage;
++        int before = data.size();
++
++        for (int section = this.levelHeightAccessor.getMinSection(); section < this.levelHeightAccessor.getMaxSection(); ++section) {
++            data.remove(SectionPos.asLong(chunkPos.x, section, chunkPos.z));
++        }
++
++        if (before != data.size()) {
++            this.onUnload(coordinate);
++        }
++    }
++
++    protected void onUnload(long coordinate) {}
++
++    public boolean isEmpty(long coordinate) {
++        Long2ObjectMap<Optional<R>> data = this.storage;
++        int x = net.minecraft.server.MCUtil.getCoordinateX(coordinate);
++        int z = net.minecraft.server.MCUtil.getCoordinateZ(coordinate);
++        for (int section = this.levelHeightAccessor.getMinSection(); section < this.levelHeightAccessor.getMaxSection(); ++section) {
++            Optional<R> optional = data.get(SectionPos.asLong(x, section, z));
++            if (optional != null && optional.orElse(null) != null) {
++                return false;
++            }
++        }
++
++        return true;
++    }
++    // Paper end - actually unload POI data
++
      protected void tick(BooleanSupplier shouldKeepTicking) {
-@@ -60,11 +61,11 @@
+         while(!this.dirty.isEmpty() && shouldKeepTicking.getAsBoolean()) {
+             ChunkPos chunkPos = SectionPos.of(this.dirty.firstLong()).chunk();
+@@ -60,11 +95,11 @@
      }
  
      @Nullable
@@ -42,7 +78,7 @@
          if (this.outsideStoredRange(pos)) {
              return Optional.empty();
          } else {
-@@ -106,13 +107,18 @@
+@@ -106,13 +141,18 @@
      }
  
      private void readColumn(ChunkPos chunkPos) {
@@ -63,7 +99,7 @@
          } catch (IOException var3) {
              LOGGER.error("Error reading chunk {} data from disk", pos, var3);
              return null;
-@@ -129,7 +135,14 @@
+@@ -129,7 +169,14 @@
              int j = getVersion(dynamic);
              int k = SharedConstants.getCurrentVersion().getWorldVersion();
              boolean bl = j != k;
@@ -79,7 +115,15 @@
              OptionalDynamic<T> optionalDynamic = dynamic2.get("Sections");
  
              for(int l = this.levelHeightAccessor.getMinSection(); l < this.levelHeightAccessor.getMaxSection(); ++l) {
-@@ -156,13 +169,26 @@
+@@ -149,6 +196,7 @@
+                 });
+             }
+         }
++        if (this instanceof net.minecraft.world.entity.ai.village.poi.PoiManager) { ((net.minecraft.world.entity.ai.village.poi.PoiManager)this).queueUnload(pos.longKey, net.minecraft.server.MinecraftServer.currentTickLong + 1); } // Paper - unload POI data
+ 
+     }
+ 
+@@ -156,13 +204,26 @@
          Dynamic<Tag> dynamic = this.writeColumn(chunkPos, NbtOps.INSTANCE);
          Tag tag = dynamic.getValue();
          if (tag instanceof CompoundTag) {
@@ -107,13 +151,13 @@
      private <T> Dynamic<T> writeColumn(ChunkPos chunkPos, DynamicOps<T> dynamicOps) {
          Map<T, T> map = Maps.newHashMap();
  
-@@ -219,6 +245,23 @@
+@@ -219,6 +280,23 @@
  
      @Override
      public void close() throws IOException {
 -        this.worker.close();
 +        //this.worker.close(); // Paper - nuke I/O worker
-     }
++    }
 +
 +    // Paper start - get data function
 +    public CompoundTag getData(ChunkPos chunkcoordintpair) {
@@ -129,6 +173,6 @@
 +            }
 +        }
 +        return null;
-+    }
+     }
 +    // Paper end
  }

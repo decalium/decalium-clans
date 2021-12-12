@@ -227,12 +227,13 @@
      private boolean enforceWhitelist;
      private float averageTickTime;
      public final Executor executor;
-@@ -252,192 +285,549 @@
+@@ -252,192 +285,550 @@
      protected WorldData worldData;
      private volatile boolean isSaving;
  
 +    // CraftBukkit start
-+    public DataPackConfig datapackconfiguration;
++    public final DataPackConfig datapackconfiguration;
++    public final RegistryReadOps<Tag> registryreadops;
 +    public org.bukkit.craftbukkit.v1_18_R1.CraftServer server;
 +    public OptionSet options;
 +    public org.bukkit.command.ConsoleCommandSender console;
@@ -418,6 +419,7 @@
 +        // CraftBukkit start
 +        this.options = options;
 +        this.datapackconfiguration = datapackconfiguration;
++        this.registryreadops = RegistryReadOps.createAndLoad(NbtOps.INSTANCE, datapackresources.getResourceManager(), iregistrycustom_dimension);
 +        this.vanillaCommandDispatcher = datapackresources.commands; // CraftBukkit
 +        // Paper start - Handled by TerminalConsoleAppender
 +        // Try to see if we're actually running in a terminal, disable jline if not
@@ -506,7 +508,6 @@
 +    private void loadWorld0(String s) {
 +        LevelStorageSource.LevelStorageAccess worldSession = this.storageSource;
 +        RegistryAccess.RegistryHolder iregistrycustom_dimension = this.registryHolder;
-+        RegistryReadOps<Tag> registryreadops = RegistryReadOps.createAndLoad(NbtOps.INSTANCE, this.resources.getResourceManager(), iregistrycustom_dimension);
 +        PrimaryLevelData overworldData = (PrimaryLevelData) worldSession.getDataTag(registryreadops, datapackconfiguration);
 +        if (overworldData == null) {
 +            LevelSettings worldsettings;
@@ -630,7 +631,7 @@
 +            org.bukkit.generator.ChunkGenerator gen = this.server.getGenerator(name);
 +            org.bukkit.generator.BiomeProvider biomeProvider = this.server.getBiomeProvider(name);
 +
-+            PrimaryLevelData worlddata = (PrimaryLevelData) worldSession.getDataTag((DynamicOps) registryreadops, datapackconfiguration);
++            PrimaryLevelData worlddata = (PrimaryLevelData) worldSession.getDataTag((DynamicOps) this.registryreadops, datapackconfiguration);
 +            if (worlddata == null) {
 +                LevelSettings worldsettings;
 +                WorldGenSettings generatorsettings;
@@ -886,7 +887,7 @@
              }
  
          }
-@@ -446,61 +836,89 @@
+@@ -446,61 +837,89 @@
      private void setupDebugLevel(WorldData properties) {
          properties.setDifficulty(Difficulty.PEACEFUL);
          properties.setDifficultyLocked(true);
@@ -1012,7 +1013,7 @@
              }
          }
  
-@@ -521,44 +939,55 @@
+@@ -521,44 +940,55 @@
      public abstract boolean shouldRconBroadcast();
  
      public boolean saveAllChunks(boolean suppressLogs, boolean flush, boolean force) {
@@ -1084,7 +1085,7 @@
      }
  
      @Override
-@@ -566,35 +995,81 @@
+@@ -566,35 +996,81 @@
          this.stopServer();
      }
  
@@ -1178,7 +1179,7 @@
                  }
              }
          }
-@@ -604,10 +1079,30 @@
+@@ -604,10 +1080,30 @@
  
          try {
              this.storageSource.close();
@@ -1212,7 +1213,7 @@
      }
  
      public String getLocalIp() {
-@@ -622,40 +1117,146 @@
+@@ -622,40 +1118,146 @@
          return this.running;
      }
  
@@ -1369,7 +1370,7 @@
                      this.nextTickTime += 50L;
                      this.startMetricsRecordingTick();
                      this.profiler.push("tick");
-@@ -670,38 +1271,62 @@
+@@ -670,38 +1272,62 @@
                      JvmProfiler.INSTANCE.onServerTick(this.averageTickTime);
                  }
              } else {
@@ -1448,7 +1449,7 @@
              }
  
          }
-@@ -709,40 +1334,70 @@
+@@ -709,40 +1335,70 @@
      }
  
      private boolean haveTime() {
@@ -1530,7 +1531,7 @@
                          return true;
                      }
                  }
-@@ -752,29 +1407,33 @@
+@@ -752,29 +1408,33 @@
          }
      }
  
@@ -1576,7 +1577,7 @@
              }
  
          });
-@@ -788,95 +1447,208 @@
+@@ -788,95 +1448,208 @@
          return new File(".");
      }
  
@@ -1822,7 +1823,7 @@
  
          this.profiler.pop();
      }
-@@ -902,12 +1674,12 @@
+@@ -902,12 +1675,12 @@
      }
  
      public final ServerLevel overworld() {
@@ -1837,7 +1838,7 @@
      }
  
      public Set<ResourceKey<Level>> levelKeys() {
-@@ -936,7 +1708,7 @@
+@@ -936,7 +1709,7 @@
  
      @DontObfuscate
      public String getServerModName() {
@@ -1846,7 +1847,7 @@
      }
  
      public SystemReport fillSystemReport(SystemReport details) {
-@@ -945,25 +1717,30 @@
+@@ -945,25 +1718,30 @@
          });
          if (this.playerList != null) {
              details.setDetail("Player Count", () -> {
@@ -1886,7 +1887,7 @@
          });
          if (this.serverId != null) {
              details.setDetail("Server Id", () -> {
-@@ -982,7 +1759,7 @@
+@@ -982,7 +1760,7 @@
  
      @Override
      public void sendMessage(Component message, UUID sender) {
@@ -1895,7 +1896,7 @@
      }
  
      public KeyPair getKeyPair() {
-@@ -1010,20 +1787,23 @@
+@@ -1010,20 +1788,23 @@
      }
  
      protected void initializeKeyPair() {
@@ -1927,7 +1928,7 @@
          }
      }
  
-@@ -1032,8 +1812,12 @@
+@@ -1032,8 +1813,12 @@
      }
  
      private void updateMobSpawningFlags() {
@@ -1942,7 +1943,7 @@
          }
  
      }
-@@ -1044,8 +1828,9 @@
+@@ -1044,8 +1829,9 @@
      }
  
      private void sendDifficultyUpdate(ServerPlayer player) {
@@ -1954,7 +1955,7 @@
      }
  
      public boolean isSpawningMonsters() {
-@@ -1149,7 +1934,7 @@
+@@ -1149,7 +1935,7 @@
  
      @Nullable
      public ServerConnectionListener getConnection() {
@@ -1963,7 +1964,7 @@
      }
  
      public boolean isReady() {
-@@ -1254,27 +2039,43 @@
+@@ -1254,27 +2040,43 @@
          return this.functionManager;
      }
  
@@ -2018,7 +2019,7 @@
      }
  
      public static DataPackConfig configurePackRepository(PackRepository resourcePackManager, DataPackConfig dataPackSettings, boolean safeMode) {
-@@ -1284,50 +2085,63 @@
+@@ -1284,50 +2086,63 @@
              return new DataPackConfig(ImmutableList.of("vanilla"), ImmutableList.of());
          } else {
              Set<String> set = Sets.newLinkedHashSet();
@@ -2101,7 +2102,7 @@
                  }
              }
  
-@@ -1343,8 +2157,9 @@
+@@ -1343,8 +2158,9 @@
      }
  
      public CommandSourceStack createCommandSourceStack() {
@@ -2113,7 +2114,7 @@
      }
  
      @Override
-@@ -1414,16 +2229,9 @@
+@@ -1414,16 +2230,9 @@
  
      public int getProfilePermissions(GameProfile profile) {
          if (this.getPlayerList().isOp(profile)) {
@@ -2133,7 +2134,7 @@
          } else {
              return 0;
          }
-@@ -1439,18 +2247,21 @@
+@@ -1439,18 +2248,21 @@
  
      public abstract boolean isSingleplayerOwner(GameProfile profile);
  
@@ -2163,7 +2164,7 @@
              }
  
              this.dumpGameRules(path.resolve("gamerules.txt"));
-@@ -1459,184 +2270,217 @@
+@@ -1459,184 +2271,217 @@
              this.dumpThreads(path.resolve("threads.txt"));
              this.dumpServerProperties(path.resolve("server.properties.txt"));
              this.dumpNativeModules(path.resolve("modules.txt"));
@@ -2465,7 +2466,7 @@
      private void startMetricsRecordingTick() {
          if (this.willStartRecordingMetrics) {
              this.metricsRecorder = ActiveMetricsRecorder.createStarted(new ServerMetricsSamplersProvider(Util.timeSource, this.isDedicatedServer()), Util.timeSource, Util.ioPool(), new MetricsPersister("server"), this.onMetricsRecordingStopped, (path) -> {
-@@ -1663,9 +2507,9 @@
+@@ -1663,9 +2508,9 @@
      }
  
      public void startRecordingMetrics(Consumer<ProfileResults> resultConsumer, Consumer<Path> dumpConsumer) {
@@ -2477,7 +2478,7 @@
          };
          this.onMetricsRecordingFinished = dumpConsumer;
          this.willStartRecordingMetrics = true;
-@@ -1708,7 +2552,7 @@
+@@ -1708,7 +2553,7 @@
      }
  
      public ServerPlayerGameMode createGameModeForPlayer(ServerPlayer player) {
@@ -2486,7 +2487,7 @@
      }
  
      @Nullable
-@@ -1741,13 +2585,15 @@
+@@ -1741,13 +2586,15 @@
          if (this.debugCommandProfiler == null) {
              return EmptyProfileResults.EMPTY;
          } else {
@@ -2505,7 +2506,7 @@
          final long startNanos;
          final int startTick;
  
-@@ -1756,7 +2602,7 @@
+@@ -1756,7 +2603,7 @@
              this.startTick = tick;
          }
  
@@ -2514,7 +2515,7 @@
              return new ProfileResults() {
                  @Override
                  public List<ResultField> getTimes(String parentPath) {
-@@ -1795,4 +2641,29 @@
+@@ -1795,4 +2642,29 @@
              };
          }
      }

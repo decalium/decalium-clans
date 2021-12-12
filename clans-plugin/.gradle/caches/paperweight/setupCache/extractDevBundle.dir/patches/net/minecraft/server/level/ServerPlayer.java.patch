@@ -411,7 +411,7 @@
 +
 +                if (blockposition1 != null) {
 +                    this.moveTo(blockposition1, 0.0F, 0.0F);
-+                    if (world.noCollision((Entity) this)) {
++                    if (world.noCollision(this, this.getBoundingBox(), true)) { // Paper - make sure this loads chunks, we default to NOT loading now
                          break;
                      }
                  }
@@ -421,7 +421,7 @@
 +            this.moveTo(blockposition, 0.0F, 0.0F);
  
 -            while(!world.noCollision(this) && this.getY() < (double)(world.getMaxBuildHeight() - 1)) {
-+            while (!world.noCollision((Entity) this) && this.getY() < (double) (world.getMaxBuildHeight() - 1)) {
++            while (!world.noCollision(this, this.getBoundingBox(), true) && this.getY() < (double) (world.getMaxBuildHeight() - 1)) { // Paper - make sure this loads chunks, we default to NOT loading now
                  this.setPos(this.getX(), this.getY() + 1.0D, this.getZ());
              }
          }
@@ -1127,7 +1127,7 @@
 +                this.isChangingDimension = true; // CraftBukkit - Set teleport invulnerability only if player changing worlds
 +
 +                this.connection.send(new ClientboundRespawnPacket(worldserver.dimensionType(), worldserver.dimension(), BiomeManager.obfuscateSeed(worldserver.getSeed()), this.gameMode.getGameModeForPlayer(), this.gameMode.getPreviousGameModeForPlayer(), worldserver.isDebug(), worldserver.isFlat(), true));
-+                this.connection.send(new ClientboundChangeDifficultyPacket(this.level.getDifficulty(), this.level.getLevelData().isDifficultyLocked()));
++                this.connection.send(new ClientboundChangeDifficultyPacket(worldserver.getDifficulty(), worldserver.getLevelData().isDifficultyLocked())); // Paper - fix difficulty sync issue
 +                PlayerList playerlist = this.server.getPlayerList();
 +
 +                playerlist.sendPlayerPermissionLevel(this);

@@ -30,17 +30,17 @@
  
      BlockState getBlockState(BlockPos pos);
 +    // Paper start - if loaded util
-+    @Nullable BlockState getTypeIfLoaded(BlockPos blockposition);
-+    default Material getMaterialIfLoaded(BlockPos blockposition) {
-+        BlockState type = this.getTypeIfLoaded(blockposition);
++    @Nullable BlockState getBlockStateIfLoaded(BlockPos blockposition);
++    default @Nullable Material getMaterialIfLoaded(BlockPos blockposition) {
++        BlockState type = this.getBlockStateIfLoaded(blockposition);
 +        return type == null ? null : type.getMaterial();
 +    }
 +
-+    default Block getBlockIfLoaded(BlockPos blockposition) {
-+        BlockState type = this.getTypeIfLoaded(blockposition);
++    default @Nullable Block getBlockIfLoaded(BlockPos blockposition) {
++        BlockState type = this.getBlockStateIfLoaded(blockposition);
 +        return type == null ? null : type.getBlock();
 +    }
-+    FluidState getFluidIfLoaded(BlockPos blockposition);
++    @Nullable FluidState getFluidIfLoaded(BlockPos blockposition);
 +    // Paper end
  
      FluidState getFluidState(BlockPos pos);
@@ -71,7 +71,7 @@
 +    // CraftBukkit start - moved block handling into separate method for use by Block#rayTrace
 +    default BlockHitResult clip(ClipContext raytrace1, BlockPos blockposition) {
 +            // Paper start - Prevent raytrace from loading chunks
-+            BlockState iblockdata = this.getTypeIfLoaded(blockposition);
++            BlockState iblockdata = this.getBlockStateIfLoaded(blockposition);
 +            if (iblockdata == null) {
 +                // copied the last function parameter (listed below)
 +                Vec3 vec3d = raytrace1.getFrom().subtract(raytrace1.getTo());

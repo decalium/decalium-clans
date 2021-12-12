@@ -45,6 +45,13 @@ public class CraftVillager extends CraftAbstractVillager implements Villager {
     }
 
     @Override
+    public void remove() {
+        this.getHandle().releaseAllPois();
+
+        super.remove();
+    }
+
+    @Override
     public Profession getProfession() {
         return CraftVillager.nmsToBukkitProfession(this.getHandle().getVillagerData().getProfession());
     }

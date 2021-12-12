@@ -108,13 +108,13 @@
 +    }
 +
 +    @Override
-+    public BlockState getTypeIfLoaded(BlockPos blockposition) {
++    public final BlockState getBlockStateIfLoaded(BlockPos blockposition) {
 +        ChunkAccess chunk = this.getChunkIfLoadedImmediately(blockposition.getX() >> 4, blockposition.getZ() >> 4);
 +        return chunk == null ? null : chunk.getBlockState(blockposition);
 +    }
 +
 +    @Override
-+    public FluidState getFluidIfLoaded(BlockPos blockposition) {
++    public final FluidState getFluidIfLoaded(BlockPos blockposition) {
 +        ChunkAccess chunk = this.getChunkIfLoadedImmediately(blockposition.getX() >> 4, blockposition.getZ() >> 4);
 +        return chunk == null ? null : chunk.getFluidState(blockposition);
 +    }
@@ -134,9 +134,10 @@
 +        if (iblockdata.isAir()) {
              return false;
          } else {
-             if (drop) {
+-            if (drop) {
 -                BlockEntity blockEntity = blockState.hasBlockEntity() ? this.getBlockEntity(pos) : null;
 -                Block.dropResources(blockState, this.level, pos, blockEntity, breakingEntity, ItemStack.EMPTY);
++            if (false) { // CraftBukkit - SPIGOT-6833: Do not drop during world generation
 +                BlockEntity tileentity = iblockdata.hasBlockEntity() ? this.getBlockEntity(pos) : null;
 +
 +                Block.dropResources(iblockdata, this.level, pos, tileentity, breakingEntity, ItemStack.EMPTY);

@@ -787,7 +787,7 @@
 +            if (entityplayer2.getBukkitEntity().canSee(entityplayer.getBukkitEntity())) {
 +                entityplayer2.connection.send(packet);
 +            } else {
-+                entityplayer2.getBukkitEntity().removeDisconnectingPlayer(entityplayer.getBukkitEntity());
++                entityplayer2.getBukkitEntity().onEntityRemove(entityplayer);
 +            }
 +        }
 +        // This removes the scoreboard (and player reference) for the specific player in the manager
@@ -1103,7 +1103,7 @@
 -        while(!serverLevel2.noCollision(serverPlayer) && serverPlayer.getY() < (double)serverLevel2.getMaxBuildHeight()) {
 -            serverPlayer.setPos(serverPlayer.getX(), serverPlayer.getY() + 1.0D, serverPlayer.getZ());
 +        worldserver1.getChunkSource().addRegionTicket(net.minecraft.server.level.TicketType.POST_TELEPORT, new net.minecraft.world.level.ChunkPos(location.getBlockX() >> 4, location.getBlockZ() >> 4), 1, entityplayer.getId()); // Paper
-+        while (avoidSuffocation && !worldserver1.noCollision(entityplayer1) && entityplayer1.getY() < (double) worldserver1.getMaxBuildHeight()) {
++        while (avoidSuffocation && !worldserver1.noCollision(entityplayer1, entityplayer1.getBoundingBox(), true) && entityplayer1.getY() < (double) worldserver1.getMaxBuildHeight()) { // Paper - make sure this loads chunks, we default to NOT loading now
 +            entityplayer1.setPos(entityplayer1.getX(), entityplayer1.getY() + 1.0D, entityplayer1.getZ());
          }
 +        // CraftBukkit start

@@ -15,7 +15,7 @@
      }
  
      @Override
-@@ -41,12 +42,12 @@
+@@ -41,33 +42,41 @@
  
      @Override
      protected BlockState updateBodyAfterConvertedFromHead(BlockState from, BlockState to) {
@@ -26,11 +26,21 @@
      @Override
      protected BlockState getGrowIntoState(BlockState state, Random random) {
 -        return super.getGrowIntoState(state, random).setValue(BERRIES, Boolean.valueOf(random.nextFloat() < 0.11F));
-+        return (BlockState) super.getGrowIntoState(state, random).setValue(CaveVinesBlock.BERRIES, random.nextFloat() < 0.11F);
++        // Paper start
++        return this.getGrowIntoState(state, random, null);
      }
  
      @Override
-@@ -56,18 +57,18 @@
++    protected BlockState getGrowIntoState(BlockState state, Random random, Level level) {
++        final boolean value = (level == null ? random.nextFloat() : random.nextFloat(100.00F / level.spigotConfig.glowBerryModifier)) < 0.11F;
++        return super.getGrowIntoState(state, random).setValue(CaveVinesBlock.BERRIES, value);
++    }
++    // Paper end
++
++    @Override
+     public ItemStack getCloneItemStack(BlockGetter world, BlockPos pos, BlockState state) {
+         return new ItemStack(Items.GLOW_BERRIES);
+     }
  
      @Override
      public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
@@ -52,7 +62,7 @@
      }
  
      @Override
-@@ -77,6 +78,6 @@
+@@ -77,6 +86,6 @@
  
      @Override
      public void performBonemeal(ServerLevel world, Random random, BlockPos pos, BlockState state) {

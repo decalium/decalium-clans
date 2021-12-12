@@ -144,7 +144,7 @@
          if (this.hasDelayedDestroy) {
 -            BlockState blockState = this.level.getBlockState(this.delayedDestroyPos);
 -            if (blockState.isAir()) {
-+            iblockdata = this.level.getTypeIfLoaded(this.delayedDestroyPos); // Paper
++            iblockdata = this.level.getBlockStateIfLoaded(this.delayedDestroyPos); // Paper
 +            if (iblockdata == null || iblockdata.isAir()) { // Paper
                  this.hasDelayedDestroy = false;
              } else {
@@ -160,7 +160,7 @@
 -            BlockState blockState2 = this.level.getBlockState(this.destroyPos);
 -            if (blockState2.isAir()) {
 +            // Paper start - don't want to do same logic as above, return instead
-+            iblockdata = this.level.getTypeIfLoaded(this.destroyPos);
++            iblockdata = this.level.getBlockStateIfLoaded(this.destroyPos);
 +            if (iblockdata == null) {
 +                this.isDestroyingBlock = false;
 +                return;
@@ -363,7 +363,7 @@
 -                    this.player.connection.send(new ClientboundBlockBreakAckPacket(this.destroyPos, this.level.getBlockState(this.destroyPos), action, true, "aborted mismatched destroying"));
 +                if (!Objects.equals(this.destroyPos, pos) && !BlockPos.ZERO.equals(this.destroyPos)) {
 +                    ServerPlayerGameMode.LOGGER.debug("Mismatch in destroy block pos: {} {}", this.destroyPos, pos); // CraftBukkit - SPIGOT-5457 sent by client when interact event cancelled
-+                    BlockState type = this.level.getTypeIfLoaded(this.destroyPos); // Paper - don't load unloaded chunks for stale records here
++                    BlockState type = this.level.getBlockStateIfLoaded(this.destroyPos); // Paper - don't load unloaded chunks for stale records here
 +                    if (type != null) this.level.destroyBlockProgress(this.player.getId(), this.destroyPos, -1); // Paper
 +                    if (type != null) this.player.connection.send(new ClientboundBlockBreakAckPacket(this.destroyPos, type, action, true, "aborted mismatched destroying")); // Paper
 +                    this.destroyPos = BlockPos.ZERO; // Paper

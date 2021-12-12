@@ -856,6 +856,11 @@ public class CraftEventFactory {
     }
 
     public static EntityDeathEvent callEntityDeathEvent(net.minecraft.world.entity.LivingEntity victim, List<org.bukkit.inventory.ItemStack> drops) {
+        // Paper start
+        return CraftEventFactory.callEntityDeathEvent(victim, drops, com.google.common.util.concurrent.Runnables.doNothing());
+    }
+    public static EntityDeathEvent callEntityDeathEvent(net.minecraft.world.entity.LivingEntity victim, List<org.bukkit.inventory.ItemStack> drops, Runnable lootCheck) {
+        // Paper end
         CraftLivingEntity entity = (CraftLivingEntity) victim.getBukkitEntity();
         EntityDeathEvent event = new EntityDeathEvent(entity, drops, victim.getExpReward());
         populateFields(victim, event); // Paper - make cancellable
@@ -869,6 +874,7 @@ public class CraftEventFactory {
         playDeathSound(victim, event);
         // Paper end
         victim.expToDrop = event.getDroppedExp();
+        lootCheck.run(); // Paper - advancement triggers before destroying items
 
         for (org.bukkit.inventory.ItemStack stack : event.getDrops()) {
             if (stack == null || stack.getType() == Material.AIR || stack.getAmount() == 0) continue;
@@ -999,7 +1005,7 @@ public class CraftEventFactory {
             }
             return event;
         } else if (source == DamageSource.LAVA) {
-            EntityDamageEvent event = (new EntityDamageByBlockEvent(null, entity.getBukkitEntity(), DamageCause.LAVA, modifiers, modifierFunctions));
+            EntityDamageEvent event = (new EntityDamageByBlockEvent(CraftEventFactory.blockDamage, entity.getBukkitEntity(), DamageCause.LAVA, modifiers, modifierFunctions));
             event.setCancelled(cancelled);
             CraftEventFactory.callEvent(event);
             if (!event.isCancelled()) {

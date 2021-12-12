@@ -704,15 +704,10 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
         }
     }
 
-    // Paper start - Add method to open already placed sign
+    // Paper start - move open sign method to HumanEntity
     @Override
     public void openSign(org.bukkit.block.Sign sign) {
-        org.apache.commons.lang.Validate.isTrue(sign.getWorld().equals(this.getWorld()), "Sign must be in the same world as player is in");
-        org.bukkit.craftbukkit.v1_18_R1.block.CraftSign craftSign = (org.bukkit.craftbukkit.v1_18_R1.block.CraftSign) sign;
-        net.minecraft.world.level.block.entity.SignBlockEntity teSign = craftSign.getTileEntity();
-        // Make sign editable temporarily, will be set back to false in PlayerConnection later
-        teSign.isEditable = true;
-        this.getHandle().openTextEdit(teSign);
+        org.bukkit.craftbukkit.v1_18_R1.block.CraftSign.openSign(sign, this);
     }
     // Paper end
     @Override

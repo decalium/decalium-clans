@@ -671,10 +671,13 @@ public class CraftBlock implements Block {
         net.minecraft.world.item.ItemStack nmsItemStack;
         if (itemStack instanceof CraftItemStack) {
             nmsItemStack = ((CraftItemStack) itemStack).handle;
+            if (nmsItemStack == null) {
+                nmsItemStack = net.minecraft.world.item.ItemStack.EMPTY;
+            }
         } else {
             nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
         }
-        float speed = nmsItemStack.getItem().getDestroySpeed(nmsItemStack, this.getNMS().getBlock().defaultBlockState());
+        float speed = nmsItemStack.getDestroySpeed(this.getNMS().getBlock().defaultBlockState());
         if (speed > 1.0F && considerEnchants) {
             int enchantLevel = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(net.minecraft.world.item.enchantment.Enchantments.BLOCK_EFFICIENCY, nmsItemStack);
             if (enchantLevel > 0) {

@@ -409,7 +409,7 @@
  
      public boolean isInWorldBounds(BlockPos pos) {
 -        return !this.isOutsideBuildHeight(pos) && isInWorldBoundsHorizontal(pos);
-+        return pos.isValidLocation(this); // Paper - use better/optimized check
++        return pos.isInsideBuildHeightAndWorldBoundsHorizontal(this); // Paper - use better/optimized check
      }
  
      public static boolean isInSpawnableBounds(BlockPos pos) {
@@ -455,7 +455,7 @@
 +
 +    @Override
 +    @Nullable
-+    public final BlockState getTypeIfLoaded(BlockPos blockposition) {
++    public final BlockState getBlockStateIfLoaded(BlockPos blockposition) {
 +        // CraftBukkit start - tree generation
 +        if (captureTreeGeneration) {
 +            CraftBlockState previous = capturedBlockStates.get(blockposition);
@@ -488,21 +488,21 @@
 +        return getWorldBorder().isWithinBounds(blockposition) && getChunkIfLoadedImmediately(blockposition.getX() >> 4, blockposition.getZ() >> 4) != null;
 +    }
 +
-+    public LevelChunk getChunkIfLoaded(int x, int z) { // Overridden in WorldServer for ABI compat which has final
++    public @Nullable LevelChunk getChunkIfLoaded(int x, int z) { // Overridden in WorldServer for ABI compat which has final
 +        return ((ServerLevel) this).getChunkSource().getChunkAtIfLoadedImmediately(x, z);
 +    }
-+    public final LevelChunk getChunkIfLoaded(BlockPos blockposition) {
++    public final @Nullable LevelChunk getChunkIfLoaded(BlockPos blockposition) {
 +        return ((ServerLevel) this).getChunkSource().getChunkAtIfLoadedImmediately(blockposition.getX() >> 4, blockposition.getZ() >> 4);
 +    }
 +
 +    //  reduces need to do isLoaded before getType
-+    public final BlockState getTypeIfLoadedAndInBounds(BlockPos blockposition) {
-+        return getWorldBorder().isWithinBounds(blockposition) ? getTypeIfLoaded(blockposition) : null;
++    public final @Nullable BlockState getBlockStateIfLoadedAndInBounds(BlockPos blockposition) {
++        return getWorldBorder().isWithinBounds(blockposition) ? getBlockStateIfLoaded(blockposition) : null;
 +    }
-+    // Paper end
 +
 +    @Override
 +    public final ChunkAccess getChunk(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) { // Paper - final for inline
++        // Paper end
 +        ChunkAccess ichunkaccess = this.getChunkSource().getChunk(chunkX, chunkZ, leastStatus, create);
 +
 +        if (ichunkaccess == null && create) {

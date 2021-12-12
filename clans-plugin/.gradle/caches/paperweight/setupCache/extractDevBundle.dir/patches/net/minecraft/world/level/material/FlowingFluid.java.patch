@@ -222,7 +222,7 @@
 +                Direction enumdirection = (Direction) entry.getKey();
 +                FluidState fluid1 = (FluidState) entry.getValue();
 +                BlockPos blockposition1 = pos.relative(enumdirection);
-+                BlockState iblockdata1 = world.getTypeIfLoaded(blockposition1); // Paper
++                BlockState iblockdata1 = world.getBlockStateIfLoaded(blockposition1); // Paper
 +                if (iblockdata1 == null) continue; // Paper
 +
 +                if (this.canSpreadTo(world, pos, blockState, enumdirection, blockposition1, iblockdata1, world.getFluidState(blockposition1), fluid1.getType())) {
@@ -255,7 +255,7 @@
 +            Direction enumdirection = (Direction) iterator.next();
 +            BlockPos blockposition1 = pos.relative(enumdirection);
 +
-+            BlockState iblockdata1 = world.getTypeIfLoaded(blockposition1); // Paper
++            BlockState iblockdata1 = world.getBlockStateIfLoaded(blockposition1); // Paper
 +            if (iblockdata1 == null) continue; // Paper
 +            FluidState fluid = iblockdata1.getFluidState();
 +
@@ -427,7 +427,7 @@
 +                // Paper start - avoid loading chunks
 +                Pair<BlockState, FluidState> pair = short2objectmap.get(short0);
 +                if (pair == null) {
-+                    BlockState iblockdatax = world.getTypeIfLoaded(blockposition2);
++                    BlockState iblockdatax = world.getBlockStateIfLoaded(blockposition2);
 +                    if (iblockdatax == null) {
 +                        continue;
 +                    }
@@ -523,7 +523,7 @@
 +            // Paper start
 +            Pair pair = (Pair) short2objectmap.get(short0);
 +            if (pair == null) {
-+                BlockState iblockdatax = world.getTypeIfLoaded(blockposition1);
++                BlockState iblockdatax = world.getBlockStateIfLoaded(blockposition1);
 +                if (iblockdatax == null) continue;
 +
 +                pair = Pair.of(iblockdatax, iblockdatax.getFluidState());

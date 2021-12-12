@@ -618,7 +618,7 @@ public final class ChunkPacketBlockControllerAntiXray extends ChunkPacketBlockCo
     }
 
     private void updateBlock(Level level, BlockPos blockPos) {
-        BlockState blockState = level.getTypeIfLoaded(blockPos);
+        BlockState blockState = level.getBlockStateIfLoaded(blockPos);
 
         if (blockState != null && obfuscateGlobal[GLOBAL_BLOCKSTATE_PALETTE.idFor(blockState)]) {
             ((ServerLevel) level).getChunkSource().blockChanged(blockPos);

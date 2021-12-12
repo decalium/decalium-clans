@@ -148,7 +148,7 @@
 +    public static final double GENERAL_AREA_MAP_ACCEPTABLE_SEARCH_RANGE_SQUARED = GENERAL_AREA_MAP_ACCEPTABLE_SEARCH_RANGE * GENERAL_AREA_MAP_ACCEPTABLE_SEARCH_RANGE;
 +    public final com.destroystokyo.paper.util.misc.PlayerAreaMap playerGeneralAreaMap;
 +    // Paper end - optimise checkDespawn
-+
+ 
 +    // CraftBukkit start - recursion-safe executor for Chunk loadCallback() and unloadCallback()
 +    public final CallbackExecutor callbackExecutor = new CallbackExecutor();
 +    public static final class CallbackExecutor implements java.util.concurrent.Executor, Runnable {
@@ -361,7 +361,7 @@
 +            // Paper end - optimise notify()
 +        }
 +    }
- 
++
 +    public final ChunkHolder getUnloadingChunkHolder(int chunkX, int chunkZ) {
 +        return this.pendingUnloads.get(io.papermc.paper.util.CoordinateUtils.getChunkKey(chunkX, chunkZ));
 +    }
@@ -870,7 +870,7 @@
      }
  
      public CompletableFuture<Either<LevelChunk, ChunkHolder.ChunkLoadingFailure>> prepareEntityTickingChunk(ChunkPos pos) {
-@@ -340,37 +794,44 @@
+@@ -340,37 +794,45 @@
              return ChunkStatus.FULL;
          }).thenApplyAsync((either) -> {
              return either.mapLeft((list) -> {
@@ -917,13 +917,14 @@
 +                    }
 +                    // Paper end
                  }
++                this.getPoiManager().dequeueUnload(holder.pos.longKey); // Paper - unload POI data
  
 -                this.updatingChunkMap.put(pos, holder);
 +                this.updatingChunks.queueUpdate(pos, holder); // Paper - Don't copy
                  this.modified = true;
              }
  
-@@ -382,6 +843,7 @@
+@@ -382,6 +844,7 @@
      public void close() throws IOException {
          try {
              this.queueSorter.close();
@@ -931,7 +932,7 @@
              this.poiManager.close();
          } finally {
              super.close();
-@@ -389,110 +851,238 @@
+@@ -389,110 +852,240 @@
  
      }
  
@@ -1079,7 +1080,7 @@
 +        gameprofilerfiller.pop();
      }
  
-+    private static final double UNLOAD_QUEUE_RESIZE_FACTOR = 0.90; // Spigot // Paper - unload more
++    public static final double UNLOAD_QUEUE_RESIZE_FACTOR = 0.90; // Spigot // Paper - unload more
 +
      private void processUnloads(BooleanSupplier shouldKeepTicking) {
 -        LongIterator longIterator = this.toDrop.iterator();
@@ -1171,6 +1172,7 @@
 +                        this.regionManagers.get(index).removeChunk(holder.pos.x, holder.pos.z);
 +                    }
 +                    // Paper end
++                    this.getPoiManager().queueUnload(holder.pos.longKey, MinecraftServer.currentTickLong + 1); // Paper - unload POI data
 +                    if (ichunkaccess instanceof LevelChunk) {
 +                        ((LevelChunk) ichunkaccess).setLoaded(false);
                      }
@@ -1206,6 +1208,7 @@
 +                    for (int index = 0, len = this.regionManagers.size(); index < len; ++index) {
 +                        this.regionManagers.get(index).removeChunk(holder.pos.x, holder.pos.z);
 +                    }
++                    this.getPoiManager().queueUnload(holder.pos.longKey, MinecraftServer.currentTickLong + 1); // Paper - unload POI data
 +                } // Paper end
 +                } finally { this.unloadingPlayerChunk = unloadingBefore; } // Paper - do not allow ticket level changes while unloading chunks
  
@@ -1222,7 +1225,7 @@
              }
  
          });
-@@ -502,110 +1092,183 @@
+@@ -502,110 +1095,184 @@
          if (!this.modified) {
              return false;
          } else {
@@ -1301,6 +1304,7 @@
 +                }
 +                this.poiManager.loadInData(pos, chunkHolder.poiData);
 +                chunkHolder.tasks.forEach(Runnable::run);
++                this.getPoiManager().dequeueUnload(pos.longKey); // Paper
 +                // Paper end
 +
 +                if (chunkHolder.protoChunk != null) {try (Timing ignored2 = this.level.timings.chunkLoadLevelTimer.startTimingIfSync()) { // Paper start - timings // Paper - chunk is created async
@@ -1457,7 +1461,7 @@
      }
  
      protected void releaseLightTicket(ChunkPos pos) {
-@@ -617,94 +1280,159 @@
+@@ -617,94 +1284,159 @@
      }
  
      private ChunkStatus getDependencyStatus(ChunkStatus centerChunkTargetStatus, int distance) {
@@ -1662,7 +1666,7 @@
      }
  
      public int getTickingGenerated() {
-@@ -715,100 +1443,166 @@
+@@ -715,100 +1447,166 @@
          if (!chunkHolder.wasAccessibleSinceLastSave()) {
              return false;
          } else {
@@ -1870,7 +1874,7 @@
                      }
  
                      DebugPackets.sendPoiPacketsForChunk(this.level, pos);
-@@ -823,86 +1617,208 @@
+@@ -823,86 +1621,208 @@
      }
  
      public int size() {
@@ -2008,8 +2012,8 @@
 +        RegionFile regionFile = regionFileCache.getRegionFileIfLoaded(chunkPos);
 +
 +        return regionFile == null ? null : regionFile.getStatusIfCached(chunkPos.x, chunkPos.z);
-     }
- 
++    }
++
 +    public ChunkStatus getChunkStatusOnDisk(ChunkPos chunkPos) throws IOException {
 +        RegionFile regionFile = regionFileCache.getRegionFile(chunkPos, true);
 +
@@ -2037,9 +2041,9 @@
 +    public ChunkAccess getUnloadingChunk(int chunkX, int chunkZ) {
 +        ChunkHolder chunkHolder = this.pendingUnloads.get(ChunkPos.asLong(chunkX, chunkZ));
 +        return chunkHolder == null ? null : chunkHolder.getAvailableChunkNow();
-+    }
+     }
 +    // Paper end
-+
+ 
      boolean anyPlayerCloseEnoughForSpawning(ChunkPos pos) {
 -        long l = pos.toLong();
 -        if (!this.distanceManager.hasPlayersNearby(l)) {
@@ -2118,7 +2122,7 @@
                  }
              }
  
-@@ -910,12 +1826,13 @@
+@@ -910,12 +1830,13 @@
          }
      }
  
@@ -2136,7 +2140,7 @@
          }
      }
  
-@@ -924,29 +1841,34 @@
+@@ -924,29 +1845,34 @@
      }
  
      void updatePlayerStatus(ServerPlayer player, boolean added) {
@@ -2185,7 +2189,7 @@
                  }
              }
          }
-@@ -954,103 +1876,112 @@
+@@ -954,103 +1880,112 @@
      }
  
      private SectionPos updatePlayerPos(ServerPlayer player) {
@@ -2355,7 +2359,7 @@
              }
          }
  
-@@ -1058,24 +1989,43 @@
+@@ -1058,24 +1993,43 @@
      }
  
      public void addEntity(Entity entity) {
@@ -2411,7 +2415,7 @@
                              }
                          }
                      }
-@@ -1086,102 +2036,178 @@
+@@ -1086,102 +2040,178 @@
      }
  
      protected void removeEntity(Entity entity) {
@@ -2440,10 +2444,10 @@
 +
 +        if (playerchunkmap_entitytracker1 != null) {
 +            playerchunkmap_entitytracker1.broadcastRemoved();
-         }
++        }
 +        entity.tracker = null; // Paper - We're no longer tracked
 +    }
- 
++
 +    // Paper start - optimised tracker
 +    private final void processTrackQueue() {
 +        this.level.timings.tracker1.startTiming();
@@ -2454,8 +2458,8 @@
 +            }
 +        } finally {
 +            this.level.timings.tracker1.stopTiming();
-+        }
-+
+         }
+ 
 +
 +        this.level.timings.tracker2.startTiming();
 +        try {
@@ -2637,7 +2641,7 @@
              }
          }
  
-@@ -1199,9 +2225,10 @@
+@@ -1199,9 +2229,10 @@
          this.chunkStatusListener.onChunkStatusChange(chunkPos, levelType);
      }
  
@@ -2651,7 +2655,7 @@
          }
  
          @Override
-@@ -1217,42 +2244,77 @@
+@@ -1217,42 +2248,77 @@
  
          @Nullable
          @Override
@@ -2744,7 +2748,7 @@
              }
  
          }
-@@ -1260,19 +2322,24 @@
+@@ -1260,19 +2326,24 @@
          public void broadcastAndSend(Packet<?> packet) {
              this.broadcast(packet);
              if (this.entity instanceof ServerPlayer) {
@@ -2772,7 +2776,7 @@
              if (this.seenBy.remove(player.connection)) {
                  this.serverEntity.removePairing(player);
              }
-@@ -1280,13 +2347,24 @@
+@@ -1280,13 +2351,24 @@
          }
  
          public void updatePlayer(ServerPlayer player) {
@@ -2803,7 +2807,7 @@
                      if (this.seenBy.add(player.connection)) {
                          this.serverEntity.addPairing(player);
                      }
-@@ -1303,9 +2381,13 @@
+@@ -1303,9 +2385,13 @@
  
          private int getEffectiveRange() {
              int i = this.range;
@@ -2818,7 +2822,7 @@
                  if (j > i) {
                      i = j;
                  }
-@@ -1315,8 +2397,12 @@
+@@ -1315,8 +2401,12 @@
          }
  
          public void updatePlayers(List<ServerPlayer> players) {

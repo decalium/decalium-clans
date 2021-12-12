@@ -19,12 +19,12 @@
  
 +    // Paper start - If loaded util
 +    @Override
-+    public FluidState getFluidIfLoaded(BlockPos blockposition) {
++    public final FluidState getFluidIfLoaded(BlockPos blockposition) {
 +        return this.getFluidState(blockposition);
 +    }
 +
 +    @Override
-+    public BlockState getTypeIfLoaded(BlockPos blockposition) {
++    public final BlockState getBlockStateIfLoaded(BlockPos blockposition) {
 +        return this.getBlockState(blockposition);
 +    }
 +    // Paper end
@@ -34,9 +34,9 @@
 -        int i = pos.getY();
 -        if (this.isOutsideBuildHeight(i)) {
 +        // Paper start
-+        return getType(pos.getX(), pos.getY(), pos.getZ());
++        return getBlockState(pos.getX(), pos.getY(), pos.getZ());
 +    }
-+    public BlockState getType(final int x, final int y, final int z) {
++    public BlockState getBlockState(final int x, final int y, final int z) {
 +        if (this.isOutsideBuildHeight(y)) {
              return Blocks.VOID_AIR.defaultBlockState();
          } else {

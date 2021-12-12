@@ -1498,20 +1498,20 @@
 -            if (this.deathScore >= 0 && livingEntity != null) {
 -                livingEntity.awardKillScore(this, this.deathScore, source);
 +            LivingEntity entityliving = this.getKillCredit();
-+            /* // Paper - move down to make death event cancellable - this is the runKillTrigger below
++            /* // Paper - move down to make death event cancellable - this is the awardKillScore below
 +            if (this.deathScore >= 0 && entityliving != null) {
 +                entityliving.awardKillScore(this, this.deathScore, source);
              }
  
              if (this.isSleeping()) {
-@@ -1250,106 +1608,183 @@
+@@ -1250,106 +1608,197 @@
              }
  
              if (!this.level.isClientSide && this.hasCustomName()) {
 -                LOGGER.info("Named entity {} died: {}", this, this.getCombatTracker().getDeathMessage().getString());
 +                if (org.spigotmc.SpigotConfig.logNamedDeaths) LivingEntity.LOGGER.info("Named entity {} died: {}", this, this.getCombatTracker().getDeathMessage().getString()); // Spigot
              }
-+             */ // Paper - move down to make death event cancellable - this is the runKillTrigger below
++             */ // Paper - move down to make death event cancellable - this is the awardKillScore below
  
              this.dead = true;
 -            this.getCombatTracker().recheckStatus();
@@ -1527,9 +1527,15 @@
 +                // Paper start
 +                org.bukkit.event.entity.EntityDeathEvent deathEvent = this.dropAllDeathLoot(source);
 +                if (deathEvent == null || !deathEvent.isCancelled()) {
-+                    if (this.deathScore >= 0 && entityliving != null) {
-+                        entityliving.awardKillScore(this, this.deathScore, source);
++                    // if (this.deathScore >= 0 && entityliving != null) { // Paper moved to be run earlier in #dropAllDeathLoot before destroying the drop items in CraftEventFactory#callEntityDeathEvent
++                    //     entityliving.awardKillScore(this, this.deathScore, source);
++                    // }
++                    // Paper start - clear equipment if event is not cancelled
++                    if (this instanceof Mob mob) {
++                        java.util.Collections.fill(mob.handItems, ItemStack.EMPTY);
++                        java.util.Collections.fill(mob.armorItems, ItemStack.EMPTY);
 +                    }
++                    // Paper end
 +
 +                    if (this.isSleeping()) {
 +                        this.stopSleeping();
@@ -1603,6 +1609,7 @@
      }
  
 -    protected void dropAllDeathLoot(DamageSource source) {
++    protected boolean clearEquipmentSlots = true; // Paper
 +    protected org.bukkit.event.entity.EntityDeathEvent dropAllDeathLoot(DamageSource source) { // Paper
          Entity entity = source.getEntity();
          int i;
@@ -1623,10 +1630,17 @@
 -            this.dropFromLootTable(source, bl);
 -            this.dropCustomDeathLoot(source, i, bl);
 +            this.dropFromLootTable(source, flag);
++            this.clearEquipmentSlots = false; // Paper
 +            this.dropCustomDeathLoot(source, i, flag);
++            this.clearEquipmentSlots = true; // Paper
          }
-+        // CraftBukkit start - Call death event
-+        org.bukkit.event.entity.EntityDeathEvent deathEvent = CraftEventFactory.callEntityDeathEvent(this, this.drops); // Paper
++        // CraftBukkit start - Call death event // Paper start - call advancement triggers with correct entity equipment
++        org.bukkit.event.entity.EntityDeathEvent deathEvent = CraftEventFactory.callEntityDeathEvent(this, this.drops, () -> {
++            final LivingEntity entityliving = this.getKillCredit();
++            if (this.deathScore >= 0 && entityliving != null) {
++                entityliving.awardKillScore(this, this.deathScore, source);
++            }
++        }); // Paper end
 +        this.postDeathDropItems(deathEvent); // Paper
 +        this.drops = new ArrayList<>();
 +        // CraftBukkit end
@@ -1727,7 +1741,7 @@
          }
      }
  
-@@ -1396,13 +1831,14 @@
+@@ -1396,13 +1845,14 @@
          if (this.isSpectator()) {
              return false;
          } else {
@@ -1748,7 +1762,7 @@
                  return true;
              } else {
                  return false;
-@@ -1411,9 +1847,10 @@
+@@ -1411,9 +1861,10 @@
      }
  
      private boolean trapdoorUsableAsLadder(BlockPos pos, BlockState state) {
@@ -1762,7 +1776,7 @@
                  return true;
              }
          }
-@@ -1428,33 +1865,42 @@
+@@ -1428,33 +1879,42 @@
  
      @Override
      public boolean causeFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
@@ -1816,7 +1830,7 @@
              }
  
          }
-@@ -1471,19 +1917,16 @@
+@@ -1471,19 +1931,16 @@
          return Mth.floor(this.getAttributeValue(Attributes.ARMOR));
      }
  
@@ -1841,7 +1855,7 @@
          }
  
          return amount;
-@@ -1493,18 +1936,23 @@
+@@ -1493,18 +1950,23 @@
          if (source.isBypassMagic()) {
              return amount;
          } else {
@@ -1874,7 +1888,7 @@
                      }
                  }
              }
-@@ -1512,9 +1960,9 @@
+@@ -1512,9 +1974,9 @@
              if (amount <= 0.0F) {
                  return 0.0F;
              } else {
@@ -1887,7 +1901,7 @@
                  }
  
                  return amount;
-@@ -1522,25 +1970,181 @@
+@@ -1522,25 +1984,181 @@
          }
      }
  
@@ -2084,7 +2098,7 @@
      }
  
      public CombatTracker getCombatTracker() {
-@@ -1549,41 +2153,41 @@
+@@ -1549,41 +2167,41 @@
  
      @Nullable
      public LivingEntity getKillCredit() {
@@ -2112,17 +2126,17 @@
 -        this.entityData.set(DATA_ARROW_COUNT_ID, stuckArrowCount);
 +        // CraftBukkit start
 +        this.setArrowCount(stuckArrowCount, false);
-+    }
-+
+     }
+ 
 +    public final void setArrowCount(int i, boolean flag) {
 +        ArrowBodyCountChangeEvent event = CraftEventFactory.callArrowBodyCountChangeEvent(this, this.getArrowCount(), i, flag);
 +        if (event.isCancelled()) {
 +            return;
 +        }
 +        this.entityData.set(LivingEntity.DATA_ARROW_COUNT_ID, event.getNewAmount());
-     }
++    }
 +    // CraftBukkit end
- 
++
      public final int getStingerCount() {
 -        return this.entityData.get(DATA_STINGER_COUNT_ID);
 +        return (Integer) this.entityData.get(LivingEntity.DATA_STINGER_COUNT_ID);
@@ -2143,7 +2157,7 @@
      }
  
      public void swing(InteractionHand hand) {
-@@ -1596,12 +2200,13 @@
+@@ -1596,12 +2214,13 @@
              this.swinging = true;
              this.swingingArm = hand;
              if (this.level instanceof ServerLevel) {
@@ -2161,7 +2175,7 @@
                  }
              }
          }
-@@ -1610,162 +2215,169 @@
+@@ -1610,162 +2229,169 @@
  
      @Override
      public void handleEntityEvent(byte status) {
@@ -2471,7 +2485,7 @@
      }
  
      @Override
-@@ -1775,6 +2387,7 @@
+@@ -1775,6 +2401,7 @@
  
      protected void updateSwingTime() {
          int i = this.getCurrentSwingDuration();
@@ -2479,7 +2493,7 @@
          if (this.swinging) {
              ++this.swingTime;
              if (this.swingTime >= i) {
-@@ -1785,7 +2398,7 @@
+@@ -1785,7 +2412,7 @@
              this.swingTime = 0;
          }
  
@@ -2488,7 +2502,7 @@
      }
  
      @Nullable
-@@ -1818,8 +2431,8 @@
+@@ -1818,8 +2445,8 @@
      }
  
      public boolean isHolding(Item item) {
@@ -2499,7 +2513,7 @@
          });
      }
  
-@@ -1859,13 +2472,20 @@
+@@ -1859,13 +2486,20 @@
  
      public abstract ItemStack getItemBySlot(EquipmentSlot slot);
  
@@ -2523,7 +2537,7 @@
          }
  
      }
-@@ -1875,27 +2495,28 @@
+@@ -1875,27 +2509,28 @@
          int i = 0;
          int j = 0;
  
@@ -2561,7 +2575,7 @@
          }
  
      }
-@@ -1921,17 +2542,19 @@
+@@ -1921,17 +2556,19 @@
      }
  
      private void dismountVehicle(Entity vehicle) {
@@ -2588,7 +2602,7 @@
      }
  
      @Override
-@@ -1944,27 +2567,42 @@
+@@ -1944,27 +2581,42 @@
      }
  
      public double getJumpBoostPower() {
@@ -2640,7 +2654,7 @@
      }
  
      protected float getWaterSlowDown() {
-@@ -1977,135 +2615,153 @@
+@@ -1977,135 +2629,153 @@
  
      public void travel(Vec3 movementInput) {
          if (this.isEffectiveAi() || this.isControlledByLocalInstance()) {
@@ -2865,7 +2879,7 @@
                  }
              }
          }
-@@ -2115,15 +2771,16 @@
+@@ -2115,15 +2785,16 @@
  
      public void calculateEntityAnimation(LivingEntity entity, boolean flutter) {
          entity.animationSpeedOld = entity.animationSpeed;
@@ -2889,7 +2903,7 @@
          entity.animationPosition += entity.animationSpeed;
      }
  
-@@ -2131,26 +2788,28 @@
+@@ -2131,26 +2802,28 @@
          this.moveRelative(this.getFrictionInfluencedSpeed(slipperiness), movementInput);
          this.setDeltaMovement(this.handleOnClimbable(this.getDeltaMovement()));
          this.move(MoverType.SELF, this.getDeltaMovement());
@@ -2928,7 +2942,7 @@
          }
      }
  
-@@ -2158,14 +2817,15 @@
+@@ -2158,14 +2831,15 @@
          if (this.onClimbable()) {
              this.resetFallDistance();
              float f = 0.15F;
@@ -2950,7 +2964,7 @@
          }
  
          return motion;
-@@ -2195,6 +2855,7 @@
+@@ -2195,6 +2869,7 @@
          this.updateSwimAmount();
          if (!this.level.isClientSide) {
              int i = this.getArrowCount();
@@ -2958,7 +2972,7 @@
              if (i > 0) {
                  if (this.removeArrowTime <= 0) {
                      this.removeArrowTime = 20 * (30 - i);
-@@ -2207,6 +2868,7 @@
+@@ -2207,6 +2882,7 @@
              }
  
              int j = this.getStingerCount();
@@ -2966,7 +2980,7 @@
              if (j > 0) {
                  if (this.removeStingerTime <= 0) {
                      this.removeStingerTime = 20 * (30 - j);
-@@ -2229,73 +2891,76 @@
+@@ -2229,73 +2905,76 @@
          }
  
          this.aiStep();
@@ -3069,7 +3083,7 @@
          if (this.isFallFlying()) {
              ++this.fallFlyTicks;
          } else {
-@@ -2305,11 +2970,11 @@
+@@ -2305,11 +2984,11 @@
          if (this.isSleeping()) {
              this.setXRot(0.0F);
          }
@@ -3082,7 +3096,7 @@
          if (map != null) {
              this.handleHandSwap(map);
              if (!map.isEmpty()) {
-@@ -2322,33 +2987,45 @@
+@@ -2322,33 +3001,45 @@
      @Nullable
      private Map<EquipmentSlot, ItemStack> collectEquipmentChanges() {
          Map<EquipmentSlot, ItemStack> map = null;
@@ -3146,7 +3160,7 @@
                  }
              }
          }
-@@ -2357,37 +3034,110 @@
+@@ -2357,37 +3048,110 @@
      }
  
      private void handleHandSwap(Map<EquipmentSlot, ItemStack> equipmentChanges) {
@@ -3199,8 +3213,8 @@
          });
 -        ((ServerLevel)this.level).getChunkSource().broadcast(this, new ClientboundSetEquipmentPacket(this.getId(), list));
 +        ((ServerLevel) this.level).getChunkSource().broadcast(this, new ClientboundSetEquipmentPacket(this.getId(), list));
-     }
- 
++    }
++
 +    // Paper start - hide unnecessary item meta
 +    public ItemStack stripMeta(final ItemStack itemStack, final boolean copyItemStack) {
 +        if (itemStack.isEmpty() || (!itemStack.hasTag() && itemStack.getCount() < 2)) {
@@ -3237,7 +3251,7 @@
 +            }
 +        }
 +        return copy;
-+    }
+     }
 +    // Paper end
 +
 +    // Paper end - prevent oversized data
@@ -3267,14 +3281,14 @@
 +        return copy;
 +    }
 +    // Paper end
-+
+ 
      private ItemStack getLastArmorItem(EquipmentSlot slot) {
 -        return this.lastArmorItemStacks.get(slot.getIndex());
 +        return (ItemStack) this.lastArmorItemStacks.get(slot.getIndex());
      }
  
      private void setLastArmorItem(EquipmentSlot slot, ItemStack armor) {
-@@ -2395,7 +3145,7 @@
+@@ -2395,7 +3159,7 @@
      }
  
      private ItemStack getLastHandItem(EquipmentSlot slot) {
@@ -3283,7 +3297,7 @@
      }
  
      private void setLastHandItem(EquipmentSlot slot, ItemStack stack) {
-@@ -2403,24 +3153,26 @@
+@@ -2403,24 +3167,26 @@
      }
  
      protected float tickHeadTurn(float bodyRotation, float headRotation) {
@@ -3322,7 +3336,7 @@
              headRotation *= -1.0F;
          }
  
-@@ -2438,41 +3190,43 @@
+@@ -2438,41 +3204,43 @@
          }
  
          if (this.lerpSteps > 0) {
@@ -3385,7 +3399,7 @@
          this.level.getProfiler().push("ai");
          if (this.isImmobile()) {
              this.jumping = false;
-@@ -2487,26 +3241,26 @@
+@@ -2487,26 +3255,26 @@
          this.level.getProfiler().pop();
          this.level.getProfiler().push("jump");
          if (this.jumping && this.isAffectedByFluids()) {
@@ -3427,7 +3441,7 @@
              }
          } else {
              this.noJumpDelay = 0;
-@@ -2517,36 +3271,55 @@
+@@ -2517,36 +3285,55 @@
          this.xxa *= 0.98F;
          this.zza *= 0.98F;
          this.updateFallFlying();
@@ -3492,7 +3506,7 @@
          if (!this.level.isClientSide && this.isSensitiveToWater() && this.isInWaterRainOrBubble()) {
              this.hurt(DamageSource.DROWN, 1.0F);
          }
-@@ -2558,47 +3331,60 @@
+@@ -2558,47 +3345,60 @@
      }
  
      private void updateFallFlying() {
@@ -3570,7 +3584,7 @@
                          ++j;
                      }
                  }
-@@ -2608,8 +3394,12 @@
+@@ -2608,8 +3408,12 @@
                  }
              }
  
@@ -3585,7 +3599,7 @@
                  this.doPush(entity);
              }
          }
-@@ -2617,13 +3407,15 @@
+@@ -2617,13 +3421,15 @@
      }
  
      protected void checkAutoSpinAttack(AABB a, AABB b) {
@@ -3606,7 +3620,7 @@
                      this.autoSpinAttackTicks = 0;
                      this.setDeltaMovement(this.getDeltaMovement().scale(-0.2D));
                      break;
-@@ -2643,8 +3435,7 @@
+@@ -2643,8 +3449,7 @@
          entity.push(this);
      }
  
@@ -3616,7 +3630,7 @@
  
      public void startAutoSpinAttack(int riptideTicks) {
          this.autoSpinAttackTicks = riptideTicks;
-@@ -2655,14 +3446,21 @@
+@@ -2655,14 +3460,21 @@
      }
  
      public boolean isAutoSpinAttack() {
@@ -3641,7 +3655,7 @@
              this.dismountVehicle(entity);
          }
  
-@@ -2681,14 +3479,14 @@
+@@ -2681,14 +3493,14 @@
          this.lerpX = x;
          this.lerpY = y;
          this.lerpZ = z;
@@ -3659,7 +3673,7 @@
          this.lerpHeadSteps = interpolationSteps;
      }
  
-@@ -2697,16 +3495,17 @@
+@@ -2697,16 +3509,17 @@
      }
  
      public void onItemPickup(ItemEntity item) {
@@ -3681,7 +3695,7 @@
          }
  
      }
-@@ -2715,13 +3514,11 @@
+@@ -2715,13 +3528,11 @@
          if (entity.level != this.level) {
              return false;
          } else {
@@ -3700,7 +3714,7 @@
          }
      }
  
-@@ -2731,12 +3528,13 @@
+@@ -2731,12 +3542,13 @@
      }
  
      public float getAttackAnim(float tickDelta) {
@@ -3718,7 +3732,7 @@
      }
  
      public boolean isEffectiveAi() {
-@@ -2745,15 +3543,29 @@
+@@ -2745,15 +3557,29 @@
  
      @Override
      public boolean isPickable() {
@@ -3750,7 +3764,7 @@
      protected void markHurt() {
          this.hurtMarked = this.random.nextDouble() >= this.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE);
      }
-@@ -2775,7 +3587,7 @@
+@@ -2775,7 +3601,7 @@
  
      @Override
      protected Vec3 getRelativePortalPosition(Direction.Axis portalAxis, BlockUtil.FoundRectangle portalRect) {
@@ -3759,7 +3773,7 @@
      }
  
      public static Vec3 resetForwardDirectionOfRelativePortalPosition(Vec3 pos) {
-@@ -2787,18 +3599,16 @@
+@@ -2787,18 +3613,16 @@
      }
  
      public void setAbsorptionAmount(float amount) {
@@ -3781,7 +3795,7 @@
  
      protected void updateEffectVisibility() {
          this.effectsDirty = true;
-@@ -2807,13 +3617,18 @@
+@@ -2807,13 +3631,18 @@
      public abstract HumanoidArm getMainArm();
  
      public boolean isUsingItem() {
@@ -3802,7 +3816,7 @@
      private void updatingUsingItem() {
          if (this.isUsingItem()) {
              if (ItemStack.isSameIgnoreDurability(this.getItemInHand(this.getUsedItemHand()), this.useItem)) {
-@@ -2831,8 +3646,12 @@
+@@ -2831,8 +3660,12 @@
          if (this.shouldTriggerItemUseEffects()) {
              this.triggerItemUseEffects(stack, 5);
          }
@@ -3817,7 +3831,7 @@
              this.completeUsingItem();
          }
  
-@@ -2840,10 +3659,11 @@
+@@ -2840,10 +3673,11 @@
  
      private boolean shouldTriggerItemUseEffects() {
          int i = this.getUseItemRemainingTicks();
@@ -3833,7 +3847,7 @@
      }
  
      private void updateSwimAmount() {
-@@ -2857,21 +3677,32 @@
+@@ -2857,21 +3691,32 @@
      }
  
      protected void setLivingEntityFlag(int mask, boolean value) {
@@ -3874,7 +3888,7 @@
              if (!this.level.isClientSide) {
                  this.setLivingEntityFlag(1, true);
                  this.setLivingEntityFlag(2, hand == InteractionHand.OFF_HAND);
-@@ -2883,11 +3714,11 @@
+@@ -2883,11 +3728,11 @@
      @Override
      public void onSyncedDataUpdated(EntityDataAccessor<?> data) {
          super.onSyncedDataUpdated(data);
@@ -3888,7 +3902,7 @@
              if (this.isUsingItem() && this.useItem.isEmpty()) {
                  this.useItem = this.getItemInHand(this.getUsedItemHand());
                  if (!this.useItem.isEmpty()) {
-@@ -2895,7 +3726,10 @@
+@@ -2895,7 +3740,10 @@
                  }
              } else if (!this.isUsingItem() && !this.useItem.isEmpty()) {
                  this.useItem = ItemStack.EMPTY;
@@ -3900,7 +3914,7 @@
              }
          }
  
-@@ -2917,41 +3751,78 @@
+@@ -2917,41 +3765,78 @@
  
              if (stack.getUseAnimation() == UseAnim.EAT) {
                  this.spawnItemParticles(stack, particleCount);
@@ -3995,7 +4009,7 @@
                  }
  
              }
-@@ -2987,22 +3858,83 @@
+@@ -2987,22 +3872,83 @@
          }
  
          this.useItem = ItemStack.EMPTY;
@@ -4085,7 +4099,7 @@
      public boolean isSuppressingSlidingDownLadder() {
          return this.isShiftKeyDown();
      }
-@@ -3021,48 +3953,81 @@
+@@ -3021,48 +3967,81 @@
      }
  
      public boolean randomTeleport(double x, double y, double z, boolean particleEffects) {
@@ -4146,7 +4160,7 @@
 +                this.setPos(d0, d6, d2);
 +                if (world.noCollision((Entity) this) && !world.containsAnyLiquid(this.getBoundingBox())) {
 +                    flag1 = true;
-+                }
+                 }
 +                // now revert and call event if the teleport place is valid
 +                this.setPos(d3, d4, d5);
 +
@@ -4166,7 +4180,7 @@
 +                            return Optional.empty();
 +                        }
 +                    }
-                 }
++                }
 +                // CraftBukkit end
              }
          }
@@ -4194,7 +4208,7 @@
          }
      }
  
-@@ -3074,8 +4039,7 @@
+@@ -3074,8 +4053,7 @@
          return true;
      }
  
@@ -4204,7 +4218,7 @@
  
      public boolean canTakeItem(ItemStack stack) {
          return false;
-@@ -3088,7 +4052,7 @@
+@@ -3088,7 +4066,7 @@
  
      @Override
      public EntityDimensions getDimensions(Pose pose) {
@@ -4213,7 +4227,7 @@
      }
  
      public ImmutableList<Pose> getDismountPoses() {
-@@ -3096,20 +4060,21 @@
+@@ -3096,20 +4074,21 @@
      }
  
      public AABB getLocalBoundsForPose(Pose pose) {
@@ -4240,7 +4254,7 @@
      }
  
      public boolean isSleeping() {
-@@ -3121,9 +4086,10 @@
+@@ -3121,9 +4100,10 @@
              this.stopRiding();
          }
  
@@ -4254,7 +4268,7 @@
          }
  
          this.setPose(Pose.SLEEPING);
-@@ -3134,42 +4100,51 @@
+@@ -3134,42 +4114,51 @@
      }
  
      private void setPosToBed(BlockPos pos) {
@@ -4323,7 +4337,7 @@
      }
  
      @Override
-@@ -3193,9 +4168,9 @@
+@@ -3193,9 +4182,9 @@
      public ItemStack eat(Level world, ItemStack stack) {
          if (stack.isEdible()) {
              world.gameEvent(this, GameEvent.EAT, this.eyeBlockPosition());
@@ -4335,7 +4349,7 @@
                  stack.shrink(1);
              }
  
-@@ -3207,10 +4182,16 @@
+@@ -3207,10 +4196,16 @@
  
      private void addEatEffect(ItemStack stack, Level world, LivingEntity targetEntity) {
          Item item = stack.getItem();
@@ -4355,7 +4369,7 @@
                  }
              }
          }
-@@ -3218,26 +4199,26 @@
+@@ -3218,26 +4213,26 @@
      }
  
      private static byte entityEventForEquipmentBreak(EquipmentSlot slot) {
@@ -4398,7 +4412,7 @@
      }
  
      public void broadcastBreakEvent(InteractionHand hand) {
-@@ -3248,6 +4229,7 @@
+@@ -3248,6 +4243,7 @@
      public AABB getBoundingBoxForCulling() {
          if (this.getItemBySlot(EquipmentSlot.HEAD).is(Items.DRAGON_HEAD)) {
              float f = 0.5F;
@@ -4406,7 +4420,7 @@
              return this.getBoundingBox().inflate(0.5D, 0.5D, 0.5D);
          } else {
              return super.getBoundingBoxForCulling();
-@@ -3256,46 +4238,26 @@
+@@ -3256,46 +4252,26 @@
  
      public static EquipmentSlot getEquipmentSlotForItem(ItemStack stack) {
          Item item = stack.getItem();
@@ -4461,7 +4475,7 @@
      }
  
      @Override
-@@ -3303,8 +4265,9 @@
+@@ -3303,8 +4279,9 @@
          if (this.isSpectator()) {
              return false;
          } else {
@@ -4473,7 +4487,7 @@
          }
      }
  
-@@ -3314,26 +4277,43 @@
+@@ -3314,26 +4291,43 @@
      }
  
      public void recreateFromPacket(ClientboundAddMobPacket packet) {

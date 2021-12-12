@@ -146,7 +146,7 @@
  
 +    // Paper start
 +    private static final java.util.Comparator<? super CompoundTag> enchantSorter = java.util.Comparator.comparing(o -> o.getString("id"));
-+    private void processEnchantOrder(CompoundTag tag) {
++    private void processEnchantOrder(@Nullable CompoundTag tag) {
 +        if (tag == null || !tag.contains("Enchantments", 9)) {
 +            return;
 +        }
@@ -202,7 +202,7 @@
      public ItemStack(ItemLike item) {
          this(item, 1);
      }
-@@ -137,51 +228,68 @@
+@@ -137,16 +228,32 @@
          this.updateEmptyCacheFlag();
      }
  
@@ -240,8 +240,7 @@
              this.getItem().verifyTagAfterLoad(this.tag);
          }
  
-+        processEnchantOrder(this.tag); // Paper
-         if (this.getItem().canBeDepleted()) {
+@@ -154,34 +261,34 @@
              this.setDamageValue(this.getDamageValue());
          }
  
@@ -291,7 +290,7 @@
      }
  
      public Item getItem() {
-@@ -196,28 +304,176 @@
+@@ -196,28 +303,176 @@
          return this.getItem() == item;
      }
  
@@ -479,7 +478,7 @@
          return this.getItem().use(world, user, hand);
      }
  
-@@ -226,9 +482,10 @@
+@@ -226,9 +481,10 @@
      }
  
      public CompoundTag save(CompoundTag nbt) {
@@ -493,7 +492,7 @@
          if (this.tag != null) {
              nbt.put("tag", this.tag.copy());
          }
-@@ -246,8 +503,9 @@
+@@ -246,8 +502,9 @@
  
      public boolean isDamageableItem() {
          if (!this.emptyCacheFlag && this.getItem().getMaxDamage() > 0) {
@@ -505,7 +504,7 @@
          } else {
              return false;
          }
-@@ -269,45 +527,76 @@
+@@ -269,45 +526,76 @@
          return this.getItem().getMaxDamage();
      }
  
@@ -598,7 +597,7 @@
                      }
  
                      this.setDamageValue(0);
-@@ -329,100 +618,74 @@
+@@ -329,100 +617,74 @@
          return this.item.getBarColor(this);
      }
  
@@ -721,7 +720,7 @@
      }
  
      public boolean sameItem(ItemStack stack) {
-@@ -430,22 +693,17 @@
+@@ -430,22 +692,17 @@
      }
  
      public boolean sameItemStackIgnoreDurability(ItemStack stack) {
@@ -746,7 +745,7 @@
      public String toString() {
          return this.count + " " + this.getItem();
      }
-@@ -461,7 +719,7 @@
+@@ -461,7 +718,7 @@
  
      }
  
@@ -755,7 +754,7 @@
          player.awardStat(Stats.ITEM_CRAFTED.get(this.getItem()), amount);
          this.getItem().onCraftedBy(this, world, player);
      }
-@@ -491,6 +749,17 @@
+@@ -491,6 +748,17 @@
          return this.tag;
      }
  
@@ -773,7 +772,7 @@
      public CompoundTag getOrCreateTag() {
          if (this.tag == null) {
              this.setTag(new CompoundTag());
-@@ -503,9 +772,10 @@
+@@ -503,9 +771,10 @@
          if (this.tag != null && this.tag.contains(key, 10)) {
              return this.tag.getCompound(key);
          } else {
@@ -787,7 +786,7 @@
          }
      }
  
-@@ -528,6 +798,25 @@
+@@ -528,8 +797,28 @@
          return this.tag != null ? this.tag.getList("Enchantments", 10) : new ListTag();
      }
  
@@ -812,7 +811,10 @@
 +
      public void setTag(@Nullable CompoundTag nbt) {
          this.tag = nbt;
++        this.processEnchantOrder(this.tag); // Paper
          if (this.getItem().canBeDepleted()) {
+             this.setDamageValue(this.getDamageValue());
+         }
 @@ -541,17 +830,19 @@
      }
  

@@ -81,13 +81,13 @@ public class CraftMerchantCustom extends CraftMerchant {
 
         // Paper start
         @Override
-        public void processTrade(MerchantOffer merchantRecipe, io.papermc.paper.event.player.PlayerPurchaseEvent event) { // The MerchantRecipe passed in here is the one set by the PlayerPurchaseEvent
+        public void processTrade(MerchantOffer merchantRecipe, @javax.annotation.Nullable io.papermc.paper.event.player.PlayerPurchaseEvent event) { // The MerchantRecipe passed in here is the one set by the PlayerPurchaseEvent
             /** Based on {@link net.minecraft.world.entity.npc.AbstractVillager#processTrade(MerchantOffer, io.papermc.paper.event.player.PlayerPurchaseEvent)} */
             if (getTradingPlayer() instanceof net.minecraft.server.level.ServerPlayer) {
-                if (event.willIncreaseTradeUses()) {
+                if (event == null || event.willIncreaseTradeUses()) {
                     merchantRecipe.increaseUses();
                 }
-                if (event.isRewardingExp()) {
+                if (event == null || event.isRewardingExp()) {
                     this.tradingWorld.addFreshEntity(new net.minecraft.world.entity.ExperienceOrb(tradingWorld, tradingPlayer.getX(), tradingPlayer.getY(), tradingPlayer.getZ(), merchantRecipe.getXp(), org.bukkit.entity.ExperienceOrb.SpawnReason.VILLAGER_TRADE, this.tradingPlayer, null));
                 }
             }

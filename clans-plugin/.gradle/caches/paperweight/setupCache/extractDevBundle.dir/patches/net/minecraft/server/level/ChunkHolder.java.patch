@@ -238,7 +238,7 @@
      public void blockChanged(BlockPos pos) {
 -        LevelChunk levelChunk = this.getTickingChunk();
 -        if (levelChunk != null) {
-+        if (!pos.isValidLocation(levelHeightAccessor)) return; // Paper - SPIGOT-6086 for all invalid locations; avoid acquiring locks
++        if (!pos.isInsideBuildHeightAndWorldBoundsHorizontal(levelHeightAccessor)) return; // Paper - SPIGOT-6086 for all invalid locations; avoid acquiring locks
 +        LevelChunk chunk = this.getTickingChunk();
 +
 +        if (chunk != null) {

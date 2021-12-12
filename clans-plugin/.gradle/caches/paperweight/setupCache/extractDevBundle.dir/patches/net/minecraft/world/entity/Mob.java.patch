@@ -54,13 +54,13 @@
      @Nullable
      private LivingEntity target;
      private final Sensing sensing;
--    private final NonNullList<ItemStack> handItems = NonNullList.withSize(2, ItemStack.EMPTY);
+-    public final NonNullList<ItemStack> handItems = NonNullList.withSize(2, ItemStack.EMPTY);
 -    public final float[] handDropChances = new float[2];
--    private final NonNullList<ItemStack> armorItems = NonNullList.withSize(4, ItemStack.EMPTY);
+-    public final NonNullList<ItemStack> armorItems = NonNullList.withSize(4, ItemStack.EMPTY);
 -    public final float[] armorDropChances = new float[4];
-+    private final NonNullList<ItemStack> handItems;
++    public final NonNullList<ItemStack> handItems;
 +    public final float[] handDropChances;
-+    private final NonNullList<ItemStack> armorItems;
++    public final NonNullList<ItemStack> armorItems;
 +    public final float[] armorDropChances;
      private boolean canPickUpLoot;
      private boolean persistenceRequired;
@@ -870,7 +870,7 @@
          }
  
      }
-@@ -849,18 +1005,22 @@
+@@ -849,18 +1005,24 @@
      @Override
      protected void dropCustomDeathLoot(DamageSource source, int lootingMultiplier, boolean allowDrops) {
          super.dropCustomDeathLoot(source, lootingMultiplier, allowDrops);
@@ -898,11 +898,13 @@
 -                this.spawnAtLocation(itemStack);
 -                this.setItemSlot(equipmentSlot, ItemStack.EMPTY);
 +                this.spawnAtLocation(itemstack);
++                if (this.clearEquipmentSlots) { // Paper
 +                this.setItemSlot(enumitemslot, ItemStack.EMPTY);
++                } // Paper
              }
          }
  
-@@ -868,15 +1028,16 @@
+@@ -868,15 +1030,16 @@
  
      protected float getEquipmentDropChance(EquipmentSlot slot) {
          float f;
@@ -928,7 +930,7 @@
          }
  
          return f;
-@@ -886,6 +1047,7 @@
+@@ -886,6 +1049,7 @@
          if (this.random.nextFloat() < 0.15F * difficulty.getSpecialMultiplier()) {
              int i = this.random.nextInt(2);
              float f = this.level.getDifficulty() == Difficulty.HARD ? 0.1F : 0.25F;
@@ -936,7 +938,7 @@
              if (this.random.nextFloat() < 0.095F) {
                  ++i;
              }
-@@ -898,20 +1060,26 @@
+@@ -898,20 +1062,26 @@
                  ++i;
              }
  
@@ -972,7 +974,7 @@
                          }
                      }
                  }
-@@ -922,67 +1090,72 @@
+@@ -922,67 +1092,72 @@
  
      @Nullable
      public static Item getEquipmentForSlot(EquipmentSlot equipmentSlot, int equipmentLevel) {
@@ -1099,7 +1101,7 @@
              }
          }
  
-@@ -990,15 +1163,16 @@
+@@ -990,15 +1165,16 @@
  
      protected void enchantSpawnedWeapon(float power) {
          if (!this.getMainHandItem().isEmpty() && this.random.nextFloat() < 0.25F * power) {
@@ -1120,7 +1122,7 @@
          }
  
      }
-@@ -1024,12 +1198,12 @@
+@@ -1024,12 +1200,12 @@
      }
  
      public void setDropChance(EquipmentSlot slot, float chance) {
@@ -1139,7 +1141,7 @@
          }
  
      }
-@@ -1044,8 +1218,9 @@
+@@ -1044,8 +1220,9 @@
  
      @Override
      public boolean canTakeItem(ItemStack stack) {
@@ -1151,7 +1153,7 @@
      }
  
      public boolean isPersistenceRequired() {
-@@ -1057,39 +1232,58 @@
+@@ -1057,39 +1234,58 @@
          if (!this.isAlive()) {
              return InteractionResult.PASS;
          } else if (this.getLeashHolder() == player) {
@@ -1228,7 +1230,7 @@
                      });
                      return optional.isPresent() ? InteractionResult.SUCCESS : InteractionResult.PASS;
                  } else {
-@@ -1101,8 +1295,7 @@
+@@ -1101,8 +1297,7 @@
          }
      }
  
@@ -1238,7 +1240,7 @@
  
      protected InteractionResult mobInteract(Player player, InteractionHand hand) {
          return InteractionResult.PASS;
-@@ -1113,16 +1306,12 @@
+@@ -1113,16 +1308,12 @@
      }
  
      public boolean isWithinRestriction(BlockPos pos) {
@@ -1257,7 +1259,7 @@
      }
  
      public BlockPos getRestrictCenter() {
-@@ -1141,47 +1330,65 @@
+@@ -1141,47 +1332,65 @@
          return this.restrictRadius != -1.0F;
      }
  
@@ -1343,7 +1345,7 @@
          }
      }
  
-@@ -1192,7 +1399,11 @@
+@@ -1192,7 +1401,11 @@
  
          if (this.leashHolder != null) {
              if (!this.isAlive() || !this.leashHolder.isAlive()) {
@@ -1356,7 +1358,7 @@
              }
  
          }
-@@ -1203,11 +1414,13 @@
+@@ -1203,11 +1416,13 @@
              this.leashHolder = null;
              this.leashInfoTag = null;
              if (!this.level.isClientSide && dropItem) {
@@ -1372,7 +1374,7 @@
              }
          }
  
-@@ -1234,7 +1447,7 @@
+@@ -1234,7 +1449,7 @@
          this.leashHolder = entity;
          this.leashInfoTag = null;
          if (!this.level.isClientSide && sendPacket && this.level instanceof ServerLevel) {
@@ -1381,7 +1383,7 @@
          }
  
          if (this.isPassenger()) {
-@@ -1250,31 +1463,40 @@
+@@ -1250,31 +1465,40 @@
  
      @Override
      public boolean startRiding(Entity entity, boolean force) {
@@ -1431,7 +1433,7 @@
                  this.leashInfoTag = null;
              }
          }
-@@ -1292,34 +1514,36 @@
+@@ -1292,34 +1516,36 @@
      }
  
      public void setNoAi(boolean aiDisabled) {
@@ -1479,7 +1481,7 @@
  
      @Override
      public HumanoidArm getMainArm() {
-@@ -1327,48 +1551,60 @@
+@@ -1327,48 +1553,60 @@
      }
  
      public double getMeleeAttackRangeSqr(LivingEntity target) {
@@ -1555,7 +1557,7 @@
              }
          }
  
-@@ -1377,9 +1613,10 @@
+@@ -1377,9 +1615,10 @@
      public boolean isSunBurnTick() {
          if (this.level.isDay() && !this.level.isClientSide) {
              float f = this.getBrightness();
@@ -1569,7 +1571,7 @@
                  return true;
              }
          }
-@@ -1405,16 +1642,21 @@
+@@ -1405,16 +1644,21 @@
      @Override
      protected void removeAfterChangingDimensions() {
          super.removeAfterChangingDimensions();

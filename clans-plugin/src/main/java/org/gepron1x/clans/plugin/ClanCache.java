@@ -1,13 +1,10 @@
 package org.gepron1x.clans.plugin;
 
-import com.github.benmanes.caffeine.cache.Caffeine;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class ClanCache {
@@ -21,6 +18,11 @@ public final class ClanCache {
 
     public Clan getUserClan(UUID uuid) {
         return userClanCache.get(uuid);
+
+    }
+
+    public boolean isCached(String tag) {
+        return clanMap.containsKey(tag);
     }
 
     public Clan getClan(String tag) {

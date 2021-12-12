@@ -19,6 +19,7 @@ dependencies {
    // compileOnly("io.papermc.paper:paper-api:1.17.1-R0.1-SNAPSHOT")
     paperDevBundle("1.18-R0.1-SNAPSHOT")
     implementation("org.jdbi:jdbi3-core:3.24.1")
+    implementation("space.arim.dazzleconf:dazzleconf-ext-snakeyaml:1.2.1")
 }
 
 var libraryPackage = "org.gepron1x.clans.libraries"

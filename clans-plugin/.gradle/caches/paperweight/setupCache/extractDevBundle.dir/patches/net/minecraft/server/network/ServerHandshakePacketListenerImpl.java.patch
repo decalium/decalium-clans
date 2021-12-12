@@ -27,7 +27,7 @@
  
      public ServerHandshakePacketListenerImpl(MinecraftServer server, Connection connection) {
          this.server = server;
-@@ -23,40 +39,131 @@
+@@ -23,40 +39,136 @@
  
      @Override
      public void handleIntention(ClientIntentionPacket packet) {
@@ -132,12 +132,12 @@
 +                        handledByEvent = true; // Hooray, we did it!
 +                    }
 +                }
-+                // Don't try and handle default logic if it's been handled by the event.
-+                if (!handledByEvent && proxyLogicEnabled) {
-+                // Paper end
 +                    // Spigot Start
-+                //if (org.spigotmc.SpigotConfig.bungee) { // Paper - comment out, we check above!
-+                        String[] split = packet.hostName.split("\00");
++                    String[] split = packet.hostName.split("\00");
++                    // Don't try and handle default logic if it's been handled by the event.
++                    if (!handledByEvent && proxyLogicEnabled) {
++                        // Paper end
++                    // if (org.spigotmc.SpigotConfig.bungee) { // Paper - comment out, we check above!
 +                        if ( ( split.length == 3 || split.length == 4 ) && ( ServerHandshakePacketListenerImpl.BYPASS_HOSTCHECK || ServerHandshakePacketListenerImpl.HOST_PATTERN.matcher( split[1] ).matches() ) ) { // Paper
 +                            // Paper start - Unix domain socket support
 +                            java.net.SocketAddress socketAddress = connection.getRemoteAddress();
@@ -156,6 +156,11 @@
 +                        {
 +                            connection.spoofedProfile = ServerHandshakePacketListenerImpl.gson.fromJson(split[3], com.mojang.authlib.properties.Property[].class);
 +                        }
++                    } else if ( ( split.length == 3 || split.length == 4 ) && ( ServerHandshakePacketListenerImpl.HOST_PATTERN.matcher( split[1] ).matches() ) ) {
++                        TranslatableComponent chatmessage = new TranslatableComponent("Unknown data in login hostname, did you forget to enable BungeeCord in spigot.yml?");
++                        this.connection.send(new ClientboundLoginDisconnectPacket(chatmessage));
++                        this.connection.disconnect(chatmessage);
++                        return;
 +                    }
 +                    // Spigot End
 +                    ((ServerLoginPacketListenerImpl) this.connection.getPacketListener()).hostname = packet.hostName + ":" + packet.port; // CraftBukkit - set hostname

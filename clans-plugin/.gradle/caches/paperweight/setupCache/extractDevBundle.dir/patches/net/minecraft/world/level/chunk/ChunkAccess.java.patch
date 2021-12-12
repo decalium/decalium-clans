@@ -30,7 +30,7 @@
  
 +    // CraftBukkit start - SPIGOT-6814: move to IChunkAccess to account for 1.17 to 1.18 chunk upgrading.
 +    private static final org.bukkit.craftbukkit.v1_18_R1.persistence.CraftPersistentDataTypeRegistry DATA_TYPE_REGISTRY = new org.bukkit.craftbukkit.v1_18_R1.persistence.CraftPersistentDataTypeRegistry();
-+    public org.bukkit.craftbukkit.v1_18_R1.persistence.CraftPersistentDataContainer persistentDataContainer = new org.bukkit.craftbukkit.v1_18_R1.persistence.CraftPersistentDataContainer(ChunkAccess.DATA_TYPE_REGISTRY);
++    public org.bukkit.craftbukkit.v1_18_R1.persistence.DirtyCraftPersistentDataContainer persistentDataContainer = new org.bukkit.craftbukkit.v1_18_R1.persistence.DirtyCraftPersistentDataContainer(ChunkAccess.DATA_TYPE_REGISTRY);
 +    // CraftBukkit end
 +    // Paper start - rewrite light engine
 +    private volatile ca.spottedleaf.starlight.common.light.SWMRNibbleArray[] blockNibbles;
@@ -81,7 +81,7 @@
          this.upgradeData = upgradeData;
          this.levelHeightAccessor = heightLimitView;
          this.sections = new LevelChunkSection[heightLimitView.getSectionsCount()];
-@@ -88,17 +136,22 @@
+@@ -88,17 +136,21 @@
              if (this.sections.length == sectionArrayInitializer.length) {
                  System.arraycopy(sectionArrayInitializer, 0, this.sections, 0, this.sections.length);
              } else {
@@ -94,7 +94,6 @@
 +        ChunkAccess.replaceMissingSections(heightLimitView, biome, this.sections);
 +        // CraftBukkit start
 +        this.biomeRegistry = biome;
-+        this.persistentDataContainer.setCallback(() -> this.setUnsaved(true)); // CraftBukkit - SPIGOT-6814: Handle cases were only persistentData is saved
      }
 +    public final Registry<Biome> biomeRegistry;
 +    // CraftBukkit end
@@ -108,15 +107,15 @@
              }
          }
  
-@@ -108,6 +161,7 @@
+@@ -108,6 +160,7 @@
          return GameEventDispatcher.NOOP;
      }
  
-+    public abstract BlockState getType(final int x, final int y, final int z); // Paper
++    public abstract BlockState getBlockState(final int x, final int y, final int z); // Paper
      @Nullable
      public abstract BlockState setBlockState(BlockPos pos, BlockState state, boolean moved);
  
-@@ -117,12 +171,13 @@
+@@ -117,12 +170,13 @@
  
      @Nullable
      public LevelChunkSection getHighestSection() {
@@ -135,7 +134,7 @@
              }
          }
  
-@@ -130,12 +185,14 @@
+@@ -130,12 +184,14 @@
      }
  
      public int getHighestSectionPosition() {
@@ -152,7 +151,7 @@
          set.addAll(this.blockEntities.keySet());
          return set;
      }
-@@ -157,8 +214,8 @@
+@@ -157,8 +213,8 @@
      }
  
      public Heightmap getOrCreateHeightmapUnprimed(Heightmap.Types type) {
@@ -163,7 +162,7 @@
          });
      }
  
-@@ -167,14 +224,15 @@
+@@ -167,14 +223,15 @@
      }
  
      public int getHeight(Heightmap.Types type, int x, int z) {
@@ -182,7 +181,7 @@
          }
  
          return heightmap.getFirstAvailable(x & 15, z & 15) - 1;
-@@ -187,7 +245,7 @@
+@@ -187,7 +244,7 @@
      @Nullable
      @Override
      public StructureStart<?> getStartForFeature(StructureFeature<?> structure) {
@@ -191,7 +190,7 @@
      }
  
      @Override
-@@ -208,16 +266,16 @@
+@@ -208,16 +265,16 @@
  
      @Override
      public LongSet getReferencesForFeature(StructureFeature<?> structure) {
@@ -211,7 +210,7 @@
          this.unsaved = true;
      }
  
-@@ -242,8 +300,8 @@
+@@ -242,8 +299,8 @@
              upperHeight = this.getMaxBuildHeight() - 1;
          }
  
@@ -222,6 +221,19 @@
                  return false;
              }
          }
+@@ -253,10 +310,11 @@
+ 
+     public void setUnsaved(boolean shouldSave) {
+         this.unsaved = shouldSave;
++        if (!shouldSave) this.persistentDataContainer.dirty(false); // CraftBukkit - SPIGOT-6814: chunk was saved, pdc is no longer dirty
+     }
+ 
+     public boolean isUnsaved() {
+-        return this.unsaved;
++        return this.unsaved || this.persistentDataContainer.dirty(); // CraftBukkit - SPIGOT-6814: chunk is unsaved if pdc was mutated
+     }
+ 
+     public abstract ChunkStatus getStatus();
 @@ -264,7 +322,7 @@
      public abstract void removeBlockEntity(BlockPos pos);
  
@@ -286,9 +298,9 @@
              });
 -            throw new ReportedException(crashReport);
 +            throw new ReportedException(crashreport);
-+        }
-+    }
-+
+         }
+     }
+ 
 +    // CraftBukkit start
 +    public void setBiome(int i, int j, int k, Biome biome) {
 +        try {
@@ -306,10 +318,10 @@
 +                return CrashReportCategory.formatLocation(this, i, j, k);
 +            });
 +            throw new ReportedException(crashreport);
-         }
-     }
++        }
++    }
 +    // CraftBukkit end
- 
++
      public void fillBiomesFromNoise(BiomeResolver biomeSupplier, Climate.Sampler sampler) {
 -        ChunkPos chunkPos = this.getPos();
 -        int i = QuartPos.fromBlock(chunkPos.getMinBlockX());

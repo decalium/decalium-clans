@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/BlockCollisions.java
 +++ b/net/minecraft/world/level/BlockCollisions.java
-@@ -66,22 +66,41 @@
+@@ -66,28 +66,47 @@
      protected VoxelShape computeNext() {
          while(true) {
              if (this.cursor.advance()) {
@@ -31,7 +31,7 @@
 +                } else if ((!far && source instanceof net.minecraft.server.level.ServerPlayer) || (source != null && source.collisionLoadChunks)) {
 +                    blockState = this.collisionGetter.getBlockState(this.pos);
 +                } else {
-+                    blockState = this.collisionGetter.getTypeIfLoaded(this.pos);
++                    blockState = this.collisionGetter.getBlockStateIfLoaded(this.pos);
 +                }
 +
 +                if (blockState == null) {
@@ -49,4 +49,11 @@
 +                if (/*this.onlySuffocatingBlocks && (!blockState.isSuffocating(blockGetter, this.pos)) ||*/ l == 1 && !blockState.hasLargeCollisionShape() || l == 2 && !blockState.is(Blocks.MOVING_PISTON)) { // Paper - onlySuffocatingBlocks is only true on the client, so we don't care about it here
                      continue;
                  }
+ 
+                 VoxelShape voxelShape = blockState.getCollisionShape(this.collisionGetter, this.pos, this.context);
+                 if (voxelShape == Shapes.block()) {
+-                    if (!this.box.intersects((double)i, (double)j, (double)k, (double)i + 1.0D, (double)j + 1.0D, (double)k + 1.0D)) {
++                    if (!io.papermc.paper.util.CollisionUtil.voxelShapeIntersect(this.box, (double)i, (double)j, (double)k, (double)i + 1.0D, (double)j + 1.0D, (double)k + 1.0D)) { // Paper - keep vanilla behavior for voxelshape intersection - See comment in CollisionUtil
+                         continue;
+                     }
  

@@ -8,33 +8,43 @@
  import net.minecraft.world.entity.Entity;
  import net.minecraft.world.level.block.Blocks;
  import net.minecraft.world.level.block.entity.BlockEntity;
-@@ -83,6 +84,29 @@
-         return List.of();
+@@ -60,7 +61,7 @@
+     private ChunkAccess getChunk(int chunkX, int chunkZ) {
+         int i = chunkX - this.centerX;
+         int j = chunkZ - this.centerZ;
+-        if (i >= 0 && i < this.chunks.length && j >= 0 && j < this.chunks[i].length) {
++        if (i >= 0 && i < this.chunks.length && j >= 0 && j < this.chunks[i].length) { // Paper - if this changes, update getChunkIfLoaded below
+             ChunkAccess chunkAccess = this.chunks[i][j];
+             return (ChunkAccess)(chunkAccess != null ? chunkAccess : new EmptyLevelChunk(this.level, new ChunkPos(chunkX, chunkZ)));
+         } else {
+@@ -68,6 +69,30 @@
+         }
      }
  
 +    // Paper start - if loaded util
-+    private ChunkAccess getChunkIfLoaded(int x, int z) {
-+        int k = x - this.centerX;
-+        int l = z - this.centerZ;
++    private @Nullable ChunkAccess getChunkIfLoaded(int x, int z) {
++        // Based on getChunk(int, int)
++        int xx = x - this.centerX;
++        int zz = z - this.centerZ;
 +
-+        if (k >= 0 && k < this.chunks.length && l >= 0 && l < this.chunks[k].length) { // Paper - if this changes, update getChunkIfLoaded below
-+            return this.chunks[k][l];
++        if (xx >= 0 && xx < this.chunks.length && zz >= 0 && zz < this.chunks[xx].length) {
++            return this.chunks[xx][zz];
 +        }
 +        return null;
 +    }
 +    @Override
-+    public FluidState getFluidIfLoaded(BlockPos blockposition) {
++    public final FluidState getFluidIfLoaded(BlockPos blockposition) {
 +        ChunkAccess chunk = getChunkIfLoaded(blockposition.getX() >> 4, blockposition.getZ() >> 4);
 +        return chunk == null ? null : chunk.getFluidState(blockposition);
 +    }
 +
 +    @Override
-+    public BlockState getTypeIfLoaded(BlockPos blockposition) {
++    public final BlockState getBlockStateIfLoaded(BlockPos blockposition) {
 +        ChunkAccess chunk = getChunkIfLoaded(blockposition.getX() >> 4, blockposition.getZ() >> 4);
 +        return chunk == null ? null : chunk.getBlockState(blockposition);
 +    }
 +    // Paper end
 +
-     @Nullable
      @Override
-     public BlockEntity getBlockEntity(BlockPos pos) {
+     public WorldBorder getWorldBorder() {
+         return this.level.getWorldBorder();

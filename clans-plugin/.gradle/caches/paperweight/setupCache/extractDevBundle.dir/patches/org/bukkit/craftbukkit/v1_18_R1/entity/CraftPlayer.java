@@ -94,6 +94,7 @@ import org.bukkit.Sound;
 import org.bukkit.Statistic;
 import org.bukkit.WeatherType;
 import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.configuration.serialization.DelegateDeserialization;
 import org.bukkit.conversations.Conversation;
@@ -1532,8 +1533,8 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
     }
     // Paper end
 
-    public void removeDisconnectingPlayer(Player player) {
-        this.hiddenEntities.remove(player.getUniqueId());
+    public void onEntityRemove(Entity entity) {
+        this.hiddenEntities.remove(entity.getUUID());
     }
 
     @Override
@@ -1980,9 +1981,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
         this.getHandle().maxHealthCache = getMaxHealth();
     }
 
-    public void sendHealthUpdate() {
+    // Paper start
+    @Override
+    public void sendHealthUpdate(final double health, final int foodLevel, final float saturationLevel) {
         // Paper start - cancellable death event
-        ClientboundSetHealthPacket packet = new ClientboundSetHealthPacket(this.getScaledHealth(), this.getHandle().getFoodData().getFoodLevel(), this.getHandle().getFoodData().getSaturationLevel());
+        ClientboundSetHealthPacket packet = new ClientboundSetHealthPacket((float) health, foodLevel, saturationLevel);
         if (this.getHandle().queueHealthUpdatePacket) {
             this.getHandle().queuedHealthUpdatePacket = packet;
         } else {
@@ -1990,7 +1993,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
         }
         // Paper end
     }
-
+    
+    @Override
+    public void sendHealthUpdate() {
+        this.sendHealthUpdate(this.getScaledHealth(), this.getHandle().getFoodData().getFoodLevel(), this.getHandle().getFoodData().getSaturationLevel());
+    }
+    // Paper end
+    
     public void injectScaledMaxHealth(Collection<AttributeInstance> collection, boolean force) {
         if (!this.scaledHealth && !force) {
             return;
@@ -2219,6 +2228,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
         getInventory().setItemInMainHand(book);
         this.getHandle().openItemGui(org.bukkit.craftbukkit.v1_18_R1.inventory.CraftItemStack.asNMSCopy(book), net.minecraft.world.InteractionHand.MAIN_HAND);
         getInventory().setItemInMainHand(hand);
+    }
+
+    @Override
+    public void openSign(Sign sign) {
+        CraftSign.openSign(sign, this);
     }
 
     @Override

@@ -13437,6 +13437,7 @@ c	net/minecraft/world/phys/shapes/Shapes	net/minecraft/world/phys/shapes/VoxelSh
 	f	Lnet/minecraft/world/phys/shapes/VoxelShape;	EMPTY	e
 	f	D	EPSILON	a
 	f	Lnet/minecraft/world/phys/shapes/VoxelShape;	INFINITY	c
+c	net/minecraft/world/phys/shapes/Shapes$1	net/minecraft/world/phys/shapes/VoxelShapes$1
 c	net/minecraft/world/phys/shapes/Shapes$DoubleLineConsumer	net/minecraft/world/phys/shapes/VoxelShapes$a
 c	net/minecraft/world/ticks/TickPriority	net/minecraft/world/ticks/TickListPriority
 	m	()[Lnet/minecraft/world/ticks/TickPriority;	$values	b
@@ -19854,7 +19855,6 @@ c	net/minecraft/world/entity/monster/Creeper	net/minecraft/world/entity/monster/
 	f	I	swell	bW
 c	net/minecraft/world/entity/monster/Drowned	net/minecraft/world/entity/monster/EntityDrowned
 	m	(Lnet/minecraft/world/entity/monster/Drowned;Lnet/minecraft/world/entity/ai/navigation/PathNavigation;)Lnet/minecraft/world/entity/ai/navigation/PathNavigation;	access$002	a
-	m	(Lnet/minecraft/world/entity/monster/Drowned;)Z	access$100	a
 	m	()V	addBehaviourGoals	n
 	m	(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;)Z	canReplaceCurrentItem	a
 	m	(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/level/ServerLevelAccessor;Lnet/minecraft/world/entity/MobSpawnType;Lnet/minecraft/core/BlockPos;Ljava/util/Random;)Z	checkDrownedSpawnRules	a
@@ -25358,7 +25358,6 @@ c	net/minecraft/world/entity/animal/horse/Llama	net/minecraft/world/entity/anima
 	m	()V	followMommy	fW
 	m	()Lnet/minecraft/sounds/SoundEvent;	getAmbientSound	r
 	m	()Lnet/minecraft/sounds/SoundEvent;	getAngrySound	fT
-	m	(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/AgeableMob;)Lnet/minecraft/world/entity/AgeableMob;	getBreedOffspring	a
 	m	(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/AgeableMob;)Lnet/minecraft/world/entity/animal/horse/Llama;	getBreedOffspring	b
 	m	()Lnet/minecraft/world/entity/animal/horse/Llama;	getCaravanHead	gp
 	m	()Lnet/minecraft/sounds/SoundEvent;	getDeathSound	x_
@@ -25412,7 +25411,6 @@ c	net/minecraft/world/entity/animal/horse/Llama$LlamaGroupData	net/minecraft/wor
 	f	I	variant	a
 c	net/minecraft/world/entity/animal/horse/Llama$LlamaAttackWolfGoal	net/minecraft/world/entity/animal/horse/EntityLlama$a
 	m	()D	getFollowDistance	l
-	m	(Lnet/minecraft/world/entity/LivingEntity;)Z	lambda$new$0	b
 c	net/minecraft/world/entity/animal/horse/Llama$LlamaHurtByTargetGoal	net/minecraft/world/entity/animal/horse/EntityLlama$c
 	m	()Z	canContinueToUse	b
 c	net/minecraft/world/entity/monster/CaveSpider	net/minecraft/world/entity/monster/EntityCaveSpider
@@ -30416,6 +30414,7 @@ c	net/minecraft/world/phys/shapes/ArrayVoxelShape	net/minecraft/world/phys/shape
 	f	Lit/unimi/dsi/fastutil/doubles/DoubleList;	zs	d
 c	net/minecraft/world/phys/shapes/ArrayVoxelShape$1	net/minecraft/world/phys/shapes/VoxelShapeArray$1
 	f	[I	$SwitchMap$net$minecraft$core$Direction$Axis	a
+c	net/minecraft/world/phys/shapes/ArrayVoxelShape$DoubleListOffsetExposed	net/minecraft/world/phys/shapes/VoxelShapeArray$DoubleListOffsetExposed
 c	net/minecraft/world/phys/shapes/IdenticalMerger	net/minecraft/world/phys/shapes/VoxelShapeMergerIdentical
 	m	(Lnet/minecraft/world/phys/shapes/IndexMerger$IndexConsumer;)Z	forMergedIndexes	a
 	m	()Lit/unimi/dsi/fastutil/doubles/DoubleList;	getList	a
@@ -30838,17 +30837,6 @@ c	net/minecraft/server/commands/ResetChunksCommand	net/minecraft/server/commands
 	f	Lorg/apache/logging/log4j/Logger;	LOGGER	a
 c	net/minecraft/server/commands/WorldBorderCommand	net/minecraft/server/commands/CommandWorldBorder
 	m	(Lnet/minecraft/commands/CommandSourceStack;)I	getSize	a
-	m	(Lnet/minecraft/commands/CommandSourceStack;)Z	lambda$register$0	b
-	m	(Lcom/mojang/brigadier/context/CommandContext;)I	lambda$register$1	j
-	m	(Lcom/mojang/brigadier/context/CommandContext;)I	lambda$register$10	a
-	m	(Lcom/mojang/brigadier/context/CommandContext;)I	lambda$register$2	i
-	m	(Lcom/mojang/brigadier/context/CommandContext;)I	lambda$register$3	h
-	m	(Lcom/mojang/brigadier/context/CommandContext;)I	lambda$register$4	g
-	m	(Lcom/mojang/brigadier/context/CommandContext;)I	lambda$register$5	f
-	m	(Lcom/mojang/brigadier/context/CommandContext;)I	lambda$register$6	e
-	m	(Lcom/mojang/brigadier/context/CommandContext;)I	lambda$register$7	d
-	m	(Lcom/mojang/brigadier/context/CommandContext;)I	lambda$register$8	c
-	m	(Lcom/mojang/brigadier/context/CommandContext;)I	lambda$register$9	b
 	m	(Lcom/mojang/brigadier/CommandDispatcher;)V	register	a
 	m	(Lnet/minecraft/commands/CommandSourceStack;Lnet/minecraft/world/phys/Vec2;)I	setCenter	a
 	m	(Lnet/minecraft/commands/CommandSourceStack;F)I	setDamageAmount	b
@@ -38405,7 +38393,6 @@ c	net/minecraft/world/entity/ai/village/poi/PoiManager	net/minecraft/world/entit
 	m	(Lnet/minecraft/world/level/chunk/LevelChunkSection;Lnet/minecraft/core/SectionPos;Ljava/util/function/BiConsumer;)V	updateFromSection	a
 	f	I	MAX_VILLAGE_DISTANCE	a
 	f	I	VILLAGE_SECTION_SIZE	b
-	f	Lnet/minecraft/world/entity/ai/village/poi/PoiManager$DistanceTracker;	distanceTracker	d
 	f	Lit/unimi/dsi/fastutil/longs/LongSet;	loadedChunks	e
 c	net/minecraft/world/entity/ai/village/poi/PoiManager$Occupancy	net/minecraft/world/entity/ai/village/poi/VillagePlace$Occupancy
 	m	()[Lnet/minecraft/world/entity/ai/village/poi/PoiManager$Occupancy;	$values	b
@@ -38416,6 +38403,7 @@ c	net/minecraft/world/entity/ai/village/poi/PoiManager$Occupancy	net/minecraft/w
 	f	Lnet/minecraft/world/entity/ai/village/poi/PoiManager$Occupancy;	HAS_SPACE	a
 	f	Lnet/minecraft/world/entity/ai/village/poi/PoiManager$Occupancy;	IS_OCCUPIED	b
 	f	Ljava/util/function/Predicate;	test	d
+c	net/minecraft/world/entity/ai/village/poi/PoiManager$QueuedUnload	net/minecraft/world/entity/ai/village/poi/VillagePlace$QueuedUnload
 c	net/minecraft/world/entity/ai/village/poi/PoiManager$DistanceTracker	net/minecraft/world/entity/ai/village/poi/VillagePlace$a
 	m	(J)I	getLevel	c
 	m	(J)I	getLevelFromSource	b

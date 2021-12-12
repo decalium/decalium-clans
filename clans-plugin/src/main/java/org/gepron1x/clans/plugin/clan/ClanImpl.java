@@ -2,12 +2,14 @@ package org.gepron1x.clans.plugin.clan;
 
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.kyori.adventure.text.Component;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.util.FancyCollections;
+import org.gepron1x.clans.plugin.util.Optionals;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -18,7 +20,7 @@ public record ClanImpl(String tag, UUID owner,
                        Component displayName,
                        Map<UUID, ClanMember> members,
                        Map<String, ClanHome> homes,
-                       Object2IntMap<StatisticType> statistics) implements Clan {
+                       Map<StatisticType, Integer> statistics) implements Clan {
 
     @Override
     public @NotNull String getTag() {
@@ -62,8 +64,8 @@ public record ClanImpl(String tag, UUID owner,
 
     @Override
     public OptionalInt getStatistic(@NotNull StatisticType type) {
-        int value = statistics.getInt(type);
-        return value == statistics.defaultReturnValue() ? OptionalInt.empty() : OptionalInt.of(value);
+        Integer value = statistics.get(type);
+        return Optionals.ofNullable(value);
     }
 
     @Override
@@ -188,7 +190,7 @@ public record ClanImpl(String tag, UUID owner,
                     displayName,
                     FancyCollections.asMap(ClanMember::getUniqueId, members),
                     FancyCollections.asMap(ClanHome::getName, homes),
-                    new Object2IntArrayMap<>(statistics)
+                    Map.copyOf(statistics)
             );
         }
     }

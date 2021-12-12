@@ -33,7 +33,6 @@ public final class ClanEditorImpl implements ClanEditor {
     @Override
     public ClanEditor setStatistic(@NotNull StatisticType type, int value) {
         this.builder.statistic(type, value);
-
         return this;
     }
 

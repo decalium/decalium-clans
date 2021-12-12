@@ -6,13 +6,13 @@
  
 +    // Paper start - If loaded util
 +    @Override
-+    public FluidState getFluidIfLoaded(BlockPos blockposition) {
-+        return this.getFluidState(blockposition);
++    public final FluidState getFluidIfLoaded(BlockPos blockposition) {
++        return Fluids.EMPTY.defaultFluidState();
 +    }
 +
 +    @Override
-+    public BlockState getTypeIfLoaded(BlockPos blockposition) {
-+        return this.getBlockState(blockposition);
++    public final BlockState getBlockStateIfLoaded(BlockPos blockposition) {
++        return Blocks.AIR.defaultBlockState();
 +    }
 +    // Paper end
 +

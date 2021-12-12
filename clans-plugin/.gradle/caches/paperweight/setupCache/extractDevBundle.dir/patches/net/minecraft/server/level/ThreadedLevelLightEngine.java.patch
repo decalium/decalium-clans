@@ -16,7 +16,7 @@
  import net.minecraft.world.level.chunk.DataLayer;
  import net.minecraft.world.level.chunk.LevelChunkSection;
  import net.minecraft.world.level.chunk.LightChunkGetter;
-@@ -23,21 +25,310 @@
+@@ -23,21 +25,312 @@
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
  
@@ -324,6 +324,8 @@
 +    public int getRawBrightness(final BlockPos pos, final int ambientDarkness) {
 +        // need to use new light hooks for this
 +        final int sky = this.theLightEngine.getSkyReader().getLightValue(pos) - ambientDarkness;
++        // Don't fetch the block light level if the skylight level is 15, since the value will never be higher.
++        if (sky == 15) return 15;
 +        final int block = this.theLightEngine.getBlockReader().getLightValue(pos);
 +        return Math.max(sky, block);
      }
@@ -331,7 +333,7 @@
  
      @Override
      public void close() {
-@@ -55,15 +346,16 @@
+@@ -55,15 +348,16 @@
  
      @Override
      public void checkBlock(BlockPos pos) {
@@ -354,7 +356,7 @@
          this.addTask(pos.x, pos.z, () -> {
              return 0;
          }, ThreadedLevelLightEngine.TaskType.PRE_UPDATE, Util.name(() -> {
-@@ -86,17 +378,16 @@
+@@ -86,17 +380,16 @@
  
      @Override
      public void updateSectionStatus(SectionPos pos, boolean notReady) {
@@ -378,7 +380,7 @@
          this.addTask(pos.x, pos.z, ThreadedLevelLightEngine.TaskType.PRE_UPDATE, Util.name(() -> {
              super.enableLightSources(pos, retainData);
          }, () -> {
-@@ -106,6 +397,7 @@
+@@ -106,6 +399,7 @@
  
      @Override
      public void queueSectionData(LightLayer lightType, SectionPos pos, @Nullable DataLayer nibbles, boolean nonEdge) {
@@ -386,7 +388,7 @@
          this.addTask(pos.x(), pos.z(), () -> {
              return 0;
          }, ThreadedLevelLightEngine.TaskType.PRE_UPDATE, Util.name(() -> {
-@@ -120,17 +412,14 @@
+@@ -120,17 +414,14 @@
      }
  
      private void addTask(int x, int z, IntSupplier completedLevelSupplier, ThreadedLevelLightEngine.TaskType stage, Runnable task) {
@@ -408,7 +410,7 @@
          this.addTask(pos.x, pos.z, () -> {
              return 0;
          }, ThreadedLevelLightEngine.TaskType.PRE_UPDATE, Util.name(() -> {
-@@ -141,9 +430,46 @@
+@@ -141,9 +432,46 @@
      }
  
      public CompletableFuture<ChunkAccess> lightChunk(ChunkAccess chunk, boolean excludeBlocks) {
@@ -457,7 +459,7 @@
              LevelChunkSection[] levelChunkSections = chunk.getSections();
  
              for(int i = 0; i < chunk.getSectionsCount(); ++i) {
-@@ -163,51 +489,45 @@
+@@ -163,51 +491,45 @@
  
          }, () -> {
              return "lightChunk " + chunkPos + " " + excludeBlocks;

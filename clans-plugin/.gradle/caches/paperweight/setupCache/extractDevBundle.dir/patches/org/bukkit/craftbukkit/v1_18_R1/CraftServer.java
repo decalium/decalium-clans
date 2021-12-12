@@ -56,8 +56,6 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.RegistryReadOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -1184,8 +1182,7 @@ public final class CraftServer implements Server {
 
         boolean hardcore = creator.hardcore();
 
-        RegistryReadOps<Tag> registryreadops = RegistryReadOps.createAndLoad(NbtOps.INSTANCE, console.resources.getResourceManager(), console.registryHolder);
-        PrimaryLevelData worlddata = (PrimaryLevelData) worldSession.getDataTag(registryreadops, console.datapackconfiguration);
+        PrimaryLevelData worlddata = (PrimaryLevelData) worldSession.getDataTag(console.registryreadops, console.datapackconfiguration);
 
         LevelSettings worldSettings;
         // See MinecraftServer.a(String, String, long, WorldType, JsonElement)
@@ -2289,6 +2286,107 @@ public final class CraftServer implements Server {
         ServerLevel handle = ((CraftWorld) world).getHandle();
         return new OldCraftChunkData(world.getMinHeight(), world.getMaxHeight(), handle.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY), world); // Paper - Anti-Xray - Add parameters
     }
+
+    // Paper start
+    private static final List<net.minecraft.world.level.chunk.ChunkStatus> VANILLA_GEN_STATUSES = List.of(
+        net.minecraft.world.level.chunk.ChunkStatus.EMPTY,
+        net.minecraft.world.level.chunk.ChunkStatus.STRUCTURE_STARTS,
+        net.minecraft.world.level.chunk.ChunkStatus.STRUCTURE_REFERENCES,
+        net.minecraft.world.level.chunk.ChunkStatus.BIOMES,
+        net.minecraft.world.level.chunk.ChunkStatus.NOISE,
+        net.minecraft.world.level.chunk.ChunkStatus.SURFACE,
+        net.minecraft.world.level.chunk.ChunkStatus.CARVERS,
+        net.minecraft.world.level.chunk.ChunkStatus.LIQUID_CARVERS,
+        net.minecraft.world.level.chunk.ChunkStatus.FEATURES,
+        net.minecraft.world.level.chunk.ChunkStatus.LIGHT
+    );
+
+    @net.minecraft.MethodsReturnNonnullByDefault
+    private static final class PaperEmptyLevelChunk extends net.minecraft.world.level.chunk.EmptyLevelChunk {
+        private final net.minecraft.world.level.biome.Biome biome;
+
+        public PaperEmptyLevelChunk(net.minecraft.world.level.Level world, net.minecraft.world.level.ChunkPos pos) {
+            super(world, pos);
+            this.biome = this.level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getOrThrow(net.minecraft.world.level.biome.Biomes.PLAINS);
+        }
+
+        @Override
+        public net.minecraft.world.level.biome.Biome getNoiseBiome(int biomeX, int biomeY, int biomeZ) {
+            return this.biome;
+        }
+
+        @Override
+        public void markPosForPostprocessing(BlockPos pos) {}
+    }
+
+    @Override
+    @Deprecated(forRemoval = true)
+    public ChunkGenerator.ChunkData createVanillaChunkData(World world, int x, int z) {
+        // do bunch of vanilla shit
+        final net.minecraft.server.level.ServerLevel serverLevel = ((CraftWorld) world).getHandle();
+        final Registry<net.minecraft.world.level.biome.Biome> biomeRegistry = serverLevel.getServer().registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
+        final net.minecraft.world.level.chunk.ProtoChunk protoChunk = new net.minecraft.world.level.chunk.ProtoChunk(
+            new net.minecraft.world.level.ChunkPos(x, z),
+            net.minecraft.world.level.chunk.UpgradeData.EMPTY,
+            serverLevel,
+            biomeRegistry,
+            null
+        );
+
+        final net.minecraft.world.level.chunk.ChunkGenerator chunkGenerator;
+        if (serverLevel.chunkSource.getGenerator() instanceof org.bukkit.craftbukkit.v1_18_R1.generator.CustomChunkGenerator bukkit) {
+            chunkGenerator = bukkit.delegate;
+        } else {
+            chunkGenerator = serverLevel.chunkSource.getGenerator();
+        }
+
+        final net.minecraft.world.level.ChunkPos chunkPos = new net.minecraft.world.level.ChunkPos(x, z);
+        final net.minecraft.util.thread.ProcessorMailbox<Runnable> mailbox = net.minecraft.util.thread.ProcessorMailbox.create(
+            net.minecraft.Util.backgroundExecutor(),
+            "CraftServer#createVanillaChunkData(worldName='" + world.getName() + "', x='" + x + "', z='" + z + "')"
+        );
+        for (final net.minecraft.world.level.chunk.ChunkStatus chunkStatus : VANILLA_GEN_STATUSES) {
+            final List<net.minecraft.world.level.chunk.ChunkAccess> chunks = Lists.newArrayList();
+            final int statusRange = Math.max(1, chunkStatus.getRange());
+
+            for (int zz = chunkPos.z - statusRange; zz <= chunkPos.z + statusRange; ++zz) {
+                for (int xx = chunkPos.x - statusRange; xx <= chunkPos.x + statusRange; ++xx) {
+                    if (xx == chunkPos.x && zz == chunkPos.z) {
+                        chunks.add(protoChunk);
+                    } else {
+                        final net.minecraft.world.level.chunk.ChunkAccess chunk = new PaperEmptyLevelChunk(serverLevel, new net.minecraft.world.level.ChunkPos(xx, zz));
+                        chunks.add(chunk);
+                    }
+                }
+            }
+
+            chunkStatus.generate(
+                mailbox::tell,
+                serverLevel,
+                chunkGenerator,
+                serverLevel.getStructureManager(),
+                serverLevel.chunkSource.getLightEngine(),
+                chunk -> {
+                    throw new UnsupportedOperationException("Not creating full chunks here");
+                },
+                chunks,
+                true
+            ).thenAccept(either -> {
+                if (chunkStatus == net.minecraft.world.level.chunk.ChunkStatus.NOISE) {
+                    either.left().ifPresent(chunk -> net.minecraft.world.level.levelgen.Heightmap.primeHeightmaps(chunk, net.minecraft.world.level.chunk.ChunkStatus.POST_FEATURES));
+                }
+            }).join();
+        }
+
+        // get empty object
+        OldCraftChunkData data = (OldCraftChunkData) this.createChunkData(world);
+        // copy over generated sections
+        data.getLights().addAll(protoChunk.getLights().toList());
+        data.setRawChunkData(protoChunk.getSections());
+        // hooray!
+        return data;
+    }
+    // Paper end
 
     @Override
     public BossBar createBossBar(String title, BarColor color, BarStyle style, BarFlag... flags) {

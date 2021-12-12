@@ -6,7 +6,7 @@
                  BlockPos blockPos = pos.relative(function.apply(state));
 -                BlockState blockState = world.getBlockState(blockPos);
 +                // Paper start
-+                BlockState blockState = world.getTypeIfLoaded(blockPos);
++                BlockState blockState = world.getBlockStateIfLoaded(blockPos);
 +                if (blockState == null) {
 +                    return new DoubleBlockCombiner.NeighborCombineResult.Single<>(blockEntity);
 +                }

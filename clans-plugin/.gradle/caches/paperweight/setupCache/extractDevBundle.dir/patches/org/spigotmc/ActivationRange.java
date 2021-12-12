@@ -188,7 +188,7 @@ public class ActivationRange
         maxRange = Math.max( maxRange, waterActivationRange );
         maxRange = Math.max( maxRange, villagerActivationRange );
         // Paper end
-        maxRange = Math.min( ( world.spigotConfig.viewDistance << 4 ) - 8, maxRange );
+        maxRange = Math.min( ( world.spigotConfig.simulationDistance << 4 ) - 8, maxRange );
 
         for ( Player player : world.players() )
         {

@@ -220,7 +220,7 @@ public class DummyGeneratorAccess implements WorldGenLevel {
     }
 
     @Override
-    public BlockState getTypeIfLoaded(BlockPos blockposition) {
+    public BlockState getBlockStateIfLoaded(BlockPos blockposition) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

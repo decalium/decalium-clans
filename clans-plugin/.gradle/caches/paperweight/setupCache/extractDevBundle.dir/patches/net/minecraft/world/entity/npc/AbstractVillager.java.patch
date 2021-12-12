@@ -97,11 +97,11 @@
 +
 +    // Paper start
 +    @Override
-+    public void processTrade(MerchantOffer recipe, io.papermc.paper.event.player.PlayerPurchaseEvent event) { // The MerchantRecipe passed in here is the one set by the PlayerPurchaseEvent
-+        if (event.willIncreaseTradeUses()) {
++    public void processTrade(MerchantOffer recipe, @Nullable io.papermc.paper.event.player.PlayerPurchaseEvent event) { // The MerchantRecipe passed in here is the one set by the PlayerPurchaseEvent
++        if (event == null || event.willIncreaseTradeUses()) {
 +            recipe.increaseUses();
 +        }
-+        if (event.isRewardingExp()) {
++        if (event == null || event.isRewardingExp()) {
 +            this.rewardTradeXp(recipe);
 +        }
 +        this.notifyTrade(recipe);

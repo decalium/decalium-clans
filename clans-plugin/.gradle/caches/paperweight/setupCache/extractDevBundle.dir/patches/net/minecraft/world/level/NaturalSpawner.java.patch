@@ -265,7 +265,7 @@
 -        if (!blockState.isRedstoneConductor(chunk, pos)) {
 -            BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
 -            int j = 0;
-+        BlockState iblockdata = world.getTypeIfLoadedAndInBounds(pos); // Paper - don't load chunks for mob spawn
++        BlockState iblockdata = world.getBlockStateIfLoadedAndInBounds(pos); // Paper - don't load chunks for mob spawn
 +        int j = 0; // Paper - moved up
  
 -            for(int k = 0; k < 3; ++k) {

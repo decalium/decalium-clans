@@ -49,13 +49,14 @@
      public ImposterProtoChunk(LevelChunk wrapped, boolean bl) {
          super(wrapped.getPos(), UpgradeData.EMPTY, wrapped.levelHeightAccessor, wrapped.getLevel().registryAccess().registryOrThrow(Registry.BIOME_REGISTRY), wrapped.getBlendingData());
          this.wrapped = wrapped;
-@@ -46,6 +88,11 @@
+@@ -46,6 +88,12 @@
      public BlockState getBlockState(BlockPos pos) {
          return this.wrapped.getBlockState(pos);
      }
 +    // Paper start
-+    public final BlockState getType(final int x, final int y, final int z) {
-+        return this.wrapped.getBlockData(x, y, z);
++    @Override
++    public final BlockState getBlockState(final int x, final int y, final int z) {
++        return this.wrapped.getBlockStateFinal(x, y, z);
 +    }
 +    // Paper end
  
