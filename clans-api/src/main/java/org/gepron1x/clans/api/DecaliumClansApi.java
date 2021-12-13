@@ -11,13 +11,21 @@ public interface DecaliumClansApi {
 
     @NotNull ClanManager getClanManager();
 
+    @NotNull ClanCache getClanCache();
+
     @NotNull Clan.Builder clanBuilder();
 
     @NotNull ClanMember.Builder memberBuilder();
 
     @NotNull ClanHome.Builder homeBuilder();
 
+    @NotNull ClanRole.Builder roleBuilder();
+
+    @NotNull RoleRegistry getRoleRegistry();
+
     @NotNull Index<String, ClanRole> getRoles();
+
+
 
 
 

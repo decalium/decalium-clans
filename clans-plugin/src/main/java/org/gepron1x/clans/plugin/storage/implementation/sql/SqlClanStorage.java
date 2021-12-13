@@ -23,8 +23,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SqlClanStorage implements ClanStorage {
@@ -73,6 +75,11 @@ public class SqlClanStorage implements ClanStorage {
     }
 
     @Override
+    public @NotNull Set<Clan> loadClans() {
+        return jdbi.withHandle(handle -> collectClans(handle.createQuery(SELECT_CLANS))).collect(Collectors.toSet());
+    }
+
+    @Override
     public void saveClan(@NotNull Clan clan) {
         jdbi.useTransaction(handle -> {
             handle.createUpdate(INSERT_CLAN)
@@ -94,9 +101,7 @@ public class SqlClanStorage implements ClanStorage {
 
     @Override
     public void editClan(@NotNull Clan clan, @NotNull Consumer<ClanEditor> editor) {
-        jdbi.useTransaction(handle -> {
-            editor.accept(new SqlClanEditor(handle, clan));
-        });
+        jdbi.useTransaction(handle -> editor.accept(new SqlClanEditor(handle, clan)));
     }
 
     @Override

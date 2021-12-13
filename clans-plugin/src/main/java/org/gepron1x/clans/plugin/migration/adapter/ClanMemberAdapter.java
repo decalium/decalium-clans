@@ -28,7 +28,7 @@ public final class ClanMemberAdapter extends TypeAdapter<ClanMember> {
         out.beginObject();
         out.name(UNIQUE_ID);
         gson.toJson(value.getUniqueId(), UUID.class, out);
-        out.name(ROLE).value(value.getRole().getIdentifier());
+        out.name(ROLE).value(value.getRole().getName());
 
         out.endObject();
 

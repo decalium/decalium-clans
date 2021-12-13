@@ -5,6 +5,7 @@ import org.gepron1x.clans.api.editor.ClanEditor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -12,6 +13,8 @@ public interface ClanStorage {
 
     @Nullable Clan loadClan(@NotNull String tag);
     @Nullable Clan loadUserClan(@NotNull UUID uuid);
+
+    @NotNull Set<Clan> loadClans();
 
     void saveClan(@NotNull Clan clan);
 
@@ -21,6 +24,7 @@ public interface ClanStorage {
 
 
     boolean clanExists(@NotNull String tag);
+
 
 
 }

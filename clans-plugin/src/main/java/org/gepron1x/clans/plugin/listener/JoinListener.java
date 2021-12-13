@@ -6,17 +6,17 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.gepron1x.clans.api.clan.Clan;
-import org.gepron1x.clans.plugin.ClanCache;
+import org.gepron1x.clans.plugin.ClanCacheImpl;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
 public class JoinListener implements Listener {
-    private final ClanCache cache;
+    private final ClanCacheImpl cache;
     private final ClanStorage storage;
 
-    public JoinListener(@NotNull ClanCache cache, @NotNull ClanStorage storage) {
+    public JoinListener(@NotNull ClanCacheImpl cache, @NotNull ClanStorage storage) {
 
         this.cache = cache;
         this.storage = storage;

@@ -5,19 +5,22 @@ import org.gepron1x.clans.api.editor.ClanEditor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public interface ClanManager {
-    CompletableFuture<CreationResult> addClan(@NotNull Clan clan);
+    @NotNull CompletableFuture<CreationResult> addClan(@NotNull Clan clan);
 
-    CompletableFuture<Boolean> removeClan(@NotNull Clan clan);
+    @NotNull CompletableFuture<Boolean> removeClan(@NotNull Clan clan);
 
-    CompletableFuture<Clan> editClan(@NotNull Clan clan, @NotNull Consumer<ClanEditor> consumer);
+    @NotNull CompletableFuture<Clan> editClan(@NotNull Clan clan, @NotNull Consumer<ClanEditor> consumer);
 
-    CompletableFuture<@Nullable Clan> getClan(@NotNull String tag);
-    CompletableFuture<@Nullable Clan> getUserClan(@NotNull UUID uuid);
+    @NotNull CompletableFuture<@Nullable Clan> getClan(@NotNull String tag);
+    @NotNull CompletableFuture<@Nullable Clan> getUserClan(@NotNull UUID uuid);
+
+    @NotNull CompletableFuture<Set<Clan>> getClans();
 
     enum CreationResult {
         SUCCESS,

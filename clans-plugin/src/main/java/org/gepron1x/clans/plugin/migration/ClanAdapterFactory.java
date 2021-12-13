@@ -1,4 +1,4 @@
-package org.gepron1x.clans.plugin.migration.adapter;
+package org.gepron1x.clans.plugin.migration;
 
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
@@ -12,6 +12,7 @@ import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.statistic.StatisticType;
+import org.gepron1x.clans.plugin.migration.adapter.*;
 
 public class ClanAdapterFactory implements TypeAdapterFactory {
 
@@ -40,8 +41,11 @@ public class ClanAdapterFactory implements TypeAdapterFactory {
         } else if(Location.class.isAssignableFrom(rawType)) {
             adapter = new LocationAdapter(server);
         }
+        @SuppressWarnings("unchecked")
+        TypeAdapter<T> typeAdapter = (TypeAdapter<T>) adapter;
 
-        return (TypeAdapter<T>) adapter;
+
+        return typeAdapter;
     }
 
 }
