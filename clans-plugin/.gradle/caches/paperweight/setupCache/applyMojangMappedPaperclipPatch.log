@@ -1,3 +1,0 @@
-Command: /usr/lib/jvm/java-17-openjdk/bin/java -Dpaperclip.patchonly=true -classpath /home/gepron1x/IdeaProjects/decalium-clans/clans-plugin/.gradle/caches/paperweight/setupCache/extractDevBundle.dir/data/paperclip-mojang+yarn.jar io.papermc.paperclip.Main
-Downloading mojang_1.18.jar
-Applying patches
