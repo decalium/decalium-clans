@@ -3,7 +3,6 @@ package org.gepron1x.clans.plugin.editor;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
-import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.ClanHome;
 import org.gepron1x.clans.api.editor.HomeEditor;
 import org.jetbrains.annotations.NotNull;

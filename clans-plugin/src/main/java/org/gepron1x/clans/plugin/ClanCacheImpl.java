@@ -37,6 +37,7 @@ public final class ClanCacheImpl implements ClanCache {
         return clanMap.containsValue(clan);
     }
 
+
     @Override
     public boolean isCached(@NotNull String tag) {
         return clanMap.containsKey(tag);

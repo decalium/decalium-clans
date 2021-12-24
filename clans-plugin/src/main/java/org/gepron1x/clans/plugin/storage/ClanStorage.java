@@ -1,6 +1,8 @@
 package org.gepron1x.clans.plugin.storage;
 
+import org.gepron1x.clans.api.ClanCreationResult;
 import org.gepron1x.clans.api.clan.Clan;
+import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.editor.ClanEditor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,7 +18,7 @@ public interface ClanStorage {
 
     @NotNull Set<Clan> loadClans();
 
-    void saveClan(@NotNull Clan clan);
+    ClanCreationResult saveClan(@NotNull DraftClan clan);
 
     void editClan(@NotNull Clan clan, @NotNull Consumer<ClanEditor> editor);
 

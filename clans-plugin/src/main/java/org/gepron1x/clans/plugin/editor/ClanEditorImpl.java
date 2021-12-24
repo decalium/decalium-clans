@@ -8,20 +8,20 @@ import org.gepron1x.clans.api.editor.ClanEditor;
 import org.gepron1x.clans.api.editor.HomeEditor;
 import org.gepron1x.clans.api.editor.MemberEditor;
 import org.gepron1x.clans.api.statistic.StatisticType;
-import org.jdbi.v3.core.Handle;
+import org.gepron1x.clans.plugin.clan.ClanBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
 public final class ClanEditorImpl implements ClanEditor {
 
+
+    private final ClanBuilder builder;
     private final Clan clan;
 
-    private final Clan.Builder builder;
-
-    public ClanEditorImpl(@NotNull Clan clan, @NotNull Clan.Builder builder) {
-        this.clan = clan;
+    public ClanEditorImpl(@NotNull Clan clan, @NotNull ClanBuilder builder) {
         this.builder = builder;
+        this.clan = clan;
     }
 
     @Override
@@ -38,7 +38,6 @@ public final class ClanEditorImpl implements ClanEditor {
 
     @Override
     public ClanEditor incrementStatistic(@NotNull StatisticType type) {
-
         return this;
     }
 
@@ -49,44 +48,41 @@ public final class ClanEditorImpl implements ClanEditor {
 
     @Override
     public ClanEditor addMember(@NotNull ClanMember member) {
-        builder.addMember(member);
+        this.builder.addMember(member);
         return this;
     }
 
     @Override
     public ClanEditor removeMember(@NotNull ClanMember member) {
-        builder.removeMember(member);
+        this.builder.removeMember(member);
         return this;
     }
 
     @Override
     public ClanEditor editMember(@NotNull ClanMember member, @NotNull Consumer<MemberEditor> consumer) {
         ClanMember.Builder memberBuilder = member.toBuilder();
-        MemberEditor editor = new MemberEditorImpl(member, memberBuilder);
-        consumer.accept(editor);
+        consumer.accept(new MemberEditorImpl(member, memberBuilder));
         builder.removeMember(member).addMember(memberBuilder.build());
         return this;
     }
 
     @Override
     public ClanEditor addHome(@NotNull ClanHome home) {
-        builder.addHome(home);
+        this.builder.addHome(home);
         return this;
     }
 
     @Override
     public ClanEditor removeHome(@NotNull ClanHome home) {
-        builder.removeHome(home);
+        this.builder.removeHome(home);
         return this;
     }
 
     @Override
     public ClanEditor editHome(@NotNull ClanHome home, @NotNull Consumer<HomeEditor> consumer) {
-        builder.removeHome(home);
         ClanHome.Builder homeBuilder = home.toBuilder();
-        HomeEditor editor = new HomeEditorImpl(home, homeBuilder);
-        consumer.accept(editor);
-        builder.addHome(homeBuilder.build());
+        consumer.accept(new HomeEditorImpl(home, homeBuilder));
+        builder.removeHome(home).addHome(homeBuilder.build());
         return this;
     }
 

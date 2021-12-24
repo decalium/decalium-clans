@@ -7,11 +7,12 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import net.kyori.adventure.text.minimessage.template.TemplateResolver;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public record Message(MiniMessage miniMessage,
                       String value) implements ComponentLike, TemplateHolder<Message.Container> {
@@ -28,9 +29,11 @@ public record Message(MiniMessage miniMessage,
 
     @Override
     public Container with(Iterable<Template> templates) {
+
         if (templates instanceof Collection<Template> collection) {
             return with(collection);
         }
+
         return with(Lists.newArrayList(templates));
     }
 
@@ -48,42 +51,51 @@ public record Message(MiniMessage miniMessage,
     }
 
 
-    public static final class Container implements ComponentLike, TemplateHolder<Container> {
+    public static final class Container implements ComponentLike, TemplateHolder<Container>, TemplateResolver {
         private final String value;
         private final MiniMessage miniMessage;
-        private final List<Template> templates;
+        private final Map<String, Template> templates;
 
         private Container(String value, MiniMessage miniMessage, Collection<Template> templates) {
-
             this.value = value;
             this.miniMessage = miniMessage;
-            this.templates = new ArrayList<>(templates);
+            this.templates = new HashMap<>(templates.size());
+            with(templates);
         }
 
         @Override
-        public @NotNull
-        Component asComponent() {
-            return miniMessage.deserialize(value, TemplateResolver.templates(templates));
+        public @NotNull Component asComponent() {
+            return miniMessage.deserialize(value, this);
         }
 
 
         @Override
         public Container with(Template template) {
-            this.templates.add(template);
+            this.templates.put(template.key(), template);
             return this;
         }
 
         @Override
         public Container with(Iterable<Template> templates) {
             if (templates instanceof Collection<Template> collection) return with(collection);
-            for (Template template : templates) this.templates.add(template);
+            for (Template template : templates) this.templates.put(template.key(), template);
             return this;
         }
 
         @Override
         public Container with(Collection<Template> templates) {
-            this.templates.addAll(templates);
+            for(Template template : templates) this.templates.put(template.key(), template);
             return this;
+        }
+
+        @Override
+        public boolean canResolve(@NotNull String key) {
+            return templates.containsKey(key);
+        }
+
+        @Override
+        public @Nullable Template resolve(@NotNull String key) {
+            return templates.get(key);
         }
     }
 

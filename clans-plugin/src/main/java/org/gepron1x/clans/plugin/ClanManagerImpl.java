@@ -1,10 +1,12 @@
 package org.gepron1x.clans.plugin;
 
-import org.gepron1x.clans.api.ClanCache;
+import org.gepron1x.clans.api.ClanCreationResult;
 import org.gepron1x.clans.api.ClanManager;
 import org.gepron1x.clans.api.clan.Clan;
+import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.editor.ClanEditor;
 import org.gepron1x.clans.plugin.async.FuturesFactory;
+import org.gepron1x.clans.plugin.clan.ClanBuilder;
 import org.gepron1x.clans.plugin.editor.ClanEditorImpl;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
 import org.jetbrains.annotations.NotNull;
@@ -29,19 +31,20 @@ public class ClanManagerImpl implements ClanManager {
         this.logger = logger;
     }
     @Override
-    public @NotNull CompletableFuture<CreationResult> addClan(@NotNull Clan clan) {
-        if(cache.isCached(clan.getTag())) return CompletableFuture.completedFuture(CreationResult.ALREADY_EXISTS);
-        return futuresFactory.runAsync(() -> storage.saveClan(clan))
-                .thenApply(v -> {
-                    cache.cacheClan(clan);
-                    return CreationResult.SUCCESS;
+    public @NotNull CompletableFuture<ClanCreationResult> createClan(@NotNull DraftClan draftClan) {
+        if(cache.isCached(draftClan.getTag())) return CompletableFuture.completedFuture(ClanCreationResult.alreadyExists());
+        return futuresFactory.supplyAsync(() -> storage.saveClan(draftClan))
+                .thenApply(result -> {
+                   if(result.isSuccess()) cache.cacheClan(result.clan());
+                   return result;
                 });
     }
 
     @Override
     public @NotNull CompletableFuture<Boolean> removeClan(@NotNull Clan clan) {
 
-        return futuresFactory.runAsync(() -> storage.removeClan(clan)).thenApply(v -> {
+        return futuresFactory.runAsync(() -> storage.removeClan(clan))
+                .thenApply(v -> {
             cache.removeClan(clan);
             return true;
         });
@@ -49,7 +52,7 @@ public class ClanManagerImpl implements ClanManager {
 
     @Override
     public @NotNull CompletableFuture<Clan> editClan(@NotNull Clan clan, @NotNull Consumer<ClanEditor> consumer) {
-        Clan.Builder builder = clan.toBuilder();
+        ClanBuilder builder = ClanBuilder.asBuilder(clan);
         ClanEditor editor = new ClanEditorImpl(clan, builder);
         consumer.accept(editor);
         Clan newClan = builder.build();
@@ -62,6 +65,7 @@ public class ClanManagerImpl implements ClanManager {
                     }
                     return newClan;
         });
+
     }
 
     @Override

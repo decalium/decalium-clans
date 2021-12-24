@@ -1,8 +1,8 @@
 package org.gepron1x.clans.api;
 
 import net.kyori.adventure.util.Index;
-import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.ClanHome;
+import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +13,7 @@ public interface DecaliumClansApi {
 
     @NotNull ClanCache getClanCache();
 
-    @NotNull Clan.Builder clanBuilder();
+    @NotNull DraftClan.Builder clanBuilder();
 
     @NotNull ClanMember.Builder memberBuilder();
 

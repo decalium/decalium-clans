@@ -8,8 +8,8 @@ import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.inventory.ItemStack;
 import org.gepron1x.clans.api.DecaliumClansApi;
-import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.ClanHome;
+import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.migration.adapter.*;
@@ -28,7 +28,7 @@ public class ClanAdapterFactory implements TypeAdapterFactory {
 
         Class<? super T> rawType = type.getRawType();
         TypeAdapter<?> adapter = null;
-        if(Clan.class.isAssignableFrom(rawType)) {
+        if(DraftClan.class.isAssignableFrom(rawType)) {
             adapter = new ClanAdapter(gson, api);
         } else if(ClanMember.class.isAssignableFrom(rawType)) {
             adapter = new ClanMemberAdapter(gson, api);

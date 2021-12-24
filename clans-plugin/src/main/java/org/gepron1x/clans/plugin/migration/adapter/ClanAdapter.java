@@ -7,8 +7,8 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.kyori.adventure.text.Component;
 import org.gepron1x.clans.api.DecaliumClansApi;
-import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.ClanHome;
+import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.statistic.StatisticType;
 
@@ -18,7 +18,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 
-public final class ClanAdapter extends TypeAdapter<Clan> {
+public final class ClanAdapter extends TypeAdapter<DraftClan> {
     private static final Type CLAN_MEMBER_COLLECTION = TypeToken.getParameterized(Collection.class, ClanMember.class).getType();
     private static final Type CLAN_HOME_COLLECTION = TypeToken.getParameterized(Collection.class, ClanHome.class).getType();
     private static final Type STATISTIC_MAP = TypeToken.getParameterized(Map.class, StatisticType.class, Integer.class).getType();
@@ -31,7 +31,7 @@ public final class ClanAdapter extends TypeAdapter<Clan> {
         this.api = api;
     }
     @Override
-    public void write(JsonWriter out, Clan value) throws IOException {
+    public void write(JsonWriter out, DraftClan value) throws IOException {
         out.beginObject();
         out.name(TAG).value(value.getTag());
 
@@ -54,8 +54,8 @@ public final class ClanAdapter extends TypeAdapter<Clan> {
     }
 
     @Override
-    public Clan read(JsonReader in) throws IOException {
-        Clan.Builder builder = api.clanBuilder();
+    public DraftClan read(JsonReader in) throws IOException {
+        DraftClan.Builder builder = api.clanBuilder();
         in.beginObject();
         while(in.hasNext()) {
             String fieldName = in.nextName();

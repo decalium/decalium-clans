@@ -13,7 +13,6 @@ public final class Optionals {
 
     public static OptionalInt ofNullable(@Nullable Integer value) {
         return value == null ? OptionalInt.empty() : OptionalInt.of(value);
-
     }
 
     public static OptionalLong ofNullable(@Nullable Long value) {

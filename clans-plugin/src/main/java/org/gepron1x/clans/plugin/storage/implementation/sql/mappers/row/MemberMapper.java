@@ -12,9 +12,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
-import static java.util.Objects.*;
+import static java.util.Objects.requireNonNull;
 
-public class MemberMapper extends PrefixedRowMapper<ClanMember> {
+public final class MemberMapper extends PrefixedRowMapper<ClanMember> {
     private static final String UNIQUE_ID = "uuid", ROLE = "role";
     private final DecaliumClansApi api;
     public MemberMapper(@NotNull DecaliumClansApi api, @Nullable String prefix) {

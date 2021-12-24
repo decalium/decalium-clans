@@ -6,7 +6,6 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Collection;
-import java.util.Set;
 import java.util.UUID;
 
 public interface ClanCache {

@@ -7,8 +7,8 @@ import org.gepron1x.clans.api.editor.MemberEditor;
 import org.jdbi.v3.core.Handle;
 import org.jetbrains.annotations.NotNull;
 
-public class SqlMemberEditor implements MemberEditor {
-    private static final String UPDATE_ROLE = "UPDATE members SET role=<role> WHERE uuid=<uuid> AND clan_tag=<clan_tag>";
+public final class SqlMemberEditor implements MemberEditor {
+    private static final String UPDATE_ROLE = "UPDATE members SET role=<role> WHERE uuid=<uuid> AND clan_id=<clan_id>";
     private final Handle handle;
     private final Clan clan;
     private final ClanMember member;
@@ -28,7 +28,7 @@ public class SqlMemberEditor implements MemberEditor {
     public MemberEditor setRole(@NotNull ClanRole role) {
         handle.createUpdate(UPDATE_ROLE)
                 .bind("uuid", member.getUniqueId())
-                .bind("clan_tag", clan.getTag())
+                .bind("clan_id", clan.getId())
                 .bind("role", role)
                 .execute();
         return this;

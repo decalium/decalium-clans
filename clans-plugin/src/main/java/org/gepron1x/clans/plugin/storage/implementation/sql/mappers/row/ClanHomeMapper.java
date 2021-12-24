@@ -17,7 +17,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
-public class ClanHomeMapper extends PrefixedRowMapper<ClanHome> {
+public final class ClanHomeMapper extends PrefixedRowMapper<ClanHome> {
 
     private static final String NAME = "name", CREATOR = "creator", DISPLAY_NAME = "display_name", ICON = "icon";
     private static final String X = "x", Y = "y", Z = "z", WORLD = "world";

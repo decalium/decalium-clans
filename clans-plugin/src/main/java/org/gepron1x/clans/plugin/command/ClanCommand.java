@@ -6,7 +6,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.DecaliumClansApi;
-import org.gepron1x.clans.api.clan.Clan;
+import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,7 +36,7 @@ public class ClanCommand extends AbstractCommand {
         String tag = context.get("tag");
         Component displayName = Objects.requireNonNull(context.getOrSupplyDefault("display_name", () -> Component.text(tag)));
         UUID uuid = player.getUniqueId();
-        Clan clan = clansApi.clanBuilder().tag(tag)
+        DraftClan clan = clansApi.clanBuilder().tag(tag)
                 .displayName(displayName)
                 .owner(uuid)
                 .addMember(clansApi.memberBuilder()
@@ -44,7 +44,7 @@ public class ClanCommand extends AbstractCommand {
                         .role(clansApi.getRoleRegistry().getOwnerRole())
                         .build()
                 ).build();
-        clansApi.getClanManager().addClan(clan).thenAccept(result -> {
+        clansApi.getClanManager().createClan(clan).thenAccept(result -> {
 
         });
 
