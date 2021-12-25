@@ -148,5 +148,33 @@ public final class ClanHomeImpl implements ClanHome {
                     icon
             );
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            BuilderImpl builder = (BuilderImpl) o;
+            return Objects.equals(name, builder.name) &&
+                    Objects.equals(displayName, builder.displayName) &&
+                    Objects.equals(creator, builder.creator) &&
+                    Objects.equals(location, builder.location) &&
+                    Objects.equals(icon, builder.icon);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(name, displayName, creator, location, icon);
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("name", name)
+                    .add("displayName", displayName)
+                    .add("creator", creator)
+                    .add("location", location)
+                    .add("icon", icon)
+                    .toString();
+        }
     }
 }

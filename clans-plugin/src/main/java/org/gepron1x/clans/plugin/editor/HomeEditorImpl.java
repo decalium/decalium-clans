@@ -8,6 +8,8 @@ import org.gepron1x.clans.api.editor.HomeEditor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public final class HomeEditorImpl implements HomeEditor {
 
     private final ClanHome home;
@@ -39,5 +41,23 @@ public final class HomeEditorImpl implements HomeEditor {
     public HomeEditor setDisplayName(@NotNull Component displayName) {
         builder.displayName(displayName);
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        HomeEditorImpl that = (HomeEditorImpl) o;
+        return home.equals(that.home) && builder.equals(that.builder);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(home, builder);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
     }
 }

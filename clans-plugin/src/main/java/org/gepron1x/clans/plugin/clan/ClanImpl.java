@@ -12,10 +12,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 import java.util.UUID;
 
-public class ClanImpl extends AbstractClanBase implements Clan {
+public final class ClanImpl extends AbstractClanBase implements Clan {
     private final int id;
 
-    protected ClanImpl(int id, String tag,
+    ClanImpl(int id, String tag,
                        Component displayName,
                        UUID owner, Map<UUID, ClanMember> memberMap,
                        Map<String, ClanHome> homeMap,
@@ -36,16 +36,24 @@ public class ClanImpl extends AbstractClanBase implements Clan {
 
     @Override
     public boolean equals(Object o) {
-        return super.equals(o);
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ClanImpl clan = (ClanImpl) o;
+        return id == clan.id;
     }
 
     @Override
     public int hashCode() {
-        return super.hashCode();
+        int result = super.hashCode();
+        result = (31 * result) + id;
+        return id;
     }
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("super", super.toString()).toString();
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("super", super.toString()).toString();
     }
 }

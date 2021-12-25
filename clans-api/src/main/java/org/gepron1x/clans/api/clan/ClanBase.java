@@ -34,6 +34,9 @@ public interface ClanBase extends StatisticHolder {
 
     @NotNull @Unmodifiable Collection<ClanHome> getHomes();
 
+    @Nullable ClanHome getHome(@NotNull String name);
+
+
     @NotNull @Unmodifiable Map<String, ClanHome> homeMap();
 
     interface Builder<B extends ClanBase.Builder<B, C>, C extends ClanBase> extends Buildable.Builder<C> {

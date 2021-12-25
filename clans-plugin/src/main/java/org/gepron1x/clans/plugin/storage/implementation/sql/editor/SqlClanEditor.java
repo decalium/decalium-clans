@@ -13,6 +13,8 @@ import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.statement.Update;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public final class SqlClanEditor implements ClanEditor {
@@ -78,8 +80,8 @@ public final class SqlClanEditor implements ClanEditor {
     }
 
     @Override
-    public ClanEditor editMember(@NotNull ClanMember member, @NotNull Consumer<MemberEditor> consumer) {
-        consumer.accept(new SqlMemberEditor(handle, clan, member));
+    public ClanEditor editMember(@NotNull UUID member, @NotNull Consumer<MemberEditor> consumer) {
+        consumer.accept(new SqlMemberEditor(handle, clan, Objects.requireNonNull(clan.getMember(member))));
         return this;
     }
 
@@ -113,8 +115,8 @@ public final class SqlClanEditor implements ClanEditor {
     }
 
     @Override
-    public ClanEditor editHome(@NotNull ClanHome home, @NotNull Consumer<HomeEditor> consumer) {
-        consumer.accept(new SqlHomeEditor(handle, clan, home));
+    public ClanEditor editHome(@NotNull String name, @NotNull Consumer<HomeEditor> consumer) {
+        consumer.accept(new SqlHomeEditor(handle, clan, Objects.requireNonNull(clan.getHome(name))));
         return this;
     }
 

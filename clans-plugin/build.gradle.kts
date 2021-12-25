@@ -22,8 +22,8 @@ dependencies {
     implementation(project(":clans-api"))
    // compileOnly("io.papermc.paper:paper-api:1.17.1-R0.1-SNAPSHOT")
     paperDevBundle("1.18-R0.1-SNAPSHOT")
-    implementation("org.jdbi:jdbi3-core:3.24.1")
-    implementation("cloud.commandframework:cloud-paper:1.5.0")
+    implementation("org.jdbi:jdbi3-core:3.25.0")
+    implementation("cloud.commandframework:cloud-paper:1.6.1")
     implementation("space.arim.dazzleconf:dazzleconf-ext-snakeyaml:1.2.1") {
         exclude(group = "org.yaml", module = "snakeyaml")
     }

@@ -71,5 +71,15 @@ public class DraftClanImpl extends AbstractClanBase implements DraftClan {
         public BuilderImpl self() {
             return this;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            return super.equals(o) && o.getClass() == this.getClass();
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this).add("super", super.toString()).toString();
+        }
     }
 }

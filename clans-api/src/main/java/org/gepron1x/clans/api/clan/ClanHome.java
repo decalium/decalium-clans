@@ -4,7 +4,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.Buildable;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
-import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,6 +16,8 @@ public interface ClanHome extends Buildable<ClanHome, ClanHome.Builder> {
     @NotNull UUID getCreator();
     @NotNull Location getLocation();
     @Nullable ItemStack getIcon();
+
+
 
     interface Builder extends Buildable.Builder<ClanHome> {
         @Contract("_ -> this")

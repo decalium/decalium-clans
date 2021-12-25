@@ -78,6 +78,11 @@ public abstract class AbstractClanBase implements ClanBase {
     }
 
     @Override
+    public @Nullable ClanHome getHome(@NotNull String name) {
+        return homeMap.get(name);
+    }
+
+    @Override
     public @NotNull @Unmodifiable Map<String, ClanHome> homeMap() {
         return homeMap;
     }
@@ -215,6 +220,36 @@ public abstract class AbstractClanBase implements ClanBase {
         public @NotNull B emptyHomes() {
             this.homes.clear();
             return self();
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(tag, owner, displayName, members, homes, statistics);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Builder<?, ?> builder = (Builder<?, ?>) o;
+            return Objects.equals(tag, builder.tag) &&
+                    Objects.equals(owner, builder.owner) &&
+                    Objects.equals(displayName, builder.displayName) &&
+                    members.equals(builder.members) &&
+                    homes.equals(builder.homes) &&
+                    statistics.equals(builder.statistics);
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("tag", tag)
+                    .add("owner", owner)
+                    .add("displayName", displayName)
+                    .add("members", members)
+                    .add("homes", homes)
+                    .add("statistics", statistics)
+                    .toString();
         }
     }
 }

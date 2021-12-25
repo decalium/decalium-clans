@@ -1,5 +1,6 @@
 package org.gepron1x.clans.plugin.editor;
 
+import com.google.common.base.MoreObjects;
 import net.kyori.adventure.text.Component;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.ClanHome;
@@ -11,6 +12,8 @@ import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.clan.ClanBuilder;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public final class ClanEditorImpl implements ClanEditor {
@@ -38,11 +41,13 @@ public final class ClanEditorImpl implements ClanEditor {
 
     @Override
     public ClanEditor incrementStatistic(@NotNull StatisticType type) {
+        this.builder.incrementStatistic(type);
         return this;
     }
 
     @Override
     public ClanEditor removeStatistic(@NotNull StatisticType type) {
+        this.builder.removeStatistic(type);
         return this;
     }
 
@@ -59,7 +64,8 @@ public final class ClanEditorImpl implements ClanEditor {
     }
 
     @Override
-    public ClanEditor editMember(@NotNull ClanMember member, @NotNull Consumer<MemberEditor> consumer) {
+    public ClanEditor editMember(@NotNull UUID uuid, @NotNull Consumer<MemberEditor> consumer) {
+        ClanMember member = Objects.requireNonNull(this.builder.member(uuid), "no member with given uuid present");
         ClanMember.Builder memberBuilder = member.toBuilder();
         consumer.accept(new MemberEditorImpl(member, memberBuilder));
         builder.removeMember(member).addMember(memberBuilder.build());
@@ -79,7 +85,8 @@ public final class ClanEditorImpl implements ClanEditor {
     }
 
     @Override
-    public ClanEditor editHome(@NotNull ClanHome home, @NotNull Consumer<HomeEditor> consumer) {
+    public ClanEditor editHome(@NotNull String name, @NotNull Consumer<HomeEditor> consumer) {
+        ClanHome home = Objects.requireNonNull(this.builder.home(name), "no home with given name present");
         ClanHome.Builder homeBuilder = home.toBuilder();
         consumer.accept(new HomeEditorImpl(home, homeBuilder));
         builder.removeHome(home).addHome(homeBuilder.build());
@@ -89,5 +96,26 @@ public final class ClanEditorImpl implements ClanEditor {
     @Override
     public Clan getTarget() {
         return clan;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClanEditorImpl that = (ClanEditorImpl) o;
+        return builder.equals(that.builder) && clan.equals(that.clan);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(builder, clan);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("builder", builder)
+                .add("clan", clan)
+                .toString();
     }
 }
