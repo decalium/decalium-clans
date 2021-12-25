@@ -4,11 +4,13 @@ import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.api.editor.MemberEditor;
+import org.intellij.lang.annotations.Language;
 import org.jdbi.v3.core.Handle;
 import org.jetbrains.annotations.NotNull;
 
 public final class SqlMemberEditor implements MemberEditor {
-    private static final String UPDATE_ROLE = "UPDATE members SET role=<role> WHERE uuid=<uuid> AND clan_id=<clan_id>";
+    @Language("SQL")
+    private static final String UPDATE_ROLE = "UPDATE members SET `role`=<role> WHERE `uuid`=<uuid> AND `clan_id`=<clan_id>";
     private final Handle handle;
     private final Clan clan;
     private final ClanMember member;

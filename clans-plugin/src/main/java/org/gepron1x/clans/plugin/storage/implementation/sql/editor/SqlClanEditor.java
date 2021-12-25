@@ -9,6 +9,7 @@ import org.gepron1x.clans.api.editor.ClanEditor;
 import org.gepron1x.clans.api.editor.HomeEditor;
 import org.gepron1x.clans.api.editor.MemberEditor;
 import org.gepron1x.clans.api.statistic.StatisticType;
+import org.intellij.lang.annotations.Language;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.statement.Update;
 import org.jetbrains.annotations.NotNull;
@@ -18,13 +19,20 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 public final class SqlClanEditor implements ClanEditor {
-    private static final String UPDATE_DISPLAY_NAME = "UPDATE clans SET display_name=<name> WHERE id=<id>";
-    private static final String UPDATE_STATISTIC = "UPDATE stats SET value=<value> WHERE clan_id=<clan_id> AND type=<type>";
-    private static final String DELETE_STATISTIC = "DELETE FROM stats WHERE clan_id=<id> AND type=<type>";
-    private static final String INSERT_MEMBER = "INSERT INTO members (clan_id, uuid, role) VALUES (<clan_id>, <uuid>, <role>)";
-    private static final String DELETE_MEMBER = "DELETE FROM members WHERE uuid=<uuid>";
-    private static final String INSERT_HOME = "INSERT INTO homes (clan_id, name, creator, display_name, icon, x, y, z, world) VALUES (<clan_id>, <name>, <creator>, <display_name>, <location>, <icon>, <x>, <y>, <z>, <world>)";
-    private static final String DELETE_HOME = "DELETE FROM homes WHERE clan_tag=<clan_id> AND name=<name>";
+    @Language("SQL")
+    private static final String UPDATE_DISPLAY_NAME = "UPDATE clans SET `display_name`=<name> WHERE `id`=<id>";
+    @Language("SQL")
+    private static final String UPDATE_STATISTIC = "UPDATE stats SET `value`=<value> WHERE `clan_id`=<clan_id> AND type=<type>";
+    @Language("SQL")
+    private static final String DELETE_STATISTIC = "DELETE FROM stats WHERE `clan_id`=<id> AND `type`=<type>";
+    @Language("SQL")
+    private static final String INSERT_MEMBER = "INSERT INTO members (`clan_id`, `uuid`, `role`) VALUES (<clan_id>, <uuid>, <role>)";
+    @Language("SQL")
+    private static final String DELETE_MEMBER = "DELETE FROM members WHERE `uuid`=<uuid>";
+    @Language("SQL")
+    private static final String INSERT_HOME = "INSERT INTO homes (`clan_id`, `name`, `creator`, `display_name`, `icon`, `x`, `y`, `z`, `world`) VALUES (<clan_id>, <name>, <creator>, <display_name>, <location>, <icon>, <x>, <y>, <z>, <world>)";
+    @Language("SQL")
+    private static final String DELETE_HOME = "DELETE FROM homes WHERE `clan_tag`=<clan_id> AND `name`=<name>";
     private final Handle handle;
     private final Clan clan;
 

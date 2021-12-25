@@ -15,6 +15,7 @@ import org.gepron1x.clans.plugin.storage.implementation.sql.editor.SqlClanEditor
 import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.ClanBuilderMapper;
 import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.ClanHomeMapper;
 import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.MemberMapper;
+import org.intellij.lang.annotations.Language;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
 import org.jdbi.v3.core.statement.Query;
@@ -28,6 +29,7 @@ import java.util.stream.Stream;
 
 public final class SqlClanStorage implements ClanStorage {
 
+    @Language("SQL")
     private static final String SELECT_CLANS = """
             SELECT C.id clan_id, C.tag clan_tag, C.owner, clan_owner, C.display_name clan_display_name,
             M.uuid member_uuid, M.role member_role,
@@ -41,16 +43,19 @@ public final class SqlClanStorage implements ClanStorage {
             """;
 
 
-
     private static final String SELECT_CLAN_WITH_TAG = SELECT_CLANS + " WHERE C.tag=<tag>";
     private static final String SELECT_USER_CLAN = SELECT_CLANS + " WHERE C.id=(SELECT clan_id FROM members WHERE uuid=<uuid>)";
-    private static final String INSERT_CLAN = "INSERT OR IGNORE INTO clans(tag, owner, display_name) VALUES (<tag>, <owner>, <display_name>)";
+    @Language("SQL")
+    private static final String INSERT_CLAN = "INSERT OR IGNORE INTO clans(`tag`, `owner`, `display_name`) VALUES (<tag>, <owner>, <display_name>)";
 
-
+    @Language("SQL")
     private static final String DELETE_CLAN = "DELETE FROM clans WHERE id=<id>";
-    private static final String DELETE_MEMBERS = "DELETE FROM members WHERE clan_id=<clan_id>";
-    private static final String DELETE_HOMES = "DELETE FROM homes WHERE clan_id=<clan_id>";
-    private static final String DELETE_STATISTICS = "DELETE FROM statistics WHERE clan_tag=<clan_id>";
+    @Language("SQL")
+    private static final String DELETE_MEMBERS = "DELETE FROM members WHERE `clan_id=`<clan_id>";
+    @Language("SQL")
+    private static final String DELETE_HOMES = "DELETE FROM homes WHERE `clan_id`=<clan_id>";
+    @Language("SQL")
+    private static final String DELETE_STATISTICS = "DELETE FROM statistics WHERE `clan_tag`=<clan_id>";
 
     private final Jdbi jdbi;
     private final Plugin plugin;
@@ -102,7 +107,7 @@ public final class SqlClanStorage implements ClanStorage {
                         .bind("role", member.getRole().getName())
                         .add();
             }
-            int updates = Arrays.stream(batch.execute()).sum(); // some members weren't added; some members are already in another clans;
+            int updates = Arrays.stream(batch.execute()).sum(); // some members weren't added; those are already in other clans;
 
             if(updates != draftClan.getMembers().size()) {
                 handle.rollback();
