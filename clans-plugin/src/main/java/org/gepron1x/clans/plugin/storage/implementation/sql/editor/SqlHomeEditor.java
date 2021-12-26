@@ -13,11 +13,11 @@ import org.jetbrains.annotations.Nullable;
 
 public final class SqlHomeEditor implements HomeEditor {
     @Language("SQL")
-    private static final String UPDATE_ICON = "UPDATE homes SET `icon`=<icon> WHERE `name`=<name> AND `clan_id`=<clan_id>";
+    private static final String UPDATE_ICON = "UPDATE homes SET `icon`=? WHERE `name`=? AND `clan_id`=?";
     @Language("SQL")
-    private static final String UPDATE_LOCATION = "UPDATE homes SET `x`=<x>, `y`=<y>, `z`=<z>, `world`=<world> WHERE `name`=<name> AND `clan_id`=<clan_id>";
+    private static final String UPDATE_LOCATION = "UPDATE locations SET `x`=?, `y`=?, `z`=?, `world`=? WHERE id=(SELECT location_id FROM homes WHERE `clan_id`=? AND `name`=?)";
     @Language("SQL")
-    private static final String UPDATE_DISPLAY_NAME = "UPDATE homes SET `display_name`=<display_name> WHERE `name`=<name> AND `clan_id`=<clan_id>";
+    private static final String UPDATE_DISPLAY_NAME = "UPDATE homes SET `display_name`=? WHERE `name`=? AND `clan_id`=?";
     private final Handle handle;
     private final Clan clan;
     private final ClanHome home;
@@ -36,21 +36,21 @@ public final class SqlHomeEditor implements HomeEditor {
     @Override
     public HomeEditor setIcon(@Nullable ItemStack icon) {
         handle.createUpdate(UPDATE_ICON)
-                .bind("name", home.getName())
-                .bind("clan_id", clan.getId())
-                .bind("icon", icon);
+                .bind(1, home.getName())
+                .bind(2, clan.getId())
+                .bind(0, icon);
         return this;
     }
 
     @Override
     public HomeEditor setLocation(@NotNull Location location) {
         handle.createUpdate(UPDATE_LOCATION)
-                .bind("name", home.getName())
-                .bind("clan_id", clan.getId())
-                .bind("x", location.getBlockX())
-                .bind("y", location.getBlockY())
-                .bind("z", location.getBlockZ())
-                .bind("world", location.getWorld().getName())
+                .bind(5, home.getName())
+                .bind(4, clan.getId())
+                .bind(0, location.getBlockX())
+                .bind(1, location.getBlockY())
+                .bind(2, location.getBlockZ())
+                .bind(3, location.getWorld().getName())
                 .execute();
         return this;
     }
@@ -58,9 +58,9 @@ public final class SqlHomeEditor implements HomeEditor {
     @Override
     public HomeEditor setDisplayName(@NotNull Component displayName) {
         handle.createUpdate(UPDATE_DISPLAY_NAME)
-                .bind("name", home.getName())
-                .bind("clan_id", clan.getId())
-                .bind("display_name", displayName)
+                .bind(1, home.getName())
+                .bind(2, clan.getId())
+                .bind(0, displayName)
                 .execute();
         return this;
     }

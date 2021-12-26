@@ -13,6 +13,9 @@ import java.util.function.Consumer;
 
 public interface ClanStorage {
 
+
+    void initialize();
+
     @Nullable Clan loadClan(@NotNull String tag);
     @Nullable Clan loadUserClan(@NotNull UUID uuid);
 
