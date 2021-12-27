@@ -13,11 +13,11 @@ import org.jetbrains.annotations.Nullable;
 
 public final class SqlHomeEditor implements HomeEditor {
     @Language("SQL")
-    private static final String UPDATE_ICON = "UPDATE homes SET `icon`=? WHERE `name`=? AND `clan_id`=?";
+    private static final String UPDATE_ICON = "UPDATE `homes` SET `icon`=? WHERE `name`=? AND `clan_id`=?";
     @Language("SQL")
-    private static final String UPDATE_LOCATION = "UPDATE locations SET `x`=?, `y`=?, `z`=?, `world`=? WHERE id=(SELECT location_id FROM homes WHERE `clan_id`=? AND `name`=?)";
+    private static final String UPDATE_LOCATION = "UPDATE `locations` SET `x`=?, `y`=?, `z`=?, `world`=? WHERE `home_id`=(SELECT id FROM homes WHERE `clan_id`=? AND `name`=?)";
     @Language("SQL")
-    private static final String UPDATE_DISPLAY_NAME = "UPDATE homes SET `display_name`=? WHERE `name`=? AND `clan_id`=?";
+    private static final String UPDATE_DISPLAY_NAME = "UPDATE `homes` SET `display_name`=? WHERE `name`=? AND `clan_id`=?";
     private final Handle handle;
     private final Clan clan;
     private final ClanHome home;

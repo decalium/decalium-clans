@@ -11,10 +11,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 import java.util.UUID;
 
-public class DraftClanImpl extends AbstractClanBase implements DraftClan {
+public final class DraftClanImpl extends AbstractClanBase implements DraftClan {
 
 
-    protected DraftClanImpl(String tag,
+    DraftClanImpl(String tag,
                             Component displayName,
                             UUID owner,
                             Map<UUID, ClanMember> memberMap,

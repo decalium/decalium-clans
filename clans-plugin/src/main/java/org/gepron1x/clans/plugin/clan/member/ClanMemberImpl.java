@@ -1,4 +1,4 @@
-package org.gepron1x.clans.plugin.clan;
+package org.gepron1x.clans.plugin.clan.member;
 
 import com.google.common.base.MoreObjects;
 import org.gepron1x.clans.api.clan.member.ClanMember;

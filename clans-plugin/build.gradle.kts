@@ -2,6 +2,7 @@ plugins {
     java
     `java-library`
     id("io.papermc.paperweight.userdev") version "1.3.0"
+    id("xyz.jpenilla.run-paper") version "1.0.6"
     id("net.minecrell.plugin-yml.bukkit") version "0.5.0"
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
@@ -45,6 +46,28 @@ tasks {
         relocate("io.leangen.geantyref", "$libraryPackage.geantyref")
         relocate("com.zaxxer.hikari", "$libraryPackage.hikari")
 
+    }
+
+    compileJava {
+        options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
+        // Set the release flag. This configures what version bytecode the compiler will emit, as well as what JDK APIs are usable.
+        // See https://openjdk.java.net/jeps/247 for more information.
+        options.release.set(17)
+    }
+
+    javadoc {
+        options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
+    }
+    processResources {
+        filteringCharset = Charsets.UTF_8.name() // We want UTF-8 for everything
+    }
+
+    runServer {
+        // Configure the Minecraft version for our task.
+        // This is the only required configuration besides applying the plugin.
+        // Your plugin's jar (or shadowJar if present) will be used automatically.
+        minecraftVersion("1.18")
+        jvmArgs("-Xms1024M", "-Xmx1024M")
     }
 }
 

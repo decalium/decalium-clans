@@ -1,6 +1,7 @@
 package org.gepron1x.clans.plugin.editor;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 import net.kyori.adventure.text.Component;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.ClanHome;
@@ -53,12 +54,14 @@ public final class ClanEditorImpl implements ClanEditor {
 
     @Override
     public ClanEditor addMember(@NotNull ClanMember member) {
+        Preconditions.checkArgument(this.builder.member(member.getUniqueId()) == null, "member with same uuid already in the clan");
         this.builder.addMember(member);
         return this;
     }
 
     @Override
     public ClanEditor removeMember(@NotNull ClanMember member) {
+        Preconditions.checkArgument(this.builder.member(member.getUniqueId()) != null, "cannot delete member that is not a clan");
         this.builder.removeMember(member);
         return this;
     }
@@ -66,6 +69,7 @@ public final class ClanEditorImpl implements ClanEditor {
     @Override
     public ClanEditor editMember(@NotNull UUID uuid, @NotNull Consumer<MemberEditor> consumer) {
         ClanMember member = Objects.requireNonNull(this.builder.member(uuid), "no member with given uuid present");
+        Preconditions.checkArgument(!this.clan.getOwner().equals(uuid), "cannot edit clan owner");
         ClanMember.Builder memberBuilder = member.toBuilder();
         consumer.accept(new MemberEditorImpl(member, memberBuilder));
         builder.removeMember(member).addMember(memberBuilder.build());
@@ -74,12 +78,14 @@ public final class ClanEditorImpl implements ClanEditor {
 
     @Override
     public ClanEditor addHome(@NotNull ClanHome home) {
+        Preconditions.checkArgument(this.builder.home(home.getName()) == null, "Home with same name already in the clan");
         this.builder.addHome(home);
         return this;
     }
 
     @Override
     public ClanEditor removeHome(@NotNull ClanHome home) {
+        Preconditions.checkArgument(this.builder.home(home.getName()) != null, "cannot delete home that is not in the clan");
         this.builder.removeHome(home);
         return this;
     }

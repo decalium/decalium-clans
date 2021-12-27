@@ -19,22 +19,22 @@ import java.util.function.Consumer;
 
 public final class SqlClanEditor implements ClanEditor {
     @Language("SQL")
-    private static final String UPDATE_DISPLAY_NAME = "UPDATE clans SET `display_name`=? WHERE `id`=?";
+    private static final String UPDATE_DISPLAY_NAME = "UPDATE `clans` SET `display_name`=? WHERE `id`=?";
     @Language("SQL")
-    private static final String UPDATE_STATISTIC = "UPDATE stats SET `value`=? WHERE `clan_id`=? AND type=?";
+    private static final String UPDATE_STATISTIC = "UPDATE `statistics` SET `value`=? WHERE `clan_id`=? AND type=?";
     @Language("SQL")
-    private static final String DELETE_STATISTIC = "DELETE FROM stats WHERE `clan_id`=? AND `type`=?";
+    private static final String DELETE_STATISTIC = "DELETE FROM `statistics` WHERE `clan_id`=? AND `type`=?";
     @Language("SQL")
-    private static final String INSERT_MEMBER = "INSERT INTO members (`clan_id`, `uuid`, `role`) VALUES (?, ?, ?)";
+    private static final String INSERT_MEMBER = "INSERT INTO `members` (`clan_id`, `uuid`, `role`) VALUES (?, ?, ?)";
     @Language("SQL")
-    private static final String DELETE_MEMBER = "DELETE FROM members WHERE `uuid`=?";
+    private static final String DELETE_MEMBER = "DELETE FROM `members` WHERE `uuid`=?";
     @Language("SQL")
-    private static final String INSERT_HOME = "INSERT INTO homes (`clan_id`, `name`, `creator`, `display_name`, `icon`, `location_id`) VALUES (?, ?, ?, ?, ?, ?)";
+    private static final String INSERT_HOME = "INSERT INTO `homes` (`clan_id`, `name`, `creator`, `display_name`, `icon`) VALUES (?, ?, ?, ?, ?)";
 
     @Language("SQL")
-    private static final String INSERT_LOCATION = "INSERT INTO locations (`x`, `y`, `z`, `world`) VALUES (?, ?, ?, ?)";
+    private static final String INSERT_LOCATION = "INSERT INTO `locations` (`home_id`, `x`, `y`, `z`, `world`) VALUES (?, ?, ?, ?, ?)";
     @Language("SQL")
-    private static final String DELETE_HOME = "DELETE FROM homes WHERE `clan_tag`=? AND `name`=?";
+    private static final String DELETE_HOME = "DELETE FROM `homes` WHERE `clan_tag`=? AND `name`=?";
     private final Handle handle;
     private final Clan clan;
 
@@ -98,21 +98,22 @@ public final class SqlClanEditor implements ClanEditor {
     @Override
     public ClanEditor addHome(@NotNull ClanHome home) {
         Location loc = home.getLocation();
-        int locationId = handle.createUpdate(INSERT_LOCATION)
-                .bind(0, loc.getBlockX())
-                .bind(1, loc.getBlockZ())
-                .bind(2, loc.getBlockZ())
-                .bind(3, loc.getWorld().getName())
-                .executeAndReturnGeneratedKeys("id").mapTo(int.class).findFirst().orElseThrow();
-
-        handle.createUpdate(INSERT_HOME)
+        int homeId = handle.createUpdate(INSERT_HOME)
                 .bind(0, clan.getId())
                 .bind(1, home.getName())
                 .bind(2, home.getCreator())
                 .bind(3, home.getDisplayName())
                 .bind(4, home.getIcon())
-                .bind(5, locationId)
-                .execute();
+                .executeAndReturnGeneratedKeys("id").mapTo(Integer.class).findFirst().orElseThrow();
+
+        handle.createUpdate(INSERT_LOCATION)
+                .bind(0, homeId)
+                .bind(1, loc.getBlockX())
+                .bind(2, loc.getBlockZ())
+                .bind(3, loc.getBlockZ())
+                .bind(4, loc.getWorld().getName()).execute();
+
+
         return this;
     }
 

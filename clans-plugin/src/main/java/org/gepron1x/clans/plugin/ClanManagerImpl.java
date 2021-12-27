@@ -16,19 +16,16 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 public class ClanManagerImpl implements ClanManager {
     private final ClanStorage storage;
     private final FuturesFactory futuresFactory;
     private final ClanCacheImpl cache;
-    private final Logger logger;
 
-    public ClanManagerImpl(@NotNull ClanStorage storage, @NotNull ClanCacheImpl cache, FuturesFactory futuresFactory, @NotNull Logger logger) {
+    public ClanManagerImpl(@NotNull ClanStorage storage, @NotNull ClanCacheImpl cache, FuturesFactory futuresFactory) {
         this.storage = storage;
         this.cache = cache;
         this.futuresFactory = futuresFactory;
-        this.logger = logger;
     }
     @Override
     public @NotNull CompletableFuture<ClanCreationResult> createClan(@NotNull DraftClan draftClan) {
@@ -57,7 +54,7 @@ public class ClanManagerImpl implements ClanManager {
         consumer.accept(editor);
         Clan newClan = builder.build();
 
-        return futuresFactory.runAsync(() -> storage.editClan(clan, consumer))
+        return futuresFactory.runAsync(() -> storage.applyEditor(newClan, consumer))
                 .thenApply(v -> {
                     if(cache.isCached(clan)) {
                         cache.removeClan(clan);

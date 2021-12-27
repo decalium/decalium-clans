@@ -7,7 +7,7 @@ import com.google.gson.stream.JsonWriter;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
-import org.gepron1x.clans.api.DecaliumClansApi;
+import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.clan.ClanHome;
 
 import java.io.IOException;
@@ -15,16 +15,16 @@ import java.util.UUID;
 
 public final class ClanHomeAdapter extends TypeAdapter<ClanHome> {
     private static final String NAME = "name", CREATOR = "creator", DISPLAY_NAME = "display_name", ICON = "icon", LOCATION = "location";
-    private final DecaliumClansApi api;
     private final Gson gson;
+    private final ClanBuilderFactory builderFactory;
 
-    public ClanHomeAdapter(Gson gson, DecaliumClansApi api) {
-
-        this.api = api;
+    public ClanHomeAdapter(Gson gson, ClanBuilderFactory builderFactory) {
+        this.builderFactory = builderFactory;
         this.gson = gson;
     }
     @Override
     public void write(JsonWriter out, ClanHome value) throws IOException {
+
         out.beginObject();
 
         out.name(NAME).value(value.getName());
@@ -36,6 +36,7 @@ public final class ClanHomeAdapter extends TypeAdapter<ClanHome> {
         gson.toJson(value.getDisplayName(), Component.class, out);
 
         ItemStack icon = value.getIcon();
+
         if(icon != null) {
             out.name(ICON);
             gson.toJson(icon, ItemStack.class, out);
@@ -50,7 +51,7 @@ public final class ClanHomeAdapter extends TypeAdapter<ClanHome> {
 
     @Override
     public ClanHome read(JsonReader in) throws IOException {
-        ClanHome.Builder builder = api.homeBuilder();
+        ClanHome.Builder builder = builderFactory.homeBuilder();
         in.beginObject();
         while(in.hasNext()) {
             String fieldName = in.nextName();

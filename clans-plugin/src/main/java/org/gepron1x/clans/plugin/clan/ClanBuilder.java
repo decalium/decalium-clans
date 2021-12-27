@@ -6,6 +6,7 @@ import org.gepron1x.clans.api.clan.ClanBase;
 import org.gepron1x.clans.api.clan.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.statistic.StatisticType;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -38,12 +39,12 @@ public final class ClanBuilder extends AbstractClanBase.Builder<ClanBuilder, Cla
         this.id = id;
         return self();
     }
-
+    @Contract("_ -> this")
     public ClanBuilder incrementStatistic(@NotNull StatisticType type) {
         this.statistics.mergeInt(type, 1, Integer::sum);
         return self();
     }
-
+    @Contract("_ -> this")
     public ClanBuilder removeStatistic(@NotNull StatisticType type) {
         this.statistics.removeInt(type);
         return self();

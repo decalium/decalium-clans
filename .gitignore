@@ -1,1 +1,7 @@
 /clans-plugin/.gradle/
+/clans-plugin/run/
+
+run/
+build
+.gradle
+/*.jar

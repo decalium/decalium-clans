@@ -1,7 +1,7 @@
 package org.gepron1x.clans.plugin.config.serializer;
 
 import net.kyori.adventure.text.Component;
-import org.gepron1x.clans.api.DecaliumClansApi;
+import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.jetbrains.annotations.NotNull;
@@ -16,12 +16,12 @@ import java.util.Map;
 public final class ClanRoleSerializer implements ValueSerialiser<ClanRole> {
 
     private static final String NAME = "name", DISPLAY_NAME = "display_name", WEIGHT = "weight", PERMISSIONS = "permissions";
+    private final ClanBuilderFactory builderFactory;
 
-    private final DecaliumClansApi api;
 
-    public ClanRoleSerializer(@NotNull DecaliumClansApi api) {
+    public ClanRoleSerializer(@NotNull ClanBuilderFactory builderFactory) {
 
-        this.api = api;
+        this.builderFactory = builderFactory;
     }
     @Override
     public Class<ClanRole> getTargetClass() {
@@ -30,7 +30,7 @@ public final class ClanRoleSerializer implements ValueSerialiser<ClanRole> {
 
     @Override
     public ClanRole deserialise(FlexibleType flexibleType) throws BadValueException {
-        ClanRole.Builder builder = api.roleBuilder();
+        ClanRole.Builder builder = builderFactory.roleBuilder();
         Map<String, FlexibleType> map = flexibleType.getMap((key, value) -> Map.entry(key.getString(), value));
         return builder.name(map.get(NAME).getString())
                 .displayName(map.get(DISPLAY_NAME).getObject(Component.class))

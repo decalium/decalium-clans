@@ -23,7 +23,7 @@ public interface ClanStorage {
 
     ClanCreationResult saveClan(@NotNull DraftClan clan);
 
-    void editClan(@NotNull Clan clan, @NotNull Consumer<ClanEditor> editor);
+    void applyEditor(@NotNull Clan clan, @NotNull Consumer<ClanEditor> editor);
 
     void removeClan(@NotNull Clan clan);
 

@@ -15,7 +15,6 @@ public final class LocationAdapter extends TypeAdapter<Location> {
     private final Server server;
 
     public LocationAdapter(Server server) {
-
         this.server = server;
     }
     @Override
@@ -46,6 +45,7 @@ public final class LocationAdapter extends TypeAdapter<Location> {
         double z = Double.NaN;
         float pitch = 0;
         float yaw = 0;
+
         in.beginObject();
         while(in.hasNext()) {
             String fieldName = in.nextName();

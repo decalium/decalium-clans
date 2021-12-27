@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 public final class SqlMemberEditor implements MemberEditor {
     @Language("SQL")
-    private static final String UPDATE_ROLE = "UPDATE members SET `role`=<role> WHERE `uuid`=<uuid> AND `clan_id`=<clan_id>";
+    private static final String UPDATE_ROLE = "UPDATE `members` SET `role`=? WHERE `uuid`=? AND `clan_id`=?";
     private final Handle handle;
     private final Clan clan;
     private final ClanMember member;
@@ -29,9 +29,9 @@ public final class SqlMemberEditor implements MemberEditor {
     @Override
     public MemberEditor setRole(@NotNull ClanRole role) {
         handle.createUpdate(UPDATE_ROLE)
-                .bind("uuid", member.getUniqueId())
-                .bind("clan_id", clan.getId())
-                .bind("role", role)
+                .bind(1, member.getUniqueId())
+                .bind(2, clan.getId())
+                .bind(0, role)
                 .execute();
         return this;
     }
