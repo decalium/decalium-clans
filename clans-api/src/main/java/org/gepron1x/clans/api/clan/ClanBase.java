@@ -19,7 +19,7 @@ public interface ClanBase extends StatisticHolder {
     @NotNull String getTag();
     @NotNull Component getDisplayName();
 
-    @NotNull UUID getOwner();
+    @NotNull ClanMember getOwner();
 
     @NotNull @Unmodifiable Collection<ClanMember> getMembers();
 
@@ -46,7 +46,7 @@ public interface ClanBase extends StatisticHolder {
         @NotNull B tag(@NotNull String tag);
 
         @Contract("_ -> this")
-        @NotNull B owner(@NotNull UUID owner);
+        @NotNull B owner(ClanMember owner);
 
         @Contract("_ -> this")
         @NotNull B displayName(@NotNull Component displayName);

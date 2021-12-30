@@ -13,6 +13,7 @@ version = "0.1"
 repositories {
     mavenCentral()
     maven { url = uri("https://papermc.io/repo/repository/maven-public/") }
+    maven { url = uri("https://mvn-repo.arim.space/lesser-gpl3/") }
     maven { url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/") }
     maven { url = uri("https://oss.sonatype.org/content/groups/public/") }
     maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
@@ -66,7 +67,7 @@ tasks {
         // Configure the Minecraft version for our task.
         // This is the only required configuration besides applying the plugin.
         // Your plugin's jar (or shadowJar if present) will be used automatically.
-        minecraftVersion("1.18")
+        minecraftVersion("1.18.1")
         jvmArgs("-Xms1024M", "-Xmx1024M")
     }
 }

@@ -5,22 +5,22 @@ import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.editor.ClanEditor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.arim.omnibus.util.concurrent.CentralisedFuture;
 
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public interface ClanManager {
-    @NotNull CompletableFuture<ClanCreationResult> createClan(@NotNull DraftClan draftClan);
+    @NotNull CentralisedFuture<ClanCreationResult> createClan(@NotNull DraftClan draftClan);
 
-    @NotNull CompletableFuture<Boolean> removeClan(@NotNull Clan clan);
+    @NotNull CentralisedFuture<Boolean> removeClan(@NotNull Clan clan);
 
-    @NotNull CompletableFuture<Clan> editClan(@NotNull Clan clan, @NotNull Consumer<ClanEditor> consumer);
+    @NotNull CentralisedFuture<Clan> editClan(@NotNull Clan clan, @NotNull Consumer<ClanEditor> consumer);
 
-    @NotNull CompletableFuture<@Nullable Clan> getClan(@NotNull String tag);
-    @NotNull CompletableFuture<@Nullable Clan> getUserClan(@NotNull UUID uuid);
+    @NotNull CentralisedFuture<@Nullable Clan> getClan(@NotNull String tag);
+    @NotNull CentralisedFuture<@Nullable Clan> getUserClan(@NotNull UUID uuid);
 
-    @NotNull CompletableFuture<Set<Clan>> getClans();
+    @NotNull CentralisedFuture<Set<Clan>> getClans();
 
 }

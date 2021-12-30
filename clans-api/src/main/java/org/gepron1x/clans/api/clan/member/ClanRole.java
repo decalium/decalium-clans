@@ -18,6 +18,8 @@ public interface ClanRole extends Comparable<ClanRole>, Buildable<ClanRole, Clan
     @NotNull @Unmodifiable Set<ClanPermission> getPermissions();
 
 
+
+
     @Override
     default int compareTo(@NotNull ClanRole clanRole) {
         return getWeight() - clanRole.getWeight();
