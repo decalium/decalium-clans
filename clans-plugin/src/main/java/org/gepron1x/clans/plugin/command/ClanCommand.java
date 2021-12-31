@@ -31,7 +31,7 @@ public class ClanCommand extends AbstractCommand {
     private final RoleRegistry roleRegistry;
     private final ClanManager manager;
     private final ClansConfig config;
-    private MessagesConfig messages;
+    private final MessagesConfig messages;
     private final ClanBuilderFactory builderFactory;
 
     public ClanCommand(@NotNull ClanBuilderFactory builderFactory,
@@ -85,7 +85,7 @@ public class ClanCommand extends AbstractCommand {
 
         manager.createClan(clan).thenAcceptSync(result -> {
             if(result.isSuccess()) {
-                player.sendMessage(messages.commands().creation().success().with("tag", tag));
+                player.sendMessage(messages.commands().creation().success().with("tag", tag).with("name", displayName));
             } else {
 
                 player.sendMessage(switch (result.status()) {

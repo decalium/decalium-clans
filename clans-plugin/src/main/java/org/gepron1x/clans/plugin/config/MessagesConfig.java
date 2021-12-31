@@ -82,7 +82,7 @@ public interface MessagesConfig {
 
             @ConfKey("invitation")
             @DefaultString("<prefix> <sender> invites you to the clan <clan_display_name>! " +
-                    "<click:run_command:'clan accept <sender>'>Click here</click> accept invitation or type /clan accept <sender>")
+                    "<click:run_command:'clan accept <sender>'>Click here</click> to accept invitation or type /clan accept <sender>")
             Message invitationMessage();
 
             @ConfKey("sent")
