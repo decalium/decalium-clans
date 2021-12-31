@@ -24,13 +24,17 @@ dependencies {
     implementation(project(":clans-api"))
    // compileOnly("io.papermc.paper:paper-api:1.17.1-R0.1-SNAPSHOT")
     paperDevBundle("1.18-R0.1-SNAPSHOT")
-    implementation("org.jdbi:jdbi3-core:3.25.0")
+    implementation("org.jdbi:jdbi3-core:3.25.0") {
+        exclude(group = "org.slf4j", module = "slf4j-api")
+    }
     implementation("cloud.commandframework:cloud-paper:1.6.1")
     implementation("space.arim.dazzleconf:dazzleconf-ext-snakeyaml:1.2.1") {
         exclude(group = "org.yaml", module = "snakeyaml")
     }
     compileOnly("me.clip:placeholderapi:2.10.0")
-    implementation("com.zaxxer:HikariCP:5.0.0")
+    implementation("com.zaxxer:HikariCP:5.0.0") {
+        exclude(group = "org.slf4j", module = "slf4j-api")
+    }
     implementation ("net.kyori:adventure-text-minimessage:4.2.0-SNAPSHOT") {
         exclude(group = "net.kyori", module = "adventure-api")
     }
@@ -40,7 +44,11 @@ var libraryPackage = "org.gepron1x.clans.libraries"
 
 tasks {
     shadowJar {
+
+        relocate("org.antlr", "$libraryPackage.antlr")
+        relocate("net.kyori.adventure.text.minimessage", "$libraryPackage.minimessage")
         relocate("space.arim.dazzleconf", "$libraryPackage.dazzleconf")
+        relocate("space.arim.omnibus", "$libraryPackage.omnibus")
         relocate("org.jdbi", "$libraryPackage.jdbi")
         relocate("cloud.commandframework", "$libraryPackage.cloud.commandframework")
         relocate("com.github.benmanes.caffeine", "$libraryPackage.caffeine")
@@ -54,6 +62,7 @@ tasks {
         // Set the release flag. This configures what version bytecode the compiler will emit, as well as what JDK APIs are usable.
         // See https://openjdk.java.net/jeps/247 for more information.
         options.release.set(17)
+        options.compilerArgs.add("-parameters")
     }
 
     javadoc {
@@ -68,7 +77,7 @@ tasks {
         // This is the only required configuration besides applying the plugin.
         // Your plugin's jar (or shadowJar if present) will be used automatically.
         minecraftVersion("1.18.1")
-        jvmArgs("-Xms1024M", "-Xmx1024M")
+        jvmArgs("-Xms128M", "-Xmx512M")
     }
 }
 

@@ -37,14 +37,31 @@ public interface MessagesConfig {
 
 
 
-    @SubSection Commands commands();
+    @SubSection
+    @ConfKey("commands")
+    Commands commands();
+
+
+
+
     interface Commands {
 
-        @SubSection Creation creation();
+        @SubSection
+        @ConfKey("creation")
+        Creation creation();
+
+        @SubSection
+        @ConfKey("deletion")
+        Deletion deletion();
+
+        @SubSection
+        @ConfKey("invitation")
+        Invitation invitation();
+
         interface Creation {
 
             @ConfKey("clan-with-tag-already-exists")
-            @DefaultString("<prefix> Clan with given tag already exists! Think about something more original :()")
+            @DefaultString("<prefix> Clan with given tag already exists! Think about something more original!")
             Message clanWithTagAlreadyExists();
 
             @ConfKey("success")
@@ -52,7 +69,7 @@ public interface MessagesConfig {
             Message success();
 
         }
-        @SubSection Deletion deletion();
+
         interface Deletion {
 
             @ConfKey("success")
@@ -60,7 +77,7 @@ public interface MessagesConfig {
             Message success();
         }
 
-        @SubSection Invitation invitation();
+
         interface Invitation {
 
             @ConfKey("invitation")

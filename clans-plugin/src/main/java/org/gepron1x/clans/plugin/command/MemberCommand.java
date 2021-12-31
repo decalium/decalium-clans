@@ -62,7 +62,12 @@ public class MemberCommand extends AbstractCommand {
                         return futuresFactory.completedFuture(null);
                     }
 
+                    System.out.println(clan);
+
+
+
                     ClanMember other = clan.getMember(memberPlayer.getUniqueId());
+                    System.out.println(other);
 
                     if(other == null) {
                         player.sendMessage(Component.text("Specified player is not a member of the clan."));

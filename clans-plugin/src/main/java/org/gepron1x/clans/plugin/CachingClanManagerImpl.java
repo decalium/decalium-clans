@@ -27,6 +27,7 @@ public class CachingClanManagerImpl implements CachingClanManager {
         this.clanManager = clanManager;
         this.futuresFactory = futuresFactory;
         this.cache = cache;
+
     }
     @Override
     public @Nullable Clan getUserClanIfPresent(@NotNull UUID uuid) {
@@ -40,7 +41,6 @@ public class CachingClanManagerImpl implements CachingClanManager {
 
     @Override
     public @NotNull CentralisedFuture<ClanCreationResult> createClan(@NotNull DraftClan draftClan) {
-
         return clanManager.createClan(draftClan);
     }
 

@@ -196,8 +196,6 @@ public final class SqlClanStorage implements ClanStorage {
                         .add();
             }
             int updates = Arrays.stream(batch.execute()).sum(); // some members weren't added; those are already in other clans;
-            System.out.println(updates + " updates");
-            System.out.println(draftClan.getMembers().size() + " members size");
 
             if(updates != draftClan.getMembers().size()) {
                 handle.rollback();

@@ -6,7 +6,10 @@ import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.ClanCache;
 import org.gepron1x.clans.api.clan.Clan;
+import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 
 public class ClansExpansion extends PlaceholderExpansion {
@@ -43,13 +46,14 @@ public class ClansExpansion extends PlaceholderExpansion {
     @Override
     public String onPlaceholderRequest(Player p, String params) {
         Clan clan = cache.getUserClan(p.getUniqueId());
-        if(clan == null) return null;
+        if(clan == null) return "";
+        ClanMember member = Objects.requireNonNull(clan.getMember(p));
         return switch(params) {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
             case TAG -> clan.getTag();
             case DISPLAY_NAME -> legacy.serialize(clan.getDisplayName());
             case OWNER -> clan.getOwner().asOffline(server).getName();
             case MEMBER_COUNT -> String.valueOf(clan.getMembers().size());
-            case MEMBER_ROLE -> legacy.serialize(clan.getMember(p).getRole().getDisplayName());
+            case MEMBER_ROLE -> legacy.serialize(member.getRole().getDisplayName());
             default -> null;
         };
     }

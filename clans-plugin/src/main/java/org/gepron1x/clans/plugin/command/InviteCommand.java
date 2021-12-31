@@ -10,8 +10,8 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.gepron1x.clans.api.CachingClanManager;
 import org.gepron1x.clans.api.ClanBuilderFactory;
-import org.gepron1x.clans.api.ClanManager;
 import org.gepron1x.clans.api.RoleRegistry;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
@@ -23,7 +23,11 @@ import org.jetbrains.annotations.Nullable;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static net.kyori.adventure.text.Component.text;
@@ -32,11 +36,11 @@ public class InviteCommand extends AbstractCommand {
 
 
     private final FactoryOfTheFuture futuresFactory;
-    private final ClanManager manager;
+    private final CachingClanManager manager;
     private final ClanBuilderFactory builderFactory;
     private final RoleRegistry roleRegistry;
-    private ClansConfig config;
-    private MessagesConfig messages;
+    private final ClansConfig config;
+    private final MessagesConfig messages;
 
     private record Invitation(@NotNull UUID sender, @NotNull UUID receiver) {
 
@@ -45,7 +49,7 @@ public class InviteCommand extends AbstractCommand {
     private final Table<UUID, String, Invitation> invitations = HashBasedTable.create();
 
 
-    public InviteCommand(FactoryOfTheFuture futuresFactory, ClanManager manager,
+    public InviteCommand(FactoryOfTheFuture futuresFactory, CachingClanManager manager,
                          ClanBuilderFactory builderFactory, RoleRegistry roleRegistry,
                          ClansConfig config, MessagesConfig messages) {
         this.futuresFactory = futuresFactory;
@@ -68,13 +72,14 @@ public class InviteCommand extends AbstractCommand {
 
         manager.command(builder.literal("accept")
                 .permission("clans.invite.accept")
-                .argument(StringArgument.of("sender_name"))
+                .argument(StringArgument.<CommandSender>newBuilder("sender_name")
+                        .withSuggestionsProvider(this::invitationCompletion))
                 .handler(this::acceptInvite)
         );
 
         manager.command(builder.literal("decline")
                 .permission("clans.invite.decline")
-                .argument(StringArgument.of("sender_name"))
+                .argument(StringArgument.<CommandSender>newBuilder("sender_name").withSuggestionsProvider(this::invitationCompletion))
                 .handler(this::declineInvite)
         );
 
@@ -112,6 +117,11 @@ public class InviteCommand extends AbstractCommand {
             invitations.put(receiver.getUniqueId(), player.getName(),
                     new Invitation(player.getUniqueId(), receiver.getUniqueId()));
             player.sendMessage(messages.commands().invitation().invitationSent().with("receiver", receiver.displayName()));
+
+            receiver.sendMessage(messages.commands().invitation().invitationMessage()
+                    .with("sender", player.displayName())
+                    .with("clan_display_name", clan.getDisplayName())
+            );
         });
 
     }
@@ -163,6 +173,19 @@ public class InviteCommand extends AbstractCommand {
             player.sendMessage(messages.commands().invitation().noInvitations().with("player", name));
         }
         return invitation;
+    }
+
+    private List<String> invitationCompletion(CommandContext<CommandSender> ctx, String s) {
+        if(!(ctx.getSender() instanceof Player player)) return Collections.emptyList();
+        UUID uuid = player.getUniqueId();
+        Clan clan = this.manager.getUserClanIfPresent(uuid);
+        if(clan == null) return Collections.emptyList();
+        return clan.getMembers().stream()
+                .map(m -> m.asPlayer(player.getServer()))
+                .filter(Objects::nonNull)
+                .map(Player::getName)
+                .filter(st -> st.startsWith(s))
+                .collect(Collectors.toList());
     }
 
 }

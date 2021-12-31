@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public class ClanManagerImpl implements ClanManager {
+public final class ClanManagerImpl implements ClanManager {
     private final ClanStorage storage;
     private final FactoryOfTheFuture futuresFactory;
     private final PluginManager pluginManager;
