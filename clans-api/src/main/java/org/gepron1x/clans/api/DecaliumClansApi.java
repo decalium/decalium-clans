@@ -5,10 +5,13 @@ import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.jetbrains.annotations.NotNull;
+import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 public interface DecaliumClansApi extends ClanBuilderFactory {
 
     @NotNull ClanManager getClanManager();
+
+    @NotNull FactoryOfTheFuture getFuturesFactory();
 
     @NotNull ClanCache getClanCache();
 
@@ -16,6 +19,9 @@ public interface DecaliumClansApi extends ClanBuilderFactory {
 
     @NotNull RoleRegistry getRoleRegistry();
 
+
+
+   // im lazy
     @Override
     @NotNull
     default DraftClan.Builder draftClanBuilder() {

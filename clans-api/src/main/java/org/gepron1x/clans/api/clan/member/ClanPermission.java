@@ -19,7 +19,8 @@ public record ClanPermission(@NotNull String value) {
     public static final ClanPermission DISBAND = new ClanPermission("disband");
 
     private static final Index<String, ClanPermission> NAMES =
-            Index.create(ClanPermission::value, INVITE, KICK, SET_ROLE,
+            Index.create(ClanPermission::value,
+                    INVITE, KICK, SET_ROLE,
                     ADD_HOME, REMOVE_HOME,
                     SET_DISPLAY_NAME, PROMOTE_OWNER, DISBAND);
 
@@ -31,7 +32,8 @@ public record ClanPermission(@NotNull String value) {
         return NAMES.values();
     }
 
-
-
-
+    @Override
+    public String toString() {
+        return value;
+    }
 }

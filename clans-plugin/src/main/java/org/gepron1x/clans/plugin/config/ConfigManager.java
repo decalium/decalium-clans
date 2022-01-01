@@ -26,11 +26,18 @@ public final class ConfigManager<C> {
         this.configHelper = configHelper;
     }
 
-    public static <C> ConfigManager<C> create(Plugin plugin, String fileName, Class<C> configClass, ConfigurationOptions options) {
+    public static <C> ConfigManager<C> create(Plugin plugin,
+                                              String fileName,
+                                              Class<C> configClass,
+                                              ConfigurationOptions options) {
         return create(plugin.getSLF4JLogger(), plugin.getDataFolder().toPath(), fileName, configClass, options);
     }
 
-    public static <C> ConfigManager<C> create(Logger logger, Path configFolder, String fileName, Class<C> configClass, ConfigurationOptions options) {
+    public static <C> ConfigManager<C> create(Logger logger,
+                                              Path configFolder,
+                                              String fileName,
+                                              Class<C> configClass,
+                                              ConfigurationOptions options) {
         SnakeYamlOptions yamlOptions = new SnakeYamlOptions.Builder()
                 .commentMode(CommentMode.alternativeWriter())
                 .build();
@@ -48,21 +55,26 @@ public final class ConfigManager<C> {
             SneakyThrow.sneaky(ex);
 
         } catch (ConfigFormatSyntaxException ex) {
-            configData = configHelper.getFactory().loadDefaults();
+            loadDefault();
             logger.error("The yaml syntax in your configuration is invalid. "
                     + "Check your YAML syntax with a tool such as https://yaml-online-parser.appspot.com/", ex);
 
         } catch (InvalidConfigException ex) {
-            configData = configHelper.getFactory().loadDefaults();
+            loadDefault();
             logger.error("One of the values in your configuration is not valid. "
                     + "Check to make sure you have specified the right data types.", ex);
         }
     }
 
+    private void loadDefault() {
+        logger.error("Failed to load configuration! Loading defaults!");
+        configData = configHelper.getFactory().loadDefaults();
+    }
+
     public C getConfigData() {
         C configData = this.configData;
         if (configData == null) {
-            throw new IllegalStateException("Configuration has not been loaded yet");
+            throw new IllegalStateException("Configuration has not been loaded yet.");
         }
         return configData;
     }

@@ -1,5 +1,6 @@
 package org.gepron1x.clans.api;
 
+import org.bukkit.OfflinePlayer;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.editor.ClanEditor;
@@ -20,6 +21,11 @@ public interface ClanManager {
 
     @NotNull CentralisedFuture<@Nullable Clan> getClan(@NotNull String tag);
     @NotNull CentralisedFuture<@Nullable Clan> getUserClan(@NotNull UUID uuid);
+
+    @NotNull
+    default CentralisedFuture<@Nullable Clan> getUserClan(@NotNull OfflinePlayer player) {
+        return getUserClan(player.getUniqueId());
+    }
 
     @NotNull CentralisedFuture<Set<Clan>> getClans();
 

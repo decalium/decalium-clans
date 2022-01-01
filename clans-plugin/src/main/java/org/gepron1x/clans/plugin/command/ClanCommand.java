@@ -18,38 +18,34 @@ import org.gepron1x.clans.plugin.command.argument.ComponentArgument;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.jetbrains.annotations.NotNull;
+import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
+import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 import static java.util.Objects.requireNonNull;
 
 public class ClanCommand extends AbstractCommand {
 
-    private static final String TAG = "tag";
 
     private final RoleRegistry roleRegistry;
-    private final ClanManager manager;
-    private final ClansConfig config;
-    private final MessagesConfig messages;
     private final ClanBuilderFactory builderFactory;
 
-    public ClanCommand(@NotNull ClanBuilderFactory builderFactory,
-                       @NotNull RoleRegistry roleRegistry,
-                       @NotNull ClanManager manager,
+    public ClanCommand(@NotNull ClanManager manager,
                        @NotNull ClansConfig config,
-                       @NotNull MessagesConfig messages
-                       ) {
+                       @NotNull MessagesConfig messages,
+                       @NotNull FactoryOfTheFuture futuresFactory,
+                       @NotNull ClanBuilderFactory builderFactory,
+                       @NotNull RoleRegistry roleRegistry) {
+
+        super(manager, config, messages, futuresFactory);
         this.builderFactory = builderFactory;
         this.roleRegistry = roleRegistry;
-        this.manager = manager;
-        this.config = config;
-        this.messages = messages;
     }
     @Override
     public void register(CommandManager<CommandSender> manager) {
 
-        Command.Builder<CommandSender> builder = manager.commandBuilder("clan");
+        Command.Builder<CommandSender> builder = manager.commandBuilder("clan").senderType(Player.class);
         manager.command(builder.literal("create")
                 .permission("clans.create")
                 .argument(StringArgument.of("tag"))
@@ -83,7 +79,7 @@ public class ClanCommand extends AbstractCommand {
                 .owner(member)
                 .build();
 
-        manager.createClan(clan).thenAcceptSync(result -> {
+        clanManager.createClan(clan).thenAcceptSync(result -> {
             if(result.isSuccess()) {
                 player.sendMessage(messages.commands().creation().success().with("tag", tag).with("name", displayName));
             } else {
@@ -101,11 +97,9 @@ public class ClanCommand extends AbstractCommand {
     private void myClan(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
         UUID uuid = player.getUniqueId();
-        manager.getUserClan(uuid).thenAcceptSync(clan -> {
-            if(clan == null) {
-                player.sendMessage(messages.notInTheClan());
-                return;
-            }
+        clanManager.getUserClan(uuid).thenAcceptSync(clan -> {
+            if(!checkClan(player, clan)) return;
+            Objects.requireNonNull(clan);
             player.sendMessage(Component.text().color(NamedTextColor.AQUA).append(Component.text("You are a member of ")).append(clan.getDisplayName()).append(Component.text(" clan")));
         });
     }
@@ -114,17 +108,12 @@ public class ClanCommand extends AbstractCommand {
         Player player = (Player) context.getSender();
         UUID uuid = player.getUniqueId();
 
-        manager.getUserClan(uuid).thenComposeSync(clan -> {
-            if(clan == null) {
-                player.sendMessage(messages.notInTheClan());
-                return CompletableFuture.completedFuture(false);
-            }
+        clanManager.getUserClan(uuid).thenComposeSync(clan -> {
+            if(!checkClan(player, clan)) return nullFuture();
+            Objects.requireNonNull(clan);
             ClanMember member = getMember(clan, uuid);
-            if(!member.hasPermission(ClanPermission.DISBAND)) {
-                player.sendMessage(messages.noClanPermission());
-                return CompletableFuture.completedFuture(false);
-            }
-            return this.manager.removeClan(clan);
+            if(!checkPermission(player, member, ClanPermission.DISBAND)) return nullFuture();
+            return this.clanManager.removeClan(clan);
         }).thenAcceptSync(success -> {
             if(success) player.sendMessage(messages.commands().deletion().success());
         });

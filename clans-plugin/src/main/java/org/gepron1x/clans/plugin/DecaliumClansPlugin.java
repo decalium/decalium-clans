@@ -19,9 +19,9 @@ import org.gepron1x.clans.plugin.command.parser.ClanRoleParser;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.ConfigManager;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
+import org.gepron1x.clans.plugin.config.serializer.AdventureComponentSerializer;
 import org.gepron1x.clans.plugin.config.serializer.ClanPermissionSerializer;
 import org.gepron1x.clans.plugin.config.serializer.ClanRoleSerializer;
-import org.gepron1x.clans.plugin.config.serializer.KyoriComponentSerializer;
 import org.gepron1x.clans.plugin.config.serializer.MessageSerializer;
 import org.gepron1x.clans.plugin.listener.CacheListener;
 import org.gepron1x.clans.plugin.papi.ClansExpansion;
@@ -61,7 +61,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
         ConfigurationOptions options = new ConfigurationOptions.Builder()
                 .addSerialiser(new MessageSerializer(miniMessage))
-                .addSerialiser(new KyoriComponentSerializer(miniMessage))
+                .addSerialiser(new AdventureComponentSerializer(miniMessage))
                 .addSerialiser(new ClanRoleSerializer(builderFactory))
                 .addSerialiser(new ClanPermissionSerializer())
                 .build();
@@ -72,6 +72,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         this.configManager.reloadConfig();
 
         buildRoleRegistry();
+
 
 
         ClanStorage storage = new StorageCreation(this, getClansConfig(), builderFactory, roleRegistry).create();
@@ -86,11 +87,13 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
 
 
+        ClansConfig config = getClansConfig();
+        MessagesConfig messages = getMessages();
 
 
-        ClanCommand command = new ClanCommand(builderFactory, roleRegistry, cachingClanManager, getClansConfig(), getMessages());
-        InviteCommand inviteCommand = new InviteCommand(futuresFactory, cachingClanManager, builderFactory, roleRegistry, getClansConfig(), getMessages());
-        MemberCommand memberCommand = new MemberCommand(cachingClanManager, roleRegistry, futuresFactory);
+        ClanCommand command = new ClanCommand(cachingClanManager, config, messages, futuresFactory, builderFactory, roleRegistry);
+        InviteCommand inviteCommand = new InviteCommand(cachingClanManager, config, messages, futuresFactory, builderFactory, roleRegistry);
+        MemberCommand memberCommand = new MemberCommand(cachingClanManager, config, messages, futuresFactory);
 
         getServer().getPluginManager().registerEvents(new CacheListener(clanCache, getServer(), storage), this);
 

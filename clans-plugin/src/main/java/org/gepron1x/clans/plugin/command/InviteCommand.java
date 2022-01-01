@@ -34,35 +34,31 @@ import static net.kyori.adventure.text.Component.text;
 
 public class InviteCommand extends AbstractCommand {
 
-
-    private final FactoryOfTheFuture futuresFactory;
-    private final CachingClanManager manager;
+    private final CachingClanManager clanManager;
     private final ClanBuilderFactory builderFactory;
     private final RoleRegistry roleRegistry;
-    private final ClansConfig config;
-    private final MessagesConfig messages;
 
-    private record Invitation(@NotNull UUID sender, @NotNull UUID receiver) {
-
-    }
+    private record Invitation(@NotNull UUID sender, @NotNull UUID receiver) {}
 
     private final Table<UUID, String, Invitation> invitations = HashBasedTable.create();
 
 
-    public InviteCommand(FactoryOfTheFuture futuresFactory, CachingClanManager manager,
-                         ClanBuilderFactory builderFactory, RoleRegistry roleRegistry,
-                         ClansConfig config, MessagesConfig messages) {
-        this.futuresFactory = futuresFactory;
-        this.manager = manager;
+    public InviteCommand(CachingClanManager clanManager,
+                         ClansConfig config,
+                         MessagesConfig messages,
+                         FactoryOfTheFuture futuresFactory,
+                         ClanBuilderFactory builderFactory,
+                         RoleRegistry roleRegistry)
+    {
+        super(clanManager, config, messages, futuresFactory);
+        this.clanManager = clanManager;
         this.builderFactory = builderFactory;
         this.roleRegistry = roleRegistry;
-        this.config = config;
-        this.messages = messages;
     }
 
     @Override
     public void register(CommandManager<CommandSender> manager) {
-        Command.Builder<CommandSender> builder = manager.commandBuilder("clan");
+        Command.Builder<CommandSender> builder = manager.commandBuilder("clan").senderType(Player.class);
 
         manager.command(builder.literal("invite")
                 .permission("clans.invite")
@@ -94,8 +90,8 @@ public class InviteCommand extends AbstractCommand {
             return;
         }
 
-        CentralisedFuture<Clan> first = this.manager.getUserClan(player.getUniqueId());
-        CentralisedFuture<Clan> second = this.manager.getUserClan(receiver.getUniqueId());
+        CentralisedFuture<Clan> first = this.clanManager.getUserClan(player.getUniqueId());
+        CentralisedFuture<Clan> second = this.clanManager.getUserClan(receiver.getUniqueId());
 
         futuresFactory.allOf(first, second).thenAcceptSync(ignored -> {
             Clan clan = first.join();
@@ -134,13 +130,13 @@ public class InviteCommand extends AbstractCommand {
 
         ClanMember member = builderFactory.memberBuilder().uuid(invitation.receiver()).role(roleRegistry.getDefaultRole()).build();
         Player senderPlayer = player.getServer().getPlayer(invitation.sender());
-        this.manager.getUserClan(invitation.sender())
+        this.clanManager.getUserClan(invitation.sender())
                 .thenComposeSync(clan -> {
                     if (clan == null) {
                         player.sendMessage(messages.commands().invitation().clanGotDeleted());
                         return futuresFactory.completedFuture(false);
                     }
-                    return this.manager.editClan(clan, clanEditor -> clanEditor.addMember(member)).thenApply(c -> true);
+                    return this.clanManager.editClan(clan, clanEditor -> clanEditor.addMember(member)).thenApply(c -> true);
                 }).thenAcceptSync(bool -> {
                     if (!bool) return;
                         if (senderPlayer != null) {
@@ -178,7 +174,7 @@ public class InviteCommand extends AbstractCommand {
     private List<String> invitationCompletion(CommandContext<CommandSender> ctx, String s) {
         if(!(ctx.getSender() instanceof Player player)) return Collections.emptyList();
         UUID uuid = player.getUniqueId();
-        Clan clan = this.manager.getUserClanIfPresent(uuid);
+        Clan clan = this.clanManager.getUserClanIfPresent(uuid);
         if(clan == null) return Collections.emptyList();
         return clan.getMembers().stream()
                 .map(m -> m.asPlayer(player.getServer()))

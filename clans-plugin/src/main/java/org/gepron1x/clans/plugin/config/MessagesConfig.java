@@ -45,18 +45,21 @@ public interface MessagesConfig {
 
 
     interface Commands {
-
-        @SubSection
         @ConfKey("creation")
+        @SubSection
         Creation creation();
 
-        @SubSection
         @ConfKey("deletion")
+        @SubSection
         Deletion deletion();
 
-        @SubSection
         @ConfKey("invitation")
+        @SubSection
         Invitation invitation();
+
+        @ConfKey("member")
+        @SubSection
+        Member member();
 
         interface Creation {
 
@@ -116,6 +119,45 @@ public interface MessagesConfig {
             @ConfKey("clan-got-deleted")
             @DefaultString("<prefix> Clan you joined got deleted!")
             Message clanGotDeleted();
+
+        }
+
+        interface Member {
+
+            @ConfKey("member-not-in-clan")
+            @DefaultString("<prefix> Specified player is not a member of the clan.")
+            Message notAMember();
+
+            @ConfKey("member-has-higher-weight")
+            @DefaultString("<prefix> Member <member> has higher weight than you. You cannot do any sanctions on him.")
+            Message memberHasHigherWeight();
+
+
+            @ConfKey("role")
+            @SubSection Role role();
+
+            @ConfKey("kick")
+            @SubSection Kick kick();
+
+
+            interface Role {
+
+                @ConfKey("success")
+                @DefaultString("<prefix> Role was set successfully.")
+                Message success();
+            }
+
+            interface Kick {
+
+                @ConfKey("success")
+                @DefaultString("<prefix> Kicked <member> from clan successfully.")
+                Message success();
+
+                @ConfKey("kicked")
+                @DefaultString("<prefix> <member> kicked you from the <clan>!")
+                Message kicked();
+
+            }
 
         }
 

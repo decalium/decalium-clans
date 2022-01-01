@@ -7,11 +7,11 @@ import space.arim.dazzleconf.serialiser.Decomposer;
 import space.arim.dazzleconf.serialiser.FlexibleType;
 import space.arim.dazzleconf.serialiser.ValueSerialiser;
 
-public final class KyoriComponentSerializer implements ValueSerialiser<Component> {
+public final class AdventureComponentSerializer implements ValueSerialiser<Component> {
 
     private final ComponentSerializer<Component, ? extends Component, String> componentSerializer;
 
-    public KyoriComponentSerializer(ComponentSerializer<Component, ? extends Component, String> componentSerializer) {
+    public AdventureComponentSerializer(ComponentSerializer<Component, ? extends Component, String> componentSerializer) {
 
         this.componentSerializer = componentSerializer;
     }
