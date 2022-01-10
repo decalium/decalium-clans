@@ -15,6 +15,7 @@ public interface ClanStorage {
 
 
     void initialize();
+    void shutdown();
 
     @Nullable Clan loadClan(@NotNull String tag);
     @Nullable Clan loadUserClan(@NotNull UUID uuid);

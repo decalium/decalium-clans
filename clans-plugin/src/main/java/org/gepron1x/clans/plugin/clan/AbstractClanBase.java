@@ -178,14 +178,14 @@ public abstract class AbstractClanBase implements ClanBase {
         }
 
         @Override
-        public B homes(@NotNull Collection<ClanHome> homes) {
+        public @NotNull B homes(@NotNull Collection<? extends ClanHome> homes) {
             this.homes.clear();
             this.homes.putAll(FancyCollections.asMap(ClanHome::getName, homes));
             return self();
         }
 
         @Override
-        public @NotNull B members(@NotNull Collection<ClanMember> members) {
+        public @NotNull B members(@NotNull Collection<? extends ClanMember> members) {
             this.members.clear();
             this.members.putAll(FancyCollections.asMap(ClanMember::getUniqueId, members));
             return self();

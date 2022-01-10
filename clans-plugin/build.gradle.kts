@@ -12,6 +12,7 @@ version = "0.1"
 
 repositories {
     mavenCentral()
+    mavenLocal()
     maven { url = uri("https://papermc.io/repo/repository/maven-public/") }
     maven { url = uri("https://mvn-repo.arim.space/lesser-gpl3/") }
     maven { url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/") }
@@ -31,12 +32,16 @@ dependencies {
     implementation("space.arim.dazzleconf:dazzleconf-ext-snakeyaml:1.2.1") {
         exclude(group = "org.yaml", module = "snakeyaml")
     }
-    compileOnly("me.clip:placeholderapi:2.10.0")
+    implementation("com.h2database:h2:2.0.204")
+    compileOnly("me.clip:placeholderapi:2.10.9")
     implementation("com.zaxxer:HikariCP:5.0.0") {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
-    implementation ("net.kyori:adventure-text-minimessage:4.2.0-SNAPSHOT") {
+    implementation ("net.kyori:adventure-text-minimessage:4.10.0-SNAPSHOT") {
         exclude(group = "net.kyori", module = "adventure-api")
+    }
+    compileOnly("net.draycia:carbonchat-api:2.0.6") {
+        exclude("net.kyori", "adventure-text-minimessage")
     }
 }
 
@@ -50,6 +55,7 @@ tasks {
         relocate("space.arim.dazzleconf", "$libraryPackage.dazzleconf")
         relocate("space.arim.omnibus", "$libraryPackage.omnibus")
         relocate("org.jdbi", "$libraryPackage.jdbi")
+        relocate("org.h2", "$libraryPackage.h2")
         relocate("cloud.commandframework", "$libraryPackage.cloud.commandframework")
         relocate("com.github.benmanes.caffeine", "$libraryPackage.caffeine")
         relocate("io.leangen.geantyref", "$libraryPackage.geantyref")
@@ -88,6 +94,7 @@ tasks {
 
 
 bukkit {
+    name = "DecaliumClans"
     main = "org.gepron1x.clans.plugin.DecaliumClansPlugin"
     description = "Shining clans plugin"
     apiVersion = "1.17"

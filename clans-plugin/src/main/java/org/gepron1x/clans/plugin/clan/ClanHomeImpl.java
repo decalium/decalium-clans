@@ -92,8 +92,8 @@ public final class ClanHomeImpl implements ClanHome {
                 .name(name)
                 .displayName(displayName)
                 .creator(creator)
-                .location(location)
-                .icon(icon);
+                .location(getLocation())
+                .icon(getIcon());
     }
 
     public static BuilderImpl builder() {
@@ -144,8 +144,8 @@ public final class ClanHomeImpl implements ClanHome {
                     name,
                     displayName,
                     creator,
-                    location,
-                    icon
+                    location.clone(),
+                    icon == null ? null : icon.clone()
             );
         }
 

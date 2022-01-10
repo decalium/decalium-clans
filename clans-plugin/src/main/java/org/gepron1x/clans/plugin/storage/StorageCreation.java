@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 
-public class StorageCreation {
+public final class StorageCreation {
 
     private final Plugin plugin;
     private final ClansConfig clansConfig;
@@ -44,7 +44,7 @@ public class StorageCreation {
         registerColumnMappers(jdbi);
         registerArguments(jdbi);
         
-        return new SqlClanStorage(plugin, jdbi, factory, roleRegistry);
+        return new SqlClanStorage(plugin, jdbi, clansConfig.storage().type(), factory, roleRegistry);
 
     }
 
@@ -78,7 +78,7 @@ public class StorageCreation {
         } else {
             throw new UnsupportedOperationException();
         }
-
+        hikariConfig.setDriverClassName(type.getDriverClassName());
         hikariConfig.setJdbcUrl(url);
         hikariConfig.setUsername(username);
         hikariConfig.setPassword(password);

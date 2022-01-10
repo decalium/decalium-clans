@@ -21,9 +21,9 @@ public interface ClanBase extends StatisticHolder {
 
     @NotNull ClanMember getOwner();
 
-    @NotNull @Unmodifiable Collection<ClanMember> getMembers();
+    @NotNull @Unmodifiable Collection<? extends ClanMember> getMembers();
 
-    @NotNull @Unmodifiable Map<UUID, ClanMember> memberMap();
+    @NotNull @Unmodifiable Map<UUID, ? extends ClanMember> memberMap();
 
     @Nullable ClanMember getMember(@NotNull UUID uuid);
 
@@ -32,12 +32,12 @@ public interface ClanBase extends StatisticHolder {
         return getMember(player.getUniqueId());
     }
 
-    @NotNull @Unmodifiable Collection<ClanHome> getHomes();
+    @NotNull @Unmodifiable Collection<? extends ClanHome> getHomes();
 
     @Nullable ClanHome getHome(@NotNull String name);
 
 
-    @NotNull @Unmodifiable Map<String, ClanHome> homeMap();
+    @NotNull @Unmodifiable Map<String, ? extends ClanHome> homeMap();
 
     interface Builder<B extends ClanBase.Builder<B, C>, C extends ClanBase> extends Buildable.Builder<C> {
 
@@ -66,10 +66,10 @@ public interface ClanBase extends StatisticHolder {
         @NotNull B removeHome(@NotNull ClanHome home);
 
         @Contract("_ -> this")
-        @NotNull B homes(@NotNull Collection<ClanHome> homes);
+        @NotNull B homes(@NotNull Collection<? extends ClanHome> homes);
 
         @Contract("_ -> this")
-        @NotNull B members(@NotNull Collection<ClanMember> members);
+        @NotNull B members(@NotNull Collection<? extends ClanMember> members);
 
         @Contract("_, _ -> this")
         @NotNull B statistic(@NotNull StatisticType type, int value);

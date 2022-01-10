@@ -38,6 +38,7 @@ public class CacheListener implements Listener {
             cache.cacheClan(loadedClan);
         }
 
+
     }
     @EventHandler
     public void onLeave(PlayerQuitEvent event) {
@@ -61,8 +62,10 @@ public class CacheListener implements Listener {
 
     private boolean areMembersOnline(@NotNull Clan clan) {
         for(UUID uuid : clan.memberMap().keySet()) {
+            System.out.print(uuid);
             if(server.getPlayer(uuid) != null) return true;
         }
+
         return false;
     }
 
@@ -73,9 +76,10 @@ public class CacheListener implements Listener {
 
     @EventHandler
     public void onClanEdit(ClanEditedEvent event) {
-        if(!cache.isCached(event.getClan())) return;
+        if(!cache.isCached(event.getClan().getTag())) return;
 
         cache.removeClan(event.getClan());
         cache.cacheClan(event.getResult());
+
     }
 }

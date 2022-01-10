@@ -4,9 +4,9 @@ import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import io.leangen.geantyref.TypeToken;
 import io.papermc.paper.text.PaperComponents;
-import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.template.TemplateResolver;
+import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
+import net.kyori.adventure.text.minimessage.placeholder.Replacement;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.*;
@@ -28,6 +28,7 @@ import org.gepron1x.clans.plugin.papi.ClansExpansion;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
 import org.gepron1x.clans.plugin.storage.StorageCreation;
 import org.gepron1x.clans.plugin.util.Message;
+import org.slf4j.Logger;
 import space.arim.dazzleconf.ConfigurationOptions;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
@@ -54,8 +55,8 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         this.futuresFactory = new BukkitFactoryOfTheFuture(this);
         this.builderFactory = new ClanBuilderFactoryImpl();
 
-        MiniMessage miniMessage = MiniMessage.builder().templateResolver(TemplateResolver.dynamic(s -> switch(s) {
-            case "prefix" -> getMessages().prefix();
+        MiniMessage miniMessage = MiniMessage.builder().placeholderResolver(PlaceholderResolver.dynamic(s -> switch(s) {
+            case "prefix" -> Replacement.component(getMessages().prefix());
             default -> null;
         })).build();
 
@@ -90,14 +91,15 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         ClansConfig config = getClansConfig();
         MessagesConfig messages = getMessages();
 
+        Logger logger = getSLF4JLogger();
 
-        ClanCommand command = new ClanCommand(cachingClanManager, config, messages, futuresFactory, builderFactory, roleRegistry);
-        InviteCommand inviteCommand = new InviteCommand(cachingClanManager, config, messages, futuresFactory, builderFactory, roleRegistry);
-        MemberCommand memberCommand = new MemberCommand(cachingClanManager, config, messages, futuresFactory);
+
+        ClanCommand command = new ClanCommand(logger, cachingClanManager, config, messages, futuresFactory, builderFactory, roleRegistry);
+        InviteCommand inviteCommand = new InviteCommand(logger, cachingClanManager, config, messages, futuresFactory, builderFactory, roleRegistry);
+        MemberCommand memberCommand = new MemberCommand(logger, cachingClanManager, config, messages, futuresFactory);
 
         getServer().getPluginManager().registerEvents(new CacheListener(clanCache, getServer(), storage), this);
-
-        PlaceholderAPI.registerExpansion(new ClansExpansion(getServer(), clanCache, PaperComponents.legacySectionSerializer()));
+        new ClansExpansion(getServer(), clanCache, PaperComponents.legacySectionSerializer()).register();
 
 
         PaperCommandManager<CommandSender> commandManager;

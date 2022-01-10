@@ -25,11 +25,11 @@ public final class SqlClanEditor implements ClanEditor {
     @Language("SQL")
     private static final String DELETE_STATISTIC = "DELETE FROM `statistics` WHERE `clan_id`=? AND `type`=?";
     @Language("SQL")
-    private static final String INSERT_MEMBER = "INSERT INTO `members` (`clan_id`, `uuid`, `role`) VALUES (?, ?, ?)";
+    private static final String INSERT_MEMBER = "INSERT IGNORE INTO `members` (`clan_id`, `uuid`, `role`) VALUES (?, ?, ?)";
     @Language("SQL")
     private static final String DELETE_MEMBER = "DELETE FROM `members` WHERE `uuid`=?";
     @Language("SQL")
-    private static final String INSERT_HOME = "INSERT INTO `homes` (`clan_id`, `name`, `creator`, `display_name`, `icon`) VALUES (?, ?, ?, ?, ?)";
+    private static final String INSERT_HOME = "INSERT IGNORE INTO `homes` (`clan_id`, `name`, `creator`, `display_name`, `icon`) VALUES (?, ?, ?, ?, ?)";
 
     @Language("SQL")
     private static final String INSERT_LOCATION = "INSERT INTO `locations` (`home_id`, `x`, `y`, `z`, `world`) VALUES (?, ?, ?, ?, ?)";
@@ -76,10 +76,14 @@ public final class SqlClanEditor implements ClanEditor {
 
     @Override
     public ClanEditor addMember(@NotNull ClanMember member) {
-        handle.createUpdate(INSERT_MEMBER)
+        int updateCount = handle.createUpdate(INSERT_MEMBER)
                 .bind(0, clan.getId())
                 .bind(1, member.getUniqueId())
                 .bind(2, member.getRole()).execute();
+        if(updateCount != 0) {
+            handle.rollback();
+            throw new IllegalArgumentException("Member with given uuid already in the clan");
+        }
         return this;
     }
 
@@ -98,13 +102,18 @@ public final class SqlClanEditor implements ClanEditor {
     @Override
     public ClanEditor addHome(@NotNull ClanHome home) {
         Location loc = home.getLocation();
-        int homeId = handle.createUpdate(INSERT_HOME)
+        Integer homeId = handle.createUpdate(INSERT_HOME)
                 .bind(0, clan.getId())
                 .bind(1, home.getName())
                 .bind(2, home.getCreator())
                 .bind(3, home.getDisplayName())
                 .bind(4, home.getIcon())
-                .executeAndReturnGeneratedKeys("id").mapTo(Integer.class).findFirst().orElseThrow();
+                .executeAndReturnGeneratedKeys("id").mapTo(Integer.class).findFirst().orElse(null);
+
+        if(homeId == null) {
+            handle.rollback();
+            throw new IllegalArgumentException("home already exists");
+        }
 
         handle.createUpdate(INSERT_LOCATION)
                 .bind(0, homeId)

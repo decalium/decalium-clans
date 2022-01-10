@@ -8,6 +8,9 @@ public final class Validations {
     private static final int MAX_TAG_SIZE = 16;
     private static final int MIN_TAG_SIZE = 4;
 
+    private static final int MIN_HOME_NAME_SIZE = 4;
+    private static final int MAX_HOME_NAME_SIZE = 32;
+
     private static final CharPredicate TAG_PREDICATE = c -> c == '_' || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9');
 
     public static boolean checkTag(@NotNull String tag) {
@@ -17,6 +20,10 @@ public final class Validations {
         for(char c : chars) {
             if(!TAG_PREDICATE.test(c)) return false;
         }
+        return true;
+    }
+
+    public static boolean checkHomeName(@NotNull String name) {
         return true;
     }
 

@@ -17,7 +17,7 @@ public interface ClanCache {
 
     @NotNull
     @UnmodifiableView
-    Collection<Clan> getClans();
+    Collection<? extends Clan> getClans();
 
     boolean isCached(@NotNull Clan clan);
 

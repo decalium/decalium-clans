@@ -4,13 +4,15 @@ import cloud.commandframework.CommandManager;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.gepron1x.clans.api.ClanManager;
+import org.gepron1x.clans.api.CachingClanManager;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
@@ -20,15 +22,17 @@ import java.util.UUID;
 public abstract class AbstractCommand {
 
 
-    protected final ClanManager clanManager;
+    private final Logger logger;
+    protected final CachingClanManager clanManager;
     protected final ClansConfig clansConfig;
     protected final MessagesConfig messages;
     protected final FactoryOfTheFuture futuresFactory;
 
-    public AbstractCommand(ClanManager clanManager,
+    public AbstractCommand(Logger logger, CachingClanManager clanManager,
                            ClansConfig clansConfig,
                            MessagesConfig messages,
                            FactoryOfTheFuture futuresFactory) {
+        this.logger = logger;
         this.clanManager = clanManager;
         this.clansConfig = clansConfig;
         this.messages = messages;
@@ -62,8 +66,23 @@ public abstract class AbstractCommand {
         return in;
     }
 
+    protected CentralisedFuture<@Nullable Clan> requireClan(@NotNull Player player) {
+        return this.clanManager.getUserClan(player.getUniqueId()).thenApply(clan -> {
+            if(clan == null) {
+                player.sendMessage(messages.notInTheClan());
+            }
+            return clan;
+        });
+    }
+
     protected <T> CentralisedFuture<T> nullFuture() {
         return futuresFactory.completedFuture(null);
+    }
+    
+    protected <T> T exceptionHandler(Throwable throwable) {
+        logger.error("A future completed exceptionally: ", throwable);
+        throwable.printStackTrace();
+        return null;
     }
 
 

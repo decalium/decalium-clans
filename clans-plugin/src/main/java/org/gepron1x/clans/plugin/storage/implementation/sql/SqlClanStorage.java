@@ -13,6 +13,7 @@ import org.gepron1x.clans.api.editor.ClanEditor;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.clan.ClanBuilder;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
+import org.gepron1x.clans.plugin.storage.StorageType;
 import org.gepron1x.clans.plugin.storage.implementation.sql.editor.SqlClanEditor;
 import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.ClanBuilderMapper;
 import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.ClanHomeBuilderMapper;
@@ -128,15 +129,20 @@ public final class SqlClanStorage implements ClanStorage {
     private static final String DELETE_CLAN = "DELETE FROM clans WHERE id=?";
 
     private final Jdbi jdbi;
+    private final StorageType type;
     private final ClanBuilderFactory builderFactory;
     private final RoleRegistry roleRegistry;
     private final Plugin plugin;
 
 
-    public SqlClanStorage(@NotNull Plugin plugin, @NotNull Jdbi jdbi, @NotNull ClanBuilderFactory builderFactory, @NotNull RoleRegistry roleRegistry) {
+    public SqlClanStorage(@NotNull Plugin plugin,
+                          @NotNull Jdbi jdbi,
+                          @NotNull StorageType type,
+                          @NotNull ClanBuilderFactory builderFactory,
+                          @NotNull RoleRegistry roleRegistry) {
         this.plugin = plugin;
         this.jdbi = jdbi;
-
+        this.type = type;
         this.builderFactory = builderFactory;
         this.roleRegistry = roleRegistry;
     }
@@ -152,6 +158,12 @@ public final class SqlClanStorage implements ClanStorage {
 
             List.of(CREATE_SIMPLE_CLANS_VIEW).forEach(s -> handle.createUpdate(s).execute());
         });
+
+    }
+
+    @Override
+    public void shutdown() {
+        jdbi.useHandle(type::disable);
 
     }
 

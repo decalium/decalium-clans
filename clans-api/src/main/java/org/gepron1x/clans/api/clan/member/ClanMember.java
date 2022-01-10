@@ -27,6 +27,7 @@ public interface ClanMember extends Buildable<ClanMember, ClanMember.Builder> {
         return server.getPlayer(getUniqueId());
     }
 
+    @NotNull
     default OfflinePlayer asOffline(@NotNull Server server) {
         return server.getOfflinePlayer(getUniqueId());
     }

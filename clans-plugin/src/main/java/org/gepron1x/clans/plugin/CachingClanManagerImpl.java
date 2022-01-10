@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public class CachingClanManagerImpl implements CachingClanManager {
+public final class CachingClanManagerImpl implements CachingClanManager {
 
     private final ClanManager clanManager;
     private final FactoryOfTheFuture futuresFactory;

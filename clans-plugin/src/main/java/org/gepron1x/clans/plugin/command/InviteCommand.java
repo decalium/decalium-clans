@@ -20,6 +20,7 @@ import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
@@ -34,7 +35,6 @@ import static net.kyori.adventure.text.Component.text;
 
 public class InviteCommand extends AbstractCommand {
 
-    private final CachingClanManager clanManager;
     private final ClanBuilderFactory builderFactory;
     private final RoleRegistry roleRegistry;
 
@@ -43,15 +43,14 @@ public class InviteCommand extends AbstractCommand {
     private final Table<UUID, String, Invitation> invitations = HashBasedTable.create();
 
 
-    public InviteCommand(CachingClanManager clanManager,
-                         ClansConfig config,
-                         MessagesConfig messages,
-                         FactoryOfTheFuture futuresFactory,
-                         ClanBuilderFactory builderFactory,
-                         RoleRegistry roleRegistry)
+    public InviteCommand(@NotNull Logger logger, @NotNull CachingClanManager clanManager,
+                         @NotNull ClansConfig config,
+                         @NotNull MessagesConfig messages,
+                         @NotNull FactoryOfTheFuture futuresFactory,
+                         @NotNull ClanBuilderFactory builderFactory,
+                         @NotNull RoleRegistry roleRegistry)
     {
-        super(clanManager, config, messages, futuresFactory);
-        this.clanManager = clanManager;
+        super(logger, clanManager, config, messages, futuresFactory);
         this.builderFactory = builderFactory;
         this.roleRegistry = roleRegistry;
     }
@@ -118,7 +117,7 @@ public class InviteCommand extends AbstractCommand {
                     .with("sender", player.displayName())
                     .with("clan_display_name", clan.getDisplayName())
             );
-        });
+        }).exceptionally(this::exceptionHandler);
 
     }
 
@@ -142,7 +141,7 @@ public class InviteCommand extends AbstractCommand {
                         if (senderPlayer != null) {
                             senderPlayer.sendMessage(messages.commands().invitation().playerAccepted().with("receiver", player.displayName()));
                         }
-                });
+                }).exceptionally(this::exceptionHandler);
     }
 
     private void declineInvite(CommandContext<CommandSender> context) {

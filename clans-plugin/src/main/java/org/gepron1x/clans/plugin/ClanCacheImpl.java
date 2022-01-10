@@ -1,5 +1,6 @@
 package org.gepron1x.clans.plugin;
 
+import com.google.common.base.MoreObjects;
 import org.gepron1x.clans.api.ClanCache;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
@@ -58,14 +59,15 @@ public final class ClanCacheImpl implements ClanCache {
         }
     }
     public void removeClan(Clan clan) {
-        clanMap.remove(clan.getTag(), clan);
+        clanMap.remove(clan.getTag());
         clan.memberMap().keySet().forEach(userClanMap::remove);
     }
 
-
-
-
-
-
-
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("clanMap", clanMap)
+                .add("userClanMap", userClanMap)
+                .toString();
+    }
 }

@@ -13,6 +13,7 @@ public record ClanPermission(@NotNull String value) {
 
     public static final ClanPermission ADD_HOME = new ClanPermission("add_home");
     public static final ClanPermission REMOVE_HOME = new ClanPermission("remove_home");
+    public static final ClanPermission EDIT_OTHERS_HOMES = new ClanPermission("edit_others_homes");
 
     public static final ClanPermission SET_DISPLAY_NAME = new ClanPermission("set_display_name");
     public static final ClanPermission PROMOTE_OWNER = new ClanPermission("promote_owner");
@@ -21,7 +22,7 @@ public record ClanPermission(@NotNull String value) {
     private static final Index<String, ClanPermission> NAMES =
             Index.create(ClanPermission::value,
                     INVITE, KICK, SET_ROLE,
-                    ADD_HOME, REMOVE_HOME,
+                    ADD_HOME, REMOVE_HOME, EDIT_OTHERS_HOMES,
                     SET_DISPLAY_NAME, PROMOTE_OWNER, DISBAND);
 
     public static Index<String, ClanPermission> registry() {

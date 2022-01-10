@@ -9,6 +9,7 @@ import static space.arim.dazzleconf.annote.ConfDefault.DefaultString;
 
 public interface MessagesConfig {
 
+
     @ConfKey("prefix")
     @DefaultString("<aqua>DecaliumClans |")
     Component prefix();
@@ -41,10 +42,21 @@ public interface MessagesConfig {
     @ConfKey("commands")
     Commands commands();
 
+    interface Chat {
+
+        @DefaultString("Clan chat/<role>")
+        Message messageFormat();
+    }
+
 
 
 
     interface Commands {
+
+        @ConfKey("display-name-set")
+        @DefaultString("<prefix> Display name was set to <name>.")
+        Message displayNameSet();
+
         @ConfKey("creation")
         @SubSection
         Creation creation();
@@ -60,6 +72,10 @@ public interface MessagesConfig {
         @ConfKey("member")
         @SubSection
         Member member();
+
+        @ConfKey("home")
+        @SubSection
+        Home home();
 
         interface Creation {
 
@@ -145,6 +161,10 @@ public interface MessagesConfig {
                 @ConfKey("success")
                 @DefaultString("<prefix> Role was set successfully.")
                 Message success();
+
+                @ConfKey("role-has-higher-weight")
+                @DefaultString("<prefix> Role <role> has higher weight than yours. You cannot set it.")
+                Message roleHasHigherWeight();
             }
 
             interface Kick {
@@ -158,6 +178,29 @@ public interface MessagesConfig {
                 Message kicked();
 
             }
+
+        }
+
+
+        interface Home {
+
+
+            @ConfKey("home-not-found")
+            @DefaultString("<prefix> No home with name <name> found.")
+            Message homeNotFound();
+
+            @ConfKey("home-already-exists")
+            @DefaultString("<prefix> Home with name <name> already exists!")
+            Message homeAlreadyExists();
+
+            @ConfKey("created")
+            @DefaultString("<prefix> Created new home successfully.")
+            Message created();
+
+            @ConfKey("deleted")
+            @DefaultString("<prefix> Deleted home succesfully.")
+            Message deleted();
+
 
         }
 
