@@ -75,7 +75,7 @@ public final class ClanManagerImpl implements ClanManager {
     }
 
     @Override
-    public @NotNull CentralisedFuture<Set<Clan>> getClans() {
+    public @NotNull CentralisedFuture<Set<? extends Clan>> getClans() {
         return futuresFactory.supplyAsync(storage::loadClans);
     }
 }

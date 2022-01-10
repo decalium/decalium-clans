@@ -27,6 +27,6 @@ public interface ClanManager {
         return getUserClan(player.getUniqueId());
     }
 
-    @NotNull CentralisedFuture<Set<Clan>> getClans();
+    @NotNull CentralisedFuture<Set<? extends Clan>> getClans();
 
 }

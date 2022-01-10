@@ -68,7 +68,7 @@ public record ClanRoleImpl(String name, Component displayName, int weight, Set<C
         }
 
         @Override
-        public @NotNull Builder permissions(@NotNull Collection<ClanPermission> permissions) {
+        public @NotNull Builder permissions(@NotNull Collection<? extends ClanPermission> permissions) {
             this.permissions.clear();
             this.permissions.addAll(permissions);
             return this;

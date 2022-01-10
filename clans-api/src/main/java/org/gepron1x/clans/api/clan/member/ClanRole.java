@@ -15,7 +15,7 @@ public interface ClanRole extends Comparable<ClanRole>, Buildable<ClanRole, Clan
     @NotNull String getName();
     @NotNull Component getDisplayName();
     int getWeight();
-    @NotNull @Unmodifiable Set<ClanPermission> getPermissions();
+    @NotNull @Unmodifiable Set<? extends ClanPermission> getPermissions();
 
 
 
@@ -36,7 +36,7 @@ public interface ClanRole extends Comparable<ClanRole>, Buildable<ClanRole, Clan
         @NotNull Builder weight(int weight);
 
         @Contract("_ -> this")
-        @NotNull Builder permissions(@NotNull Collection<ClanPermission> permissions);
+        @NotNull Builder permissions(@NotNull Collection<? extends ClanPermission> permissions);
 
         @Contract("_ -> this")
         default @NotNull Builder permissions(@NotNull ClanPermission @NotNull... permissions) {
