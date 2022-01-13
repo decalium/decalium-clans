@@ -21,10 +21,6 @@ public final class SqlMemberEditor implements MemberEditor {
         this.clan = clan;
         this.member = member;
     }
-    @Override
-    public ClanMember getTarget() {
-        return member;
-    }
 
     @Override
     public MemberEditor setRole(@NotNull ClanRole role) {

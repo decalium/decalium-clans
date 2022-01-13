@@ -3,7 +3,6 @@ package org.gepron1x.clans.plugin;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import io.leangen.geantyref.TypeToken;
-import io.papermc.paper.text.PaperComponents;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
 import net.kyori.adventure.text.minimessage.placeholder.Replacement;
@@ -24,7 +23,6 @@ import org.gepron1x.clans.plugin.config.serializer.ClanPermissionSerializer;
 import org.gepron1x.clans.plugin.config.serializer.ClanRoleSerializer;
 import org.gepron1x.clans.plugin.config.serializer.MessageSerializer;
 import org.gepron1x.clans.plugin.listener.CacheListener;
-import org.gepron1x.clans.plugin.papi.ClansExpansion;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
 import org.gepron1x.clans.plugin.storage.StorageCreation;
 import org.gepron1x.clans.plugin.util.Message;
@@ -100,7 +98,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         MemberCommand memberCommand = new MemberCommand(logger, cachingClanManager, config, messages, futuresFactory);
 
         getServer().getPluginManager().registerEvents(new CacheListener(clanCache, getServer(), storage), this);
-        new ClansExpansion(getServer(), clanCache, PaperComponents.legacySectionSerializer()).register();
+        //  new ClansExpansion(getServer(), clanCache, PaperComponents.legacySectionSerializer()).register();
 
 
         PaperCommandManager<CommandSender> commandManager;

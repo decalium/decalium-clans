@@ -12,6 +12,10 @@ import java.util.function.Consumer;
 
 public interface ClanEditor extends Editor<Clan> {
 
+    @Override
+    @NotNull
+    default Class<Clan> getTarget() { return Clan.class; }
+
     ClanEditor setDisplayName(@NotNull Component displayName);
 
     ClanEditor setStatistic(@NotNull StatisticType type, int value);

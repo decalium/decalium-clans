@@ -142,8 +142,4 @@ public final class SqlClanEditor implements ClanEditor {
         return this;
     }
 
-    @Override
-    public Clan getTarget() {
-        return clan;
-    }
 }

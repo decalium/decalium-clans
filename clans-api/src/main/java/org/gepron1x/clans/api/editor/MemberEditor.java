@@ -6,6 +6,12 @@ import org.jetbrains.annotations.NotNull;
 
 public interface MemberEditor extends Editor<ClanMember> {
 
+    @Override
+    @NotNull
+    default Class<ClanMember> getTarget() {
+        return ClanMember.class;
+    }
+
     MemberEditor setRole(@NotNull ClanRole role);
 
 }

@@ -28,10 +28,6 @@ public final class SqlHomeEditor implements HomeEditor {
         this.clan = clan;
         this.home = home;
     }
-    @Override
-    public ClanHome getTarget() {
-        return home;
-    }
 
     @Override
     public HomeEditor setIcon(@Nullable ItemStack icon) {

@@ -25,16 +25,16 @@ dependencies {
     implementation(project(":clans-api"))
    // compileOnly("io.papermc.paper:paper-api:1.17.1-R0.1-SNAPSHOT")
     paperDevBundle("1.18-R0.1-SNAPSHOT")
-    implementation("org.jdbi:jdbi3-core:3.25.0") {
+    implementation("org.jdbi:jdbi3-core:3.27.0") {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
     implementation("cloud.commandframework:cloud-paper:1.6.1")
     implementation("space.arim.dazzleconf:dazzleconf-ext-snakeyaml:1.2.1") {
         exclude(group = "org.yaml", module = "snakeyaml")
     }
-    implementation("com.h2database:h2:2.0.204")
+    implementation("com.h2database:h2:2.0.206")
     compileOnly("me.clip:placeholderapi:2.10.9")
-    implementation("com.zaxxer:HikariCP:5.0.0") {
+    implementation("com.zaxxer:HikariCP:5.0.1") {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
     implementation ("net.kyori:adventure-text-minimessage:4.10.0-SNAPSHOT") {
@@ -99,6 +99,6 @@ bukkit {
     description = "Shining clans plugin"
     apiVersion = "1.17"
     authors = listOf("gepron1x", "manya")
-    depend = listOf("PlaceholderAPI")
+    softDepend = listOf("PlaceholderAPI")
 }
 

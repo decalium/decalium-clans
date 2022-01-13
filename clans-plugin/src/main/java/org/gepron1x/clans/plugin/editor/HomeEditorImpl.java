@@ -20,10 +20,6 @@ public final class HomeEditorImpl implements HomeEditor {
         this.home = home;
         this.builder = builder;
     }
-    @Override
-    public ClanHome getTarget() {
-        return home;
-    }
 
     @Override
     public HomeEditor setIcon(@Nullable ItemStack icon) {

@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 public record Message(MiniMessage miniMessage,
-                      String value) implements ComponentLike, TemplateHolder<Message.Container> {
+                      String value) implements ComponentLike, WithPlaceholders<Message.Container> {
 
     public static Message message(@NotNull String value, @NotNull MiniMessage miniMessage) {
         return new Message(miniMessage, value);
@@ -50,7 +50,7 @@ public record Message(MiniMessage miniMessage,
     }
 
 
-    public static final class Container implements ComponentLike, TemplateHolder<Container> {
+    public static final class Container implements ComponentLike, WithPlaceholders<Container> {
         private final String value;
         private final MiniMessage miniMessage;
         private final PlaceholderResolver resolver;

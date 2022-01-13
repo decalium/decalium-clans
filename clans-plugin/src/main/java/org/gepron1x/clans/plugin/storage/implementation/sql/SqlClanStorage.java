@@ -42,7 +42,7 @@ public final class SqlClanStorage implements ClanStorage {
     private static final String CREATE_CLANS_TABLE = """
     CREATE TABLE IF NOT EXISTS `clans` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `tag` VARCHAR(16) COLLATE 'latin1_general_cs' NOT NULL,
+    `tag` VARCHAR(16) NOT NULL,
     `owner` BINARY(16) NOT NULL,
     `display_name` JSON NOT NULL,
     UNIQUE(`tag`, `owner`),
@@ -93,7 +93,7 @@ public final class SqlClanStorage implements ClanStorage {
     private static final String CREATE_STATISTICS_TABLE = """
     CREATE TABLE IF NOT EXISTS `statistics` (
     `clan_id` INTEGER NOT NULL UNIQUE,
-    `type` VARCHAR(16) NOT NULL COLLATE 'latin1_general_cs' UNIQUE,
+    `type` VARCHAR(16) NOT NULL UNIQUE,
     `value` INTEGER NOT NULL,
     FOREIGN KEY(`clan_id`) REFERENCES `clans` (`id`) ON DELETE CASCADE
     )

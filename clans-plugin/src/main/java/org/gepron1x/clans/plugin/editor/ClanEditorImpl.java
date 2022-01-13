@@ -100,11 +100,6 @@ public final class ClanEditorImpl implements ClanEditor {
     }
 
     @Override
-    public Clan getTarget() {
-        return clan;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

@@ -69,7 +69,7 @@ public final class CachingClanManagerImpl implements CachingClanManager {
     }
 
     @Override
-    public @NotNull CentralisedFuture<Set<Clan>> getClans() {
+    public @NotNull CentralisedFuture<Set<? extends Clan>> getClans() {
         return clanManager.getClans();
     }
 }

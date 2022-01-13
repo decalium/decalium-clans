@@ -8,7 +8,7 @@ import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
 import java.util.Collection;
 import java.util.List;
 
-public interface TemplateHolder<T extends TemplateHolder<T>> { // i have no clue how to call this
+public interface WithPlaceholders<T extends WithPlaceholders<T>> { // i have no clue how to call this
 
 
     T with(Placeholder<?> placeholder);

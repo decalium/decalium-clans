@@ -8,6 +8,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface HomeEditor extends Editor<ClanHome> {
+
+    @Override
+    @NotNull
+    default Class<ClanHome> getTarget() { return ClanHome.class; }
+
     HomeEditor setIcon(@Nullable ItemStack icon);
     HomeEditor setLocation(@NotNull Location location);
     HomeEditor setDisplayName(@NotNull Component displayName);

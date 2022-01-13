@@ -20,11 +20,6 @@ public final class MemberEditorImpl implements MemberEditor {
     }
 
     @Override
-    public ClanMember getTarget() {
-        return member;
-    }
-
-    @Override
     public MemberEditor setRole(@NotNull ClanRole role) {
         builder.role(role);
         return this;
