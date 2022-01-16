@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-public class RoleRegistryImpl implements RoleRegistry {
+public final class RoleRegistryImpl implements RoleRegistry {
 
     private final Map<String, ClanRole> roleMap;
 

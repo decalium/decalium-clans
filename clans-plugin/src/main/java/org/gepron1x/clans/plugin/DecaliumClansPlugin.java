@@ -25,7 +25,7 @@ import org.gepron1x.clans.plugin.config.serializer.MessageSerializer;
 import org.gepron1x.clans.plugin.listener.CacheListener;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
 import org.gepron1x.clans.plugin.storage.StorageCreation;
-import org.gepron1x.clans.plugin.util.Message;
+import org.gepron1x.clans.plugin.util.message.Message;
 import org.slf4j.Logger;
 import space.arim.dazzleconf.ConfigurationOptions;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;

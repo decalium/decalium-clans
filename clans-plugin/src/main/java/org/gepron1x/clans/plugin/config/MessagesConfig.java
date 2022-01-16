@@ -1,7 +1,7 @@
 package org.gepron1x.clans.plugin.config;
 
 import net.kyori.adventure.text.Component;
-import org.gepron1x.clans.plugin.util.Message;
+import org.gepron1x.clans.plugin.util.message.Message;
 import space.arim.dazzleconf.annote.ConfKey;
 import space.arim.dazzleconf.annote.SubSection;
 

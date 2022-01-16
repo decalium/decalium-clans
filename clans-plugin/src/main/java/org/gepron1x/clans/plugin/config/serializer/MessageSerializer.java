@@ -1,7 +1,7 @@
 package org.gepron1x.clans.plugin.config.serializer;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.gepron1x.clans.plugin.util.Message;
+import org.gepron1x.clans.plugin.util.message.Message;
 import org.jetbrains.annotations.NotNull;
 import space.arim.dazzleconf.error.BadValueException;
 import space.arim.dazzleconf.serialiser.Decomposer;

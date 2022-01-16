@@ -1,4 +1,4 @@
-package org.gepron1x.clans.plugin.util;
+package org.gepron1x.clans.plugin.util.message;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;

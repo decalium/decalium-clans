@@ -1,4 +1,4 @@
-package org.gepron1x.clans.plugin.util;
+package org.gepron1x.clans.plugin.util.message;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
@@ -57,13 +57,20 @@ public record Message(MiniMessage miniMessage,
         private final List<PlaceholderResolver> resolvers;
         private final Map<String, Replacement<?>> replacements;
 
-        private Container(String value, MiniMessage miniMessage, List<? extends PlaceholderResolver> resolvers, Collection<? extends Placeholder<?>> templates) {
+        private Container(String value,
+                          MiniMessage miniMessage,
+                          List<? extends PlaceholderResolver> resolvers,
+                          Collection<? extends Placeholder<?>> templates) {
             this.value = value;
             this.miniMessage = miniMessage;
             this.replacements = new HashMap<>(templates.size());
             with(templates);
             this.resolvers = new ArrayList<>(resolvers);
-            this.resolver = PlaceholderResolver.combining(PlaceholderResolver.map(this.replacements), PlaceholderResolver.combining(this.resolvers));
+
+            this.resolver = PlaceholderResolver.combining(
+                    new LiveMapPlaceholderResolver(this.replacements),
+                    new LiveGroupedPlaceholderResolver(this.resolvers)
+            );
         }
 
         @Override
