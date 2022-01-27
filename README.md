@@ -1,9 +1,6 @@
 # decalium-clans
-Плагин на кланы. ООП, Три библиотеки на аннотациях, 
-Клановые войны и тёлки с голыми сиськами. 
-
-
-Переписываю плагин с нуля, чекайте ветку rewrite
+A modern, full-featured and open-source clans plugin. Currently maintained by @gepron1x
+Check `rewrite` branch. 
 
 
 
