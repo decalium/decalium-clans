@@ -22,7 +22,7 @@ public final class RoleRegistryImpl implements RoleRegistry {
     public RoleRegistryImpl(@NotNull ClanRole defaultRole, @NotNull ClanRole ownerRole, @NotNull Collection<ClanRole> roles) {
         this.defaultRole = defaultRole;
         this.ownerRole = ownerRole;
-        Preconditions.checkArgument(roles.containsAll(Set.of(defaultRole, ownerRole)), "roles collection should containt default and owner role.");
+        Preconditions.checkArgument(roles.containsAll(Set.of(defaultRole, ownerRole)), "roles collection should contain default and owner role.");
         this.roleMap = FancyCollections.asMap(ClanRole::getName, roles);
     }
     @Override

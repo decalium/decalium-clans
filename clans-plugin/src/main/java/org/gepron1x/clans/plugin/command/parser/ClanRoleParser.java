@@ -46,7 +46,6 @@ public final class ClanRoleParser<C> implements ArgumentParser<C, ClanRole> {
 
         return roleRegistry.getRoles().stream()
                 .map(ClanRole::getName)
-                .filter(s -> s.startsWith(input))
                 .collect(Collectors.toList());
     }
 

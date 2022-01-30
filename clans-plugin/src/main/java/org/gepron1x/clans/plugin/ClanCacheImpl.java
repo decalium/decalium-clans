@@ -52,15 +52,13 @@ public final class ClanCacheImpl implements ClanCache {
 
     public void cacheClan(Clan clan) {
         clanMap.put(clan.getTag(), clan);
-        userClanMap.entrySet().removeIf(entry -> entry.getValue().getTag().equals(clan.getTag()));
-
         for(ClanMember member : clan.getMembers()) {
             userClanMap.put(member.getUniqueId(), clan);
         }
     }
     public void removeClan(Clan clan) {
         clanMap.remove(clan.getTag());
-        clan.memberMap().keySet().forEach(userClanMap::remove);
+        userClanMap.entrySet().removeIf(entry -> entry.getValue().getTag().equals(clan.getTag()));
     }
 
     @Override

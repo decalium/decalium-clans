@@ -3,6 +3,7 @@ package org.gepron1x.clans.plugin;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import io.leangen.geantyref.TypeToken;
+import io.papermc.paper.text.PaperComponents;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
 import net.kyori.adventure.text.minimessage.placeholder.Replacement;
@@ -12,6 +13,7 @@ import org.gepron1x.clans.api.*;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.plugin.async.BukkitFactoryOfTheFuture;
 import org.gepron1x.clans.plugin.command.ClanCommand;
+import org.gepron1x.clans.plugin.command.HomeCommand;
 import org.gepron1x.clans.plugin.command.InviteCommand;
 import org.gepron1x.clans.plugin.command.MemberCommand;
 import org.gepron1x.clans.plugin.command.parser.ClanRoleParser;
@@ -23,6 +25,7 @@ import org.gepron1x.clans.plugin.config.serializer.ClanPermissionSerializer;
 import org.gepron1x.clans.plugin.config.serializer.ClanRoleSerializer;
 import org.gepron1x.clans.plugin.config.serializer.MessageSerializer;
 import org.gepron1x.clans.plugin.listener.CacheListener;
+import org.gepron1x.clans.plugin.papi.ClansExpansion;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
 import org.gepron1x.clans.plugin.storage.StorageCreation;
 import org.gepron1x.clans.plugin.util.message.Message;
@@ -96,9 +99,10 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         ClanCommand command = new ClanCommand(logger, cachingClanManager, config, messages, futuresFactory, builderFactory, roleRegistry);
         InviteCommand inviteCommand = new InviteCommand(logger, cachingClanManager, config, messages, futuresFactory, builderFactory, roleRegistry);
         MemberCommand memberCommand = new MemberCommand(logger, cachingClanManager, config, messages, futuresFactory);
+        HomeCommand homeCommand = new HomeCommand(logger, cachingClanManager, config, messages, futuresFactory, builderFactory);
 
         getServer().getPluginManager().registerEvents(new CacheListener(clanCache, getServer(), storage), this);
-        //  new ClansExpansion(getServer(), clanCache, PaperComponents.legacySectionSerializer()).register();
+         new ClansExpansion(getServer(), clanCache, PaperComponents.legacySectionSerializer()).register();
 
 
         PaperCommandManager<CommandSender> commandManager;
@@ -119,6 +123,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         command.register(commandManager);
         inviteCommand.register(commandManager);
         memberCommand.register(commandManager);
+        homeCommand.register(commandManager);
     }
 
     public static void test(DecaliumClansApi api) {

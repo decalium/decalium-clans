@@ -179,7 +179,6 @@ public class InviteCommand extends AbstractCommand {
                 .map(m -> m.asPlayer(player.getServer()))
                 .filter(Objects::nonNull)
                 .map(Player::getName)
-                .filter(st -> st.startsWith(s))
                 .collect(Collectors.toList());
     }
 

@@ -1,5 +1,7 @@
 package org.gepron1x.clans.plugin;
 
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
 import org.gepron1x.clans.api.ClanCreationResult;
 import org.gepron1x.clans.api.ClanManager;
@@ -77,5 +79,10 @@ public final class ClanManagerImpl implements ClanManager {
     @Override
     public @NotNull CentralisedFuture<Set<? extends Clan>> getClans() {
         return futuresFactory.supplyAsync(storage::loadClans);
+    }
+
+    private static <E extends Event & Cancellable> void test(E event) {
+        event.setCancelled(true);
+
     }
 }

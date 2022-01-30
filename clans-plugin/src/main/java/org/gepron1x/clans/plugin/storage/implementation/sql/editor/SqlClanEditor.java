@@ -80,7 +80,7 @@ public final class SqlClanEditor implements ClanEditor {
                 .bind(0, clan.getId())
                 .bind(1, member.getUniqueId())
                 .bind(2, member.getRole()).execute();
-        if(updateCount != 0) {
+        if(updateCount != 1) {
             handle.rollback();
             throw new IllegalArgumentException("Member with given uuid already in the clan");
         }

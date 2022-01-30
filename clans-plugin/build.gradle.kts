@@ -32,7 +32,7 @@ dependencies {
     implementation("space.arim.dazzleconf:dazzleconf-ext-snakeyaml:1.2.1") {
         exclude(group = "org.yaml", module = "snakeyaml")
     }
-    implementation("com.h2database:h2:2.0.206")
+    implementation("com.h2database:h2:2.1.210")
     compileOnly("me.clip:placeholderapi:2.10.9")
     implementation("com.zaxxer:HikariCP:5.0.1") {
         exclude(group = "org.slf4j", module = "slf4j-api")

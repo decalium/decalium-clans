@@ -130,7 +130,6 @@ public class MemberCommand extends AbstractCommand {
                 .map(m -> m.asPlayer(server))
                 .filter(Objects::nonNull)
                 .map(Player::getName)
-                .filter(st -> st.startsWith(s))
                 .collect(Collectors.toList());
     }
 }

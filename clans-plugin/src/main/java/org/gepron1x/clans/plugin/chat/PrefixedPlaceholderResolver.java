@@ -26,8 +26,10 @@ public final class PrefixedPlaceholderResolver implements PlaceholderResolver {
 
     @Override
     public @Nullable Replacement<?> resolve(@NotNull String key) {
+
         if(!key.startsWith(prefixUnderscored)) return null;
         return parent.resolve(key.substring(prefixUnderscoredLen));
+
     }
 
 

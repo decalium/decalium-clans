@@ -65,6 +65,7 @@ public record Message(MiniMessage miniMessage,
             this.miniMessage = miniMessage;
             this.replacements = new HashMap<>(templates.size());
             with(templates);
+
             this.resolvers = new ArrayList<>(resolvers);
 
             this.resolver = PlaceholderResolver.combining(

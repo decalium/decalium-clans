@@ -49,6 +49,7 @@ public final class BukkitFactoryOfTheFuture implements FactoryOfTheFuture {
     public CentralisedFuture<?> runAsync(Runnable command, Executor executor) {
         return supplyAsync(() -> {
             command.run();
+
             return null;
         }, executor);
     }

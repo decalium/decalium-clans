@@ -9,7 +9,6 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Server;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.gepron1x.clans.api.ClanCache;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
@@ -21,7 +20,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ClanChatChannel implements ChatChannel {
+public final class ClanChatChannel implements ChatChannel {
     private static final Key KEY = Key.key("decaliumclans", "clanchat");
     private final Server server;
     private final ClanCache cache;
@@ -68,7 +67,7 @@ public class ClanChatChannel implements ChatChannel {
     }
 
     @Override
-    public @Nullable String quickPrefix() {
+    public @NotNull String quickPrefix() {
         return "~";
     }
 
@@ -95,6 +94,6 @@ public class ClanChatChannel implements ChatChannel {
 
     @Override
     public @NotNull Key key() {
-        return Key.key("decaliumclans", "clans");
+        return KEY;
     }
 }

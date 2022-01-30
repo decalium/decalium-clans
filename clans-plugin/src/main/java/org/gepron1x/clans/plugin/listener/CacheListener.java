@@ -31,13 +31,12 @@ public class CacheListener implements Listener {
     public void onJoin(AsyncPlayerPreLoginEvent event) {
         UUID uuid = event.getUniqueId();
         Clan clan = cache.getUserClan(uuid);
-        if(clan != null) return; // clan is already loaded!
+        if(clan != null) return;
 
-        Clan loadedClan = storage.loadUserClan(uuid); // that blocks the async thread, but, that's necessary.
+        Clan loadedClan = storage.loadUserClan(uuid);
         if(loadedClan != null) {
             cache.cacheClan(loadedClan);
         }
-
 
     }
     @EventHandler
@@ -53,16 +52,15 @@ public class CacheListener implements Listener {
     @EventHandler
     public void onClanCreation(ClanCreatedEvent event) {
         Clan clan = event.getClan();
-
         if(!areMembersOnline(clan)) return;
-
         cache.cacheClan(event.getClan());
     }
 
 
+
+
     private boolean areMembersOnline(@NotNull Clan clan) {
         for(UUID uuid : clan.memberMap().keySet()) {
-            System.out.print(uuid);
             if(server.getPlayer(uuid) != null) return true;
         }
 
@@ -77,7 +75,6 @@ public class CacheListener implements Listener {
     @EventHandler
     public void onClanEdit(ClanEditedEvent event) {
         if(!cache.isCached(event.getClan().getTag())) return;
-
         cache.removeClan(event.getClan());
         cache.cacheClan(event.getResult());
 
