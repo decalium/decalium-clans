@@ -22,4 +22,5 @@ public interface ClanCache {
     boolean isCached(@NotNull Clan clan);
 
     boolean isCached(@NotNull String tag);
+
 }

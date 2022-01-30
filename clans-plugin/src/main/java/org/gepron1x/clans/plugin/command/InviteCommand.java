@@ -114,7 +114,7 @@ public class InviteCommand extends AbstractCommand {
             player.sendMessage(messages.commands().invitation().invitationSent().with("receiver", receiver.displayName()));
 
             receiver.sendMessage(messages.commands().invitation().invitationMessage()
-                    .with("sender", player.displayName())
+                    .withMiniMessage("sender", player.getName())
                     .with("clan_display_name", clan.getDisplayName())
             );
         }).exceptionally(this::exceptionHandler);
@@ -126,7 +126,7 @@ public class InviteCommand extends AbstractCommand {
         String name = context.get("sender_name");
         Invitation invitation = checkInvitation(player, name);
         if (invitation == null) return;
-
+        invitations.remove(player.getUniqueId(), name);
         ClanMember member = builderFactory.memberBuilder().uuid(invitation.receiver()).role(roleRegistry.getDefaultRole()).build();
         Player senderPlayer = player.getServer().getPlayer(invitation.sender());
         this.clanManager.getUserClan(invitation.sender())

@@ -6,6 +6,7 @@ import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.plugin.clan.member.ClanRoleImpl;
 import org.gepron1x.clans.plugin.storage.StorageType;
+import org.gepron1x.clans.plugin.util.message.Message;
 import space.arim.dazzleconf.annote.ConfKey;
 import space.arim.dazzleconf.annote.SubSection;
 
@@ -133,8 +134,13 @@ public interface ClansConfig {
         }
 
 
+    }
 
+    @SubSection Chat chat();
 
-
+    interface Chat {
+        @ConfKey("format")
+        @DefaultString("<role> <member> <white>➟ <#cbd4d2><message>")
+        Message format();
     }
 }

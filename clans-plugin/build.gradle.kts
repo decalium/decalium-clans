@@ -18,6 +18,7 @@ repositories {
     maven { url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/") }
     maven { url = uri("https://oss.sonatype.org/content/groups/public/") }
     maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
+    maven { url = uri("https://repo.parks.dev/repository/maven-public/") }
 
 }
 
@@ -40,9 +41,10 @@ dependencies {
     implementation ("net.kyori:adventure-text-minimessage:4.10.0-SNAPSHOT") {
         exclude(group = "net.kyori", module = "adventure-api")
     }
-    compileOnly("net.draycia:carbonchat-api:2.0.6") {
+    compileOnly("net.draycia:carbonchat-api:2.0.7") {
         exclude("net.kyori", "adventure-text-minimessage")
     }
+
 }
 
 var libraryPackage = "org.gepron1x.clans.libraries"
@@ -95,10 +97,10 @@ tasks {
 
 bukkit {
     name = "DecaliumClans"
-    main = "org.gepron1x.clans.plugin.DecaliumClansPlugin"
+    main = "com.manya.clans.plugin.DecaliumClansPlugin"
     description = "Shining clans plugin"
     apiVersion = "1.17"
     authors = listOf("gepron1x", "manya")
-    softDepend = listOf("PlaceholderAPI")
+    softDepend = listOf("PlaceholderAPI", "CarbonChat")
 }
 

@@ -118,7 +118,7 @@ public final class SqlClanStorage implements ClanStorage {
     @Language("SQL")
     private static final String SELECT_CLAN_WITH_TAG = "SELECT * FROM clans_simple WHERE `clan_tag`=?";
     @Language("SQL")
-    private static final String SELECT_USER_CLAN = "SELECT * FROM clans_simple WHERE `member_uuid`=?";
+    private static final String SELECT_USER_CLAN = "SELECT * FROM clans_simple WHERE `clan_id`=(SELECT `clan_id` FROM `members` WHERE `uuid`=?)";
     @Language("SQL")
     private static final String INSERT_CLAN = "INSERT IGNORE INTO clans(`tag`, `owner`, `display_name`) VALUES (?, ?, ?)";
 
@@ -255,8 +255,11 @@ public final class SqlClanStorage implements ClanStorage {
 
                     if (rowView.getColumn("member_uuid", byte[].class) != null) {
                         ClanMember member = rowView.getRow(ClanMember.class);
-                        if(member.getUniqueId().equals(owner)) builder.owner(member);
-                        else builder.addMember(rowView.getRow(ClanMember.class));
+                        if(member.getUniqueId().equals(owner)) {
+                            builder.owner(member);
+                        } else {
+                            builder.addMember(rowView.getRow(ClanMember.class));
+                        }
                     }
 
                     if (rowView.getColumn("home_name", String.class) != null) {

@@ -17,6 +17,7 @@ import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.plugin.command.argument.ComponentArgument;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
+import org.gepron1x.clans.plugin.util.message.Message;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
@@ -63,6 +64,8 @@ public class ClanCommand extends AbstractCommand {
                 .argument(ComponentArgument.greedy("display_name"))
                 .handler(this::setDisplayName)
         );
+
+        manager.command(builder.literal("memberlist").permission("clans.memberlist").handler(this::listMembers));
 
         manager.command(builder.literal("myclan").permission("clans.myclan").handler(this::myClan));
     }
@@ -125,6 +128,19 @@ public class ClanCommand extends AbstractCommand {
             Objects.requireNonNull(clan);
             player.sendMessage(Component.text().color(NamedTextColor.AQUA).append(Component.text("You are a member of ")).append(clan.getDisplayName()).append(Component.text(" clan")));
         }).exceptionally(this::exceptionHandler);;
+    }
+
+    private void listMembers(CommandContext<CommandSender> context) {
+        Player player = (Player) context.getSender();
+        UUID uuid = player.getUniqueId();
+        requireClan(player).thenAcceptSync(clan -> {
+            if(clan == null) return;
+            for(ClanMember member : clan.getMembers()) {
+                player.sendMessage(Message.message("<role> <member>")
+                        .with("role", member.getRole())
+                        .with("member", member.asOffline(player.getServer()).getName()));
+            }
+        });
     }
 
     private void deleteClan(CommandContext<CommandSender> context) {

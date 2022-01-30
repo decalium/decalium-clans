@@ -1,6 +1,7 @@
 package org.gepron1x.clans.api.clan;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.util.Buildable;
 import org.bukkit.OfflinePlayer;
 import org.gepron1x.clans.api.clan.member.ClanMember;
@@ -15,7 +16,11 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 
-public interface ClanBase extends StatisticHolder {
+public interface ClanBase extends StatisticHolder, ComponentLike {
+    @Override
+    @NotNull
+    default Component asComponent() { return getDisplayName(); }
+
     @NotNull String getTag();
     @NotNull Component getDisplayName();
 

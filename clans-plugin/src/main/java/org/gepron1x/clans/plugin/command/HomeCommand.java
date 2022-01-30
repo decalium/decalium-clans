@@ -87,12 +87,16 @@ public class HomeCommand extends AbstractCommand {
 
         requireClan(player).thenComposeSync(clan -> {
             if(clan == null) return nullFuture();
+            ClanMember member = getMember(clan, player);
+            if(!checkPermission(player, member, ClanPermission.ADD_HOME)) return nullFuture();
             if(clan.getHome(name) != null) {
                 player.sendMessage(messages.commands().home().homeAlreadyExists().with("name", name));
                 return nullFuture();
             }
 
             return clanManager.editClan(clan, clanEditor -> clanEditor.addHome(home));
+        }).thenAccept(clan -> {
+            player.sendMessage(messages.commands().home().created());
         }).exceptionally(this::exceptionHandler);
 
     }

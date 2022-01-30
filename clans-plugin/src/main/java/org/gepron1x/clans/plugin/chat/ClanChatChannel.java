@@ -7,10 +7,12 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Server;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.gepron1x.clans.api.ClanCache;
 import org.gepron1x.clans.api.clan.Clan;
+import org.gepron1x.clans.api.clan.member.ClanMember;
+import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,11 +27,13 @@ public final class ClanChatChannel implements ChatChannel {
     private final Server server;
     private final ClanCache cache;
     private final MessagesConfig messages;
+    private final ClansConfig clansConfig;
 
-    public ClanChatChannel(@NotNull Server server, @NotNull ClanCache cache, @NotNull MessagesConfig messages) {
+    public ClanChatChannel(@NotNull Server server, @NotNull ClanCache cache, @NotNull MessagesConfig messages, @NotNull ClansConfig clansConfig) {
         this.server = server;
         this.cache = cache;
         this.messages = messages;
+        this.clansConfig = clansConfig;
     }
     @Override
     public ChannelPermissionResult speechPermitted(CarbonPlayer carbonPlayer) {
@@ -87,9 +91,21 @@ public final class ClanChatChannel implements ChatChannel {
     }
 
     @Override
+    public @MonotonicNonNull String permission() {
+        return "clans.chat";
+    }
+
+    @Override
     public @NotNull RenderedMessage render(CarbonPlayer sender, Audience recipient, Component message, Component originalMessage) {
-        String template = "Clan chat| <role> <name> -> <message>";
-        return new RenderedMessage(MiniMessage.miniMessage().deserialize(template), MessageType.CHAT);
+
+        Clan clan = Objects.requireNonNull(cache.getUserClan(sender.uuid()));
+        ClanMember member = Objects.requireNonNull(clan.getMember(sender.uuid()));
+
+        return new RenderedMessage(clansConfig.chat().format()
+                .with("role", member.getRole())
+                .with("member", CarbonPlayer.renderName(sender))
+                .with("message", message)
+                .asComponent(), MessageType.CHAT);
     }
 
     @Override

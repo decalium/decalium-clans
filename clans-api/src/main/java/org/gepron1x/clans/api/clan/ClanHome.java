@@ -1,6 +1,7 @@
 package org.gepron1x.clans.api.clan;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.util.Buildable;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
@@ -10,7 +11,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public interface ClanHome extends Buildable<ClanHome, ClanHome.Builder> {
+public interface ClanHome extends Buildable<ClanHome, ClanHome.Builder>, ComponentLike {
+    @Override
+    @NotNull
+    default Component asComponent() {
+        return getDisplayName();
+    }
+
     @NotNull String getName();
     @NotNull Component getDisplayName();
     @NotNull UUID getCreator();

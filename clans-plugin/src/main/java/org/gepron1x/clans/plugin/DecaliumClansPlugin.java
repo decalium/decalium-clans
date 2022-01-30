@@ -4,6 +4,11 @@ import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import io.leangen.geantyref.TypeToken;
 import io.papermc.paper.text.PaperComponents;
+import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.CarbonChatProvider;
+import net.draycia.carbon.api.channels.ChannelRegistry;
+import net.draycia.carbon.api.channels.ChatChannel;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
 import net.kyori.adventure.text.minimessage.placeholder.Replacement;
@@ -12,6 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.*;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.plugin.async.BukkitFactoryOfTheFuture;
+import org.gepron1x.clans.plugin.chat.ClanChatChannel;
 import org.gepron1x.clans.plugin.command.ClanCommand;
 import org.gepron1x.clans.plugin.command.HomeCommand;
 import org.gepron1x.clans.plugin.command.InviteCommand;
@@ -33,6 +39,8 @@ import org.slf4j.Logger;
 import space.arim.dazzleconf.ConfigurationOptions;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.UnaryOperator;
@@ -118,6 +126,18 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         }
         commandManager.getParserRegistry().registerParserSupplier(TypeToken.get(ClanRole.class), params -> new ClanRoleParser<>(roleRegistry));
         commandManager.registerBrigadier();
+
+        CarbonChat carbon = CarbonChatProvider.carbonChat();
+
+        ClanChatChannel chatChannel = new ClanChatChannel(getServer(), clanCache, messages, config);
+
+        ChannelRegistry registry = carbon.channelRegistry();
+        try {
+            Method register = registry.getClass().getDeclaredMethod("register", Key.class, ChatChannel.class);
+            register.invoke(registry, chatChannel.key(), chatChannel);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            getSLF4JLogger().error("Error happened while registering a chat channel: ", e);
+        }
 
 
         command.register(commandManager);

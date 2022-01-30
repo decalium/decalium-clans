@@ -100,7 +100,7 @@ public class MemberCommand extends AbstractCommand {
 
         requireClan(player).thenComposeSync(clan -> {
             if (clan == null) return nullFuture();
-            ClanMember member = getMember(clan, memberPlayer);
+            ClanMember member = getMember(clan, player);
 
             if (!checkPermission(player, member, ClanPermission.KICK)) return nullFuture();
             ClanMember other = clan.getMember(memberPlayer);
@@ -110,11 +110,12 @@ public class MemberCommand extends AbstractCommand {
                 return nullFuture();
             }
             if (other.getRole().getWeight() >= member.getRole().getWeight()) {
+                System.out.println("other: " + other.getRole().getWeight() + " member: " + member.getRole().getWeight());
                 player.sendMessage(messages.commands().member().memberHasHigherWeight().with("member", memberPlayer.getName()));
                 return nullFuture();
             }
 
-            return this.clanManager.editClan(clan, clanEditor -> clanEditor.removeMember(member));
+            return this.clanManager.editClan(clan, clanEditor -> clanEditor.removeMember(other));
         }).thenAccept(clan -> {
             if (clan != null) player.sendMessage(messages.commands().member().kick().success());
         }).exceptionally(this::exceptionHandler);
