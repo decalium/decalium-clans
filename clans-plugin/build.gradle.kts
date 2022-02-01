@@ -19,6 +19,7 @@ repositories {
     maven { url = uri("https://oss.sonatype.org/content/groups/public/") }
     maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
     maven { url = uri("https://repo.parks.dev/repository/maven-public/") }
+    maven("https://maven.enginehub.org/repo/")
 
 }
 
@@ -43,6 +44,9 @@ dependencies {
     }
     compileOnly("net.draycia:carbonchat-api:2.0.7") {
         exclude("net.kyori", "adventure-text-minimessage")
+    }
+    compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.0") {
+        exclude("org.bukkit", "bukkit")
     }
 
 }
@@ -97,10 +101,11 @@ tasks {
 
 bukkit {
     name = "DecaliumClans"
-    main = "com.manya.clans.plugin.DecaliumClansPlugin"
+    main = "org.gepron1x.clans.plugin.DecaliumClansPlugin"
     description = "Shining clans plugin"
     apiVersion = "1.17"
     authors = listOf("gepron1x", "manya")
+    depend = listOf("WorldGuard")
     softDepend = listOf("PlaceholderAPI", "CarbonChat")
 }
 

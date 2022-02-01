@@ -2,6 +2,7 @@ package org.gepron1x.clans.plugin;
 
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
+import com.sk89q.worldguard.WorldGuard;
 import io.leangen.geantyref.TypeToken;
 import io.papermc.paper.text.PaperComponents;
 import net.draycia.carbon.api.CarbonChat;
@@ -31,10 +32,9 @@ import org.gepron1x.clans.plugin.config.serializer.ClanPermissionSerializer;
 import org.gepron1x.clans.plugin.config.serializer.ClanRoleSerializer;
 import org.gepron1x.clans.plugin.config.serializer.MessageSerializer;
 import org.gepron1x.clans.plugin.listener.CacheListener;
-import org.gepron1x.clans.plugin.papi.ClansExpansion;
+import org.gepron1x.clans.plugin.papi.PlaceholderAPIHook;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
 import org.gepron1x.clans.plugin.storage.StorageCreation;
-import org.gepron1x.clans.plugin.util.message.Message;
 import org.slf4j.Logger;
 import space.arim.dazzleconf.ConfigurationOptions;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
@@ -89,13 +89,15 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         ClanStorage storage = new StorageCreation(this, getClansConfig(), builderFactory, roleRegistry).create();
         storage.initialize();
 
-        this.clanManager = new ClanManagerImpl(storage, futuresFactory, getServer().getPluginManager());
+        this.clanManager = new ClanManagerImpl(storage, futuresFactory, getServer().getPluginManager(), WorldGuard.getInstance());
         this.clanCache = new ClanCacheImpl();
 
 
         CachingClanManager cachingClanManager = new CachingClanManagerImpl(clanManager, futuresFactory, clanCache);
 
-
+        if(getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new PlaceholderAPIHook(getServer(), clanCache, PaperComponents.legacySectionSerializer()).register();
+        }
 
 
         ClansConfig config = getClansConfig();
@@ -103,14 +105,15 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
         Logger logger = getSLF4JLogger();
 
-
         ClanCommand command = new ClanCommand(logger, cachingClanManager, config, messages, futuresFactory, builderFactory, roleRegistry);
         InviteCommand inviteCommand = new InviteCommand(logger, cachingClanManager, config, messages, futuresFactory, builderFactory, roleRegistry);
         MemberCommand memberCommand = new MemberCommand(logger, cachingClanManager, config, messages, futuresFactory);
         HomeCommand homeCommand = new HomeCommand(logger, cachingClanManager, config, messages, futuresFactory, builderFactory);
 
         getServer().getPluginManager().registerEvents(new CacheListener(clanCache, getServer(), storage), this);
-         new ClansExpansion(getServer(), clanCache, PaperComponents.legacySectionSerializer()).register();
+
+
+
 
 
         PaperCommandManager<CommandSender> commandManager;
@@ -129,6 +132,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
         CarbonChat carbon = CarbonChatProvider.carbonChat();
 
+
         ClanChatChannel chatChannel = new ClanChatChannel(getServer(), clanCache, messages, config);
 
         ChannelRegistry registry = carbon.channelRegistry();
@@ -146,13 +150,6 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         homeCommand.register(commandManager);
     }
 
-    public static void test(DecaliumClansApi api) {
-        Message message = Message.message("value");
-
-
-
-
-    }
 
     private void buildRoleRegistry() {
         ClanRole ownerRole = getClansConfig().roles().ownerRole();
@@ -168,6 +165,12 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
 
     }
+
+    private void registerCommands() {
+
+    }
+
+
 
 
 

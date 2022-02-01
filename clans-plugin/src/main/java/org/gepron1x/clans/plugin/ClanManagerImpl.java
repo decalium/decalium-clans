@@ -1,5 +1,6 @@
 package org.gepron1x.clans.plugin;
 
+import com.sk89q.worldguard.WorldGuard;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
@@ -13,6 +14,7 @@ import org.gepron1x.clans.api.event.ClanDeletedEvent;
 import org.gepron1x.clans.api.event.ClanEditedEvent;
 import org.gepron1x.clans.plugin.clan.ClanBuilder;
 import org.gepron1x.clans.plugin.editor.ClanEditorImpl;
+import org.gepron1x.clans.plugin.editor.PostClanEditor;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,11 +29,13 @@ public final class ClanManagerImpl implements ClanManager {
     private final ClanStorage storage;
     private final FactoryOfTheFuture futuresFactory;
     private final PluginManager pluginManager;
+    private final WorldGuard worldGuard;
 
-    public ClanManagerImpl(@NotNull ClanStorage storage, FactoryOfTheFuture futuresFactory, PluginManager pluginManager) {
+    public ClanManagerImpl(@NotNull ClanStorage storage, @NotNull FactoryOfTheFuture futuresFactory, @NotNull PluginManager pluginManager, @NotNull WorldGuard worldGuard) {
         this.storage = storage;
         this.futuresFactory = futuresFactory;
         this.pluginManager = pluginManager;
+        this.worldGuard = worldGuard;
     }
     @Override
     public @NotNull CentralisedFuture<ClanCreationResult> createClan(@NotNull DraftClan draftClan) {
@@ -61,6 +65,7 @@ public final class ClanManagerImpl implements ClanManager {
         Clan newClan = builder.build();
         return futuresFactory.runAsync(() -> storage.applyEditor(newClan, consumer))
                 .thenApplySync(v -> {
+                    consumer.accept(new PostClanEditor(newClan, worldGuard.getPlatform().getRegionContainer()));
                     pluginManager.callEvent(new ClanEditedEvent(clan, newClan));
                     return newClan;
                 });
