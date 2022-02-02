@@ -89,7 +89,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         ClanStorage storage = new StorageCreation(this, getClansConfig(), builderFactory, roleRegistry).create();
         storage.initialize();
 
-        this.clanManager = new ClanManagerImpl(storage, futuresFactory, getServer().getPluginManager(), WorldGuard.getInstance());
+        this.clanManager = new ClanManagerImpl(storage, futuresFactory, getServer(), WorldGuard.getInstance());
         this.clanCache = new ClanCacheImpl();
 
 

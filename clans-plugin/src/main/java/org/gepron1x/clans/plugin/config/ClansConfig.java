@@ -142,6 +142,6 @@ public interface ClansConfig {
         @ConfKey("format")
         @DefaultString("<role> <member> <white>➟ <#cbd4d2><message>")
         Message format();
-        
+
     }
 }

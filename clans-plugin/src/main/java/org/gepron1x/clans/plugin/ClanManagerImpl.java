@@ -1,6 +1,7 @@
 package org.gepron1x.clans.plugin;
 
 import com.sk89q.worldguard.WorldGuard;
+import org.bukkit.Server;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
@@ -31,10 +32,10 @@ public final class ClanManagerImpl implements ClanManager {
     private final PluginManager pluginManager;
     private final WorldGuard worldGuard;
 
-    public ClanManagerImpl(@NotNull ClanStorage storage, @NotNull FactoryOfTheFuture futuresFactory, @NotNull PluginManager pluginManager, @NotNull WorldGuard worldGuard) {
+    public ClanManagerImpl(@NotNull ClanStorage storage, @NotNull FactoryOfTheFuture futuresFactory, @NotNull Server server, @NotNull WorldGuard worldGuard) {
         this.storage = storage;
         this.futuresFactory = futuresFactory;
-        this.pluginManager = pluginManager;
+        this.pluginManager = server.getPluginManager();
         this.worldGuard = worldGuard;
     }
     @Override
@@ -52,6 +53,8 @@ public final class ClanManagerImpl implements ClanManager {
     public @NotNull CentralisedFuture<Boolean> removeClan(@NotNull Clan clan) {
         return futuresFactory.supplyAsync(() -> storage.removeClan(clan))
                 .thenApplySync(b -> {
+                    PostClanEditor postEditor = new PostClanEditor(clan, worldGuard.getPlatform().getRegionContainer());
+                    clan.getHomes().forEach(postEditor::removeHome);
                     if(b) pluginManager.callEvent(new ClanDeletedEvent(clan));
                     return b;
                 });
