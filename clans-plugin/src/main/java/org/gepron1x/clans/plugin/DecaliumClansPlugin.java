@@ -13,6 +13,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
 import net.kyori.adventure.text.minimessage.placeholder.Replacement;
+import net.kyori.registry.Registry;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.*;
@@ -39,8 +40,6 @@ import org.slf4j.Logger;
 import space.arim.dazzleconf.ConfigurationOptions;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.UnaryOperator;
@@ -83,13 +82,15 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         this.configManager.reloadConfig();
 
         buildRoleRegistry();
+        ClansConfig config = getClansConfig();
+        MessagesConfig messages = getMessages();
 
 
 
         ClanStorage storage = new StorageCreation(this, getClansConfig(), builderFactory, roleRegistry).create();
         storage.initialize();
 
-        this.clanManager = new ClanManagerImpl(storage, futuresFactory, getServer(), WorldGuard.getInstance());
+        this.clanManager = new ClanManagerImpl(storage, futuresFactory, getServer(), messages, WorldGuard.getInstance());
         this.clanCache = new ClanCacheImpl();
 
 
@@ -100,8 +101,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         }
 
 
-        ClansConfig config = getClansConfig();
-        MessagesConfig messages = getMessages();
+
 
         Logger logger = getSLF4JLogger();
 
@@ -136,12 +136,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         ClanChatChannel chatChannel = new ClanChatChannel(getServer(), clanCache, messages, config);
 
         ChannelRegistry registry = carbon.channelRegistry();
-        try {
-            Method register = registry.getClass().getDeclaredMethod("register", Key.class, ChatChannel.class);
-            register.invoke(registry, chatChannel.key(), chatChannel);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            getSLF4JLogger().error("Error happened while registering a chat channel: ", e);
-        }
+        ((Registry<Key, ChatChannel>) registry).register(chatChannel.key(), chatChannel);
 
 
         command.register(commandManager);

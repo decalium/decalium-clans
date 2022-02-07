@@ -1,6 +1,10 @@
 package org.gepron1x.clans.api.clan.member;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentLike;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.util.Buildable;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -9,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-public interface ClanMember extends Buildable<ClanMember, ClanMember.Builder> {
+public interface ClanMember extends Buildable<ClanMember, ClanMember.Builder>, ComponentLike {
 
 
     @NotNull UUID getUniqueId();
@@ -18,6 +22,8 @@ public interface ClanMember extends Buildable<ClanMember, ClanMember.Builder> {
     default boolean hasPermission(@NotNull ClanPermission permission) {
         return getRole().getPermissions().contains(permission);
     }
+
+
 
 
     @Contract("_ -> new")
@@ -32,6 +38,25 @@ public interface ClanMember extends Buildable<ClanMember, ClanMember.Builder> {
         return server.getOfflinePlayer(getUniqueId());
     }
 
+    default Component renderName(@NotNull Server server) {
+        UUID uuid = getUniqueId();
+        OfflinePlayer player = server.getOfflinePlayer(uuid);
+        Player onlinePlayer = player.getPlayer();
+        if(onlinePlayer != null) return onlinePlayer.displayName();
+        String name = player.getName();
+        if(name != null) return Component.text(name);
+        String uuidString = uuid.toString();
+        return Component.text().append(Component.text("Unknown player "))
+                .append(Component.text("("+uuidString+")").clickEvent(ClickEvent.copyToClipboard(uuidString)))
+                .build();
+
+    }
+
+    @Override
+    @NotNull
+    default Component asComponent() {
+        return renderName(Bukkit.getServer());
+    }
 
     interface Builder extends Buildable.Builder<ClanMember> {
         @Contract("_ -> this")

@@ -25,7 +25,7 @@ import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 import java.util.Objects;
 import java.util.UUID;
 
-public class ClanCommand extends AbstractCommand {
+public class ClanCommand extends AbstractClanCommand {
 
 
     private final RoleRegistry roleRegistry;

@@ -36,16 +36,61 @@ public interface MessagesConfig {
     @DefaultString("<prefix> You are not in the clan!")
     Message notInTheClan();
 
+    @SubSection
+    @ConfKey("announcements")
+    Announcements announcements();
+
+    @SubSection
+    @ConfKey("war")
+    War war();
 
 
     @SubSection
     @ConfKey("commands")
     Commands commands();
 
-    interface Chat {
 
-        @DefaultString("Clan chat/<role>")
-        Message messageFormat();
+
+    interface Announcements {
+        @ConfKey("member-added")
+        @DefaultString("<prefix> <member> joined the clan!")
+        Message memberAdded();
+
+        @ConfKey("member-removed")
+        @DefaultString("<prefix> <member> is not with us anymore!")
+        Message memberRemoved();
+
+        @ConfKey("member-promoted")
+        @DefaultString("<prefix> <member> is <role> now!")
+        Message memberPromoted();
+
+        @ConfKey("clan-deleted")
+        @DefaultString("<prefix> Your clan is disbanded.")
+        Message clanDeleted();
+
+        @ConfKey("clan-set-display-name")
+        @DefaultString("<prefix> Clan is now called <name>")
+        Message clanSetDisplayName();
+
+        @ConfKey("home-created")
+        @DefaultString("<prefix> <member> created a new clan home <home_name>")
+        Message homeCreated();
+
+        @ConfKey("home-deleted")
+        @DefaultString("<prefix> <member> deleted home <home_name>")
+        Message homeDeleted();
+
+
+    }
+
+    interface War {
+        @ConfKey("player-died")
+        @DefaultString("<prefix> ClanWar -> <member> died!")
+        Message playerDied();
+
+        @ConfKey("win")
+        @DefaultString("<prefix> ClanWar -> <clan> won! Congratulations!")
+        Message win();
     }
 
 
@@ -109,7 +154,7 @@ public interface MessagesConfig {
             Message invitationSent();
 
             @ConfKey("player-accepted")
-            @DefaultString("<prefix> <reciever> accepted your invitation.")
+            @DefaultString("<prefix> <receiver> accepted your invitation.")
             Message playerAccepted();
 
             @ConfKey("accepted")
@@ -117,7 +162,7 @@ public interface MessagesConfig {
             Message accepted();
 
             @ConfKey("player-declined")
-            @DefaultString("<prefix> <reciever> declined your invitation.")
+            @DefaultString("<prefix> <receiver> declined your invitation.")
             Message playerDeclined();
 
             @ConfKey("declined")

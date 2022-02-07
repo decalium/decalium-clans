@@ -19,7 +19,7 @@ import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 import java.util.Objects;
 import java.util.UUID;
 
-public abstract class AbstractCommand {
+public abstract class AbstractClanCommand {
 
 
     private final Logger logger;
@@ -28,10 +28,10 @@ public abstract class AbstractCommand {
     protected final MessagesConfig messages;
     protected final FactoryOfTheFuture futuresFactory;
 
-    public AbstractCommand(Logger logger, CachingClanManager clanManager,
-                           ClansConfig clansConfig,
-                           MessagesConfig messages,
-                           FactoryOfTheFuture futuresFactory) {
+    public AbstractClanCommand(Logger logger, CachingClanManager clanManager,
+                               ClansConfig clansConfig,
+                               MessagesConfig messages,
+                               FactoryOfTheFuture futuresFactory) {
         this.logger = logger;
         this.clanManager = clanManager;
         this.clansConfig = clansConfig;
@@ -68,9 +68,7 @@ public abstract class AbstractCommand {
 
     protected CentralisedFuture<@Nullable Clan> requireClan(@NotNull Player player) {
         return this.clanManager.getUserClan(player.getUniqueId()).thenApply(clan -> {
-            if(clan == null) {
-                player.sendMessage(messages.notInTheClan());
-            }
+            checkClan(player, clan);
             return clan;
         });
     }

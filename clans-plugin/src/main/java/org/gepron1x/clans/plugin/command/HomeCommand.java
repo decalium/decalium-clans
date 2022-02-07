@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
-public class HomeCommand extends AbstractCommand {
+public class HomeCommand extends AbstractClanCommand {
     private final ClanBuilderFactory builderFactory;
 
     private record ClanAndHome(@Nullable Clan clan, @Nullable ClanHome home) {

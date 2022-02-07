@@ -13,18 +13,21 @@ import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
+import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.api.editor.ClanEditor;
 import org.gepron1x.clans.api.editor.HomeEditor;
 import org.gepron1x.clans.api.editor.MemberEditor;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.DecaliumClansPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -86,6 +89,7 @@ public final class PostClanEditor implements ClanEditor {
 
     @Override
     public ClanEditor editMember(@NotNull UUID uuid, @NotNull Consumer<MemberEditor> consumer) {
+        consumer.accept(new PostMemberEditor());
         return this;
     }
 
@@ -99,6 +103,7 @@ public final class PostClanEditor implements ClanEditor {
             stand.setPersistent(true);
             stand.setCanMove(false);
             stand.setCanTick(false);
+            stand.setCustomNameVisible(true);
             stand.setMarker(true);
             stand.setInvisible(true);
             PersistentDataContainer pdc = stand.getPersistentDataContainer();
@@ -143,6 +148,7 @@ public final class PostClanEditor implements ClanEditor {
 
     @Override
     public ClanEditor editHome(@NotNull String name, @NotNull Consumer<HomeEditor> consumer) {
+        consumer.accept(new PostHomeEditor());
         return this;
     }
 
@@ -153,5 +159,32 @@ public final class PostClanEditor implements ClanEditor {
 
     private static String nameFor(Clan clan, ClanHome home) {
         return "decaliumclans_"+clan.getTag()+"_"+home.getName();
+    }
+
+    private static class PostMemberEditor implements MemberEditor {
+
+
+        @Override
+        public MemberEditor setRole(@NotNull ClanRole role) {
+            return this;
+        }
+    }
+
+    private static class PostHomeEditor implements HomeEditor {
+
+        @Override
+        public HomeEditor setIcon(@Nullable ItemStack icon) {
+            return this;
+        }
+
+        @Override
+        public HomeEditor setLocation(@NotNull Location location) {
+            return this;
+        }
+
+        @Override
+        public HomeEditor setDisplayName(@NotNull Component displayName) {
+            return this;
+        }
     }
 }

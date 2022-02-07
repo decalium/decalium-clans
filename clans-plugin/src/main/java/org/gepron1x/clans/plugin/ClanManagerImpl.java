@@ -14,6 +14,8 @@ import org.gepron1x.clans.api.event.ClanCreatedEvent;
 import org.gepron1x.clans.api.event.ClanDeletedEvent;
 import org.gepron1x.clans.api.event.ClanEditedEvent;
 import org.gepron1x.clans.plugin.clan.ClanBuilder;
+import org.gepron1x.clans.plugin.config.MessagesConfig;
+import org.gepron1x.clans.plugin.editor.AnnouncingClanEditor;
 import org.gepron1x.clans.plugin.editor.ClanEditorImpl;
 import org.gepron1x.clans.plugin.editor.PostClanEditor;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
@@ -30,12 +32,16 @@ public final class ClanManagerImpl implements ClanManager {
     private final ClanStorage storage;
     private final FactoryOfTheFuture futuresFactory;
     private final PluginManager pluginManager;
+    private final Server server;
+    private final MessagesConfig messages;
     private final WorldGuard worldGuard;
 
-    public ClanManagerImpl(@NotNull ClanStorage storage, @NotNull FactoryOfTheFuture futuresFactory, @NotNull Server server, @NotNull WorldGuard worldGuard) {
+    public ClanManagerImpl(@NotNull ClanStorage storage, @NotNull FactoryOfTheFuture futuresFactory, @NotNull Server server, @NotNull MessagesConfig messages, @NotNull WorldGuard worldGuard) {
         this.storage = storage;
         this.futuresFactory = futuresFactory;
         this.pluginManager = server.getPluginManager();
+        this.server = server;
+        this.messages = messages;
         this.worldGuard = worldGuard;
     }
     @Override
@@ -68,7 +74,7 @@ public final class ClanManagerImpl implements ClanManager {
         Clan newClan = builder.build();
         return futuresFactory.runAsync(() -> storage.applyEditor(newClan, consumer))
                 .thenApplySync(v -> {
-                    consumer.accept(new PostClanEditor(newClan, worldGuard.getPlatform().getRegionContainer()));
+                    consumer.accept(new AnnouncingClanEditor(clan, server, new PostClanEditor(newClan, worldGuard.getPlatform().getRegionContainer()), messages));
                     pluginManager.callEvent(new ClanEditedEvent(clan, newClan));
                     return newClan;
                 });

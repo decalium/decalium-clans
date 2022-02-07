@@ -1,8 +1,13 @@
 package org.gepron1x.clans.api.clan;
 
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.ForwardingAudience;
+import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.util.Buildable;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.statistic.StatisticHolder;
@@ -14,9 +19,11 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-public interface ClanBase extends StatisticHolder, ComponentLike {
+public interface ClanBase extends StatisticHolder, ComponentLike, ForwardingAudience {
     @Override
     @NotNull
     default Component asComponent() { return getDisplayName(); }
@@ -35,6 +42,19 @@ public interface ClanBase extends StatisticHolder, ComponentLike {
     @Nullable
     default ClanMember getMember(@NotNull OfflinePlayer player) {
         return getMember(player.getUniqueId());
+    }
+
+    @Override
+    @NotNull default Iterable<? extends Audience> audiences() {
+        return getMembers().stream()
+                .map(m -> m.asPlayer(Bukkit.getServer()))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    default @NotNull Pointers pointers() {
+        return Pointers.builder().withDynamic(Identity.DISPLAY_NAME, this::getDisplayName).build();
     }
 
     @NotNull @Unmodifiable Collection<? extends ClanHome> getHomes();

@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 import static java.util.Objects.requireNonNull;
 import static net.kyori.adventure.text.Component.text;
 
-public class InviteCommand extends AbstractCommand {
+public class InviteCommand extends AbstractClanCommand {
 
     private final ClanBuilderFactory builderFactory;
     private final RoleRegistry roleRegistry;

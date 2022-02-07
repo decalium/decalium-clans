@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class MemberCommand extends AbstractCommand {
+public class MemberCommand extends AbstractClanCommand {
 
 
     public MemberCommand(@NotNull Logger logger, CachingClanManager clanManager,
