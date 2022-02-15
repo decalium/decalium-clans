@@ -2,36 +2,36 @@ package org.gepron1x.clans.plugin.util.message;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
-import net.kyori.adventure.text.minimessage.placeholder.Placeholder;
-import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
+import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
 import java.util.Collection;
 import java.util.List;
 
-public interface WithPlaceholders<T extends WithPlaceholders<T>> { // i have no clue how to call this
+public interface WithTags<T extends WithTags<T>> { // i have no clue how to call this
 
 
-    T with(Placeholder<?> placeholder);
+    T with(TagResolver tagResolver);
 
-    T with(Iterable<? extends Placeholder<?>> placeholders);
+    default T with(String key, Tag tag) {
+        return with(TagResolver.resolver(key, tag));
+    }
 
-    T with(Collection<? extends Placeholder<?>> templates);
+    T with(Collection<? extends TagResolver> resolvers);
 
-    T with(PlaceholderResolver placeholderResolver);
 
-    default T with(Placeholder<?>... templates) {
-        return with(List.of(templates));
+    default T with(TagResolver... resolvers) {
+        return with(List.of(resolvers));
     }
 
 
 
     default T with(String key, ComponentLike like) {
-        return with(Placeholder.component(key, like));
+        return with(key, Tag.inserting(like));
     }
 
-
     default T withMiniMessage(String key, String value) {
-        return with(Placeholder.miniMessage(key, value));
+        return with(key, Tag.preProcessParsed(value));
     }
 
     default T with(String key, String value) {

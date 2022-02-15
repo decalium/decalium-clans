@@ -16,6 +16,11 @@ import static space.arim.dazzleconf.annote.ConfDefault.*;
 
 public interface ClansConfig {
 
+
+    @DefaultString("<gray>Not in clan")
+    @ConfKey("not-clan-placeholder")
+    Component noClanPlaceholder();
+
     @ConfKey("roles")
     @SubSection
     Roles roles();

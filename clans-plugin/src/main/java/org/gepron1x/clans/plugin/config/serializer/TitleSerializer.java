@@ -40,7 +40,7 @@ public final class TitleSerializer implements ValueSerialiser<Title> {
                 .map(s -> Duration.ofMillis(Long.parseLong(s) * MILLIS_PER_TICK))
                 .toList();
 
-        return Title.Times.of(durations.get(0), durations.get(1), durations.get(2));
+        return Title.Times.times(durations.get(0), durations.get(1), durations.get(2));
     }
 
     private String serialiseTimes(Title.Times times) {

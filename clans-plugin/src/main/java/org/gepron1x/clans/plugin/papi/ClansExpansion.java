@@ -7,51 +7,54 @@ import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.ClanCache;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
+import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
 
-public class ClansExpansion extends PlaceholderExpansion {
+public final class ClansExpansion extends PlaceholderExpansion {
 
     private static final String TAG = "tag", DISPLAY_NAME = "display_name", OWNER = "owner", MEMBER_COUNT = "member_count", MEMBER_ROLE = "member_role";
 
 
     private final Server server;
+    private final ClansConfig clansConfig;
     private final ClanCache cache;
     private final LegacyComponentSerializer legacy;
 
-    public ClansExpansion(@NotNull Server server, @NotNull ClanCache cache, @NotNull LegacyComponentSerializer legacy) {
+    public ClansExpansion(@NotNull Server server, @NotNull ClansConfig clansConfig, @NotNull ClanCache cache, @NotNull LegacyComponentSerializer legacy) {
         this.server = server;
+        this.clansConfig = clansConfig;
         this.cache = cache;
         this.legacy = legacy;
     }
 
 
     @Override
-    public String getIdentifier() {
+    public @NotNull String getIdentifier() {
         return "clans";
     }
 
     @Override
-    public String getAuthor() {
+    public @NotNull String getAuthor() {
         return "gepron1x";
     }
 
     @Override
-    public String getVersion() {
+    public @NotNull String getVersion() {
         return "0.1";
     }
 
     @Override
-    public String onPlaceholderRequest(Player p, String params) {
+    public String onPlaceholderRequest(Player p, @NotNull String params) {
         Clan clan = cache.getUserClan(p.getUniqueId());
-        if(clan == null) return "";
+        if(clan == null) return legacy.serialize(clansConfig.noClanPlaceholder());
         ClanMember member = Objects.requireNonNull(clan.getMember(p));
         return switch(params) {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
             case TAG -> clan.getTag();
             case DISPLAY_NAME -> legacy.serialize(clan.getDisplayName());
-            case OWNER -> clan.getOwner().asOffline(server).getName();
+            case OWNER -> legacy.serialize(clan.getOwner().renderName(server));
             case MEMBER_COUNT -> String.valueOf(clan.getMembers().size());
             case MEMBER_ROLE -> legacy.serialize(member.getRole().getDisplayName());
             default -> null;

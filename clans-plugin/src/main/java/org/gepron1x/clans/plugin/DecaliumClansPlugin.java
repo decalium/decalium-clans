@@ -11,8 +11,8 @@ import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
-import net.kyori.adventure.text.minimessage.placeholder.Replacement;
+import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.registry.Registry;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -64,10 +64,10 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         this.futuresFactory = new BukkitFactoryOfTheFuture(this);
         this.builderFactory = new ClanBuilderFactoryImpl();
 
-        MiniMessage miniMessage = MiniMessage.builder().placeholderResolver(PlaceholderResolver.dynamic(s -> switch(s) {
-            case "prefix" -> Replacement.component(getMessages().prefix());
+        MiniMessage miniMessage = MiniMessage.builder().tags((TagResolver.WithoutArguments) (text) -> switch(text) {
+            case "prefix" -> Tag.inserting(getMessages().prefix());
             default -> null;
-        })).build();
+        }).build();
 
         ConfigurationOptions options = new ConfigurationOptions.Builder()
                 .addSerialiser(new MessageSerializer(miniMessage))
@@ -97,7 +97,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         CachingClanManager cachingClanManager = new CachingClanManagerImpl(clanManager, futuresFactory, clanCache);
 
         if(getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            new PlaceholderAPIHook(getServer(), clanCache, PaperComponents.legacySectionSerializer()).register();
+            new PlaceholderAPIHook(getServer(), config, clanCache, PaperComponents.legacySectionSerializer()).register();
         }
 
 

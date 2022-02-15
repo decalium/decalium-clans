@@ -1,15 +1,15 @@
 package org.gepron1x.clans.plugin.chat;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
-import net.kyori.adventure.text.minimessage.placeholder.Replacement;
+import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public record ClanPlaceholderResolver(@NotNull Clan clan) implements PlaceholderResolver {
+public record ClanPlaceholderResolver(@NotNull Clan clan) implements TagResolver.WithoutArguments {
 
     public static ClanPlaceholderResolver clan(@NotNull Clan clan) {
         return new ClanPlaceholderResolver(clan);
@@ -26,28 +26,28 @@ public record ClanPlaceholderResolver(@NotNull Clan clan) implements Placeholder
     private static final String OWNER = "owner_";
 
     @Override
-    public @Nullable Replacement<?> resolve(@NotNull String key) {
+    public @Nullable Tag resolve(@NotNull String name) {
 
-        Replacement<?> replacement = switch (key) {
-            case ID -> Replacement.component(Component.text(clan.getId()));
-            case TAG -> Replacement.component(Component.text(clan.getTag()));
-            case DISPLAY_NAME -> Replacement.component(clan.getDisplayName());
-            case MEMBERS_SIZE -> Replacement.component(Component.text(clan.getMembers().size()));
-            case HOMES_SIZE -> Replacement.component(Component.text(clan.getHomes().size()));
+        Component component = switch (name) {
+            case ID -> Component.text(clan.getId());
+            case TAG -> Component.text(clan.getTag());
+            case DISPLAY_NAME -> clan.getDisplayName();
+            case MEMBERS_SIZE -> Component.text(clan.getMembers().size());
+            case HOMES_SIZE -> Component.text(clan.getHomes().size());
             default -> null;
         };
 
-        if(replacement != null) return replacement;
+        if(component != null) return Tag.inserting(component);
 
-        if(key.startsWith(STATISTIC)) {
-            StatisticType type = new StatisticType(key.substring(STATISTIC.length()));
+        if(name.startsWith(STATISTIC)) {
+            StatisticType type = new StatisticType(name.substring(STATISTIC.length()));
             int value = clan.getStatisticOr(type, 0);
-            return Replacement.component(Component.text(value));
+            return Tag.inserting(Component.text(value));
         }
 
-        if(key.startsWith(OWNER)) {
+        if(name.startsWith(OWNER)) {
             ClanMember member = clan.getOwner();
-            return PrefixedPlaceholderResolver.prefixed(new ClanMemberPlaceholderResolver(member), "owner").resolve(key);
+            return PrefixedTagResolver.prefixed(new ClanMemberPlaceholderResolver(member), "owner").resolve(name);
         }
 
         return null;

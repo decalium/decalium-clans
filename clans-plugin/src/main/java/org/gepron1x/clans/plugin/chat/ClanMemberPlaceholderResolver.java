@@ -1,15 +1,13 @@
 package org.gepron1x.clans.plugin.chat;
 
-import com.google.common.base.Strings;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
-import net.kyori.adventure.text.minimessage.placeholder.Replacement;
-import org.bukkit.Bukkit;
+import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public record ClanMemberPlaceholderResolver(@NotNull ClanMember member) implements PlaceholderResolver {
+public record ClanMemberPlaceholderResolver(@NotNull ClanMember member) implements TagResolver.WithoutArguments {
     private static final String ROLE = "role";
     private static final String NAME = "name";
     private static final String UUID = "uuid";
@@ -18,13 +16,14 @@ public record ClanMemberPlaceholderResolver(@NotNull ClanMember member) implemen
         return new ClanMemberPlaceholderResolver(member);
     }
     @Override
-    public @Nullable Replacement<?> resolve(@NotNull String key) {
+    public @Nullable Tag resolve(@NotNull String name) {
 
-        return switch (key) {
-            case ROLE -> Replacement.component(member.getRole().getDisplayName());
-            case NAME -> Replacement.component(Component.text(Strings.nullToEmpty(member.asOffline(Bukkit.getServer()).getName())));
-            case UUID -> Replacement.component(Component.text(member.getUniqueId().toString()));
+        Component component = switch (name) {
+            case ROLE -> member.getRole().asComponent();
+            case NAME -> member.asComponent();
+            case UUID -> Component.text(member.getUniqueId().toString());
             default -> null;
         };
+        return component == null ? null : Tag.inserting(component);
     }
 }

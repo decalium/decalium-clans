@@ -2,14 +2,14 @@ package org.gepron1x.clans.plugin.chat;
 
 import com.google.common.base.Strings;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
-import net.kyori.adventure.text.minimessage.placeholder.Replacement;
+import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.gepron1x.clans.api.clan.ClanHome;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public record ClanHomePlaceholderResolver(@NotNull ClanHome clanHome) implements PlaceholderResolver {
+public record ClanHomePlaceholderResolver(@NotNull ClanHome clanHome) implements TagResolver.WithoutArguments {
 
     private static final String NAME = "name";
     private static final String DISPLAY_NAME = "display_name";
@@ -28,8 +28,8 @@ public record ClanHomePlaceholderResolver(@NotNull ClanHome clanHome) implements
 
 
     @Override
-    public @Nullable Replacement<?> resolve(@NotNull String key) {
-        Component component = switch(key) {
+    public @Nullable Tag resolve(@NotNull String name) {
+        Component component = switch(name) {
             case NAME -> Component.text(clanHome.getName());
             case DISPLAY_NAME -> clanHome.getDisplayName();
             case OWNER_UUID -> Component.text(clanHome.getCreator().toString());
@@ -41,6 +41,6 @@ public record ClanHomePlaceholderResolver(@NotNull ClanHome clanHome) implements
             case ICON -> Component.text("[]").hoverEvent(clanHome.getIcon());
             default -> null;
         };
-        return component == null ? null : Replacement.component(component);
+        return component == null ? null : Tag.inserting(component);
     }
 }
