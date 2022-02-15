@@ -1,8 +1,8 @@
-#Decalium Clans
+# Decalium Clans
 
 A free, open-source, powerful and performant clans plugin. Like in dreams.
 
-##Features
+## Features
 - A role and clan permission system.
 - Clan homes with WorldGuard integration.
 - Announcements and clan chat with Carbon hook.
@@ -12,7 +12,7 @@ A free, open-source, powerful and performant clans plugin. Like in dreams.
 - All messages are configurable, using MiniMessage format.
 
 
-##Todo
+## Todo
 - Multiple server setups support
 - Clan wars
 
