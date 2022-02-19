@@ -1,7 +1,7 @@
 package org.gepron1x.clans.plugin.war;
 
 import org.bukkit.Server;
-import org.gepron1x.clans.api.CachingClanManager;
+import org.gepron1x.clans.api.CachingClanRepository;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.jetbrains.annotations.NotNull;
@@ -16,12 +16,12 @@ public final class ClanWarManager {
 
     private final Map<UUID, ClanWar> wars = new HashMap<>();
     private final Map<String, ClanWar> clanWars = new HashMap<>();
-    private final CachingClanManager clanManager;
+    private final CachingClanRepository clanManager;
     private final Server server;
     private final ClansConfig config;
     private final MessagesConfig messages;
 
-    public ClanWarManager(@NotNull CachingClanManager clanManager, @NotNull Server server, @NotNull ClansConfig config, @NotNull MessagesConfig messages) {
+    public ClanWarManager(@NotNull CachingClanRepository clanManager, @NotNull Server server, @NotNull ClansConfig config, @NotNull MessagesConfig messages) {
 
         this.clanManager = clanManager;
         this.server = server;

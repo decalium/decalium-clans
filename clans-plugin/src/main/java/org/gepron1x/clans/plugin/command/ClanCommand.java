@@ -8,7 +8,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.gepron1x.clans.api.CachingClanManager;
+import org.gepron1x.clans.api.CachingClanRepository;
 import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.RoleRegistry;
 import org.gepron1x.clans.api.clan.DraftClan;
@@ -31,7 +31,7 @@ public class ClanCommand extends AbstractClanCommand {
     private final RoleRegistry roleRegistry;
     private final ClanBuilderFactory builderFactory;
 
-    public ClanCommand(@NotNull Logger logger, @NotNull CachingClanManager manager,
+    public ClanCommand(@NotNull Logger logger, @NotNull CachingClanRepository manager,
                        @NotNull ClansConfig config,
                        @NotNull MessagesConfig messages,
                        @NotNull FactoryOfTheFuture futuresFactory,

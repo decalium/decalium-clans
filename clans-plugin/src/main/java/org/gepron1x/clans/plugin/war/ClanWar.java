@@ -4,7 +4,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
-import org.gepron1x.clans.api.CachingClanManager;
+import org.gepron1x.clans.api.CachingClanRepository;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.jetbrains.annotations.NotNull;
@@ -18,9 +18,9 @@ public final class ClanWar implements ForwardingAudience {
     private final Server server;
     private final ClansConfig clansConfig;
     private final MessagesConfig messages;
-    private final CachingClanManager clanManager;
+    private final CachingClanRepository clanManager;
 
-    public ClanWar(Set<ClanWarTeam> teams, Map<ClanWarTeam, ClanWarTeam> enemies, Server server, ClansConfig clansConfig, MessagesConfig messages, CachingClanManager clanManager) {
+    public ClanWar(Set<ClanWarTeam> teams, Map<ClanWarTeam, ClanWarTeam> enemies, Server server, ClansConfig clansConfig, MessagesConfig messages, CachingClanRepository clanManager) {
         this.teams = teams;
         this.enemies = enemies;
         this.server = server;

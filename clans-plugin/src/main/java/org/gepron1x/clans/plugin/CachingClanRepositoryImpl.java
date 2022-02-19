@@ -1,9 +1,9 @@
 package org.gepron1x.clans.plugin;
 
-import org.gepron1x.clans.api.CachingClanManager;
+import org.gepron1x.clans.api.CachingClanRepository;
 import org.gepron1x.clans.api.ClanCache;
 import org.gepron1x.clans.api.ClanCreationResult;
-import org.gepron1x.clans.api.ClanManager;
+import org.gepron1x.clans.api.ClanRepository;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.editor.ClanEditor;
@@ -16,15 +16,15 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public final class CachingClanManagerImpl implements CachingClanManager {
+public final class CachingClanRepositoryImpl implements CachingClanRepository {
 
-    private final ClanManager clanManager;
+    private final ClanRepository clanRepository;
     private final FactoryOfTheFuture futuresFactory;
     private final ClanCache cache;
 
-    public CachingClanManagerImpl(@NotNull ClanManager clanManager, @NotNull FactoryOfTheFuture futuresFactory, @NotNull ClanCache cache) {
+    public CachingClanRepositoryImpl(@NotNull ClanRepository clanRepository, @NotNull FactoryOfTheFuture futuresFactory, @NotNull ClanCache cache) {
 
-        this.clanManager = clanManager;
+        this.clanRepository = clanRepository;
         this.futuresFactory = futuresFactory;
         this.cache = cache;
 
@@ -41,35 +41,35 @@ public final class CachingClanManagerImpl implements CachingClanManager {
 
     @Override
     public @NotNull CentralisedFuture<ClanCreationResult> createClan(@NotNull DraftClan draftClan) {
-        return clanManager.createClan(draftClan);
+        return clanRepository.createClan(draftClan);
     }
 
     @Override
     public @NotNull CentralisedFuture<Boolean> removeClan(@NotNull Clan clan) {
-        return clanManager.removeClan(clan);
+        return clanRepository.removeClan(clan);
     }
 
     @Override
     public @NotNull CentralisedFuture<Clan> editClan(@NotNull Clan clan, @NotNull Consumer<ClanEditor> consumer) {
-        return clanManager.editClan(clan, consumer);
+        return clanRepository.editClan(clan, consumer);
     }
 
     @Override
     public @NotNull CentralisedFuture<@Nullable Clan> getClan(@NotNull String tag) {
         Clan clan = cache.getClan(tag);
         if(clan != null) return futuresFactory.completedFuture(clan);
-        return clanManager.getClan(tag);
+        return clanRepository.getClan(tag);
     }
 
     @Override
     public @NotNull CentralisedFuture<@Nullable Clan> getUserClan(@NotNull UUID uuid) {
         Clan clan = cache.getUserClan(uuid);
         if(clan != null) return futuresFactory.completedFuture(clan);
-        return clanManager.getUserClan(uuid);
+        return clanRepository.getUserClan(uuid);
     }
 
     @Override
     public @NotNull CentralisedFuture<Set<? extends Clan>> getClans() {
-        return clanManager.getClans();
+        return clanRepository.getClans();
     }
 }

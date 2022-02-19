@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public interface CachingClanManager extends ClanManager {
+public interface CachingClanRepository extends ClanRepository {
 
 
     @Nullable Clan getUserClanIfPresent(@NotNull UUID uuid);

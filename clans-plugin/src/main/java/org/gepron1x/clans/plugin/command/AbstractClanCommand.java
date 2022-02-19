@@ -4,7 +4,7 @@ import cloud.commandframework.CommandManager;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.gepron1x.clans.api.CachingClanManager;
+import org.gepron1x.clans.api.CachingClanRepository;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
@@ -23,12 +23,12 @@ public abstract class AbstractClanCommand {
 
 
     private final Logger logger;
-    protected final CachingClanManager clanManager;
+    protected final CachingClanRepository clanManager;
     protected final ClansConfig clansConfig;
     protected final MessagesConfig messages;
     protected final FactoryOfTheFuture futuresFactory;
 
-    public AbstractClanCommand(Logger logger, CachingClanManager clanManager,
+    public AbstractClanCommand(Logger logger, CachingClanRepository clanManager,
                                ClansConfig clansConfig,
                                MessagesConfig messages,
                                FactoryOfTheFuture futuresFactory) {

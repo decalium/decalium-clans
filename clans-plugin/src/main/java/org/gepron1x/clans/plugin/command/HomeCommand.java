@@ -10,7 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.gepron1x.clans.api.CachingClanManager;
+import org.gepron1x.clans.api.CachingClanRepository;
 import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.ClanHome;
@@ -33,7 +33,7 @@ public class HomeCommand extends AbstractClanCommand {
     }
 
     public HomeCommand(@NotNull Logger logger,
-                       @NotNull CachingClanManager clanManager,
+                       @NotNull CachingClanRepository clanManager,
                        @NotNull ClansConfig clansConfig,
                        @NotNull MessagesConfig messages,
                        @NotNull FactoryOfTheFuture futuresFactory,

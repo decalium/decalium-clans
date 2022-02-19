@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public interface ClanManager {
+public interface ClanRepository {
     @NotNull CentralisedFuture<ClanCreationResult> createClan(@NotNull DraftClan draftClan);
 
     @NotNull CentralisedFuture<Boolean> removeClan(@NotNull Clan clan);

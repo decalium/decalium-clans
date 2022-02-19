@@ -9,7 +9,7 @@ import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 public interface DecaliumClansApi extends ClanBuilderFactory {
 
-    @NotNull ClanManager getClanManager();
+    @NotNull ClanRepository getClanManager();
 
     @NotNull FactoryOfTheFuture getFuturesFactory();
 

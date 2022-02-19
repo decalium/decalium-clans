@@ -51,7 +51,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
     private RoleRegistry roleRegistry;
     private ClanBuilderFactory builderFactory;
     private ClanCacheImpl clanCache;
-    private ClanManager clanManager;
+    private ClanRepository clanRepository;
     private DecaliumClansApi clansApi;
 
     private ConfigManager<ClansConfig> configManager;
@@ -90,11 +90,11 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         ClanStorage storage = new StorageCreation(this, getClansConfig(), builderFactory, roleRegistry).create();
         storage.initialize();
 
-        this.clanManager = new ClanManagerImpl(storage, futuresFactory, getServer(), messages, WorldGuard.getInstance());
+        this.clanRepository = new ClanRepositoryImpl(storage, futuresFactory, getServer(), messages, WorldGuard.getInstance());
         this.clanCache = new ClanCacheImpl();
 
 
-        CachingClanManager cachingClanManager = new CachingClanManagerImpl(clanManager, futuresFactory, clanCache);
+        CachingClanRepository cachingClanManager = new CachingClanRepositoryImpl(clanRepository, futuresFactory, clanCache);
 
         if(getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new PlaceholderAPIHook(getServer(), config, clanCache, PaperComponents.legacySectionSerializer()).register();

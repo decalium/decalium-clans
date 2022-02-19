@@ -8,7 +8,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.gepron1x.clans.api.CachingClanManager;
+import org.gepron1x.clans.api.CachingClanRepository;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class MemberCommand extends AbstractClanCommand {
 
 
-    public MemberCommand(@NotNull Logger logger, CachingClanManager clanManager,
+    public MemberCommand(@NotNull Logger logger, CachingClanRepository clanManager,
                          @NotNull ClansConfig config,
                          @NotNull MessagesConfig messages, @NotNull FactoryOfTheFuture futuresFactory) {
         super(logger, clanManager, config, messages, futuresFactory);

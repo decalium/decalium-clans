@@ -5,7 +5,7 @@ import cloud.commandframework.context.CommandContext;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.gepron1x.clans.api.CachingClanManager;
+import org.gepron1x.clans.api.CachingClanRepository;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
@@ -20,7 +20,7 @@ public class ClanWarCommand extends AbstractClanCommand {
     private final ClanWarManager warManager;
 
     public ClanWarCommand(Logger logger,
-                          CachingClanManager clanManager,
+                          CachingClanRepository clanManager,
                           ClansConfig clansConfig,
                           MessagesConfig messages,
                           FactoryOfTheFuture futuresFactory,

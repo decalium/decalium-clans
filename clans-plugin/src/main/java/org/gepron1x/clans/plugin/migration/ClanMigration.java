@@ -3,7 +3,7 @@ package org.gepron1x.clans.plugin.migration;
 import com.destroystokyo.paper.util.SneakyThrow;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import org.gepron1x.clans.api.ClanManager;
+import org.gepron1x.clans.api.ClanRepository;
 import org.gepron1x.clans.api.clan.Clan;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -21,11 +21,11 @@ public final class ClanMigration {
     private static final Type CLANS_SET_TYPE = TypeToken.getParameterized(Set.class, Clan.class).getType();
 
     private final Logger logger;
-    private final ClanManager manager;
+    private final ClanRepository manager;
     private final File file;
     private final Gson gson;
 
-    public ClanMigration(@NotNull Logger logger, @NotNull ClanManager manager, @NotNull File file, @NotNull Gson gson) {
+    public ClanMigration(@NotNull Logger logger, @NotNull ClanRepository manager, @NotNull File file, @NotNull Gson gson) {
         this.logger = logger;
 
         this.manager = manager;

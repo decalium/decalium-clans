@@ -10,7 +10,7 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.gepron1x.clans.api.CachingClanManager;
+import org.gepron1x.clans.api.CachingClanRepository;
 import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.RoleRegistry;
 import org.gepron1x.clans.api.clan.Clan;
@@ -43,7 +43,7 @@ public class InviteCommand extends AbstractClanCommand {
     private final Table<UUID, String, Invitation> invitations = HashBasedTable.create();
 
 
-    public InviteCommand(@NotNull Logger logger, @NotNull CachingClanManager clanManager,
+    public InviteCommand(@NotNull Logger logger, @NotNull CachingClanRepository clanManager,
                          @NotNull ClansConfig config,
                          @NotNull MessagesConfig messages,
                          @NotNull FactoryOfTheFuture futuresFactory,

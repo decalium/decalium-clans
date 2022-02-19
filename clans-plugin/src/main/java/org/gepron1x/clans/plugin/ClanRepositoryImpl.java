@@ -6,7 +6,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
 import org.gepron1x.clans.api.ClanCreationResult;
-import org.gepron1x.clans.api.ClanManager;
+import org.gepron1x.clans.api.ClanRepository;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.editor.ClanEditor;
@@ -28,7 +28,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public final class ClanManagerImpl implements ClanManager {
+public final class ClanRepositoryImpl implements ClanRepository {
     private final ClanStorage storage;
     private final FactoryOfTheFuture futuresFactory;
     private final PluginManager pluginManager;
@@ -36,7 +36,7 @@ public final class ClanManagerImpl implements ClanManager {
     private final MessagesConfig messages;
     private final WorldGuard worldGuard;
 
-    public ClanManagerImpl(@NotNull ClanStorage storage, @NotNull FactoryOfTheFuture futuresFactory, @NotNull Server server, @NotNull MessagesConfig messages, @NotNull WorldGuard worldGuard) {
+    public ClanRepositoryImpl(@NotNull ClanStorage storage, @NotNull FactoryOfTheFuture futuresFactory, @NotNull Server server, @NotNull MessagesConfig messages, @NotNull WorldGuard worldGuard) {
         this.storage = storage;
         this.futuresFactory = futuresFactory;
         this.pluginManager = server.getPluginManager();
