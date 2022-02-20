@@ -7,13 +7,13 @@ import org.gepron1x.clans.api.clan.ClanHome;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface HomeEditor extends Editor<ClanHome> {
+public interface HomeEdition extends Edition<ClanHome> {
 
     @Override
     @NotNull
     default Class<ClanHome> getTarget() { return ClanHome.class; }
 
-    HomeEditor setIcon(@Nullable ItemStack icon);
-    HomeEditor setLocation(@NotNull Location location);
-    HomeEditor setDisplayName(@NotNull Component displayName);
+    HomeEdition setIcon(@Nullable ItemStack icon);
+    HomeEdition setLocation(@NotNull Location location);
+    HomeEdition setDisplayName(@NotNull Component displayName);
 }

@@ -9,7 +9,7 @@ import org.gepron1x.clans.api.clan.ClanHome;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public record ClanHomePlaceholderResolver(@NotNull ClanHome clanHome) implements TagResolver.WithoutArguments {
+public record ClanHomeTagResolver(@NotNull ClanHome clanHome) implements TagResolver.WithoutArguments {
 
     private static final String NAME = "name";
     private static final String DISPLAY_NAME = "display_name";
@@ -22,8 +22,8 @@ public record ClanHomePlaceholderResolver(@NotNull ClanHome clanHome) implements
 
     private static final String ICON = "icon";
 
-    public static ClanHomePlaceholderResolver home(@NotNull ClanHome home) {
-        return new ClanHomePlaceholderResolver(home);
+    public static ClanHomeTagResolver home(@NotNull ClanHome home) {
+        return new ClanHomeTagResolver(home);
     }
 
 

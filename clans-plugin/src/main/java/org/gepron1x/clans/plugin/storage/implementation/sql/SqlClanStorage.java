@@ -9,12 +9,12 @@ import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.ClanHome;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
-import org.gepron1x.clans.api.editor.ClanEditor;
+import org.gepron1x.clans.api.editor.ClanEdition;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.clan.ClanBuilder;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
 import org.gepron1x.clans.plugin.storage.StorageType;
-import org.gepron1x.clans.plugin.storage.implementation.sql.editor.SqlClanEditor;
+import org.gepron1x.clans.plugin.storage.implementation.sql.editor.SqlClanEdition;
 import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.ClanBuilderMapper;
 import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.ClanHomeBuilderMapper;
 import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.LocationMapper;
@@ -214,7 +214,7 @@ public final class SqlClanStorage implements ClanStorage {
                 return ClanCreationResult.membersInOtherClans();
             }
 
-            ClanEditor editor = new SqlClanEditor(handle, clan);
+            ClanEdition editor = new SqlClanEdition(handle, clan);
 
             for(ClanHome home : draftClan.getHomes()) {
                 editor.addHome(home);
@@ -226,8 +226,8 @@ public final class SqlClanStorage implements ClanStorage {
     }
 
     @Override
-    public void applyEditor(@NotNull Clan clan, @NotNull Consumer<ClanEditor> editor) {
-        jdbi.useTransaction(handle -> editor.accept(new SqlClanEditor(handle, clan)));
+    public void applyEditor(@NotNull Clan clan, @NotNull Consumer<ClanEdition> editor) {
+        jdbi.useTransaction(handle -> editor.accept(new SqlClanEdition(handle, clan)));
     }
 
     @Override

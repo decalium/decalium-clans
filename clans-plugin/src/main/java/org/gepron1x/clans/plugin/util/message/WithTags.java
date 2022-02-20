@@ -5,8 +5,8 @@ import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 public interface WithTags<T extends WithTags<T>> { // i have no clue how to call this
 
@@ -21,7 +21,7 @@ public interface WithTags<T extends WithTags<T>> { // i have no clue how to call
 
 
     default T with(TagResolver... resolvers) {
-        return with(List.of(resolvers));
+        return with(Arrays.asList(resolvers));
     }
 
 
@@ -33,6 +33,7 @@ public interface WithTags<T extends WithTags<T>> { // i have no clue how to call
     default T withMiniMessage(String key, String value) {
         return with(key, Tag.preProcessParsed(value));
     }
+
 
     default T with(String key, String value) {
         return with(key, Component.text(value));

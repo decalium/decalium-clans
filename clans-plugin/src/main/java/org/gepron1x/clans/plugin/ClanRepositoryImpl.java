@@ -9,15 +9,15 @@ import org.gepron1x.clans.api.ClanCreationResult;
 import org.gepron1x.clans.api.ClanRepository;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
-import org.gepron1x.clans.api.editor.ClanEditor;
+import org.gepron1x.clans.api.editor.ClanEdition;
 import org.gepron1x.clans.api.event.ClanCreatedEvent;
 import org.gepron1x.clans.api.event.ClanDeletedEvent;
 import org.gepron1x.clans.api.event.ClanEditedEvent;
 import org.gepron1x.clans.plugin.clan.ClanBuilder;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
-import org.gepron1x.clans.plugin.editor.AnnouncingClanEditor;
-import org.gepron1x.clans.plugin.editor.ClanEditorImpl;
-import org.gepron1x.clans.plugin.editor.PostClanEditor;
+import org.gepron1x.clans.plugin.editor.AnnouncingClanEdition;
+import org.gepron1x.clans.plugin.editor.ClanEditionImpl;
+import org.gepron1x.clans.plugin.editor.PostClanEdition;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -59,7 +59,7 @@ public final class ClanRepositoryImpl implements ClanRepository {
     public @NotNull CentralisedFuture<Boolean> removeClan(@NotNull Clan clan) {
         return futuresFactory.supplyAsync(() -> storage.removeClan(clan))
                 .thenApplySync(b -> {
-                    PostClanEditor postEditor = new PostClanEditor(clan, worldGuard.getPlatform().getRegionContainer());
+                    PostClanEdition postEditor = new PostClanEdition(clan, worldGuard.getPlatform().getRegionContainer());
                     clan.getHomes().forEach(postEditor::removeHome);
                     if(b) pluginManager.callEvent(new ClanDeletedEvent(clan));
                     return b;
@@ -67,14 +67,14 @@ public final class ClanRepositoryImpl implements ClanRepository {
     }
 
     @Override
-    public @NotNull CentralisedFuture<Clan> editClan(@NotNull Clan clan, @NotNull Consumer<ClanEditor> consumer) {
+    public @NotNull CentralisedFuture<Clan> editClan(@NotNull Clan clan, @NotNull Consumer<ClanEdition> consumer) {
         ClanBuilder builder = ClanBuilder.asBuilder(clan);
-        ClanEditor editor = new ClanEditorImpl(clan, builder);
+        ClanEdition editor = new ClanEditionImpl(clan, builder);
         consumer.accept(editor);
         Clan newClan = builder.build();
         return futuresFactory.runAsync(() -> storage.applyEditor(newClan, consumer))
                 .thenApplySync(v -> {
-                    consumer.accept(new AnnouncingClanEditor(clan, server, new PostClanEditor(newClan, worldGuard.getPlatform().getRegionContainer()), messages));
+                    consumer.accept(new AnnouncingClanEdition(clan, server, new PostClanEdition(newClan, worldGuard.getPlatform().getRegionContainer()), messages));
                     pluginManager.callEvent(new ClanEditedEvent(clan, newClan));
                     return newClan;
                 });

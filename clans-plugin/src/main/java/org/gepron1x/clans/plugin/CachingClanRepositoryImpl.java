@@ -6,7 +6,7 @@ import org.gepron1x.clans.api.ClanCreationResult;
 import org.gepron1x.clans.api.ClanRepository;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
-import org.gepron1x.clans.api.editor.ClanEditor;
+import org.gepron1x.clans.api.editor.ClanEdition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
@@ -50,7 +50,7 @@ public final class CachingClanRepositoryImpl implements CachingClanRepository {
     }
 
     @Override
-    public @NotNull CentralisedFuture<Clan> editClan(@NotNull Clan clan, @NotNull Consumer<ClanEditor> consumer) {
+    public @NotNull CentralisedFuture<Clan> editClan(@NotNull Clan clan, @NotNull Consumer<ClanEdition> consumer) {
         return clanRepository.editClan(clan, consumer);
     }
 

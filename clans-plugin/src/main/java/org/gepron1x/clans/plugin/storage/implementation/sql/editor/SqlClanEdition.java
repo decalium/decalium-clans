@@ -5,9 +5,9 @@ import org.bukkit.Location;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
-import org.gepron1x.clans.api.editor.ClanEditor;
-import org.gepron1x.clans.api.editor.HomeEditor;
-import org.gepron1x.clans.api.editor.MemberEditor;
+import org.gepron1x.clans.api.editor.ClanEdition;
+import org.gepron1x.clans.api.editor.HomeEdition;
+import org.gepron1x.clans.api.editor.MemberEdition;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.intellij.lang.annotations.Language;
 import org.jdbi.v3.core.Handle;
@@ -17,7 +17,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public final class SqlClanEditor implements ClanEditor {
+public final class SqlClanEdition implements ClanEdition {
     @Language("SQL")
     private static final String UPDATE_DISPLAY_NAME = "UPDATE `clans` SET `display_name`=? WHERE `id`=?";
     @Language("SQL")
@@ -38,12 +38,12 @@ public final class SqlClanEditor implements ClanEditor {
     private final Handle handle;
     private final Clan clan;
 
-    public SqlClanEditor(@NotNull Handle handle, @NotNull Clan clan) {
+    public SqlClanEdition(@NotNull Handle handle, @NotNull Clan clan) {
         this.handle = handle;
         this.clan = clan;
     }
     @Override
-    public ClanEditor setDisplayName(@NotNull Component displayName) {
+    public ClanEdition setDisplayName(@NotNull Component displayName) {
         handle.createUpdate(UPDATE_DISPLAY_NAME)
                 .bind(0, displayName)
                 .bind(1, clan.getId())
@@ -52,7 +52,7 @@ public final class SqlClanEditor implements ClanEditor {
     }
 
     @Override
-    public ClanEditor setStatistic(@NotNull StatisticType type, int value) {
+    public ClanEdition setStatistic(@NotNull StatisticType type, int value) {
         handle.createUpdate(UPDATE_STATISTIC)
                 .bind(0, value)
                 .bind(1, clan.getId())
@@ -61,12 +61,12 @@ public final class SqlClanEditor implements ClanEditor {
     }
 
     @Override
-    public ClanEditor incrementStatistic(@NotNull StatisticType type) {
+    public ClanEdition incrementStatistic(@NotNull StatisticType type) {
         return this;
     }
 
     @Override
-    public ClanEditor removeStatistic(@NotNull StatisticType type) {
+    public ClanEdition removeStatistic(@NotNull StatisticType type) {
         handle.createUpdate(DELETE_STATISTIC)
                 .bind(0, clan.getId())
                 .bind(1, type).execute();
@@ -75,7 +75,7 @@ public final class SqlClanEditor implements ClanEditor {
     }
 
     @Override
-    public ClanEditor addMember(@NotNull ClanMember member) {
+    public ClanEdition addMember(@NotNull ClanMember member) {
         int updateCount = handle.createUpdate(INSERT_MEMBER)
                 .bind(0, clan.getId())
                 .bind(1, member.getUniqueId())
@@ -88,19 +88,19 @@ public final class SqlClanEditor implements ClanEditor {
     }
 
     @Override
-    public ClanEditor removeMember(@NotNull ClanMember member) {
+    public ClanEdition removeMember(@NotNull ClanMember member) {
         handle.createUpdate(DELETE_MEMBER).bind(0, member.getUniqueId()).execute();
         return this;
     }
 
     @Override
-    public ClanEditor editMember(@NotNull UUID member, @NotNull Consumer<MemberEditor> consumer) {
-        consumer.accept(new SqlMemberEditor(handle, clan, Objects.requireNonNull(clan.getMember(member))));
+    public ClanEdition editMember(@NotNull UUID member, @NotNull Consumer<MemberEdition> consumer) {
+        consumer.accept(new SqlMemberEdition(handle, clan, Objects.requireNonNull(clan.getMember(member))));
         return this;
     }
 
     @Override
-    public ClanEditor addHome(@NotNull ClanHome home) {
+    public ClanEdition addHome(@NotNull ClanHome home) {
         Location loc = home.getLocation();
         Integer homeId = handle.createUpdate(INSERT_HOME)
                 .bind(0, clan.getId())
@@ -129,7 +129,7 @@ public final class SqlClanEditor implements ClanEditor {
 
 
     @Override
-    public ClanEditor removeHome(@NotNull ClanHome home) {
+    public ClanEdition removeHome(@NotNull ClanHome home) {
         handle.createUpdate(DELETE_HOME)
                 .bind(0, clan.getId())
                 .bind(1, home.getName());
@@ -137,8 +137,8 @@ public final class SqlClanEditor implements ClanEditor {
     }
 
     @Override
-    public ClanEditor editHome(@NotNull String name, @NotNull Consumer<HomeEditor> consumer) {
-        consumer.accept(new SqlHomeEditor(handle, clan, Objects.requireNonNull(clan.getHome(name))));
+    public ClanEdition editHome(@NotNull String name, @NotNull Consumer<HomeEdition> consumer) {
+        consumer.accept(new SqlHomeEdition(handle, clan, Objects.requireNonNull(clan.getHome(name))));
         return this;
     }
 

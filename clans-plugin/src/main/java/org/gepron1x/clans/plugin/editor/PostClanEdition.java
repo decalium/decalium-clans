@@ -21,9 +21,9 @@ import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
-import org.gepron1x.clans.api.editor.ClanEditor;
-import org.gepron1x.clans.api.editor.HomeEditor;
-import org.gepron1x.clans.api.editor.MemberEditor;
+import org.gepron1x.clans.api.editor.ClanEdition;
+import org.gepron1x.clans.api.editor.HomeEdition;
+import org.gepron1x.clans.api.editor.MemberEdition;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.DecaliumClansPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -35,38 +35,38 @@ import java.util.function.Consumer;
 
 import static java.util.Objects.requireNonNull;
 
-public final class PostClanEditor implements ClanEditor {
+public final class PostClanEdition implements ClanEdition {
     private static final NamespacedKey CLAN_NAME = new NamespacedKey(JavaPlugin.getPlugin(DecaliumClansPlugin.class), "clan_name");
     private static final NamespacedKey CLAN_HOME_NAME = new NamespacedKey(JavaPlugin.getPlugin(DecaliumClansPlugin.class), "clan_home_name");
     private final Clan clan;
     private final RegionContainer regionContainer;
 
-    public PostClanEditor(Clan clan, RegionContainer regionContainer) {
+    public PostClanEdition(Clan clan, RegionContainer regionContainer) {
         this.clan = clan;
         this.regionContainer = regionContainer;
     }
     @Override
-    public ClanEditor setDisplayName(@NotNull Component displayName) {
+    public ClanEdition setDisplayName(@NotNull Component displayName) {
         return this;
     }
 
     @Override
-    public ClanEditor setStatistic(@NotNull StatisticType type, int value) {
+    public ClanEdition setStatistic(@NotNull StatisticType type, int value) {
         return this;
     }
 
     @Override
-    public ClanEditor incrementStatistic(@NotNull StatisticType type) {
+    public ClanEdition incrementStatistic(@NotNull StatisticType type) {
         return this;
     }
 
     @Override
-    public ClanEditor removeStatistic(@NotNull StatisticType type) {
+    public ClanEdition removeStatistic(@NotNull StatisticType type) {
         return this;
     }
 
     @Override
-    public ClanEditor addMember(@NotNull ClanMember member) {
+    public ClanEdition addMember(@NotNull ClanMember member) {
         for(ClanHome home : clan.getHomes()) {
             RegionManager regionManager =  getRegionManager(home.getLocation());
             ProtectedRegion region = regionManager.getRegion(nameFor(clan, home));
@@ -77,7 +77,7 @@ public final class PostClanEditor implements ClanEditor {
     }
 
     @Override
-    public ClanEditor removeMember(@NotNull ClanMember member) {
+    public ClanEdition removeMember(@NotNull ClanMember member) {
         for(ClanHome home : clan.getHomes()) {
             RegionManager regionManager = getRegionManager(home.getLocation());
             ProtectedRegion region = regionManager.getRegion(nameFor(clan, home));
@@ -88,13 +88,13 @@ public final class PostClanEditor implements ClanEditor {
     }
 
     @Override
-    public ClanEditor editMember(@NotNull UUID uuid, @NotNull Consumer<MemberEditor> consumer) {
-        consumer.accept(new PostMemberEditor());
+    public ClanEdition editMember(@NotNull UUID uuid, @NotNull Consumer<MemberEdition> consumer) {
+        consumer.accept(new PostMemberEdition());
         return this;
     }
 
     @Override
-    public ClanEditor addHome(@NotNull ClanHome home) {
+    public ClanEdition addHome(@NotNull ClanHome home) {
         RegionManager regionManager = getRegionManager(home.getLocation());
         ProtectedCuboidRegion region = createForHome(home);
         DefaultDomain members = region.getMembers();
@@ -132,7 +132,7 @@ public final class PostClanEditor implements ClanEditor {
     }
 
     @Override
-    public ClanEditor removeHome(@NotNull ClanHome home) {
+    public ClanEdition removeHome(@NotNull ClanHome home) {
         RegionManager regionManager = getRegionManager(home.getLocation());
         regionManager.removeRegion(nameFor(clan, home));
         home.getLocation().getNearbyEntitiesByType(ArmorStand.class, 2).forEach(as -> {
@@ -147,8 +147,8 @@ public final class PostClanEditor implements ClanEditor {
     }
 
     @Override
-    public ClanEditor editHome(@NotNull String name, @NotNull Consumer<HomeEditor> consumer) {
-        consumer.accept(new PostHomeEditor());
+    public ClanEdition editHome(@NotNull String name, @NotNull Consumer<HomeEdition> consumer) {
+        consumer.accept(new PostHomeEdition());
         return this;
     }
 
@@ -161,29 +161,29 @@ public final class PostClanEditor implements ClanEditor {
         return "decaliumclans_"+clan.getTag()+"_"+home.getName();
     }
 
-    private static class PostMemberEditor implements MemberEditor {
+    private static class PostMemberEdition implements MemberEdition {
 
 
         @Override
-        public MemberEditor setRole(@NotNull ClanRole role) {
+        public MemberEdition setRole(@NotNull ClanRole role) {
             return this;
         }
     }
 
-    private static class PostHomeEditor implements HomeEditor {
+    private static class PostHomeEdition implements HomeEdition {
 
         @Override
-        public HomeEditor setIcon(@Nullable ItemStack icon) {
+        public HomeEdition setIcon(@Nullable ItemStack icon) {
             return this;
         }
 
         @Override
-        public HomeEditor setLocation(@NotNull Location location) {
+        public HomeEdition setLocation(@NotNull Location location) {
             return this;
         }
 
         @Override
-        public HomeEditor setDisplayName(@NotNull Component displayName) {
+        public HomeEdition setDisplayName(@NotNull Component displayName) {
             return this;
         }
     }

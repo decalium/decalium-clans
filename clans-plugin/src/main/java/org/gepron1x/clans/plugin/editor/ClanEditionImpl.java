@@ -6,9 +6,9 @@ import net.kyori.adventure.text.Component;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
-import org.gepron1x.clans.api.editor.ClanEditor;
-import org.gepron1x.clans.api.editor.HomeEditor;
-import org.gepron1x.clans.api.editor.MemberEditor;
+import org.gepron1x.clans.api.editor.ClanEdition;
+import org.gepron1x.clans.api.editor.HomeEdition;
+import org.gepron1x.clans.api.editor.MemberEdition;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.clan.ClanBuilder;
 import org.jetbrains.annotations.NotNull;
@@ -17,84 +17,84 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public final class ClanEditorImpl implements ClanEditor {
+public final class ClanEditionImpl implements ClanEdition {
 
 
     private final ClanBuilder builder;
     private final Clan clan;
 
-    public ClanEditorImpl(@NotNull Clan clan, @NotNull ClanBuilder builder) {
+    public ClanEditionImpl(@NotNull Clan clan, @NotNull ClanBuilder builder) {
         this.builder = builder;
         this.clan = clan;
     }
 
     @Override
-    public ClanEditor setDisplayName(@NotNull Component displayName) {
+    public ClanEdition setDisplayName(@NotNull Component displayName) {
         this.builder.displayName(displayName);
         return this;
     }
 
     @Override
-    public ClanEditor setStatistic(@NotNull StatisticType type, int value) {
+    public ClanEdition setStatistic(@NotNull StatisticType type, int value) {
         this.builder.statistic(type, value);
         return this;
     }
 
     @Override
-    public ClanEditor incrementStatistic(@NotNull StatisticType type) {
+    public ClanEdition incrementStatistic(@NotNull StatisticType type) {
         this.builder.incrementStatistic(type);
         return this;
     }
 
     @Override
-    public ClanEditor removeStatistic(@NotNull StatisticType type) {
+    public ClanEdition removeStatistic(@NotNull StatisticType type) {
         this.builder.removeStatistic(type);
         return this;
     }
 
     @Override
-    public ClanEditor addMember(@NotNull ClanMember member) {
+    public ClanEdition addMember(@NotNull ClanMember member) {
         Preconditions.checkArgument(this.builder.member(member.getUniqueId()) == null, "member with same uuid already in the clan");
         this.builder.addMember(member);
         return this;
     }
 
     @Override
-    public ClanEditor removeMember(@NotNull ClanMember member) {
+    public ClanEdition removeMember(@NotNull ClanMember member) {
         Preconditions.checkArgument(this.builder.member(member.getUniqueId()) != null, "cannot delete member that is not a clan");
         this.builder.removeMember(member);
         return this;
     }
 
     @Override
-    public ClanEditor editMember(@NotNull UUID uuid, @NotNull Consumer<MemberEditor> consumer) {
+    public ClanEdition editMember(@NotNull UUID uuid, @NotNull Consumer<MemberEdition> consumer) {
         ClanMember member = Objects.requireNonNull(this.builder.member(uuid), "no member with given uuid present");
         Preconditions.checkArgument(!this.clan.getOwner().getUniqueId().equals(uuid), "cannot edit clan owner");
         ClanMember.Builder memberBuilder = member.toBuilder();
-        consumer.accept(new MemberEditorImpl(member, memberBuilder));
+        consumer.accept(new MemberEditionImpl(member, memberBuilder));
         builder.removeMember(member).addMember(memberBuilder.build());
         return this;
     }
 
     @Override
-    public ClanEditor addHome(@NotNull ClanHome home) {
+    public ClanEdition addHome(@NotNull ClanHome home) {
         Preconditions.checkArgument(this.builder.home(home.getName()) == null, "Home with same name already in the clan");
         this.builder.addHome(home);
         return this;
     }
 
     @Override
-    public ClanEditor removeHome(@NotNull ClanHome home) {
+    public ClanEdition removeHome(@NotNull ClanHome home) {
         Preconditions.checkArgument(this.builder.home(home.getName()) != null, "cannot delete home that is not in the clan");
         this.builder.removeHome(home);
         return this;
     }
 
     @Override
-    public ClanEditor editHome(@NotNull String name, @NotNull Consumer<HomeEditor> consumer) {
+    public ClanEdition editHome(@NotNull String name, @NotNull Consumer<HomeEdition> consumer) {
         ClanHome home = Objects.requireNonNull(this.builder.home(name), "no home with given name present");
         ClanHome.Builder homeBuilder = home.toBuilder();
-        consumer.accept(new HomeEditorImpl(home, homeBuilder));
+        consumer.accept(new HomeEditionImpl(home, homeBuilder));
         builder.removeHome(home).addHome(homeBuilder.build());
         return this;
     }
@@ -103,7 +103,7 @@ public final class ClanEditorImpl implements ClanEditor {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ClanEditorImpl that = (ClanEditorImpl) o;
+        ClanEditionImpl that = (ClanEditionImpl) o;
         return builder.equals(that.builder) && clan.equals(that.clan);
     }
 

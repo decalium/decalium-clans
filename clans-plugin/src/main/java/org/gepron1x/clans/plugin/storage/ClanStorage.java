@@ -3,7 +3,7 @@ package org.gepron1x.clans.plugin.storage;
 import org.gepron1x.clans.api.ClanCreationResult;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
-import org.gepron1x.clans.api.editor.ClanEditor;
+import org.gepron1x.clans.api.editor.ClanEdition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +24,7 @@ public interface ClanStorage {
 
     ClanCreationResult saveClan(@NotNull DraftClan clan);
 
-    void applyEditor(@NotNull Clan clan, @NotNull Consumer<ClanEditor> editor);
+    void applyEditor(@NotNull Clan clan, @NotNull Consumer<ClanEdition> editor);
 
     boolean removeClan(@NotNull Clan clan);
 

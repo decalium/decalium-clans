@@ -9,10 +9,10 @@ import org.gepron1x.clans.api.statistic.StatisticType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public record ClanPlaceholderResolver(@NotNull Clan clan) implements TagResolver.WithoutArguments {
+public record ClanTagResolver(@NotNull Clan clan) implements TagResolver.WithoutArguments {
 
-    public static ClanPlaceholderResolver clan(@NotNull Clan clan) {
-        return new ClanPlaceholderResolver(clan);
+    public static ClanTagResolver clan(@NotNull Clan clan) {
+        return new ClanTagResolver(clan);
     }
 
     private static final String ID = "id";
@@ -47,7 +47,7 @@ public record ClanPlaceholderResolver(@NotNull Clan clan) implements TagResolver
 
         if(name.startsWith(OWNER)) {
             ClanMember member = clan.getOwner();
-            return PrefixedTagResolver.prefixed(new ClanMemberPlaceholderResolver(member), "owner").resolve(name);
+            return PrefixedTagResolver.prefixed(new ClanMemberTagResolver(member), "owner").resolve(name);
         }
 
         return null;

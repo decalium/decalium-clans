@@ -5,13 +5,13 @@ import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.ClanHome;
-import org.gepron1x.clans.api.editor.HomeEditor;
+import org.gepron1x.clans.api.editor.HomeEdition;
 import org.intellij.lang.annotations.Language;
 import org.jdbi.v3.core.Handle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class SqlHomeEditor implements HomeEditor {
+public final class SqlHomeEdition implements HomeEdition {
     @Language("SQL")
     private static final String UPDATE_ICON = "UPDATE `homes` SET `icon`=? WHERE `name`=? AND `clan_id`=?";
     @Language("SQL")
@@ -22,7 +22,7 @@ public final class SqlHomeEditor implements HomeEditor {
     private final Clan clan;
     private final ClanHome home;
 
-    public SqlHomeEditor(@NotNull Handle handle, @NotNull Clan clan, @NotNull ClanHome home) {
+    public SqlHomeEdition(@NotNull Handle handle, @NotNull Clan clan, @NotNull ClanHome home) {
 
         this.handle = handle;
         this.clan = clan;
@@ -30,7 +30,7 @@ public final class SqlHomeEditor implements HomeEditor {
     }
 
     @Override
-    public HomeEditor setIcon(@Nullable ItemStack icon) {
+    public HomeEdition setIcon(@Nullable ItemStack icon) {
         handle.createUpdate(UPDATE_ICON)
                 .bind(1, home.getName())
                 .bind(2, clan.getId())
@@ -39,7 +39,7 @@ public final class SqlHomeEditor implements HomeEditor {
     }
 
     @Override
-    public HomeEditor setLocation(@NotNull Location location) {
+    public HomeEdition setLocation(@NotNull Location location) {
         handle.createUpdate(UPDATE_LOCATION)
                 .bind(5, home.getName())
                 .bind(4, clan.getId())
@@ -52,7 +52,7 @@ public final class SqlHomeEditor implements HomeEditor {
     }
 
     @Override
-    public HomeEditor setDisplayName(@NotNull Component displayName) {
+    public HomeEdition setDisplayName(@NotNull Component displayName) {
         handle.createUpdate(UPDATE_DISPLAY_NAME)
                 .bind(1, home.getName())
                 .bind(2, clan.getId())

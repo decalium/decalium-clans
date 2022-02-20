@@ -3,24 +3,24 @@ package org.gepron1x.clans.plugin.editor;
 import com.google.common.base.MoreObjects;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
-import org.gepron1x.clans.api.editor.MemberEditor;
+import org.gepron1x.clans.api.editor.MemberEdition;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public final class MemberEditorImpl implements MemberEditor {
+public final class MemberEditionImpl implements MemberEdition {
 
     private final ClanMember member;
     private final ClanMember.Builder builder;
 
-    public MemberEditorImpl(@NotNull ClanMember member, @NotNull ClanMember.Builder builder) {
+    public MemberEditionImpl(@NotNull ClanMember member, @NotNull ClanMember.Builder builder) {
 
         this.member = member;
         this.builder = builder;
     }
 
     @Override
-    public MemberEditor setRole(@NotNull ClanRole role) {
+    public MemberEdition setRole(@NotNull ClanRole role) {
         builder.role(role);
         return this;
     }
@@ -29,7 +29,7 @@ public final class MemberEditorImpl implements MemberEditor {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MemberEditorImpl that = (MemberEditorImpl) o;
+        MemberEditionImpl that = (MemberEditionImpl) o;
         return member.equals(that.member) && builder.equals(that.builder);
     }
 
