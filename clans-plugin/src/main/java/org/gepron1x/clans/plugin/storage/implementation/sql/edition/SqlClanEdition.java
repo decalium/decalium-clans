@@ -1,13 +1,13 @@
-package org.gepron1x.clans.plugin.storage.implementation.sql.editor;
+package org.gepron1x.clans.plugin.storage.implementation.sql.edition;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
-import org.gepron1x.clans.api.editor.ClanEdition;
-import org.gepron1x.clans.api.editor.HomeEdition;
-import org.gepron1x.clans.api.editor.MemberEdition;
+import org.gepron1x.clans.api.edition.ClanEdition;
+import org.gepron1x.clans.api.edition.HomeEdition;
+import org.gepron1x.clans.api.edition.MemberEdition;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.intellij.lang.annotations.Language;
 import org.jdbi.v3.core.Handle;

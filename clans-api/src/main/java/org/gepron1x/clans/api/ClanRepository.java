@@ -3,7 +3,7 @@ package org.gepron1x.clans.api;
 import org.bukkit.OfflinePlayer;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
-import org.gepron1x.clans.api.editor.ClanEdition;
+import org.gepron1x.clans.api.edition.ClanEdition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
