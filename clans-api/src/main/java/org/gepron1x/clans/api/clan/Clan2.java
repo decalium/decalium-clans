@@ -7,6 +7,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public interface Clan2 {
+
     int id();
 
     @NotNull CompletableFuture<DraftClan> getDraft();
