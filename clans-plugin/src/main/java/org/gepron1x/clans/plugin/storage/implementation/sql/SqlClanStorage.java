@@ -226,8 +226,8 @@ public final class SqlClanStorage implements ClanStorage {
     }
 
     @Override
-    public void applyEditor(@NotNull Clan clan, @NotNull Consumer<ClanEdition> editor) {
-        jdbi.useTransaction(handle -> editor.accept(new SqlClanEdition(handle, clan)));
+    public void applyEdition(@NotNull Clan clan, @NotNull Consumer<ClanEdition> consumer) {
+        jdbi.useTransaction(handle -> consumer.accept(new SqlClanEdition(handle, clan)));
     }
 
     @Override

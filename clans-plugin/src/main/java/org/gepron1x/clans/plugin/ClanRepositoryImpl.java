@@ -72,7 +72,7 @@ public final class ClanRepositoryImpl implements ClanRepository {
         ClanEdition editor = new ClanEditionImpl(clan, builder);
         consumer.accept(editor);
         Clan newClan = builder.build();
-        return futuresFactory.runAsync(() -> storage.applyEditor(newClan, consumer))
+        return futuresFactory.runAsync(() -> storage.applyEdition(newClan, consumer))
                 .thenApplySync(v -> {
                     consumer.accept(new AnnouncingClanEdition(clan, server, new PostClanEdition(newClan, worldGuard.getPlatform().getRegionContainer()), messages));
                     pluginManager.callEvent(new ClanEditedEvent(clan, newClan));

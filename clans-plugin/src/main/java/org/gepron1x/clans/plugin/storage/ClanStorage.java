@@ -24,7 +24,7 @@ public interface ClanStorage {
 
     ClanCreationResult saveClan(@NotNull DraftClan clan);
 
-    void applyEditor(@NotNull Clan clan, @NotNull Consumer<ClanEdition> editor);
+    void applyEdition(@NotNull Clan clan, @NotNull Consumer<ClanEdition> consumer);
 
     boolean removeClan(@NotNull Clan clan);
 
