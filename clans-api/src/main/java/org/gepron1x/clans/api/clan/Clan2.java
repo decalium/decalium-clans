@@ -12,5 +12,5 @@ public interface Clan2 {
 
     @NotNull CompletableFuture<DraftClan> getDraft();
 
-    @NotNull CompletableFuture<DraftClan> edit(Consumer<ClanEdition> consumer);
+    @NotNull CompletableFuture<?> edit(Consumer<ClanEdition> consumer);
 }

@@ -1,6 +1,6 @@
 package org.gepron1x.clans.api;
 
-import org.gepron1x.clans.api.clan.Clan;
+import org.gepron1x.clans.api.clan.DraftClan;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -10,16 +10,16 @@ import java.util.UUID;
 
 public interface ClanCache {
     @Nullable
-    Clan getClan(@NotNull String tag);
+    DraftClan getClan(@NotNull String tag);
 
     @Nullable
-    Clan getUserClan(@NotNull UUID uuid);
+    DraftClan getUserClan(@NotNull UUID uuid);
 
     @NotNull
     @UnmodifiableView
-    Collection<? extends Clan> getClans();
+    Collection<? extends DraftClan> getClans();
 
-    boolean isCached(@NotNull Clan clan);
+    boolean isCached(@NotNull DraftClan clan);
 
     boolean isCached(@NotNull String tag);
 

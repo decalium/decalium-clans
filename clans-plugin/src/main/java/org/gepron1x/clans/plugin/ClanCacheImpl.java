@@ -3,7 +3,9 @@ package org.gepron1x.clans.plugin;
 import com.google.common.base.MoreObjects;
 import org.gepron1x.clans.api.ClanCache;
 import org.gepron1x.clans.api.clan.Clan;
+import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
+import org.gepron1x.clans.plugin.storage.IdentifiedClan;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -15,21 +17,22 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class ClanCacheImpl implements ClanCache {
-    private final Map<String, Clan> clanMap = new ConcurrentHashMap<>();
-    private final Map<UUID, Clan> userClanMap = new ConcurrentHashMap<>();
+    private final Map<String, IdentifiedClan> clanMap = new ConcurrentHashMap<>();
+    private final Map<Integer, IdentifiedClan> idClanMap = new ConcurrentHashMap<>();
+    private final Map<UUID, IdentifiedClan> userClanMap = new ConcurrentHashMap<>();
 
     public ClanCacheImpl() {
 
     }
     @Override
     @Nullable
-    public Clan getUserClan(@NotNull UUID uuid) {
+    public DraftClan getUserClan(@NotNull UUID uuid) {
         return userClanMap.get(uuid);
 
     }
 
     @Override
-    public @NotNull @UnmodifiableView Collection<Clan> getClans() {
+    public @NotNull @UnmodifiableView Collection<DraftClan> getClans() {
         return Collections.unmodifiableCollection(clanMap.values());
     }
 

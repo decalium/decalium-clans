@@ -1,9 +1,8 @@
 package org.gepron1x.clans.plugin.storage;
 
 import org.gepron1x.clans.api.ClanCreationResult;
-import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
-import org.gepron1x.clans.api.editor.ClanEdition;
+import org.gepron1x.clans.api.edition.ClanEdition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,19 +16,35 @@ public interface ClanStorage {
     void initialize();
     void shutdown();
 
-    @Nullable Clan loadClan(@NotNull String tag);
-    @Nullable Clan loadUserClan(@NotNull UUID uuid);
+    @Nullable IdentifiedClan loadClan(@NotNull String tag);
 
-    @NotNull Set<Clan> loadClans();
+    @Nullable IdentifiedClan loadClan(int id);
+    @Nullable IdentifiedClan loadUserClan(@NotNull UUID uuid);
 
-    ClanCreationResult saveClan(@NotNull DraftClan clan);
+    @NotNull Set<IdentifiedClan> loadClans();
 
-    void applyEdition(@NotNull Clan clan, @NotNull Consumer<ClanEdition> consumer);
+    SaveResult saveClan(@NotNull DraftClan clan);
 
-    boolean removeClan(@NotNull Clan clan);
+    void applyEdition(int id, @NotNull Consumer<ClanEdition> consumer);
+
+    boolean removeClan(int id);
 
 
-    boolean clanExists(@NotNull String tag);
+
+
+    record SaveResult(int id, ClanCreationResult.Status status) {
+        public static final SaveResult ALREADY_EXISTS = new SaveResult(Integer.MIN_VALUE, ClanCreationResult.Status.ALREADY_EXISTS);
+        public static final SaveResult MEMBERS_IN_OTHER_CLANS = new SaveResult(Integer.MIN_VALUE, ClanCreationResult.Status.MEMBERS_IN_OTHER_CLANS);
+
+        public static SaveResult success(int id) {
+            return new SaveResult(id, ClanCreationResult.Status.SUCCESS);
+        }
+
+
+
+
+
+    }
 
 
 
