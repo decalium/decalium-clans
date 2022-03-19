@@ -123,7 +123,7 @@ public class ClanCommand extends AbstractClanCommand {
     private void myClan(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
         UUID uuid = player.getUniqueId();
-        clanManager.getUserClan(uuid).thenAcceptSync(clan -> {
+        clanManager.requestUserClan(uuid).thenAcceptSync(clan -> {
             if(!checkClan(player, clan)) return;
             Objects.requireNonNull(clan);
             player.sendMessage(Component.text().color(NamedTextColor.AQUA).append(Component.text("You are a member of ")).append(clan.getDisplayName()).append(Component.text(" clan")));
@@ -137,7 +137,7 @@ public class ClanCommand extends AbstractClanCommand {
             if(clan == null) return;
             for(ClanMember member : clan.getMembers()) {
                 player.sendMessage(Message.message("<role> <member>")
-                        .with("role", member.getRole())
+                        .with("role", member.role())
                         .with("member", member.asOffline(player.getServer()).getName()));
             }
         });

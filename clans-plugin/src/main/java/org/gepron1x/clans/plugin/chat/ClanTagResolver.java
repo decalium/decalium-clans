@@ -3,15 +3,15 @@ package org.gepron1x.clans.plugin.chat;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import org.gepron1x.clans.api.clan.Clan;
+import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public record ClanTagResolver(@NotNull Clan clan) implements TagResolver.WithoutArguments {
+public record ClanTagResolver(@NotNull DraftClan clan) implements TagResolver.WithoutArguments {
 
-    public static ClanTagResolver clan(@NotNull Clan clan) {
+    public static ClanTagResolver clan(@NotNull DraftClan clan) {
         return new ClanTagResolver(clan);
     }
 
@@ -29,11 +29,10 @@ public record ClanTagResolver(@NotNull Clan clan) implements TagResolver.Without
     public @Nullable Tag resolve(@NotNull String name) {
 
         Component component = switch (name) {
-            case ID -> Component.text(clan.getId());
-            case TAG -> Component.text(clan.getTag());
-            case DISPLAY_NAME -> clan.getDisplayName();
-            case MEMBERS_SIZE -> Component.text(clan.getMembers().size());
-            case HOMES_SIZE -> Component.text(clan.getHomes().size());
+            case TAG -> Component.text(clan.tag());
+            case DISPLAY_NAME -> clan.displayName();
+            case MEMBERS_SIZE -> Component.text(clan.members().size());
+            case HOMES_SIZE -> Component.text(clan.homes().size());
             default -> null;
         };
 
@@ -41,12 +40,12 @@ public record ClanTagResolver(@NotNull Clan clan) implements TagResolver.Without
 
         if(name.startsWith(STATISTIC)) {
             StatisticType type = new StatisticType(name.substring(STATISTIC.length()));
-            int value = clan.getStatisticOr(type, 0);
+            int value = clan.statisticOr(type, 0);
             return Tag.inserting(Component.text(value));
         }
 
         if(name.startsWith(OWNER)) {
-            ClanMember member = clan.getOwner();
+            ClanMember member = clan.owner();
             return PrefixedTagResolver.prefixed(new ClanMemberTagResolver(member), "owner").resolve(name);
         }
 

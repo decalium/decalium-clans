@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.gepron1x.clans.api.CachingClanRepository;
 import org.gepron1x.clans.api.ClanBuilderFactory;
-import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
@@ -111,7 +110,7 @@ public class HomeCommand extends AbstractClanCommand {
             if(clan == null || home == null) return nullFuture();
 
             ClanMember member = getMember(clan, player);
-            ClanMember homeOwner = getMember(clan, home.getCreator());
+            ClanMember homeOwner = getMember(clan, home.creator());
 
             if(!member.equals(homeOwner) && !member.hasPermission(ClanPermission.EDIT_OTHERS_HOMES)) {
                 player.sendMessage(messages.noClanPermission());
@@ -131,7 +130,7 @@ public class HomeCommand extends AbstractClanCommand {
         requireHome(player, name).thenComposeSync(pair -> {
             ClanHome home = pair.home();
             if(home == null) return nullFuture();
-            return player.teleportAsync(home.getLocation());
+            return player.teleportAsync(home.location());
         }).thenAccept(success -> {
             if(success) player.sendMessage(Component.text("Teleported successfully"));
         }).exceptionally(this::exceptionHandler);

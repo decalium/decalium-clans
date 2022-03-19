@@ -5,7 +5,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.CachingClanRepository;
-import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.plugin.config.ClansConfig;
@@ -67,7 +66,7 @@ public abstract class AbstractClanCommand {
     }
 
     protected CentralisedFuture<@Nullable Clan> requireClan(@NotNull Player player) {
-        return this.clanManager.getUserClan(player.getUniqueId()).thenApply(clan -> {
+        return this.clanManager.requestUserClan(player.getUniqueId()).thenApply(clan -> {
             checkClan(player, clan);
             return clan;
         });

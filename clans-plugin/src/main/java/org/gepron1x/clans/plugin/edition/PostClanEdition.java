@@ -17,7 +17,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
@@ -68,10 +67,10 @@ public final class PostClanEdition implements ClanEdition {
     @Override
     public ClanEdition addMember(@NotNull ClanMember member) {
         for(ClanHome home : clan.getHomes()) {
-            RegionManager regionManager =  getRegionManager(home.getLocation());
+            RegionManager regionManager =  getRegionManager(home.location());
             ProtectedRegion region = regionManager.getRegion(nameFor(clan, home));
             if(region == null) continue;
-            region.getMembers().addPlayer(member.getUniqueId());
+            region.getMembers().addPlayer(member.uniqueId());
         }
         return this;
     }
@@ -79,10 +78,10 @@ public final class PostClanEdition implements ClanEdition {
     @Override
     public ClanEdition removeMember(@NotNull ClanMember member) {
         for(ClanHome home : clan.getHomes()) {
-            RegionManager regionManager = getRegionManager(home.getLocation());
+            RegionManager regionManager = getRegionManager(home.location());
             ProtectedRegion region = regionManager.getRegion(nameFor(clan, home));
             if(region == null) continue;
-            region.getMembers().removePlayer(member.getUniqueId());
+            region.getMembers().removePlayer(member.uniqueId());
         }
         return this;
     }
@@ -95,11 +94,11 @@ public final class PostClanEdition implements ClanEdition {
 
     @Override
     public ClanEdition addHome(@NotNull ClanHome home) {
-        RegionManager regionManager = getRegionManager(home.getLocation());
+        RegionManager regionManager = getRegionManager(home.location());
         ProtectedCuboidRegion region = createForHome(home);
         DefaultDomain members = region.getMembers();
         clan.memberMap().keySet().forEach(members::addPlayer);
-        home.getLocation().getWorld().spawn(home.getLocation(), ArmorStand.class, stand -> {
+        home.location().getWorld().spawn(home.location(), ArmorStand.class, stand -> {
             stand.setPersistent(true);
             stand.setCanMove(false);
             stand.setCanTick(false);
@@ -108,10 +107,10 @@ public final class PostClanEdition implements ClanEdition {
             stand.setInvisible(true);
             PersistentDataContainer pdc = stand.getPersistentDataContainer();
             pdc.set(CLAN_NAME, PersistentDataType.STRING, clan.getTag());
-            pdc.set(CLAN_HOME_NAME, PersistentDataType.STRING, home.getName());
-            stand.customName(LinearComponents.linear(Component.text("База "), home.getDisplayName()));
+            pdc.set(CLAN_HOME_NAME, PersistentDataType.STRING, home.name());
+            stand.customName(LinearComponents.linear(Component.text("База "), home.displayName()));
             stand.setDisabledSlots(EquipmentSlot.values());
-            stand.getEquipment().setHelmet(home.getIcon());
+            stand.getEquipment().setHelmet(home.icon());
         });
         regionManager.addRegion(region);
         return this;
@@ -119,7 +118,7 @@ public final class PostClanEdition implements ClanEdition {
 
 
     private ProtectedCuboidRegion createForHome(ClanHome home) {
-        Location location = home.getLocation();
+        Location location = home.location();
         double size = 30;
         double halfSize = size / 2;
         int x = location.getBlockX();
@@ -133,13 +132,13 @@ public final class PostClanEdition implements ClanEdition {
 
     @Override
     public ClanEdition removeHome(@NotNull ClanHome home) {
-        RegionManager regionManager = getRegionManager(home.getLocation());
+        RegionManager regionManager = getRegionManager(home.location());
         regionManager.removeRegion(nameFor(clan, home));
-        home.getLocation().getNearbyEntitiesByType(ArmorStand.class, 2).forEach(as -> {
+        home.location().getNearbyEntitiesByType(ArmorStand.class, 2).forEach(as -> {
             PersistentDataContainer pdc = as.getPersistentDataContainer();
             String clanTag = pdc.get(CLAN_NAME, PersistentDataType.STRING);
             String homeName = pdc.get(CLAN_HOME_NAME, PersistentDataType.STRING);
-            if(Objects.equals(clanTag, clan.getTag()) && Objects.equals(homeName, home.getName())) {
+            if(Objects.equals(clanTag, clan.getTag()) && Objects.equals(homeName, home.name())) {
                 as.remove();
             }
         });
@@ -158,7 +157,7 @@ public final class PostClanEdition implements ClanEdition {
     }
 
     private static String nameFor(Clan clan, ClanHome home) {
-        return "decaliumclans_"+clan.getTag()+"_"+home.getName();
+        return "decaliumclans_"+clan.getTag()+"_"+home.name();
     }
 
     private static class PostMemberEdition implements MemberEdition {

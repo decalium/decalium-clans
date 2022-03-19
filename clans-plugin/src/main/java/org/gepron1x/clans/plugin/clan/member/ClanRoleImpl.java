@@ -14,22 +14,22 @@ import java.util.Set;
 
 public record ClanRoleImpl(String name, Component displayName, int weight, Set<ClanPermission> permissions) implements ClanRole {
     @Override
-    public @NotNull String getName() {
+    public @NotNull String name() {
         return name;
     }
 
     @Override
-    public @NotNull Component getDisplayName() {
+    public @NotNull Component displayName() {
         return displayName;
     }
 
     @Override
-    public int getWeight() {
+    public int weight() {
         return weight;
     }
 
     @Override
-    public @NotNull @Unmodifiable Set<ClanPermission> getPermissions() {
+    public @NotNull @Unmodifiable Set<ClanPermission> permissions() {
         return permissions;
     }
 

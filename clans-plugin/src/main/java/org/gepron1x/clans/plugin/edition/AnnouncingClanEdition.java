@@ -2,7 +2,6 @@ package org.gepron1x.clans.plugin.edition;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Server;
-import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
@@ -79,7 +78,7 @@ public final class AnnouncingClanEdition implements ClanEdition {
     public ClanEdition addHome(@NotNull ClanHome home) {
         delegate.addHome(home);
         clan.sendMessage(messages.announcements().homeCreated()
-                .with("member", requireNonNull(clan.getMember(home.getCreator())).renderName(server))
+                .with("member", requireNonNull(clan.getMember(home.creator())).renderName(server))
                 .with("home_name", home));
         return this;
     }

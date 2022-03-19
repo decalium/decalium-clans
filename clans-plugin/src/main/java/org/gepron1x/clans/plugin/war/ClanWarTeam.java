@@ -5,7 +5,6 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.util.Buildable;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
-import org.gepron1x.clans.api.clan.ClanBase;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;

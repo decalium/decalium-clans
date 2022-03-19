@@ -2,10 +2,12 @@ package org.gepron1x.clans.plugin.storage;
 
 import org.gepron1x.clans.api.ClanCreationResult;
 import org.gepron1x.clans.api.clan.DraftClan;
+import org.gepron1x.clans.api.clan.IdentifiedDraftClan;
 import org.gepron1x.clans.api.edition.ClanEdition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -16,12 +18,16 @@ public interface ClanStorage {
     void initialize();
     void shutdown();
 
-    @Nullable IdentifiedClan loadClan(@NotNull String tag);
+    @Nullable IdentifiedDraftClan loadClan(@NotNull String tag);
 
-    @Nullable IdentifiedClan loadClan(int id);
-    @Nullable IdentifiedClan loadUserClan(@NotNull UUID uuid);
+    @Nullable IdentifiedDraftClan loadClan(int id);
+    @Nullable IdentifiedDraftClan loadUserClan(@NotNull UUID uuid);
 
-    @NotNull Set<IdentifiedClan> loadClans();
+    OptionalInt lookupId(@NotNull String tag);
+    OptionalInt lookupId(@NotNull UUID member);
+    Set<Integer> clanIds();
+
+    @NotNull Set<IdentifiedDraftClanImpl> loadClans();
 
     SaveResult saveClan(@NotNull DraftClan clan);
 

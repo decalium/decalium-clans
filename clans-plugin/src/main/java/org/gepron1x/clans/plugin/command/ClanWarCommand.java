@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
+import java.util.Optional;
+
 public class ClanWarCommand extends AbstractClanCommand {
     private final Preparations preparations;
     private final ClanWarManager warManager;
@@ -41,11 +43,11 @@ public class ClanWarCommand extends AbstractClanCommand {
         Player player = (Player) context.getSender();
         String clanTag = context.get("clan");
         CentralisedFuture<Clan> playerClan = requireClan(player);
-        CentralisedFuture<Clan> otherClan = clanManager.getClan(clanTag);
+        CentralisedFuture<Optional<CachingClan>> otherClan = clanManager.requestClan(clanTag);
 
         futuresFactory.allOf(playerClan, otherClan).thenAcceptSync(ignored -> {
             Clan clan = playerClan.join();
-            Clan other = otherClan.join();
+            Optional<T> other = otherClan.join();
             if(clan == null) return;
             if(other == null) {
                 player.sendMessage(Component.text("No clan with given tag exists."));

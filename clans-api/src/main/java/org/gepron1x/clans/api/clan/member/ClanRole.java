@@ -13,20 +13,20 @@ import java.util.Set;
 
 public interface ClanRole extends Comparable<ClanRole>, Buildable<ClanRole, ClanRole.Builder>, ComponentLike {
 
-    @NotNull String getName();
-    @NotNull Component getDisplayName();
-    int getWeight();
-    @NotNull @Unmodifiable Set<? extends ClanPermission> getPermissions();
+    @NotNull String name();
+    @NotNull Component displayName();
+    int weight();
+    @NotNull @Unmodifiable Set<? extends ClanPermission> permissions();
 
     @Override
     @NotNull
     default Component asComponent() {
-        return getDisplayName();
+        return displayName();
     }
 
     @Override
     default int compareTo(@NotNull ClanRole clanRole) {
-        return getWeight() - clanRole.getWeight();
+        return weight() - clanRole.weight();
     }
 
     interface Builder extends Buildable.Builder<ClanRole> {

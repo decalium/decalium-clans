@@ -15,6 +15,6 @@ public final class ClanRoleArgumentFactory extends AbstractArgumentFactory<ClanR
 
     @Override
     protected Argument build(ClanRole value, ConfigRegistry config) {
-        return (position, statement, ctx) -> statement.setString(position, value.getName());
+        return (position, statement, ctx) -> statement.setString(position, value.name());
     }
 }

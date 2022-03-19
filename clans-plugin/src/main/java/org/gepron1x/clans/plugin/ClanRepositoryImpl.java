@@ -2,11 +2,11 @@ package org.gepron1x.clans.plugin;
 
 import org.gepron1x.clans.api.ClanCreationResult;
 import org.gepron1x.clans.api.ClanRepository;
-import org.gepron1x.clans.api.clan.Clan2;
+import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
-import org.gepron1x.clans.plugin.clan.Clan2Impl;
+import org.gepron1x.clans.api.clan.IdentifiedDraftClan;
+import org.gepron1x.clans.plugin.clan.ClanImpl;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
-import org.gepron1x.clans.plugin.storage.IdentifiedClan;
 import org.jetbrains.annotations.NotNull;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
@@ -32,31 +32,31 @@ public final class ClanRepositoryImpl implements ClanRepository {
                 return ClanCreationResult.failure(saveResult.status());
             }
             int id = saveResult.id();
-            return ClanCreationResult.success(new Clan2Impl(id, this.storage, this.futuresFactory));
+            return ClanCreationResult.success(new ClanImpl(id, draftClan, this.storage, this.futuresFactory));
         });
     }
 
     @Override
-    public @NotNull CentralisedFuture<Boolean> removeClan(@NotNull Clan2 clan) {
+    public @NotNull CentralisedFuture<Boolean> removeClan(@NotNull Clan clan) {
         return futuresFactory.supplyAsync(() -> this.storage.removeClan(clan.id()));
     }
 
     @Override
-    public @NotNull CentralisedFuture<Optional<Clan2>> getClan(@NotNull String tag) {
+    public CentralisedFuture<Optional<Clan>> requestClan(@NotNull String tag) {
         return futuresFactory.supplyAsync(() -> Optional.ofNullable(this.storage.loadClan(tag)).map(this::adapt));
     }
 
     @Override
-    public @NotNull CentralisedFuture<Optional<Clan2>> getUserClan(@NotNull UUID uuid) {
+    public CentralisedFuture<Optional<Clan>> requestUserClan(@NotNull UUID uuid) {
         return futuresFactory.supplyAsync(() -> Optional.ofNullable(this.storage.loadUserClan(uuid)).map(this::adapt));
     }
 
     @Override
-    public @NotNull CentralisedFuture<Set<? extends Clan2>> getClans() {
+    public @NotNull CentralisedFuture<Set<? extends Clan>> clans() {
         return futuresFactory.supplyAsync(() -> this.storage.loadClans().stream().map(this::adapt).collect(Collectors.toUnmodifiableSet()));
     }
 
-    private Clan2 adapt(IdentifiedClan identified) {
-        return new Clan2Impl(identified.id(), this.storage, this.futuresFactory);
+    private Clan adapt(IdentifiedDraftClan draftClan) {
+        return new ClanImpl(draftClan.id(), draftClan, this.storage, this.futuresFactory);
     }
 }

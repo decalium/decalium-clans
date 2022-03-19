@@ -6,13 +6,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.gepron1x.clans.api.clan.Clan;
+import org.gepron1x.clans.api.clan.IdentifiedDraftClan;
 import org.gepron1x.clans.api.event.ClanCreatedEvent;
 import org.gepron1x.clans.api.event.ClanDeletedEvent;
 import org.gepron1x.clans.api.event.ClanEditedEvent;
 import org.gepron1x.clans.plugin.ClanCacheImpl;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -33,7 +34,7 @@ public class CacheListener implements Listener {
         Clan clan = cache.getUserClan(uuid);
         if(clan != null) return;
 
-        Clan loadedClan = storage.loadUserClan(uuid);
+        @Nullable IdentifiedDraftClan loadedClan = storage.loadUserClan(uuid);
         if(loadedClan != null) {
             cache.cacheClan(loadedClan);
         }
@@ -42,16 +43,16 @@ public class CacheListener implements Listener {
     @EventHandler
     public void onLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        Clan clan = cache.getUserClan(player.getUniqueId());
+        @Nullable IdentifiedDraftClan clan = cache.getUserClan(player.getUniqueId());
         if(clan == null) return;
         if(areMembersOnline(clan)) return;
-        cache.removeClan(clan);
+        cache.removeClan(clan.id());
 
     }
 
     @EventHandler
     public void onClanCreation(ClanCreatedEvent event) {
-        Clan clan = event.getClan();
+        @Nullable IdentifiedDraftClan clan = event.getClan();
         if(!areMembersOnline(clan)) return;
         cache.cacheClan(event.getClan());
     }
@@ -59,7 +60,7 @@ public class CacheListener implements Listener {
 
 
 
-    private boolean areMembersOnline(@NotNull Clan clan) {
+    private boolean areMembersOnline(@Nullable IdentifiedDraftClan clan) {
         for(UUID uuid : clan.memberMap().keySet()) {
             if(server.getPlayer(uuid) != null) return true;
         }

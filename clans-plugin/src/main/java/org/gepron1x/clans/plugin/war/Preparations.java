@@ -1,7 +1,5 @@
 package org.gepron1x.clans.plugin.war;
 
-import org.gepron1x.clans.api.clan.Clan;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;

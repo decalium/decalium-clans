@@ -19,9 +19,9 @@ public record ClanMemberTagResolver(@NotNull ClanMember member) implements TagRe
     public @Nullable Tag resolve(@NotNull String name) {
 
         Component component = switch (name) {
-            case ROLE -> member.getRole().asComponent();
+            case ROLE -> member.role().asComponent();
             case NAME -> member.asComponent();
-            case UUID -> Component.text(member.getUniqueId().toString());
+            case UUID -> Component.text(member.uniqueId().toString());
             default -> null;
         };
         return component == null ? null : Tag.inserting(component);

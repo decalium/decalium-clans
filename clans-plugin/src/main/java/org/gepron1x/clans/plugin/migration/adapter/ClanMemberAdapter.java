@@ -29,8 +29,8 @@ public final class ClanMemberAdapter extends TypeAdapter<ClanMember> {
     public void write(JsonWriter out, ClanMember value) throws IOException {
         out.beginObject();
         out.name(UNIQUE_ID);
-        gson.toJson(value.getUniqueId(), UUID.class, out);
-        out.name(ROLE).value(value.getRole().getName());
+        gson.toJson(value.uniqueId(), UUID.class, out);
+        out.name(ROLE).value(value.role().name());
 
         out.endObject();
 

@@ -16,30 +16,27 @@ import java.util.UUID;
 public interface ClanMember extends Buildable<ClanMember, ClanMember.Builder>, ComponentLike {
 
 
-    @NotNull UUID getUniqueId();
-    @NotNull ClanRole getRole();
+    @NotNull UUID uniqueId();
+    @NotNull ClanRole role();
 
     default boolean hasPermission(@NotNull ClanPermission permission) {
-        return getRole().getPermissions().contains(permission);
+        return role().permissions().contains(permission);
     }
-
-
-
 
     @Contract("_ -> new")
     @NotNull ClanMember withRole(@NotNull ClanRole role);
 
     default Player asPlayer(@NotNull Server server) {
-        return server.getPlayer(getUniqueId());
+        return server.getPlayer(uniqueId());
     }
 
     @NotNull
     default OfflinePlayer asOffline(@NotNull Server server) {
-        return server.getOfflinePlayer(getUniqueId());
+        return server.getOfflinePlayer(uniqueId());
     }
 
     default Component renderName(@NotNull Server server) {
-        UUID uuid = getUniqueId();
+        UUID uuid = uniqueId();
         OfflinePlayer player = server.getOfflinePlayer(uuid);
         Player onlinePlayer = player.getPlayer();
         if(onlinePlayer != null) return onlinePlayer.displayName();

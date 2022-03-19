@@ -24,10 +24,7 @@ import org.slf4j.Logger;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
@@ -89,12 +86,12 @@ public class InviteCommand extends AbstractClanCommand {
             return;
         }
 
-        CentralisedFuture<Clan> first = this.clanManager.getUserClan(player.getUniqueId());
-        CentralisedFuture<Clan> second = this.clanManager.getUserClan(receiver.getUniqueId());
+        CentralisedFuture<Optional<CachingClan>> first = this.clanManager.requestUserClan(player.getUniqueId());
+        CentralisedFuture<Optional<CachingClan>> second = this.clanManager.requestUserClan(receiver.getUniqueId());
 
         futuresFactory.allOf(first, second).thenAcceptSync(ignored -> {
-            Clan clan = first.join();
-            Clan receiverClan = second.join();
+            Optional<T> clan = first.join();
+            Optional<T> receiverClan = second.join();
 
             if (clan == null) {
                 player.sendMessage(messages.notInTheClan());
@@ -129,7 +126,7 @@ public class InviteCommand extends AbstractClanCommand {
         invitations.remove(player.getUniqueId(), name);
         ClanMember member = builderFactory.memberBuilder().uuid(invitation.receiver()).role(roleRegistry.getDefaultRole()).build();
         Player senderPlayer = player.getServer().getPlayer(invitation.sender());
-        this.clanManager.getUserClan(invitation.sender())
+        this.clanManager.requestUserClan(invitation.sender())
                 .thenComposeSync(clan -> {
                     if (clan == null) {
                         player.sendMessage(messages.commands().invitation().clanGotDeleted());

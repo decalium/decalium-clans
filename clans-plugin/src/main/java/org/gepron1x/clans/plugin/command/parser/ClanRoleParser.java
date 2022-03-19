@@ -45,7 +45,7 @@ public final class ClanRoleParser<C> implements ArgumentParser<C, ClanRole> {
     public @NonNull List<@NonNull String> suggestions(@NonNull CommandContext<C> commandContext, @NonNull String input) {
 
         return roleRegistry.getRoles().stream()
-                .map(ClanRole::getName)
+                .map(ClanRole::name)
                 .collect(Collectors.toList());
     }
 

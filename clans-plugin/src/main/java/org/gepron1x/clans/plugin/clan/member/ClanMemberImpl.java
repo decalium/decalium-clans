@@ -12,12 +12,12 @@ public record ClanMemberImpl(UUID uuid,
                              ClanRole role) implements ClanMember {
 
     @Override
-    public @NotNull UUID getUniqueId() {
+    public @NotNull UUID uniqueId() {
         return uuid;
     }
 
     @Override
-    public @NotNull ClanRole getRole() {
+    public @NotNull ClanRole role() {
         return role;
     }
 

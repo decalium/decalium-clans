@@ -40,7 +40,7 @@ public final class ClanWar implements ForwardingAudience {
         Objects.requireNonNull(team);
         team.killPlayer(uuid);
         if(team.isDead()) {
-            clanManager.getClan(enemies.get(team).getClanTag()).thenAcceptSync(clan -> {
+            clanManager.requestClan(enemies.get(team).getClanTag()).thenAcceptSync(clan -> {
                 if(clan == null) return;
                 sendMessage(messages.war().win().with("clan", clan));
             });

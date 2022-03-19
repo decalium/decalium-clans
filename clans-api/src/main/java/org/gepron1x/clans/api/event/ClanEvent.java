@@ -1,18 +1,18 @@
 package org.gepron1x.clans.api.event;
 
 import org.bukkit.event.Event;
-import org.gepron1x.clans.api.clan.Clan;
-import org.jetbrains.annotations.NotNull;
+import org.gepron1x.clans.api.clan.IdentifiedDraftClan;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class ClanEvent extends Event {
-    protected final Clan clan;
+    protected final @Nullable IdentifiedDraftClan clan;
 
-    public ClanEvent(@NotNull Clan clan) {
+    public ClanEvent(@Nullable IdentifiedDraftClan clan) {
 
         this.clan = clan;
     }
 
-    public Clan getClan() {
+    public @Nullable IdentifiedDraftClan getClan() {
         return clan;
     }
 }

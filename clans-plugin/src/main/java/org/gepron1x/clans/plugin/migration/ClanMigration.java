@@ -37,7 +37,7 @@ public final class ClanMigration {
 
         logger.info("Started migration - saving clans to the {} file", file);
 
-        return manager.getClans().thenApply(clans -> {
+        return manager.clans().thenApply(clans -> {
             try {
                 gson.toJson(clans, CLANS_SET_TYPE, new FileWriter(file));
                 return true;

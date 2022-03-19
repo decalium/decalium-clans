@@ -15,7 +15,6 @@ import org.jetbrains.annotations.Nullable;
 
 public final class PapiTagResolver implements TagResolver {
 
-
     private final OfflinePlayer player;
 
     public PapiTagResolver(@Nullable OfflinePlayer player) {
@@ -39,7 +38,7 @@ public final class PapiTagResolver implements TagResolver {
     }
 
     private boolean isPlaceholder(String name) {
-       return name.charAt(0) != '%' && name.charAt(name.length() - 1) != '%';
+       return name.charAt(0) == '%' && name.charAt(name.length() - 1) == '%';
     }
 
     @Override

@@ -3,14 +3,12 @@ package org.gepron1x.clans.plugin.edition;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import net.kyori.adventure.text.Component;
-import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.edition.ClanEdition;
 import org.gepron1x.clans.api.edition.HomeEdition;
 import org.gepron1x.clans.api.edition.MemberEdition;
 import org.gepron1x.clans.api.statistic.StatisticType;
-import org.gepron1x.clans.plugin.clan.ClanBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -54,14 +52,14 @@ public final class ClanEditionImpl implements ClanEdition {
 
     @Override
     public ClanEdition addMember(@NotNull ClanMember member) {
-        Preconditions.checkArgument(this.builder.member(member.getUniqueId()) == null, "member with same uuid already in the clan");
+        Preconditions.checkArgument(this.builder.member(member.uniqueId()) == null, "member with same uuid already in the clan");
         this.builder.addMember(member);
         return this;
     }
 
     @Override
     public ClanEdition removeMember(@NotNull ClanMember member) {
-        Preconditions.checkArgument(this.builder.member(member.getUniqueId()) != null, "cannot delete member that is not a clan");
+        Preconditions.checkArgument(this.builder.member(member.uniqueId()) != null, "cannot delete member that is not a clan");
         this.builder.removeMember(member);
         return this;
     }
@@ -78,14 +76,14 @@ public final class ClanEditionImpl implements ClanEdition {
 
     @Override
     public ClanEdition addHome(@NotNull ClanHome home) {
-        Preconditions.checkArgument(this.builder.home(home.getName()) == null, "Home with same name already in the clan");
+        Preconditions.checkArgument(this.builder.home(home.name()) == null, "Home with same name already in the clan");
         this.builder.addHome(home);
         return this;
     }
 
     @Override
     public ClanEdition removeHome(@NotNull ClanHome home) {
-        Preconditions.checkArgument(this.builder.home(home.getName()) != null, "cannot delete home that is not in the clan");
+        Preconditions.checkArgument(this.builder.home(home.name()) != null, "cannot delete home that is not in the clan");
         this.builder.removeHome(home);
         return this;
     }

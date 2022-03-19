@@ -27,15 +27,15 @@ public final class ClanHomeAdapter extends TypeAdapter<ClanHome> {
 
         out.beginObject();
 
-        out.name(NAME).value(value.getName());
+        out.name(NAME).value(value.name());
 
         out.name(CREATOR);
-        gson.toJson(value.getCreator(), UUID.class, out);
+        gson.toJson(value.creator(), UUID.class, out);
 
         out.name(DISPLAY_NAME);
-        gson.toJson(value.getDisplayName(), Component.class, out);
+        gson.toJson(value.displayName(), Component.class, out);
 
-        ItemStack icon = value.getIcon();
+        ItemStack icon = value.icon();
 
         if(icon != null) {
             out.name(ICON);
@@ -43,7 +43,7 @@ public final class ClanHomeAdapter extends TypeAdapter<ClanHome> {
         }
 
         out.name(LOCATION);
-        gson.toJson(value.getLocation(), Location.class, out);
+        gson.toJson(value.location(), Location.class, out);
 
         out.endObject();
 

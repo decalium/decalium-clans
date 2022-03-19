@@ -9,7 +9,6 @@ import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.CachingClanRepository;
-import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.clan.member.ClanRole;
@@ -76,13 +75,13 @@ public class MemberCommand extends AbstractClanCommand {
 
 
 
-            if(other.getRole().getWeight() > member.getRole().getWeight()) {
+            if(other.role().weight() > member.role().weight()) {
                 player.sendMessage(messages.commands().member().memberHasHigherWeight().with("member", memberPlayer.getName()));
                 return nullFuture();
             }
 
-            if(member.getRole().getWeight() <= role.getWeight()) {
-                player.sendMessage(messages.commands().member().role().roleHasHigherWeight().with("role", role.getDisplayName()));
+            if(member.role().weight() <= role.weight()) {
+                player.sendMessage(messages.commands().member().role().roleHasHigherWeight().with("role", role.displayName()));
                 return nullFuture();
             }
 
@@ -109,8 +108,8 @@ public class MemberCommand extends AbstractClanCommand {
                         .with("player", memberPlayer.getName()));
                 return nullFuture();
             }
-            if (other.getRole().getWeight() >= member.getRole().getWeight()) {
-                System.out.println("other: " + other.getRole().getWeight() + " member: " + member.getRole().getWeight());
+            if (other.role().weight() >= member.role().weight()) {
+                System.out.println("other: " + other.role().weight() + " member: " + member.role().weight());
                 player.sendMessage(messages.commands().member().memberHasHigherWeight().with("member", memberPlayer.getName()));
                 return nullFuture();
             }

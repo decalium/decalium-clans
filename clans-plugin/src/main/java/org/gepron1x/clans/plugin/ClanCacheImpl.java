@@ -1,11 +1,9 @@
 package org.gepron1x.clans.plugin;
 
 import com.google.common.base.MoreObjects;
-import org.gepron1x.clans.api.ClanCache;
-import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
-import org.gepron1x.clans.plugin.storage.IdentifiedClan;
+import org.gepron1x.clans.plugin.storage.IdentifiedDraftClanImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -16,59 +14,63 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class ClanCacheImpl implements ClanCache {
-    private final Map<String, IdentifiedClan> clanMap = new ConcurrentHashMap<>();
-    private final Map<Integer, IdentifiedClan> idClanMap = new ConcurrentHashMap<>();
-    private final Map<UUID, IdentifiedClan> userClanMap = new ConcurrentHashMap<>();
+public final class ClanCacheImpl {
+    private final Map<String, IdentifiedDraftClanImpl> clanMap = new ConcurrentHashMap<>();
+    private final Map<Integer, DraftClan> idClanMap = new ConcurrentHashMap<>();
+    private final Map<UUID, IdentifiedDraftClanImpl> userClanMap = new ConcurrentHashMap<>();
 
     public ClanCacheImpl() {
 
     }
-    @Override
+
     @Nullable
-    public DraftClan getUserClan(@NotNull UUID uuid) {
+    public IdentifiedDraftClanImpl getUserClan(@NotNull UUID uuid) {
         return userClanMap.get(uuid);
 
     }
 
-    @Override
     public @NotNull @UnmodifiableView Collection<DraftClan> getClans() {
-        return Collections.unmodifiableCollection(clanMap.values());
-    }
-
-    @Override
-    public boolean isCached(@NotNull Clan clan) {
-        return clanMap.containsValue(clan);
+        return Collections.unmodifiableCollection(idClanMap.values());
     }
 
 
-    @Override
+
     public boolean isCached(@NotNull String tag) {
         return clanMap.containsKey(tag);
     }
 
-    @Override
     @Nullable
-    public Clan getClan(@NotNull String tag) {
+    public IdentifiedDraftClanImpl getClan(@NotNull String tag) {
         return clanMap.get(tag);
     }
 
-    public void cacheClan(Clan clan) {
-        clanMap.put(clan.getTag(), clan);
-        for(ClanMember member : clan.getMembers()) {
-            userClanMap.put(member.getUniqueId(), clan);
+    public @Nullable DraftClan getClan(int id) {
+        return idClanMap.get(id);
+    }
+
+    public void cacheClan(int id, DraftClan clan) {
+        idClanMap.put(id, clan);
+        IdentifiedDraftClanImpl identifiedDraftClan = new IdentifiedDraftClanImpl(id, clan);
+        clanMap.put(clan.tag(), identifiedDraftClan);
+        for(ClanMember member : clan.members()) {
+            userClanMap.put(member.uniqueId(), identifiedDraftClan);
         }
     }
-    public void removeClan(Clan clan) {
-        clanMap.remove(clan.getTag());
-        userClanMap.entrySet().removeIf(entry -> entry.getValue().getTag().equals(clan.getTag()));
+
+
+    public void removeClan(int id) {
+        DraftClan clan = idClanMap.remove(id);
+        if(clan == null) return;
+        clanMap.remove(clan.tag());
+        for(UUID uuid : clan.memberMap().keySet()) userClanMap.remove(uuid);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("clanMap", clanMap)
-                .add("userClanMap", userClanMap)
+                .add("cachedClans", clanMap.values())
                 .toString();
     }
+
+
 }

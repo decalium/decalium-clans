@@ -9,11 +9,12 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Server;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.gepron1x.clans.api.ClanCache;
-import org.gepron1x.clans.api.clan.Clan;
+import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
+import org.gepron1x.clans.plugin.ClanCacheImpl;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
+import org.gepron1x.clans.plugin.storage.IdentifiedDraftClanImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -25,11 +26,11 @@ import java.util.stream.Collectors;
 public final class ClanChatChannel implements ChatChannel {
     private static final Key KEY = Key.key("decaliumclans", "clanchat");
     private final Server server;
-    private final ClanCache cache;
+    private final ClanCacheImpl cache;
     private final MessagesConfig messages;
     private final ClansConfig clansConfig;
 
-    public ClanChatChannel(@NotNull Server server, @NotNull ClanCache cache, @NotNull MessagesConfig messages, @NotNull ClansConfig clansConfig) {
+    public ClanChatChannel(@NotNull Server server, @NotNull ClanCacheImpl cache, @NotNull MessagesConfig messages, @NotNull ClansConfig clansConfig) {
         this.server = server;
         this.cache = cache;
         this.messages = messages;
@@ -54,9 +55,9 @@ public final class ClanChatChannel implements ChatChannel {
 
     @Override
     public List<Audience> recipients(CarbonPlayer sender) {
-        Clan clan = cache.getUserClan(sender.uuid());
+        IdentifiedDraftClanImpl clan = cache.getUserClan(sender.uuid());
         if(clan == null) return Collections.emptyList();
-        return clan.getMembers().stream()
+        return clan.clan().members().stream()
                 .map(m -> m.asPlayer(server))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -64,10 +65,10 @@ public final class ClanChatChannel implements ChatChannel {
 
     @Override
     public Set<CarbonPlayer> filterRecipients(CarbonPlayer sender, Set<CarbonPlayer> recipients) {
-        Clan clan = cache.getUserClan(sender.uuid());
+        IdentifiedDraftClanImpl clan = cache.getUserClan(sender.uuid());
         if(clan == null) return Collections.emptySet();
 
-        return recipients.stream().filter(p -> clan.getMember(sender.uuid()) != null).collect(Collectors.toSet());
+        return recipients.stream().filter(p -> clan.clan().member(sender.uuid()) != null).collect(Collectors.toSet());
     }
 
     @Override
@@ -98,11 +99,11 @@ public final class ClanChatChannel implements ChatChannel {
     @Override
     public @NotNull RenderedMessage render(CarbonPlayer sender, Audience recipient, Component message, Component originalMessage) {
 
-        Clan clan = Objects.requireNonNull(cache.getUserClan(sender.uuid()));
-        ClanMember member = Objects.requireNonNull(clan.getMember(sender.uuid()));
+        DraftClan clan = Objects.requireNonNull(cache.getUserClan(sender.uuid())).clan();
+        ClanMember member = Objects.requireNonNull(clan.member(sender.uuid()));
 
         return new RenderedMessage(clansConfig.chat().format()
-                .with("role", member.getRole())
+                .with("role", member.role())
                 .with("member", CarbonPlayer.renderName(sender))
                 .with("message", message)
                 .asComponent(), MessageType.CHAT);

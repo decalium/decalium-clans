@@ -5,11 +5,13 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import org.gepron1x.clans.api.clan.ClanHome;
+import org.gepron1x.clans.api.edition.HomeEdition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public final class ClanHomeImpl implements ClanHome {
     private final String name;
@@ -56,27 +58,27 @@ public final class ClanHomeImpl implements ClanHome {
     }
 
     @Override
-    public @NotNull String getName() {
+    public @NotNull String name() {
         return name;
     }
 
     @Override
-    public @NotNull Component getDisplayName() {
+    public @NotNull Component displayName() {
         return displayName;
     }
 
     @Override
-    public @NotNull UUID getCreator() {
+    public @NotNull UUID creator() {
         return creator;
     }
 
     @Override
-    public @NotNull Location getLocation() {
+    public @NotNull Location location() {
         return location.clone();
     }
 
     @Override
-    public @Nullable ItemStack getIcon() {
+    public @Nullable ItemStack icon() {
         return icon == null ? null : icon.clone();
     }
 
@@ -92,8 +94,8 @@ public final class ClanHomeImpl implements ClanHome {
                 .name(name)
                 .displayName(displayName)
                 .creator(creator)
-                .location(getLocation())
-                .icon(getIcon());
+                .location(location())
+                .icon(icon());
     }
 
     public static BuilderImpl builder() {
@@ -175,6 +177,33 @@ public final class ClanHomeImpl implements ClanHome {
                     .add("location", location)
                     .add("icon", icon)
                     .toString();
+        }
+
+        @Override
+        public void applyEdition(Consumer<HomeEdition> consumer) {
+            consumer.accept(new HomeEditionImpl());
+        }
+
+
+        private final class HomeEditionImpl implements HomeEdition {
+
+            @Override
+            public HomeEdition setIcon(@Nullable ItemStack icon) {
+                BuilderImpl.this.icon(icon);
+                return this;
+            }
+
+            @Override
+            public HomeEdition setLocation(@NotNull Location location) {
+                BuilderImpl.this.location(location);
+                return this;
+            }
+
+            @Override
+            public HomeEdition setDisplayName(@NotNull Component displayName) {
+                BuilderImpl.this.displayName(displayName);
+                return this;
+            }
         }
     }
 }
