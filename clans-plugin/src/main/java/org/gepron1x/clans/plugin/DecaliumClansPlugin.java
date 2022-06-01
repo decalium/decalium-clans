@@ -62,10 +62,10 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         this.futuresFactory = new BukkitFactoryOfTheFuture(this);
         this.builderFactory = new ClanBuilderFactoryImpl();
 
-        MiniMessage miniMessage = MiniMessage.builder().tags((TagResolver.WithoutArguments) (text) -> switch(text) {
+        MiniMessage miniMessage = MiniMessage.builder().tags(TagResolver.resolver((TagResolver.WithoutArguments) (text) -> switch(text) {
             case "prefix" -> Tag.selfClosingInserting(getMessages().prefix());
             default -> null;
-        }).build();
+        }, TagResolver.standard())).build();
 
         ConfigurationOptions options = new ConfigurationOptions.Builder()
                 .addSerialiser(new MessageSerializer(miniMessage))

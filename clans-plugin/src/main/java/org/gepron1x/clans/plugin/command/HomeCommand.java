@@ -103,7 +103,6 @@ public class HomeCommand extends AbstractClanCommand {
         }
        clan.edit(edition -> edition.addHome(home)).thenAccept(c -> player.sendMessage(messages.commands().home().created()))
                .exceptionally(this::exceptionHandler);
-
     }
 
     private void deleteHome(CommandContext<CommandSender> context) {

@@ -39,6 +39,9 @@ public final class ClanExecutionHandler implements CommandExecutionHandler<Comma
                 commandContext.store(CLAN_MEMBER, clan.member(player).orElseThrow());
                 this.delegate.execute(commandContext);
             }, () -> player.sendMessage(messages.notInTheClan()));
+        }).exceptionally(t -> {
+            t.printStackTrace();
+            return null;
         });
     }
 }

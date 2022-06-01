@@ -40,7 +40,7 @@ public interface DraftClan extends StatisticHolder, ComponentLike, Buildable<Dra
     @NotNull @Unmodifiable Map<UUID, ? extends ClanMember> memberMap();
 
     default Optional<ClanMember> member(@NotNull UUID uuid) {
-        return Optional.of(memberMap().get(uuid));
+        return Optional.ofNullable(memberMap().get(uuid));
     }
 
     default Optional<ClanMember> member(@NotNull OfflinePlayer player) {
@@ -65,7 +65,7 @@ public interface DraftClan extends StatisticHolder, ComponentLike, Buildable<Dra
     }
 
     default Optional<ClanHome> home(@NotNull String name) {
-        return Optional.of(homeMap().get(name));
+        return Optional.ofNullable(homeMap().get(name));
     }
 
 
