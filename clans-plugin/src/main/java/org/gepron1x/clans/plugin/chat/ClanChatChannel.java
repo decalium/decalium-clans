@@ -10,11 +10,11 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Server;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.gepron1x.clans.api.clan.DraftClan;
+import org.gepron1x.clans.api.clan.IdentifiedDraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
-import org.gepron1x.clans.plugin.ClanCacheImpl;
+import org.gepron1x.clans.plugin.cache.ClanCacheImpl;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
-import org.gepron1x.clans.plugin.storage.IdentifiedDraftClanImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -55,9 +55,9 @@ public final class ClanChatChannel implements ChatChannel {
 
     @Override
     public List<Audience> recipients(CarbonPlayer sender) {
-        IdentifiedDraftClanImpl clan = cache.getUserClan(sender.uuid());
+        IdentifiedDraftClan clan = cache.getUserClan(sender.uuid());
         if(clan == null) return Collections.emptyList();
-        return clan.clan().members().stream()
+        return clan.members().stream()
                 .map(m -> m.asPlayer(server))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -65,10 +65,10 @@ public final class ClanChatChannel implements ChatChannel {
 
     @Override
     public Set<CarbonPlayer> filterRecipients(CarbonPlayer sender, Set<CarbonPlayer> recipients) {
-        IdentifiedDraftClanImpl clan = cache.getUserClan(sender.uuid());
+        IdentifiedDraftClan clan = cache.getUserClan(sender.uuid());
         if(clan == null) return Collections.emptySet();
 
-        return recipients.stream().filter(p -> clan.clan().member(sender.uuid()) != null).collect(Collectors.toSet());
+        return recipients.stream().filter(p -> clan.member(sender.uuid()).isPresent()).collect(Collectors.toSet());
     }
 
     @Override
@@ -99,8 +99,8 @@ public final class ClanChatChannel implements ChatChannel {
     @Override
     public @NotNull RenderedMessage render(CarbonPlayer sender, Audience recipient, Component message, Component originalMessage) {
 
-        DraftClan clan = Objects.requireNonNull(cache.getUserClan(sender.uuid())).clan();
-        ClanMember member = Objects.requireNonNull(clan.member(sender.uuid()));
+        DraftClan clan = Objects.requireNonNull(cache.getUserClan(sender.uuid()));
+        ClanMember member = clan.member(sender.uuid()).orElseThrow();
 
         return new RenderedMessage(clansConfig.chat().format()
                 .with("role", member.role())

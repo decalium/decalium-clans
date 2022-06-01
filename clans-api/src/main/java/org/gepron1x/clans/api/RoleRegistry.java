@@ -8,11 +8,11 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.Collection;
 
 public interface RoleRegistry {
-    @NotNull ClanRole getDefaultRole();
-    @NotNull ClanRole getOwnerRole();
+    @NotNull ClanRole defaultRole();
+    @NotNull ClanRole ownerRole();
 
-    @Nullable ClanRole getRole(@NotNull String name);
+    @Nullable ClanRole role(@NotNull String name);
 
-    @NotNull @Unmodifiable Collection<ClanRole> getRoles();
+    @NotNull @Unmodifiable Collection<ClanRole> roles();
 
 }

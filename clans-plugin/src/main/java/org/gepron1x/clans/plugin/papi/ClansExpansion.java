@@ -4,14 +4,14 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
-import org.gepron1x.clans.api.clan.DraftClan;
+import org.gepron1x.clans.api.clan.IdentifiedDraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
-import org.gepron1x.clans.plugin.ClanCacheImpl;
+import org.gepron1x.clans.api.clan.member.ClanRole;
+import org.gepron1x.clans.plugin.cache.ClanCacheImpl;
 import org.gepron1x.clans.plugin.config.ClansConfig;
-import org.gepron1x.clans.plugin.storage.IdentifiedDraftClanImpl;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
+import java.util.Optional;
 
 
 public final class ClansExpansion extends PlaceholderExpansion {
@@ -49,18 +49,15 @@ public final class ClansExpansion extends PlaceholderExpansion {
 
     @Override
     public String onPlaceholderRequest(Player p, @NotNull String params) {
-        IdentifiedDraftClanImpl identifiedDraftClan = cache.getUserClan(p.getUniqueId());
-        if(identifiedDraftClan == null) return legacy.serialize(clansConfig.noClanPlaceholder());
-
-        DraftClan clan = identifiedDraftClan.clan();
-
-        ClanMember member = Objects.requireNonNull(clan.member(p));
+        IdentifiedDraftClan clan = cache.getUserClan(p.getUniqueId());
+        if(clan == null) return legacy.serialize(clansConfig.noClanPlaceholder());
+        Optional<ClanMember> member = clan.member(p);
         return switch(params) {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
             case TAG -> clan.tag();
             case DISPLAY_NAME -> legacy.serialize(clan.displayName());
             case OWNER -> legacy.serialize(clan.owner().renderName(server));
             case MEMBER_COUNT -> String.valueOf(clan.members().size());
-            case MEMBER_ROLE -> legacy.serialize(member.role().displayName());
+            case MEMBER_ROLE -> (member.map(ClanMember::role).map(ClanRole::displayName).map(this.legacy::serialize).orElse(""));
             default -> null;
         };
     }

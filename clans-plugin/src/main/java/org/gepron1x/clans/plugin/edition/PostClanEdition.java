@@ -17,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
@@ -45,7 +46,7 @@ public final class PostClanEdition implements ClanEdition {
         this.regionContainer = regionContainer;
     }
     @Override
-    public ClanEdition setDisplayName(@NotNull Component displayName) {
+    public ClanEdition rename(@NotNull Component displayName) {
         return this;
     }
 
@@ -66,7 +67,7 @@ public final class PostClanEdition implements ClanEdition {
 
     @Override
     public ClanEdition addMember(@NotNull ClanMember member) {
-        for(ClanHome home : clan.getHomes()) {
+        for(ClanHome home : clan.homes()) {
             RegionManager regionManager =  getRegionManager(home.location());
             ProtectedRegion region = regionManager.getRegion(nameFor(clan, home));
             if(region == null) continue;
@@ -77,7 +78,7 @@ public final class PostClanEdition implements ClanEdition {
 
     @Override
     public ClanEdition removeMember(@NotNull ClanMember member) {
-        for(ClanHome home : clan.getHomes()) {
+        for(ClanHome home : clan.homes()) {
             RegionManager regionManager = getRegionManager(home.location());
             ProtectedRegion region = regionManager.getRegion(nameFor(clan, home));
             if(region == null) continue;
@@ -106,7 +107,7 @@ public final class PostClanEdition implements ClanEdition {
             stand.setMarker(true);
             stand.setInvisible(true);
             PersistentDataContainer pdc = stand.getPersistentDataContainer();
-            pdc.set(CLAN_NAME, PersistentDataType.STRING, clan.getTag());
+            pdc.set(CLAN_NAME, PersistentDataType.STRING, clan.tag());
             pdc.set(CLAN_HOME_NAME, PersistentDataType.STRING, home.name());
             stand.customName(LinearComponents.linear(Component.text("База "), home.displayName()));
             stand.setDisabledSlots(EquipmentSlot.values());
@@ -138,7 +139,7 @@ public final class PostClanEdition implements ClanEdition {
             PersistentDataContainer pdc = as.getPersistentDataContainer();
             String clanTag = pdc.get(CLAN_NAME, PersistentDataType.STRING);
             String homeName = pdc.get(CLAN_HOME_NAME, PersistentDataType.STRING);
-            if(Objects.equals(clanTag, clan.getTag()) && Objects.equals(homeName, home.name())) {
+            if(Objects.equals(clanTag, clan.tag()) && Objects.equals(homeName, home.name())) {
                 as.remove();
             }
         });
@@ -157,7 +158,7 @@ public final class PostClanEdition implements ClanEdition {
     }
 
     private static String nameFor(Clan clan, ClanHome home) {
-        return "decaliumclans_"+clan.getTag()+"_"+home.name();
+        return "decaliumclans_"+clan.tag()+"_"+home.name();
     }
 
     private static class PostMemberEdition implements MemberEdition {

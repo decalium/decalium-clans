@@ -16,8 +16,8 @@ public interface ClanRepository {
     @NotNull CentralisedFuture<Boolean> removeClan(@NotNull Clan clan);
 
 
-    CentralisedFuture<Optional<Clan>> requestClan(@NotNull String tag);
-    CentralisedFuture<Optional<Clan>> requestUserClan(@NotNull UUID uuid);
+    @NotNull CentralisedFuture<Optional<Clan>> requestClan(@NotNull String tag);
+    @NotNull CentralisedFuture<Optional<Clan>> requestUserClan(@NotNull UUID uuid);
 
     default CentralisedFuture<Optional<Clan>> requestUserClan(@NotNull OfflinePlayer player) {
         return requestUserClan(player.getUniqueId());

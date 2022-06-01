@@ -35,9 +35,6 @@ public interface ClanStorage {
 
     boolean removeClan(int id);
 
-
-
-
     record SaveResult(int id, ClanCreationResult.Status status) {
         public static final SaveResult ALREADY_EXISTS = new SaveResult(Integer.MIN_VALUE, ClanCreationResult.Status.ALREADY_EXISTS);
         public static final SaveResult MEMBERS_IN_OTHER_CLANS = new SaveResult(Integer.MIN_VALUE, ClanCreationResult.Status.MEMBERS_IN_OTHER_CLANS);
@@ -51,7 +48,6 @@ public interface ClanStorage {
 
 
     }
-
 
 
 }

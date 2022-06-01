@@ -18,7 +18,7 @@ public interface ClanEdition extends Edition<DraftClan> {
     @NotNull
     default Class<DraftClan> getTarget() { return DraftClan.class; }
 
-    ClanEdition setDisplayName(@NotNull Component displayName);
+    ClanEdition rename(@NotNull Component displayName);
 
     ClanEdition setStatistic(@NotNull StatisticType type, int value);
 

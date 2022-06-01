@@ -8,6 +8,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
+import org.gepron1x.clans.api.edition.EditionApplicable;
+import org.gepron1x.clans.api.edition.MemberEdition;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -55,7 +57,7 @@ public interface ClanMember extends Buildable<ClanMember, ClanMember.Builder>, C
         return renderName(Bukkit.getServer());
     }
 
-    interface Builder extends Buildable.Builder<ClanMember> {
+    interface Builder extends Buildable.Builder<ClanMember>, EditionApplicable<ClanMember, MemberEdition> {
         @Contract("_ -> this")
         @NotNull Builder uuid(UUID uuid);
 

@@ -9,15 +9,14 @@ import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 public interface DecaliumClansApi extends ClanBuilderFactory {
 
-    @NotNull ClanRepository getClanManager();
+    @NotNull CachingClanRepository repository();
 
-    @NotNull FactoryOfTheFuture getFuturesFactory();
+    @NotNull FactoryOfTheFuture futuresFactory();
 
-    @NotNull ClanCache getClanCache();
 
-    @NotNull ClanBuilderFactory getBuilderFactory();
+    @NotNull ClanBuilderFactory builderFactory();
 
-    @NotNull RoleRegistry getRoleRegistry();
+    @NotNull RoleRegistry roleRegistry();
 
 
 
@@ -25,24 +24,24 @@ public interface DecaliumClansApi extends ClanBuilderFactory {
     @Override
     @NotNull
     default DraftClan.Builder draftClanBuilder() {
-        return getBuilderFactory().draftClanBuilder();
+        return builderFactory().draftClanBuilder();
     }
 
     @Override
     @NotNull
     default ClanMember.Builder memberBuilder() {
-        return getBuilderFactory().memberBuilder();
+        return builderFactory().memberBuilder();
     }
 
     @Override
     @NotNull
     default ClanHome.Builder homeBuilder() {
-        return getBuilderFactory().homeBuilder();
+        return builderFactory().homeBuilder();
     }
 
     @Override
     @NotNull
     default ClanRole.Builder roleBuilder() {
-        return getBuilderFactory().roleBuilder();
+        return builderFactory().roleBuilder();
     }
 }

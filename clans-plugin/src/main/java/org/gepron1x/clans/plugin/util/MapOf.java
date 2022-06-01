@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 
 public record MapOf<K, V>(Function<V, K> keyMapper, Collection<V> values) {
 
@@ -15,10 +16,16 @@ public record MapOf<K, V>(Function<V, K> keyMapper, Collection<V> values) {
 
     public Map<K, V> create() {
         if(values.isEmpty()) return Map.of();
-        Map<K, V> map = new HashMap<>(values.size());
+        return Map.copyOf(create(HashMap::new));
+    }
+
+    public <M extends Map<K, V>> M create(IntFunction<M> mapFactory) {
+        M map = mapFactory.apply(values.size());
         for(V value : values) {
             map.put(keyMapper.apply(value), value);
         }
-        return Map.copyOf(map);
+        return map;
     }
+
+
 }

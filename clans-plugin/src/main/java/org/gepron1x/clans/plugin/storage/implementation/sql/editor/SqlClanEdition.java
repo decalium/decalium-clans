@@ -42,7 +42,7 @@ public final class SqlClanEdition implements ClanEdition {
         this.clanId = clanId;
     }
     @Override
-    public ClanEdition setDisplayName(@NotNull Component displayName) {
+    public ClanEdition rename(@NotNull Component displayName) {
         handle.createUpdate(UPDATE_DISPLAY_NAME)
                 .bind(0, displayName)
                 .bind(1, clanId)

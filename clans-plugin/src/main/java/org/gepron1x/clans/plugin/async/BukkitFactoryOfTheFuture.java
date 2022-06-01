@@ -21,7 +21,10 @@ public final class BukkitFactoryOfTheFuture implements FactoryOfTheFuture {
 
     public BukkitFactoryOfTheFuture(@NotNull Plugin plugin) {
         BukkitScheduler scheduler = plugin.getServer().getScheduler();
-        this.mainThreadExecutor = scheduler.getMainThreadExecutor(plugin);
+        this.mainThreadExecutor = r -> {
+            if(plugin.getServer().isPrimaryThread()) r.run();
+            scheduler.runTask(plugin, r);
+        };
         this.asyncThreadExecutor = r -> scheduler.runTaskAsynchronously(plugin, r);
     }
 

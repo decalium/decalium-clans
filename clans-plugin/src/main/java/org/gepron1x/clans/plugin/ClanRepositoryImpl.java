@@ -42,12 +42,12 @@ public final class ClanRepositoryImpl implements ClanRepository {
     }
 
     @Override
-    public CentralisedFuture<Optional<Clan>> requestClan(@NotNull String tag) {
+    public @NotNull CentralisedFuture<Optional<Clan>> requestClan(@NotNull String tag) {
         return futuresFactory.supplyAsync(() -> Optional.ofNullable(this.storage.loadClan(tag)).map(this::adapt));
     }
 
     @Override
-    public CentralisedFuture<Optional<Clan>> requestUserClan(@NotNull UUID uuid) {
+    public @NotNull CentralisedFuture<Optional<Clan>> requestUserClan(@NotNull UUID uuid) {
         return futuresFactory.supplyAsync(() -> Optional.ofNullable(this.storage.loadUserClan(uuid)).map(this::adapt));
     }
 
@@ -56,7 +56,7 @@ public final class ClanRepositoryImpl implements ClanRepository {
         return futuresFactory.supplyAsync(() -> this.storage.loadClans().stream().map(this::adapt).collect(Collectors.toUnmodifiableSet()));
     }
 
-    private Clan adapt(IdentifiedDraftClan draftClan) {
+    Clan adapt(IdentifiedDraftClan draftClan) {
         return new ClanImpl(draftClan.id(), draftClan, this.storage, this.futuresFactory);
     }
 }

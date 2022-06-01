@@ -1,10 +1,10 @@
 plugins {
     java
     `java-library`
-    id("io.papermc.paperweight.userdev") version "1.3.0"
+    // id("io.papermc.paperweight.userdev") version "1.3.5"
     id("xyz.jpenilla.run-paper") version "1.0.6"
     id("net.minecrell.plugin-yml.bukkit") version "0.5.0"
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 group = "org.gepron1x"
@@ -25,24 +25,24 @@ repositories {
 
 dependencies {
     implementation(project(":clans-api"))
-   // compileOnly("io.papermc.paper:paper-api:1.17.1-R0.1-SNAPSHOT")
-    paperDevBundle("1.18-R0.1-SNAPSHOT")
-    implementation("org.jdbi:jdbi3-core:3.27.0") {
+    compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
+    // paperDevBundle("1.18.2-R0.1-SNAPSHOT")
+    implementation("org.jdbi:jdbi3-core:3.28.0") {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
-    implementation("cloud.commandframework:cloud-paper:1.6.1")
+    implementation("cloud.commandframework:cloud-paper:1.6.2")
     implementation("space.arim.dazzleconf:dazzleconf-ext-snakeyaml:1.2.1") {
         exclude(group = "org.yaml", module = "snakeyaml")
     }
-    implementation("com.h2database:h2:2.1.210")
+    implementation("com.h2database:h2:2.1.212")
     compileOnly("me.clip:placeholderapi:2.10.9")
     implementation("com.zaxxer:HikariCP:5.0.1") {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
-    implementation ("net.kyori:adventure-text-minimessage:4.10.0-SNAPSHOT") {
+    implementation ("net.kyori:adventure-text-minimessage:4.10.1") {
         exclude(group = "net.kyori", module = "adventure-api")
     }
-    compileOnly("net.draycia:carbonchat-api:2.0.7") {
+    compileOnly("net.draycia:carbonchat-api:2.0.10") {
         exclude("net.kyori", "adventure-text-minimessage")
     }
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.0") {
@@ -50,6 +50,7 @@ dependencies {
     }
 
 }
+
 
 var libraryPackage = "org.gepron1x.clans.libraries"
 
@@ -88,7 +89,7 @@ tasks {
         // Configure the Minecraft version for our task.
         // This is the only required configuration besides applying the plugin.
         // Your plugin's jar (or shadowJar if present) will be used automatically.
-        minecraftVersion("1.18.1")
+        minecraftVersion("1.18.2")
         jvmArgs("-Xms128M", "-Xmx512M")
     }
 }
@@ -103,7 +104,7 @@ bukkit {
     name = "DecaliumClans"
     main = "org.gepron1x.clans.plugin.DecaliumClansPlugin"
     description = "Shining clans plugin"
-    apiVersion = "1.17"
+    apiVersion = "1.18"
     authors = listOf("gepron1x", "manya")
     depend = listOf("WorldGuard")
     softDepend = listOf("PlaceholderAPI", "CarbonChat")

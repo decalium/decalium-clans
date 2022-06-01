@@ -3,6 +3,7 @@ package org.gepron1x.clans.plugin.util.message;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
 import java.util.Arrays;
@@ -27,11 +28,11 @@ public interface WithTags<T extends WithTags<T>> { // i have no clue how to call
 
 
     default T with(String key, ComponentLike like) {
-        return with(key, Tag.inserting(like));
+        return with(Placeholder.component(key, like));
     }
 
     default T withMiniMessage(String key, String value) {
-        return with(key, Tag.preProcessParsed(value));
+        return with(Placeholder.parsed(key, value));
     }
 
 

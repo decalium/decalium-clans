@@ -16,13 +16,9 @@ import org.gepron1x.clans.api.statistic.StatisticHolder;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public interface DraftClan extends StatisticHolder, ComponentLike, Buildable<DraftClan, DraftClan.Builder>, ForwardingAudience {
@@ -43,12 +39,11 @@ public interface DraftClan extends StatisticHolder, ComponentLike, Buildable<Dra
 
     @NotNull @Unmodifiable Map<UUID, ? extends ClanMember> memberMap();
 
-    @Nullable default ClanMember member(@NotNull UUID uuid) {
-        return memberMap().get(uuid);
+    default Optional<ClanMember> member(@NotNull UUID uuid) {
+        return Optional.of(memberMap().get(uuid));
     }
 
-    @Nullable
-    default ClanMember member(@NotNull OfflinePlayer player) {
+    default Optional<ClanMember> member(@NotNull OfflinePlayer player) {
         return member(player.getUniqueId());
     }
 
@@ -69,8 +64,8 @@ public interface DraftClan extends StatisticHolder, ComponentLike, Buildable<Dra
         return homeMap().values();
     }
 
-    @Nullable default ClanHome home(@NotNull String name) {
-        return homeMap().get(name);
+    default Optional<ClanHome> home(@NotNull String name) {
+        return Optional.of(homeMap().get(name));
     }
 
 

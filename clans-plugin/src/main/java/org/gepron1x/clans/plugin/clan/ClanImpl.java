@@ -6,10 +6,10 @@ import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.edition.ClanEdition;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
 import org.jetbrains.annotations.NotNull;
+import space.arim.omnibus.util.concurrent.CentralisedFuture;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public final class ClanImpl implements Clan, DelegatingClan {
@@ -32,7 +32,7 @@ public final class ClanImpl implements Clan, DelegatingClan {
     }
 
     @Override
-    public @NotNull CompletableFuture<Clan> edit(Consumer<ClanEdition> consumer) {
+    public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> consumer) {
         DraftClan.Builder builder = draftClan.toBuilder();
         builder.applyEdition(consumer);
         return futuresFactory.runAsync(() -> this.storage.applyEdition(this.id, consumer))

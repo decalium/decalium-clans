@@ -10,7 +10,6 @@ import org.gepron1x.clans.api.edition.MemberEdition;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.util.Optionals;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.*;
@@ -78,8 +77,8 @@ public final class DraftClanImpl implements DraftClan {
     }
 
     @Override
-    public @Nullable ClanMember member(@NotNull UUID uuid) {
-        return this.memberMap.get(uuid);
+    public Optional<ClanMember> member(@NotNull UUID uuid) {
+        return Optional.ofNullable(this.memberMap.get(uuid));
     }
 
     @Override
@@ -88,8 +87,8 @@ public final class DraftClanImpl implements DraftClan {
     }
 
     @Override
-    public @Nullable ClanHome home(@NotNull String name) {
-        return this.homeMap.get(name);
+    public Optional<ClanHome> home(@NotNull String name) {
+        return Optional.ofNullable(this.homeMap.get(name));
     }
 
     @Override
@@ -236,7 +235,7 @@ public final class DraftClanImpl implements DraftClan {
         private final class ClanEditionImpl implements ClanEdition {
 
             @Override
-            public ClanEdition setDisplayName(@NotNull Component displayName) {
+            public ClanEdition rename(@NotNull Component displayName) {
                 BuilderImpl.this.displayName(displayName);
                 return this;
             }
@@ -273,7 +272,10 @@ public final class DraftClanImpl implements DraftClan {
 
             @Override
             public ClanEdition editMember(@NotNull UUID uuid, @NotNull Consumer<MemberEdition> consumer) {
-
+                ClanMember member = Objects.requireNonNull(BuilderImpl.this.members.get(uuid));
+                ClanMember.Builder builder = member.toBuilder();
+                builder.applyEdition(consumer);
+                BuilderImpl.this.removeMember(member).addMember(member);
                 return this;
             }
 
