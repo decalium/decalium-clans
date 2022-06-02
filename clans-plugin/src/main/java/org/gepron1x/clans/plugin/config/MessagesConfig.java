@@ -20,6 +20,7 @@ public interface MessagesConfig {
     Message noPermission();
 
 
+
     @ConfKey("no-clan-permission")
     @DefaultString("<prefix> Your role does not grant you permission to do this.")
     Message noClanPermission();

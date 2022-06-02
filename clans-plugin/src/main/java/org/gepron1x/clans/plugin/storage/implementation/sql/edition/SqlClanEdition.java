@@ -2,7 +2,6 @@ package org.gepron1x.clans.plugin.storage.implementation.sql.edition;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
-import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.edition.ClanEdition;
@@ -12,8 +11,8 @@ import org.gepron1x.clans.api.statistic.StatisticType;
 import org.intellij.lang.annotations.Language;
 import org.jdbi.v3.core.Handle;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -36,17 +35,17 @@ public final class SqlClanEdition implements ClanEdition {
     @Language("SQL")
     private static final String DELETE_HOME = "DELETE FROM `homes` WHERE `clan_tag`=? AND `name`=?";
     private final Handle handle;
-    private final Clan clan;
+    private final @Nullable int clanId;
 
-    public SqlClanEdition(@NotNull Handle handle, @NotNull Clan clan) {
+    public SqlClanEdition(@NotNull Handle handle, int clanId) {
         this.handle = handle;
-        this.clan = clan;
+        this.clanId = clanId;
     }
     @Override
-    public ClanEdition setDisplayName(@NotNull Component displayName) {
+    public ClanEdition rename(@NotNull Component displayName) {
         handle.createUpdate(UPDATE_DISPLAY_NAME)
                 .bind(0, displayName)
-                .bind(1, clan.getId())
+                .bind(1, clanId)
                 .execute();
         return this;
     }
@@ -55,7 +54,7 @@ public final class SqlClanEdition implements ClanEdition {
     public ClanEdition setStatistic(@NotNull StatisticType type, int value) {
         handle.createUpdate(UPDATE_STATISTIC)
                 .bind(0, value)
-                .bind(1, clan.getId())
+                .bind(1, clanId)
                 .bind(2, type).execute();
         return this;
     }
@@ -68,7 +67,7 @@ public final class SqlClanEdition implements ClanEdition {
     @Override
     public ClanEdition removeStatistic(@NotNull StatisticType type) {
         handle.createUpdate(DELETE_STATISTIC)
-                .bind(0, clan.getId())
+                .bind(0, clanId)
                 .bind(1, type).execute();
         return this;
 
@@ -77,9 +76,9 @@ public final class SqlClanEdition implements ClanEdition {
     @Override
     public ClanEdition addMember(@NotNull ClanMember member) {
         int updateCount = handle.createUpdate(INSERT_MEMBER)
-                .bind(0, clan.getId())
-                .bind(1, member.getUniqueId())
-                .bind(2, member.getRole()).execute();
+                .bind(0, clanId)
+                .bind(1, member.uniqueId())
+                .bind(2, member.role()).execute();
         if(updateCount != 1) {
             handle.rollback();
             throw new IllegalArgumentException("Member with given uuid already in the clan");
@@ -89,25 +88,25 @@ public final class SqlClanEdition implements ClanEdition {
 
     @Override
     public ClanEdition removeMember(@NotNull ClanMember member) {
-        handle.createUpdate(DELETE_MEMBER).bind(0, member.getUniqueId()).execute();
+        handle.createUpdate(DELETE_MEMBER).bind(0, member.uniqueId()).execute();
         return this;
     }
 
     @Override
     public ClanEdition editMember(@NotNull UUID member, @NotNull Consumer<MemberEdition> consumer) {
-        consumer.accept(new SqlMemberEdition(handle, clan, Objects.requireNonNull(clan.getMember(member))));
+        consumer.accept(new SqlMemberEdition(handle, clanId, member));
         return this;
     }
 
     @Override
     public ClanEdition addHome(@NotNull ClanHome home) {
-        Location loc = home.getLocation();
+        Location loc = home.location();
         Integer homeId = handle.createUpdate(INSERT_HOME)
-                .bind(0, clan.getId())
-                .bind(1, home.getName())
-                .bind(2, home.getCreator())
-                .bind(3, home.getDisplayName())
-                .bind(4, home.getIcon())
+                .bind(0, clanId)
+                .bind(1, home.name())
+                .bind(2, home.creator())
+                .bind(3, home.displayName())
+                .bind(4, home.icon())
                 .executeAndReturnGeneratedKeys("id").mapTo(Integer.class).findFirst().orElse(null);
 
         if(homeId == null) {
@@ -131,14 +130,14 @@ public final class SqlClanEdition implements ClanEdition {
     @Override
     public ClanEdition removeHome(@NotNull ClanHome home) {
         handle.createUpdate(DELETE_HOME)
-                .bind(0, clan.getId())
-                .bind(1, home.getName());
+                .bind(0, clanId)
+                .bind(1, home.name());
         return this;
     }
 
     @Override
     public ClanEdition editHome(@NotNull String name, @NotNull Consumer<HomeEdition> consumer) {
-        consumer.accept(new SqlHomeEdition(handle, clan, Objects.requireNonNull(clan.getHome(name))));
+        consumer.accept(new SqlHomeEdition(handle, clanId, name));
         return this;
     }
 

@@ -1,59 +1,71 @@
 package org.gepron1x.clans.plugin.clan;
 
 import com.google.common.base.MoreObjects;
-import net.kyori.adventure.text.Component;
 import org.gepron1x.clans.api.clan.Clan;
-import org.gepron1x.clans.api.clan.ClanHome;
 import org.gepron1x.clans.api.clan.DraftClan;
-import org.gepron1x.clans.api.clan.member.ClanMember;
-import org.gepron1x.clans.api.statistic.StatisticType;
+import org.gepron1x.clans.api.edition.ClanEdition;
+import org.gepron1x.clans.plugin.storage.ClanStorage;
 import org.jetbrains.annotations.NotNull;
+import space.arim.omnibus.util.concurrent.CentralisedFuture;
+import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.Objects;
+import java.util.function.Consumer;
 
-public final class ClanImpl extends AbstractClanBase implements Clan {
+public final class ClanImpl implements Clan, DelegatingClan {
+
     private final int id;
+    private final DraftClan draftClan;
+    private transient final ClanStorage storage;
+    private transient final FactoryOfTheFuture futuresFactory;
 
-    ClanImpl(int id, String tag,
-             Component displayName,
-             ClanMember owner, Map<UUID, ClanMember> memberMap,
-             Map<String, ClanHome> homeMap,
-             Map<StatisticType, Integer> statistics) {
-        super(tag, displayName, owner, memberMap, homeMap, statistics);
+    public ClanImpl(int id, DraftClan draftClan, ClanStorage storage, FactoryOfTheFuture futuresFactory) {
+
         this.id = id;
+        this.draftClan = draftClan;
+        this.storage = storage;
+        this.futuresFactory = futuresFactory;
     }
-
     @Override
-    public int getId() {
+    public int id() {
         return id;
     }
 
     @Override
-    public @NotNull DraftClan toDraft() {
-        return new DraftClanImpl(getTag(), getDisplayName(), getOwner(), memberMap(), homeMap(), getStatistics());
+    public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> consumer) {
+        DraftClan.Builder builder = draftClan.toBuilder();
+        builder.applyEdition(consumer);
+        return futuresFactory.runAsync(() -> this.storage.applyEdition(this.id, consumer))
+                .thenApply(ignored -> new ClanImpl(this.id, builder.build(), this.storage, this.futuresFactory));
     }
+
+
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        ClanImpl clan = (ClanImpl) o;
-        return id == clan.id;
+        ClanImpl clan2 = (ClanImpl) o;
+        return id == clan2.id && draftClan.equals(clan2.draftClan);
     }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        result = (31 * result) + id;
-        return id;
+        return Objects.hash(id, draftClan);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("id", id)
-                .add("super", super.toString()).toString();
+                .add("draftClan", draftClan)
+                .add("storage", storage)
+                .add("futuresFactory", futuresFactory)
+                .toString();
+    }
+
+    @Override
+    public DraftClan delegate() {
+        return this.draftClan;
     }
 }

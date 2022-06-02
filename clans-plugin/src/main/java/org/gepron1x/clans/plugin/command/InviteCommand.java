@@ -10,18 +10,17 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.gepron1x.clans.api.CachingClanRepository;
 import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.RoleRegistry;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
+import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-import space.arim.omnibus.util.concurrent.CentralisedFuture;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.util.Collections;
@@ -30,7 +29,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static java.util.Objects.requireNonNull;
 import static net.kyori.adventure.text.Component.text;
 
 public class InviteCommand extends AbstractClanCommand {
@@ -62,7 +60,12 @@ public class InviteCommand extends AbstractClanCommand {
         manager.command(builder.literal("invite")
                 .permission("clans.invite")
                 .argument(SinglePlayerSelectorArgument.of("receiver"))
-                .handler(this::invite)
+                .handler(
+                        new ClanExecutionHandler(
+                                new PermissiveClanExecutionHandler(this::invite, ClanPermission.INVITE, this.messages),
+                                this.clanRepository, this.messages
+                        )
+                )
         );
 
         manager.command(builder.literal("accept")
@@ -89,23 +92,12 @@ public class InviteCommand extends AbstractClanCommand {
             return;
         }
 
-        CentralisedFuture<Clan> first = this.clanManager.getUserClan(player.getUniqueId());
-        CentralisedFuture<Clan> second = this.clanManager.getUserClan(receiver.getUniqueId());
+        Clan clan = context.get(ClanExecutionHandler.CLAN);
 
-        futuresFactory.allOf(first, second).thenAcceptSync(ignored -> {
-            Clan clan = first.join();
-            Clan receiverClan = second.join();
+        this.clanRepository.requestUserClan(receiver.getUniqueId()).thenAcceptSync(opt -> {
 
-            if (clan == null) {
-                player.sendMessage(messages.notInTheClan());
-                return;
-            }
-            if (!requireNonNull(clan.getMember(player)).hasPermission(ClanPermission.INVITE)) {
-                player.sendMessage(messages.noClanPermission());
-                return;
-            }
 
-            if (receiverClan != null) {
+            if (opt.isPresent()) {
                 player.sendMessage(messages.playerIsAlreadyInClan().with("player", receiver.displayName()));
                 return;
             }
@@ -115,7 +107,7 @@ public class InviteCommand extends AbstractClanCommand {
 
             receiver.sendMessage(messages.commands().invitation().invitationMessage()
                     .withMiniMessage("sender", player.getName())
-                    .with("clan_display_name", clan.getDisplayName())
+                    .with("clan_display_name", clan.displayName())
             );
         }).exceptionally(this::exceptionHandler);
 
@@ -127,15 +119,15 @@ public class InviteCommand extends AbstractClanCommand {
         Invitation invitation = checkInvitation(player, name);
         if (invitation == null) return;
         invitations.remove(player.getUniqueId(), name);
-        ClanMember member = builderFactory.memberBuilder().uuid(invitation.receiver()).role(roleRegistry.getDefaultRole()).build();
+        ClanMember member = builderFactory.memberBuilder().uuid(invitation.receiver()).role(roleRegistry.defaultRole()).build();
         Player senderPlayer = player.getServer().getPlayer(invitation.sender());
-        this.clanManager.getUserClan(invitation.sender())
+        this.clanRepository.requestUserClan(invitation.sender())
                 .thenComposeSync(clan -> {
-                    if (clan == null) {
+                    if (clan.isEmpty()) {
                         player.sendMessage(messages.commands().invitation().clanGotDeleted());
                         return futuresFactory.completedFuture(false);
                     }
-                    return this.clanManager.editClan(clan, clanEditor -> clanEditor.addMember(member)).thenApply(c -> true);
+                    return clan.get().edit(edition -> edition.addMember(member)).thenApply(c -> true);
                 }).thenAcceptSync(bool -> {
                     if (!bool) return;
                         if (senderPlayer != null) {
@@ -173,13 +165,16 @@ public class InviteCommand extends AbstractClanCommand {
     private List<String> invitationCompletion(CommandContext<CommandSender> ctx, String s) {
         if(!(ctx.getSender() instanceof Player player)) return Collections.emptyList();
         UUID uuid = player.getUniqueId();
-        Clan clan = this.clanManager.getUserClanIfPresent(uuid);
-        if(clan == null) return Collections.emptyList();
-        return clan.getMembers().stream()
-                .map(m -> m.asPlayer(player.getServer()))
-                .filter(Objects::nonNull)
-                .map(Player::getName)
-                .collect(Collectors.toList());
+        return this.clanRepository.userClanIfCached(uuid).map(Clan::members)
+                .map(members ->
+                        members.stream()
+                                .map(m -> m.asPlayer(player.getServer()))
+                                .filter(Objects::nonNull)
+                                .map(Player::getName)
+                                .collect(Collectors.toList())
+                )
+                .orElse(Collections.emptyList());
+
     }
 
 }

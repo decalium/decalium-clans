@@ -10,19 +10,18 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.gepron1x.clans.api.CachingClanRepository;
 import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
+import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.plugin.command.argument.ComponentArgument;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-import space.arim.omnibus.util.concurrent.CentralisedFuture;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 public class HomeCommand extends AbstractClanCommand {
@@ -53,20 +52,32 @@ public class HomeCommand extends AbstractClanCommand {
                 .permission("clans.home.create")
                 .argument(StringArgument.of("name"))
                 .argument(ComponentArgument.optional("display_name", StringArgument.StringMode.GREEDY))
-                .handler(this::createHome)
-
+                .handler(
+                        new ClanExecutionHandler(
+                                new PermissiveClanExecutionHandler(this::createHome, ClanPermission.ADD_HOME, this.messages),
+                                this.clanRepository, this.messages)
+                )
         );
 
         manager.command(builder.literal("delete")
                 .permission("clans.home.delete")
                 .argument(StringArgument.of("name"))
-                .handler(this::deleteHome)
+                .handler(new ClanExecutionHandler(new PermissiveClanExecutionHandler(
+                        new HomeRequiredExecutorHandler(this::deleteHome, "name", this.messages),
+                        ClanPermission.REMOVE_HOME,
+                        this.messages
+
+                ), this.clanRepository, this.messages))
         );
 
         manager.command(builder.literal("teleport")
                 .permission("clans.home.teleport")
                 .argument(StringArgument.of("name"))
-                .handler(this::teleportToHome)
+                .handler(new ClanExecutionHandler(
+                        new HomeRequiredExecutorHandler(this::teleportToHome, "name", this.messages),
+                        this.clanRepository,
+                        this.messages)
+                )
         );
 
     }
@@ -85,69 +96,41 @@ public class HomeCommand extends AbstractClanCommand {
                 .location(location)
                 .icon(icon).build();
 
-        requireClan(player).thenComposeSync(clan -> {
-            if(clan == null) return nullFuture();
-            ClanMember member = getMember(clan, player);
-            if(!checkPermission(player, member, ClanPermission.ADD_HOME)) return nullFuture();
-            if(clan.getHome(name) != null) {
-                player.sendMessage(messages.commands().home().homeAlreadyExists().with("name", name));
-                return nullFuture();
-            }
-
-            return clanManager.editClan(clan, clanEditor -> clanEditor.addHome(home));
-        }).thenAccept(clan -> {
-            player.sendMessage(messages.commands().home().created());
-        }).exceptionally(this::exceptionHandler);
-
+        Clan clan = context.get(ClanExecutionHandler.CLAN);
+        if(clan.home(name).isPresent()) {
+            player.sendMessage(messages.commands().home().homeAlreadyExists().with("name", name));
+            return;
+        }
+       clan.edit(edition -> edition.addHome(home)).thenAccept(c -> player.sendMessage(messages.commands().home().created()))
+               .exceptionally(this::exceptionHandler);
     }
 
     private void deleteHome(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
-        String name = context.get("name");
-        requireHome(player, name).thenComposeSync(pair -> {
-            Clan clan = pair.clan();
-            ClanHome home = pair.home();
 
-            if(clan == null || home == null) return nullFuture();
+        Clan clan = context.get(ClanExecutionHandler.CLAN);
+        ClanMember member = context.get(ClanExecutionHandler.CLAN_MEMBER);
+        ClanHome home = context.get(HomeRequiredExecutorHandler.HOME);
 
-            ClanMember member = getMember(clan, player);
-            ClanMember homeOwner = getMember(clan, home.getCreator());
-
-            if(!member.equals(homeOwner) && !member.hasPermission(ClanPermission.EDIT_OTHERS_HOMES)) {
-                player.sendMessage(messages.noClanPermission());
-                return nullFuture();
-            }
-
-            return clanManager.editClan(clan, clanEditor -> clanEditor.removeHome(home));
-
-        }).thenAccept(c -> {
+        if(!home.creator().equals(player.getUniqueId()) && !member.hasPermission(ClanPermission.EDIT_OTHERS_HOMES)) {
+            player.sendMessage(messages.noClanPermission());
+            return;
+        }
+       clan.edit(edition -> edition.removeHome(home)).thenAccept(c -> {
             if(c != null) player.sendMessage(messages.commands().home().deleted());
         }).exceptionallyCompose(this::exceptionHandler);
     }
 
     private void teleportToHome(CommandContext<CommandSender> context) {
+
         Player player = (Player) context.getSender();
-        String name = context.get("name");
-        requireHome(player, name).thenComposeSync(pair -> {
-            ClanHome home = pair.home();
-            if(home == null) return nullFuture();
-            return player.teleportAsync(home.getLocation());
-        }).thenAccept(success -> {
-            if(success) player.sendMessage(Component.text("Teleported successfully"));
-        }).exceptionally(this::exceptionHandler);
+
+        player.teleportAsync(context.get(HomeRequiredExecutorHandler.HOME).location()).thenAccept(bool -> {
+            if(bool) player.sendMessage(Component.text("Teleported succesfully."));
+        });
     }
 
 
 
-    private CentralisedFuture<ClanAndHome> requireHome(@NotNull Player player, @NotNull String homeName) {
-        return this.requireClan(player)
-                .thenApply(clan -> {
-                    if(clan == null) return ClanAndHome.EMPTY;
-                    ClanHome home = clan.getHome(homeName);
-                    if(home == null) {
-                        player.sendMessage(messages.commands().home().homeNotFound().with("name", homeName));
-                    }
-                    return new ClanAndHome(clan, home);
-                });
-    }
+
 }

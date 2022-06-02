@@ -3,22 +3,22 @@ package org.gepron1x.clans.plugin.storage.implementation.sql;
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 import org.gepron1x.clans.api.ClanBuilderFactory;
-import org.gepron1x.clans.api.ClanCreationResult;
 import org.gepron1x.clans.api.RoleRegistry;
-import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.ClanHome;
 import org.gepron1x.clans.api.clan.DraftClan;
+import org.gepron1x.clans.api.clan.IdentifiedDraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.edition.ClanEdition;
 import org.gepron1x.clans.api.statistic.StatisticType;
-import org.gepron1x.clans.plugin.clan.ClanBuilder;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
+import org.gepron1x.clans.plugin.storage.IdentifiedDraftClanImpl;
 import org.gepron1x.clans.plugin.storage.StorageType;
 import org.gepron1x.clans.plugin.storage.implementation.sql.edition.SqlClanEdition;
 import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.ClanBuilderMapper;
 import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.ClanHomeBuilderMapper;
 import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.LocationMapper;
 import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.MemberMapper;
+import org.gepron1x.clans.plugin.util.Optionals;
 import org.intellij.lang.annotations.Language;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
@@ -116,6 +116,9 @@ public final class SqlClanStorage implements ClanStorage {
     """;
 
     @Language("SQL")
+    private static final String SELECT_CLAN_WITH_ID = "SELECT * FROM clans_simple WHERE`clan_id`=?";
+
+    @Language("SQL")
     private static final String SELECT_CLAN_WITH_TAG = "SELECT * FROM clans_simple WHERE `clan_tag`=?";
     @Language("SQL")
     private static final String SELECT_USER_CLAN = "SELECT * FROM clans_simple WHERE `clan_id`=(SELECT `clan_id` FROM `members` WHERE `uuid`=?)";
@@ -127,6 +130,15 @@ public final class SqlClanStorage implements ClanStorage {
 
     @Language("SQL")
     private static final String DELETE_CLAN = "DELETE FROM clans WHERE id=?";
+
+    @Language("SQL")
+    private static final String SELECT_CLAN_ID_WITH_TAG = "SELECT `id` FROM clans WHERE `tag`=?";
+
+    @Language("SQL")
+    private static final String SELECT_CLAN_ID_WITH_MEMBER = "SELECT `clan_id` FROM members WHERE `uuid`=?";
+
+    @Language("SQL")
+    private static final String SELECT_IDS = "SELECT `id` FROM clans";
 
     private final Jdbi jdbi;
     private final StorageType type;
@@ -168,94 +180,116 @@ public final class SqlClanStorage implements ClanStorage {
     }
 
     @Override
-    public @Nullable Clan loadClan(@NotNull String tag) {
+    public @Nullable IdentifiedDraftClan loadClan(@NotNull String tag) {
         return jdbi.withHandle(handle -> collectClans(handle.createQuery(SELECT_CLAN_WITH_TAG).bind(0, tag))
                 .findFirst().orElse(null));
     }
 
     @Override
-    public @Nullable Clan loadUserClan(@NotNull UUID uuid) {
+    public @Nullable IdentifiedDraftClan loadClan(int id) {
+        return jdbi.withHandle(handle -> collectClans(handle.createQuery(SELECT_CLAN_WITH_ID).bind(0, id)))
+                .findFirst().orElse(null);
+    }
+
+    @Override
+    public @Nullable IdentifiedDraftClan loadUserClan(@NotNull UUID uuid) {
         return jdbi.withHandle(handle -> collectClans(handle.createQuery(SELECT_USER_CLAN).bind(0, uuid)))
                 .findFirst().orElse(null);
     }
 
     @Override
-    public @NotNull Set<Clan> loadClans() {
+    public OptionalInt lookupId(@NotNull String tag) {
+        return jdbi.withHandle(handle -> Optionals.ofNullable(
+                handle.createQuery(SELECT_CLAN_ID_WITH_TAG).bind(0, tag).mapTo(Integer.class)
+                        .findFirst().orElse(null)
+        ));
+    }
+
+    @Override
+    public OptionalInt lookupId(@NotNull UUID member) {
+        return jdbi.withHandle(handle -> Optionals.ofNullable(
+                handle.createQuery(SELECT_CLAN_ID_WITH_MEMBER).bind(0, member).mapTo(Integer.class)
+                        .findFirst().orElse(null)
+        ));
+    }
+
+    @Override
+    public Set<Integer> clanIds() {
+        return jdbi.withHandle(handle -> handle.createQuery(SELECT_IDS).mapTo(Integer.class).collect(Collectors.toUnmodifiableSet()));
+    }
+
+    @Override
+    public @NotNull Set<IdentifiedDraftClanImpl> loadClans() {
         return jdbi.withHandle(handle -> collectClans(handle.createQuery(SELECT_CLANS))).collect(Collectors.toSet());
     }
 
     @Override
-    public ClanCreationResult saveClan(@NotNull DraftClan draftClan) {
+    public SaveResult saveClan(@NotNull DraftClan draftClan) {
         return jdbi.inTransaction(handle -> {
             Optional<Integer> optionalId = handle.createUpdate(INSERT_CLAN)
-                    .bind(0, draftClan.getTag())
-                    .bind(1, draftClan.getOwner().getUniqueId())
-                    .bind(2, draftClan.getDisplayName())
+                    .bind(0, draftClan.tag())
+                    .bind(1, draftClan.owner().uniqueId())
+                    .bind(2, draftClan.displayName())
                     .executeAndReturnGeneratedKeys("id").mapTo(Integer.class).findFirst();
             if(optionalId.isEmpty()) {
                 handle.rollback();
-                return ClanCreationResult.alreadyExists();
+                return SaveResult.ALREADY_EXISTS;
             }
             int id = optionalId.get();
 
-            Clan clan = ClanBuilder.asBuilder(draftClan, id).build();
 
             PreparedBatch batch = handle.prepareBatch(INSERT_MEMBER);
-            for(ClanMember member : draftClan.getMembers()) {
+            for(ClanMember member : draftClan.members()) {
                 batch.bind(0, id)
-                        .bind(1, member.getUniqueId())
-                        .bind(2, member.getRole().getName())
+                        .bind(1, member.uniqueId())
+                        .bind(2, member.role().name())
                         .add();
             }
             int updates = Arrays.stream(batch.execute()).sum(); // some members weren't added; those are already in other clans;
 
-            if(updates != draftClan.getMembers().size()) {
+            if(updates != draftClan.members().size()) {
                 handle.rollback();
-                return ClanCreationResult.membersInOtherClans();
+                return SaveResult.MEMBERS_IN_OTHER_CLANS;
             }
 
-            ClanEdition editor = new SqlClanEdition(handle, clan);
+            ClanEdition editor = new SqlClanEdition(handle, id);
 
-            for(ClanHome home : draftClan.getHomes()) {
+            for(ClanHome home : draftClan.homes()) {
                 editor.addHome(home);
             }
-            draftClan.getStatistics().forEach(editor::setStatistic);
+            editor.setStatistics(draftClan.statistics());
 
-            return ClanCreationResult.success(clan);
+            return SaveResult.success(id);
         });
     }
 
     @Override
-    public void applyEdition(@NotNull Clan clan, @NotNull Consumer<ClanEdition> consumer) {
-        jdbi.useTransaction(handle -> consumer.accept(new SqlClanEdition(handle, clan)));
+    public void applyEdition(int id, @NotNull Consumer<ClanEdition> consumer) {
+        jdbi.useHandle(handle -> consumer.accept(new SqlClanEdition(handle, id)));
     }
 
+
     @Override
-    public boolean removeClan(@NotNull Clan clan) {
-        final int id = clan.getId();
+    public boolean removeClan(int id) {
         return jdbi.inTransaction(handle -> handle.createUpdate(DELETE_CLAN).bind(0, id).execute() != 0);
     }
 
-    @Override
-    public boolean clanExists(@NotNull String tag) {
-        return false;
-    }
 
 
-    private Stream<Clan> collectClans(Query query) {
-        return query.registerRowMapper(ClanBuilder.class, new ClanBuilderMapper("clan"))
+    private Stream<IdentifiedDraftClanImpl> collectClans(Query query) {
+        return query.registerRowMapper(DraftClan.Builder.class, new ClanBuilderMapper("clan", builderFactory))
                 .registerRowMapper(ClanMember.class, new MemberMapper(builderFactory, roleRegistry, "member"))
                 .registerRowMapper(ClanHome.Builder.class, new ClanHomeBuilderMapper(builderFactory, "home"))
                 .registerRowMapper(Location.class, new LocationMapper(plugin.getServer(), "location"))
-                .reduceRows(new LinkedHashMap<String, ClanBuilder>(), (map, rowView) -> {
-                    ClanBuilder builder = map.computeIfAbsent(
-                            rowView.getColumn("clan_tag", String.class),
-                            clanTag -> rowView.getRow(ClanBuilder.class));
+                .reduceRows(new LinkedHashMap<Integer, DraftClan.Builder>(), (map, rowView) -> {
+                    DraftClan.Builder builder = map.computeIfAbsent(
+                            rowView.getColumn("clan_id", Integer.class),
+                            clanTag -> rowView.getRow(DraftClan.Builder.class));
                     UUID owner = rowView.getColumn("clan_owner", UUID.class);
 
                     if (rowView.getColumn("member_uuid", byte[].class) != null) {
                         ClanMember member = rowView.getRow(ClanMember.class);
-                        if(member.getUniqueId().equals(owner)) {
+                        if(member.uniqueId().equals(owner)) {
                             builder.owner(member);
                         } else {
                             builder.addMember(rowView.getRow(ClanMember.class));
@@ -271,7 +305,7 @@ public final class SqlClanStorage implements ClanStorage {
                         builder.statistic(new StatisticType(statType), rowView.getColumn("statistic_value", Integer.class));
                     }
                     return map;
-                }).values().stream().map(ClanBuilder::build);
+                }).entrySet().stream().map(entry -> new IdentifiedDraftClanImpl(entry.getKey(), entry.getValue().build()));
     }
 
 }

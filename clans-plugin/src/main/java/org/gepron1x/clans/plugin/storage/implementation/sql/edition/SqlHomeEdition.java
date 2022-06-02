@@ -1,10 +1,8 @@
-package org.gepron1x.clans.plugin.storage.implementation.sql.edition;
+package org.gepron1x.clans.plugin.storage.implementation.sql.editor;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
-import org.gepron1x.clans.api.clan.Clan;
-import org.gepron1x.clans.api.clan.ClanHome;
 import org.gepron1x.clans.api.edition.HomeEdition;
 import org.intellij.lang.annotations.Language;
 import org.jdbi.v3.core.Handle;
@@ -19,21 +17,21 @@ public final class SqlHomeEdition implements HomeEdition {
     @Language("SQL")
     private static final String UPDATE_DISPLAY_NAME = "UPDATE `homes` SET `display_name`=? WHERE `name`=? AND `clan_id`=?";
     private final Handle handle;
-    private final Clan clan;
-    private final ClanHome home;
+    private final int clanId;
+    private final String homeName;
 
-    public SqlHomeEdition(@NotNull Handle handle, @NotNull Clan clan, @NotNull ClanHome home) {
+    public SqlHomeEdition(@NotNull Handle handle, int clanId, String homeName) {
 
         this.handle = handle;
-        this.clan = clan;
-        this.home = home;
+        this.clanId = clanId;
+        this.homeName = homeName;
     }
 
     @Override
     public HomeEdition setIcon(@Nullable ItemStack icon) {
         handle.createUpdate(UPDATE_ICON)
-                .bind(1, home.getName())
-                .bind(2, clan.getId())
+                .bind(1, homeName)
+                .bind(2, clanId)
                 .bind(0, icon);
         return this;
     }
@@ -41,8 +39,8 @@ public final class SqlHomeEdition implements HomeEdition {
     @Override
     public HomeEdition setLocation(@NotNull Location location) {
         handle.createUpdate(UPDATE_LOCATION)
-                .bind(5, home.getName())
-                .bind(4, clan.getId())
+                .bind(5, homeName)
+                .bind(4, clanId)
                 .bind(0, location.getBlockX())
                 .bind(1, location.getBlockY())
                 .bind(2, location.getBlockZ())
@@ -54,8 +52,8 @@ public final class SqlHomeEdition implements HomeEdition {
     @Override
     public HomeEdition setDisplayName(@NotNull Component displayName) {
         handle.createUpdate(UPDATE_DISPLAY_NAME)
-                .bind(1, home.getName())
-                .bind(2, clan.getId())
+                .bind(1, homeName)
+                .bind(2, clanId)
                 .bind(0, displayName)
                 .execute();
         return this;

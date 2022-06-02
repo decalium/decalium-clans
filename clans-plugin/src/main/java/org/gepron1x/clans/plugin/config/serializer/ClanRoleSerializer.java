@@ -45,10 +45,10 @@ public final class ClanRoleSerializer implements ValueSerialiser<ClanRole> {
     public Map<String, Object> serialise(ClanRole value, Decomposer decomposer) {
         Map<String, Object> map = new LinkedHashMap<>(4);
 
-        map.put(NAME, value.getName());
-        map.put(DISPLAY_NAME, decomposer.decompose(Component.class, value.getDisplayName()));
-        map.put(WEIGHT, value.getWeight());
-        map.put(PERMISSIONS, decomposer.decomposeCollection(ClanPermission.class, value.getPermissions()));
+        map.put(NAME, value.name());
+        map.put(DISPLAY_NAME, decomposer.decompose(Component.class, value.displayName()));
+        map.put(WEIGHT, value.weight());
+        map.put(PERMISSIONS, decomposer.decomposeCollection(ClanPermission.class, value.permissions()));
 
         return map;
     }

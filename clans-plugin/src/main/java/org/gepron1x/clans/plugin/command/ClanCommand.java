@@ -8,12 +8,13 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.gepron1x.clans.api.CachingClanRepository;
 import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.RoleRegistry;
+import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
+import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.plugin.command.argument.ComponentArgument;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
@@ -22,8 +23,9 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
-import java.util.Objects;
 import java.util.UUID;
+
+import static net.kyori.adventure.text.Component.text;
 
 public class ClanCommand extends AbstractClanCommand {
 
@@ -31,14 +33,14 @@ public class ClanCommand extends AbstractClanCommand {
     private final RoleRegistry roleRegistry;
     private final ClanBuilderFactory builderFactory;
 
-    public ClanCommand(@NotNull Logger logger, @NotNull CachingClanRepository manager,
+    public ClanCommand(@NotNull Logger logger, @NotNull CachingClanRepository repository,
                        @NotNull ClansConfig config,
                        @NotNull MessagesConfig messages,
                        @NotNull FactoryOfTheFuture futuresFactory,
                        @NotNull ClanBuilderFactory builderFactory,
                        @NotNull RoleRegistry roleRegistry) {
 
-        super(logger, manager, config, messages, futuresFactory);
+        super(logger, repository, config, messages, futuresFactory);
         this.builderFactory = builderFactory;
         this.roleRegistry = roleRegistry;
     }
@@ -56,18 +58,30 @@ public class ClanCommand extends AbstractClanCommand {
 
         manager.command(builder.literal("delete")
                 .permission("clans.delete")
-                .handler(this::deleteClan)
+                .handler(
+                        new ClanExecutionHandler(
+                                new PermissiveClanExecutionHandler(this::deleteClan, ClanPermission.DISBAND, this.messages),
+                                this.clanRepository,
+                                this.messages)
+                )
         );
 
         manager.command(builder.literal("set").literal("displayname")
                 .permission("clans.set.displayname")
                 .argument(ComponentArgument.greedy("display_name"))
-                .handler(this::setDisplayName)
+                .handler(
+                        new ClanExecutionHandler(
+                                new PermissiveClanExecutionHandler(this::setDisplayName, ClanPermission.SET_DISPLAY_NAME, this.messages),
+                                this.clanRepository,
+                                this.messages)
+                )
         );
 
-        manager.command(builder.literal("memberlist").permission("clans.memberlist").handler(this::listMembers));
+        manager.command(builder.literal("memberlist").permission("clans.memberlist")
+                .handler(new ClanExecutionHandler(this::listMembers, this.clanRepository, this.messages)));
 
-        manager.command(builder.literal("myclan").permission("clans.myclan").handler(this::myClan));
+        manager.command(builder.literal("myclan").permission("clans.myclan")
+                .handler(new ClanExecutionHandler(this::myClan, this.clanRepository, this.messages)));
     }
 
 
@@ -75,13 +89,13 @@ public class ClanCommand extends AbstractClanCommand {
         Player player = (Player) context.getSender();
         String tag = context.get("tag");
         Component displayName = context.<Component>getOptional("display_name")
-                .orElseGet(() -> Component.text(tag, NamedTextColor.GRAY));
+                .orElseGet(() -> text(tag, NamedTextColor.GRAY));
 
         UUID uuid = player.getUniqueId();
 
         ClanMember member = builderFactory.memberBuilder()
                 .uuid(uuid)
-                .role(roleRegistry.getOwnerRole())
+                .role(roleRegistry.ownerRole())
                 .build();
 
         DraftClan clan = builderFactory.draftClanBuilder()
@@ -90,7 +104,7 @@ public class ClanCommand extends AbstractClanCommand {
                 .owner(member)
                 .build();
 
-        clanManager.createClan(clan).thenAcceptSync(result -> {
+        clanRepository.createClan(clan).thenAcceptSync(result -> {
             if(result.isSuccess()) {
                 player.sendMessage(messages.commands().creation().success().with("tag", tag).with("name", displayName));
             } else {
@@ -106,54 +120,34 @@ public class ClanCommand extends AbstractClanCommand {
 
     private void setDisplayName(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
+        Clan clan = context.get(ClanExecutionHandler.CLAN);
         Component displayName = context.get("display_name");
-
-        requireClan(player).thenComposeSync(clan -> {
-            if(clan == null) return nullFuture();
-            ClanMember member = getMember(clan, player);
-
-            if(!checkPermission(player, member, ClanPermission.SET_DISPLAY_NAME)) return nullFuture();
-
-            return clanManager.editClan(clan, editor -> editor.setDisplayName(displayName));
-        }).thenAcceptSync(c -> {
-            if(c != null) player.sendMessage(messages.commands().displayNameSet().with("name", displayName));
-        }).exceptionally(this::exceptionHandler);
+        clan.edit(edition -> edition.rename(displayName))
+                .thenAccept(c -> player.sendMessage(this.messages.commands().displayNameSet().with("name", displayName)));
     }
 
     private void myClan(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
-        UUID uuid = player.getUniqueId();
-        clanManager.getUserClan(uuid).thenAcceptSync(clan -> {
-            if(!checkClan(player, clan)) return;
-            Objects.requireNonNull(clan);
-            player.sendMessage(Component.text().color(NamedTextColor.AQUA).append(Component.text("You are a member of ")).append(clan.getDisplayName()).append(Component.text(" clan")));
-        }).exceptionally(this::exceptionHandler);;
+        Clan clan = context.get(ClanExecutionHandler.CLAN);
+        player.sendMessage(Component.textOfChildren(text("You are member of "), clan, text("clan")));
     }
 
     private void listMembers(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
-        UUID uuid = player.getUniqueId();
-        requireClan(player).thenAcceptSync(clan -> {
-            if(clan == null) return;
-            for(ClanMember member : clan.getMembers()) {
-                player.sendMessage(Message.message("<role> <member>")
-                        .with("role", member.getRole())
-                        .with("member", member.asOffline(player.getServer()).getName()));
-            }
-        });
+        Clan clan = context.get(ClanExecutionHandler.CLAN);
+       for(ClanMember member : clan.members()) {
+           player.sendMessage(Message.message("<role> <member>")
+                   .with("role", member.role())
+                   .with("member", member));
+       }
+
     }
 
     private void deleteClan(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
-        UUID uuid = player.getUniqueId();
-
-        requireClan(player).thenComposeSync(clan -> {
-            if(clan == null) return futuresFactory.completedFuture(false);
-            ClanMember member = getMember(clan, uuid);
-            if(!checkPermission(player, member, ClanPermission.DISBAND)) return futuresFactory.completedFuture(false);
-            return this.clanManager.removeClan(clan);
-        }).thenAcceptSync(success -> {
-            if(success) player.sendMessage(messages.commands().deletion().success());
-        }).exceptionally(this::exceptionHandler);;
+        Clan clan = context.get(ClanExecutionHandler.CLAN);
+        clanRepository.removeClan(clan).thenAcceptSync(success -> {
+            if(success) player.sendMessage(this.messages.commands().deletion().success());
+        });
     }
 }

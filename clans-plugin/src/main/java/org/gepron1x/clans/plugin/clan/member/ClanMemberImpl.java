@@ -3,21 +3,23 @@ package org.gepron1x.clans.plugin.clan.member;
 import com.google.common.base.MoreObjects;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
+import org.gepron1x.clans.api.edition.MemberEdition;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public record ClanMemberImpl(UUID uuid,
                              ClanRole role) implements ClanMember {
 
     @Override
-    public @NotNull UUID getUniqueId() {
+    public @NotNull UUID uniqueId() {
         return uuid;
     }
 
     @Override
-    public @NotNull ClanRole getRole() {
+    public @NotNull ClanRole role() {
         return role;
     }
 
@@ -75,6 +77,21 @@ public record ClanMemberImpl(UUID uuid,
                     .add("uuid", uuid)
                     .add("role", role)
                     .toString();
+        }
+
+        @Override
+        public void applyEdition(Consumer<MemberEdition> consumer) {
+            consumer.accept(new MemberEditionImpl());
+        }
+
+        private final class MemberEditionImpl implements MemberEdition {
+
+            @Override
+            public MemberEdition setRole(@NotNull ClanRole role) {
+                BuilderImpl.this.role(role);
+                return this;
+            }
+
         }
     }
 }

@@ -60,7 +60,7 @@ public interface ClansConfig {
             return List.of(
                     ClanRoleImpl.builder()
                             .name("moderator")
-                            .displayName(Component.text("Модератора", NamedTextColor.AQUA))
+                            .displayName(Component.text("Модератор", NamedTextColor.AQUA))
                             .permissions(ClanPermission.INVITE, ClanPermission.KICK,
                                     ClanPermission.ADD_HOME, ClanPermission.SET_ROLE)
                             .weight(8)

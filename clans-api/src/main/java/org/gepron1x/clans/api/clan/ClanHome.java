@@ -5,6 +5,8 @@ import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.util.Buildable;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
+import org.gepron1x.clans.api.edition.EditionApplicable;
+import org.gepron1x.clans.api.edition.HomeEdition;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,18 +17,18 @@ public interface ClanHome extends Buildable<ClanHome, ClanHome.Builder>, Compone
     @Override
     @NotNull
     default Component asComponent() {
-        return getDisplayName();
+        return displayName();
     }
 
-    @NotNull String getName();
-    @NotNull Component getDisplayName();
-    @NotNull UUID getCreator();
-    @NotNull Location getLocation();
-    @Nullable ItemStack getIcon();
+    @NotNull String name();
+    @NotNull Component displayName();
+    @NotNull UUID creator();
+    @NotNull Location location();
+    @Nullable ItemStack icon();
 
 
 
-    interface Builder extends Buildable.Builder<ClanHome> {
+    interface Builder extends Buildable.Builder<ClanHome>, EditionApplicable<ClanHome, HomeEdition> {
         @Contract("_ -> this")
         @NotNull Builder name(@NotNull String name);
 

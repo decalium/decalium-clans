@@ -30,15 +30,15 @@ public record ClanHomeTagResolver(@NotNull ClanHome clanHome) implements TagReso
     @Override
     public @Nullable Tag resolve(@NotNull String name) {
         Component component = switch(name) {
-            case NAME -> Component.text(clanHome.getName());
-            case DISPLAY_NAME -> clanHome.getDisplayName();
-            case OWNER_UUID -> Component.text(clanHome.getCreator().toString());
-            case OWNER_NAME -> Component.text(Strings.nullToEmpty(Bukkit.getOfflinePlayer(clanHome.getCreator()).getName()));
-            case LOCATION_X -> Component.text(clanHome.getLocation().getBlockX());
-            case LOCATION_Y -> Component.text(clanHome.getLocation().getBlockY());
-            case LOCATION_Z -> Component.text(clanHome.getLocation().getBlockZ());
-            case LOCATION_WORLD -> Component.text(clanHome.getLocation().getWorld().getName());
-            case ICON -> Component.text("[]").hoverEvent(clanHome.getIcon());
+            case NAME -> Component.text(clanHome.name());
+            case DISPLAY_NAME -> clanHome.displayName();
+            case OWNER_UUID -> Component.text(clanHome.creator().toString());
+            case OWNER_NAME -> Component.text(Strings.nullToEmpty(Bukkit.getOfflinePlayer(clanHome.creator()).getName()));
+            case LOCATION_X -> Component.text(clanHome.location().getBlockX());
+            case LOCATION_Y -> Component.text(clanHome.location().getBlockY());
+            case LOCATION_Z -> Component.text(clanHome.location().getBlockZ());
+            case LOCATION_WORLD -> Component.text(clanHome.location().getWorld().getName());
+            case ICON -> Component.text("[]").hoverEvent(clanHome.icon());
             default -> null;
         };
         return component == null ? null : Tag.inserting(component);

@@ -1,52 +1,47 @@
 package org.gepron1x.clans.plugin;
 
-import org.gepron1x.clans.api.*;
+import org.gepron1x.clans.api.ClanBuilderFactory;
+import org.gepron1x.clans.api.DecaliumClansApi;
+import org.gepron1x.clans.api.RoleRegistry;
+import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.jetbrains.annotations.NotNull;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 public final class DecaliumClansApiImpl implements DecaliumClansApi {
 
-    private final ClanRepository clanRepository;
-    private final ClanCache cache;
+    private final CachingClanRepository clanRepository;
     private final RoleRegistry roleRegistry;
     private final ClanBuilderFactory builderFactory;
     private final FactoryOfTheFuture futuresFactory;
 
-    public DecaliumClansApiImpl(@NotNull ClanRepository clanRepository,
-                                @NotNull ClanCache cache,
+    public DecaliumClansApiImpl(@NotNull CachingClanRepository clanRepository,
                                 @NotNull RoleRegistry roleRegistry,
                                 @NotNull ClanBuilderFactory builderFactory,
                                 FactoryOfTheFuture futuresFactory) {
 
         this.clanRepository = clanRepository;
-        this.cache = cache;
         this.roleRegistry = roleRegistry;
         this.builderFactory = builderFactory;
         this.futuresFactory = futuresFactory;
     }
     @Override
-    public @NotNull ClanRepository getClanManager() {
+    public @NotNull CachingClanRepository repository() {
         return clanRepository;
     }
 
     @Override
-    public @NotNull FactoryOfTheFuture getFuturesFactory() {
+    public @NotNull FactoryOfTheFuture futuresFactory() {
         return futuresFactory;
     }
 
     @Override
-    public @NotNull ClanCache getClanCache() {
-        return cache;
-    }
-
-    @Override
-    public @NotNull ClanBuilderFactory getBuilderFactory() {
+    public @NotNull ClanBuilderFactory builderFactory() {
         return builderFactory;
     }
 
 
     @Override
-    public @NotNull RoleRegistry getRoleRegistry() {
+    public @NotNull RoleRegistry roleRegistry() {
         return roleRegistry;
     }
 

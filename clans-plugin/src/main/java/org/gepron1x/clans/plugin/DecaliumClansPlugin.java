@@ -5,21 +5,21 @@ import cloud.commandframework.paper.PaperCommandManager;
 import com.sk89q.worldguard.WorldGuard;
 import io.leangen.geantyref.TypeToken;
 import io.papermc.paper.text.PaperComponents;
-import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.CarbonChatProvider;
-import net.draycia.carbon.api.channels.ChannelRegistry;
-import net.draycia.carbon.api.channels.ChatChannel;
-import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.kyori.registry.Registry;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.gepron1x.clans.api.*;
+import org.gepron1x.clans.api.ClanBuilderFactory;
+import org.gepron1x.clans.api.DecaliumClansApi;
+import org.gepron1x.clans.api.RoleRegistry;
 import org.gepron1x.clans.api.clan.member.ClanRole;
+import org.gepron1x.clans.api.repository.CachingClanRepository;
+import org.gepron1x.clans.api.repository.ClanRepository;
+import org.gepron1x.clans.plugin.announce.AnnouncingClanRepository;
 import org.gepron1x.clans.plugin.async.BukkitFactoryOfTheFuture;
-import org.gepron1x.clans.plugin.chat.ClanChatChannel;
+import org.gepron1x.clans.plugin.cache.CachingClanRepositoryImpl;
+import org.gepron1x.clans.plugin.cache.ClanCacheImpl;
 import org.gepron1x.clans.plugin.command.ClanCommand;
 import org.gepron1x.clans.plugin.command.HomeCommand;
 import org.gepron1x.clans.plugin.command.InviteCommand;
@@ -36,6 +36,8 @@ import org.gepron1x.clans.plugin.listener.CacheListener;
 import org.gepron1x.clans.plugin.papi.PlaceholderAPIHook;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
 import org.gepron1x.clans.plugin.storage.StorageCreation;
+import org.gepron1x.clans.plugin.util.AsciiArt;
+import org.gepron1x.clans.plugin.wg.WgRepositoryImpl;
 import org.slf4j.Logger;
 import space.arim.dazzleconf.ConfigurationOptions;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
@@ -51,7 +53,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
     private RoleRegistry roleRegistry;
     private ClanBuilderFactory builderFactory;
     private ClanCacheImpl clanCache;
-    private ClanRepository clanRepository;
+    private CachingClanRepository clanRepository;
     private DecaliumClansApi clansApi;
 
     private ConfigManager<ClansConfig> configManager;
@@ -64,10 +66,10 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         this.futuresFactory = new BukkitFactoryOfTheFuture(this);
         this.builderFactory = new ClanBuilderFactoryImpl();
 
-        MiniMessage miniMessage = MiniMessage.builder().tags((TagResolver.WithoutArguments) (text) -> switch(text) {
-            case "prefix" -> Tag.inserting(getMessages().prefix());
+        MiniMessage miniMessage = MiniMessage.builder().tags(TagResolver.resolver((TagResolver.WithoutArguments) (text) -> switch(text) {
+            case "prefix" -> Tag.selfClosingInserting(getMessages().prefix());
             default -> null;
-        }).build();
+        }, TagResolver.standard())).build();
 
         ConfigurationOptions options = new ConfigurationOptions.Builder()
                 .addSerialiser(new MessageSerializer(miniMessage))
@@ -89,12 +91,27 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
         ClanStorage storage = new StorageCreation(this, getClansConfig(), builderFactory, roleRegistry).create();
         storage.initialize();
-
-        this.clanRepository = new ClanRepositoryImpl(storage, futuresFactory, getServer(), messages, WorldGuard.getInstance());
         this.clanCache = new ClanCacheImpl();
 
 
-        CachingClanRepository cachingClanManager = new CachingClanRepositoryImpl(clanRepository, futuresFactory, clanCache);
+        ClanRepository repository = new AnnouncingClanRepository(
+                new WgRepositoryImpl(
+                        new ClanRepositoryImpl(storage, futuresFactory),
+                        WorldGuard.getInstance(),
+                        getServer()
+                ),
+                getServer(),
+                messages);
+
+        this.clanRepository = new CachingClanRepositoryImpl(
+                repository,
+                futuresFactory,
+                clanCache
+        );
+
+        getServer().getPluginManager().registerEvents(new CacheListener(clanCache, getServer(), repository), this);
+
+
 
         if(getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new PlaceholderAPIHook(getServer(), config, clanCache, PaperComponents.legacySectionSerializer()).register();
@@ -105,14 +122,10 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
         Logger logger = getSLF4JLogger();
 
-        ClanCommand command = new ClanCommand(logger, cachingClanManager, config, messages, futuresFactory, builderFactory, roleRegistry);
-        InviteCommand inviteCommand = new InviteCommand(logger, cachingClanManager, config, messages, futuresFactory, builderFactory, roleRegistry);
-        MemberCommand memberCommand = new MemberCommand(logger, cachingClanManager, config, messages, futuresFactory);
-        HomeCommand homeCommand = new HomeCommand(logger, cachingClanManager, config, messages, futuresFactory, builderFactory);
-
-        getServer().getPluginManager().registerEvents(new CacheListener(clanCache, getServer(), storage), this);
-
-
+        ClanCommand command = new ClanCommand(logger, this.clanRepository, config, messages, futuresFactory, builderFactory, roleRegistry);
+        InviteCommand inviteCommand = new InviteCommand(logger, this.clanRepository, config, messages, futuresFactory, builderFactory, roleRegistry);
+        MemberCommand memberCommand = new MemberCommand(logger, this.clanRepository, config, messages, futuresFactory);
+        HomeCommand homeCommand = new HomeCommand(logger, this.clanRepository, config, messages, futuresFactory, builderFactory);
 
 
 
@@ -130,19 +143,22 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         commandManager.getParserRegistry().registerParserSupplier(TypeToken.get(ClanRole.class), params -> new ClanRoleParser<>(roleRegistry));
         commandManager.registerBrigadier();
 
-        CarbonChat carbon = CarbonChatProvider.carbonChat();
+        /* CarbonChat carbon = CarbonChatProvider.carbonChat();
 
 
         ClanChatChannel chatChannel = new ClanChatChannel(getServer(), clanCache, messages, config);
 
         ChannelRegistry registry = carbon.channelRegistry();
-        ((Registry<Key, ChatChannel>) registry).register(chatChannel.key(), chatChannel);
+        ((Registry<Key, ChatChannel>) registry).register(chatChannel.key(), chatChannel); */
 
 
         command.register(commandManager);
         inviteCommand.register(commandManager);
         memberCommand.register(commandManager);
         homeCommand.register(commandManager);
+
+
+        new AsciiArt(logger).print();
     }
 
 
