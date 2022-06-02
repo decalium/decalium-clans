@@ -7,8 +7,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.Plugin;
-import org.gepron1x.clans.api.CachingClanRepository;
 import org.gepron1x.clans.api.clan.Clan;
+import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 

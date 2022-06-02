@@ -1,9 +1,9 @@
 package org.gepron1x.clans.plugin.storage;
 
-import org.gepron1x.clans.api.ClanCreationResult;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.IdentifiedDraftClan;
 import org.gepron1x.clans.api.edition.ClanEdition;
+import org.gepron1x.clans.api.repository.ClanCreationResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

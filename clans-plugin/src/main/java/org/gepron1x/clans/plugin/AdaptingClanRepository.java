@@ -1,9 +1,9 @@
 package org.gepron1x.clans.plugin;
 
-import org.gepron1x.clans.api.ClanCreationResult;
-import org.gepron1x.clans.api.ClanRepository;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
+import org.gepron1x.clans.api.repository.ClanCreationResult;
+import org.gepron1x.clans.api.repository.ClanRepository;
 import org.jetbrains.annotations.NotNull;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 

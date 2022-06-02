@@ -1,9 +1,9 @@
 package org.gepron1x.clans.plugin;
 
-import org.gepron1x.clans.api.CachingClanRepository;
 import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.DecaliumClansApi;
 import org.gepron1x.clans.api.RoleRegistry;
+import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.jetbrains.annotations.NotNull;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 

@@ -1,10 +1,10 @@
 package org.gepron1x.clans.plugin;
 
-import org.gepron1x.clans.api.ClanCreationResult;
-import org.gepron1x.clans.api.ClanRepository;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.IdentifiedDraftClan;
+import org.gepron1x.clans.api.repository.ClanCreationResult;
+import org.gepron1x.clans.api.repository.ClanRepository;
 import org.gepron1x.clans.plugin.clan.ClanImpl;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
 import org.jetbrains.annotations.NotNull;

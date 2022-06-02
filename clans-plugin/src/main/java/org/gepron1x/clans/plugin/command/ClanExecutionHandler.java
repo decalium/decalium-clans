@@ -8,9 +8,9 @@ import io.leangen.geantyref.TypeToken;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.gepron1x.clans.api.ClanRepository;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
+import org.gepron1x.clans.api.repository.ClanRepository;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 
 public final class ClanExecutionHandler implements CommandExecutionHandler<CommandSender> {

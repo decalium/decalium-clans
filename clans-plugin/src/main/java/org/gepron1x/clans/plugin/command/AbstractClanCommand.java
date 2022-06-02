@@ -2,7 +2,7 @@ package org.gepron1x.clans.plugin.command;
 
 import cloud.commandframework.CommandManager;
 import org.bukkit.command.CommandSender;
-import org.gepron1x.clans.api.CachingClanRepository;
+import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.slf4j.Logger;

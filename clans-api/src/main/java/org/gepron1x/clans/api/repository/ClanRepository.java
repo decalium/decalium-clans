@@ -1,4 +1,4 @@
-package org.gepron1x.clans.api;
+package org.gepron1x.clans.api.repository;
 
 import org.bukkit.OfflinePlayer;
 import org.gepron1x.clans.api.clan.Clan;

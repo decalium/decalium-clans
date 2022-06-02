@@ -6,8 +6,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.gepron1x.clans.api.ClanRepository;
 import org.gepron1x.clans.api.clan.Clan;
+import org.gepron1x.clans.api.repository.ClanRepository;
 import org.gepron1x.clans.plugin.cache.ClanCacheImpl;
 import org.jetbrains.annotations.NotNull;
 
