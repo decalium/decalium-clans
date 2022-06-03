@@ -43,7 +43,8 @@ public final class SavableHomes implements Savable {
             handle.rollback();
             throw new IllegalStateException("Homes with some names already exists for this clan.");
         }
-        for(int i = 0; i < locations.size(); i++) {
+
+        for(int i = 0; i < ids.size(); i++) {
             ClanHome home = homeList.get(i);
             int id = ids.get(i);
             Location location = home.location();

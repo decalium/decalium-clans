@@ -118,7 +118,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
             new PlaceholderAPIHook(getServer(), config, clanCache, PaperComponents.legacySectionSerializer()).register();
         }
 
-        if(getServer().getPluginManager().getPlugin("Carbon") != null) {
+        if(getServer().getPluginManager().getPlugin("CarbonChat") != null) {
             new CarbonChatHook(getServer(), clanCache, messages, config).register();
         }
 

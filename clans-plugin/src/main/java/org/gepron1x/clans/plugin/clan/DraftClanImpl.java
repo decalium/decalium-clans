@@ -275,7 +275,7 @@ public final class DraftClanImpl implements DraftClan {
                 ClanMember member = Objects.requireNonNull(BuilderImpl.this.members.get(uuid));
                 ClanMember.Builder builder = member.toBuilder();
                 builder.applyEdition(consumer);
-                BuilderImpl.this.removeMember(member).addMember(member);
+                BuilderImpl.this.removeMember(member).addMember(builder.build());
                 return this;
             }
 

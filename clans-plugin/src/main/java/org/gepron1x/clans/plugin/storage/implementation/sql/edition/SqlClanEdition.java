@@ -37,7 +37,7 @@ public final class SqlClanEdition implements ClanEdition {
     @Language("SQL")
     private static final String INSERT_LOCATION = "INSERT INTO `locations` (`home_id`, `x`, `y`, `z`, `world`) VALUES (?, ?, ?, ?, ?)";
     @Language("SQL")
-    private static final String DELETE_HOME = "DELETE FROM `homes` WHERE `clan_tag`=? AND `name`=?";
+    private static final String DELETE_HOME = "DELETE FROM `homes` WHERE `clan_id`=? AND `name`=?";
     private final Handle handle;
     private final int clanId;
 
@@ -117,7 +117,7 @@ public final class SqlClanEdition implements ClanEdition {
     public ClanEdition removeHome(@NotNull ClanHome home) {
         handle.createUpdate(DELETE_HOME)
                 .bind(0, clanId)
-                .bind(1, home.name());
+                .bind(1, home.name()).execute();
         return this;
     }
 

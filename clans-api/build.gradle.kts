@@ -18,3 +18,23 @@ dependencies {
     api("space.arim.omnibus:omnibus:1.1.0-RC2")
     compileOnly("org.jetbrains:annotations:22.0.0")
 }
+
+tasks {
+
+
+    compileJava {
+        options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
+        // Set the release flag. This configures what version bytecode the compiler will emit, as well as what JDK APIs are usable.
+        // See https://openjdk.java.net/jeps/247 for more information.
+        options.release.set(17)
+        options.compilerArgs.add("-parameters")
+    }
+
+    javadoc {
+        options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
+    }
+    processResources {
+        filteringCharset = Charsets.UTF_8.name() // We want UTF-8 for everything
+    }
+
+}
