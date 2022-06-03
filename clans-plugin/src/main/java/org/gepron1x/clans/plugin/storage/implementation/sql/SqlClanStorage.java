@@ -13,6 +13,9 @@ import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
 import org.gepron1x.clans.plugin.storage.IdentifiedDraftClanImpl;
 import org.gepron1x.clans.plugin.storage.StorageType;
+import org.gepron1x.clans.plugin.storage.implementation.sql.common.SavableHomes;
+import org.gepron1x.clans.plugin.storage.implementation.sql.common.SavableMembers;
+import org.gepron1x.clans.plugin.storage.implementation.sql.common.SavableStatistics;
 import org.gepron1x.clans.plugin.storage.implementation.sql.edition.SqlClanEdition;
 import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.ClanBuilderMapper;
 import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.ClanHomeBuilderMapper;
@@ -21,7 +24,6 @@ import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.MemberMa
 import org.gepron1x.clans.plugin.util.Optionals;
 import org.intellij.lang.annotations.Language;
 import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.core.statement.PreparedBatch;
 import org.jdbi.v3.core.statement.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -237,28 +239,15 @@ public final class SqlClanStorage implements ClanStorage {
             }
             int id = optionalId.get();
 
-
-            PreparedBatch batch = handle.prepareBatch(INSERT_MEMBER);
-            for(ClanMember member : draftClan.members()) {
-                batch.bind(0, id)
-                        .bind(1, member.uniqueId())
-                        .bind(2, member.role().name())
-                        .add();
-            }
-            int updates = Arrays.stream(batch.execute()).sum(); // some members weren't added; those are already in other clans;
+            int updates = new SavableMembers(handle, id, draftClan.members()).execute(); // some members weren't added; those are already in other clans;
 
             if(updates != draftClan.members().size()) {
                 handle.rollback();
                 return SaveResult.MEMBERS_IN_OTHER_CLANS;
             }
 
-            ClanEdition editor = new SqlClanEdition(handle, id);
-
-            for(ClanHome home : draftClan.homes()) {
-                editor.addHome(home);
-            }
-            editor.setStatistics(draftClan.statistics());
-
+            new SavableHomes(handle, id, draftClan.homes()).execute();
+            new SavableStatistics(handle, id, draftClan.statistics()).execute();
             return SaveResult.success(id);
         });
     }
