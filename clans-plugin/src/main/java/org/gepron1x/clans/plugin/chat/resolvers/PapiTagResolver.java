@@ -1,4 +1,4 @@
-package org.gepron1x.clans.plugin.chat;
+package org.gepron1x.clans.plugin.chat.resolvers;
 
 import io.papermc.paper.text.PaperComponents;
 import me.clip.placeholderapi.PlaceholderAPI;

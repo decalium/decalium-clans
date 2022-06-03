@@ -1,4 +1,4 @@
-package org.gepron1x.clans.plugin.chat;
+package org.gepron1x.clans.plugin.chat.resolvers;
 
 import com.google.common.base.Strings;
 import net.kyori.adventure.text.Component;
