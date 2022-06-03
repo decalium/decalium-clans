@@ -1,4 +1,4 @@
-package org.gepron1x.clans.plugin.storage.implementation.sql.editor;
+package org.gepron1x.clans.plugin.storage.implementation.sql.edition;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
