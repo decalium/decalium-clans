@@ -42,7 +42,7 @@ dependencies {
     implementation ("net.kyori:adventure-text-minimessage:4.10.1") {
         exclude(group = "net.kyori", module = "adventure-api")
     }
-    compileOnly("net.draycia:carbonchat-api:2.0.10") {
+    compileOnly("net.draycia:carbonchat-api:2.1.0-SNAPSHOT") {
         exclude("net.kyori", "adventure-text-minimessage")
     }
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.0") {

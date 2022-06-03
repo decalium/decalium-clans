@@ -97,6 +97,11 @@ public final class ClanChatChannel implements ChatChannel {
     }
 
     @Override
+    public double radius() {
+        return -1;
+    }
+
+    @Override
     public @NotNull RenderedMessage render(CarbonPlayer sender, Audience recipient, Component message, Component originalMessage) {
 
         DraftClan clan = Objects.requireNonNull(cache.getUserClan(sender.uuid()));

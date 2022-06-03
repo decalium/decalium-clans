@@ -20,6 +20,7 @@ import org.gepron1x.clans.plugin.announce.AnnouncingClanRepository;
 import org.gepron1x.clans.plugin.async.BukkitFactoryOfTheFuture;
 import org.gepron1x.clans.plugin.cache.CachingClanRepositoryImpl;
 import org.gepron1x.clans.plugin.cache.ClanCacheImpl;
+import org.gepron1x.clans.plugin.chat.CarbonChatHook;
 import org.gepron1x.clans.plugin.command.ClanCommand;
 import org.gepron1x.clans.plugin.command.HomeCommand;
 import org.gepron1x.clans.plugin.command.InviteCommand;
@@ -117,7 +118,9 @@ public final class DecaliumClansPlugin extends JavaPlugin {
             new PlaceholderAPIHook(getServer(), config, clanCache, PaperComponents.legacySectionSerializer()).register();
         }
 
-
+        if(getServer().getPluginManager().getPlugin("Carbon") != null) {
+            new CarbonChatHook(getServer(), clanCache, messages, config).register();
+        }
 
 
         Logger logger = getSLF4JLogger();
@@ -142,14 +145,6 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         }
         commandManager.getParserRegistry().registerParserSupplier(TypeToken.get(ClanRole.class), params -> new ClanRoleParser<>(roleRegistry));
         commandManager.registerBrigadier();
-
-        /* CarbonChat carbon = CarbonChatProvider.carbonChat();
-
-
-        ClanChatChannel chatChannel = new ClanChatChannel(getServer(), clanCache, messages, config);
-
-        ChannelRegistry registry = carbon.channelRegistry();
-        ((Registry<Key, ChatChannel>) registry).register(chatChannel.key(), chatChannel); */
 
 
         command.register(commandManager);
