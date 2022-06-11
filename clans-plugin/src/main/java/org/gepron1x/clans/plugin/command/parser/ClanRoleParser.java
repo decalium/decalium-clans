@@ -35,14 +35,14 @@ public final class ClanRoleParser<C> implements ArgumentParser<C, ClanRole> {
         if(name == null) return ArgumentParseResult.failure(new NoInputProvidedException(ClanRoleParser.class, commandContext));
         inputQueue.remove();
 
-        return roleRegistry.role(name).map(ArgumentParseResult::success).orElseGet(() -> ArgumentParseResult.failure(new UnknownRoleException(commandContext)));
+        return roleRegistry.value(name).map(ArgumentParseResult::success).orElseGet(() -> ArgumentParseResult.failure(new UnknownRoleException(commandContext)));
 
     }
 
     @Override
     public @NonNull List<@NonNull String> suggestions(@NonNull CommandContext<C> commandContext, @NonNull String input) {
 
-        return roleRegistry.roles().stream()
+        return roleRegistry.values().stream()
                 .map(ClanRole::name)
                 .collect(Collectors.toList());
     }

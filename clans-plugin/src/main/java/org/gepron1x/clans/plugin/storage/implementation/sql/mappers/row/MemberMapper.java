@@ -27,7 +27,7 @@ public final class MemberMapper extends PrefixedRowMapper<ClanMember> {
     public ClanMember map(ResultSet rs, StatementContext ctx) throws SQLException {
         ColumnMapper<UUID> uuidMapper = ctx.findColumnMapperFor(UUID.class).orElseThrow();
         return builderFactory.memberBuilder().uuid(uuidMapper.map(rs, prefixed(UNIQUE_ID), ctx))
-                .role(roleRegistry.role(rs.getString(prefixed(ROLE))).orElseThrow())
+                .role(roleRegistry.value(rs.getString(prefixed(ROLE))).orElseThrow())
                 .build();
     }
 }

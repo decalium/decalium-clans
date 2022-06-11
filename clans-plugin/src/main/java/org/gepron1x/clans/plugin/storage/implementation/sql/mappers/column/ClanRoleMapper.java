@@ -19,6 +19,6 @@ public final class ClanRoleMapper implements ColumnMapper<ClanRole> {
     }
     @Override
     public ClanRole map(ResultSet r, int columnNumber, StatementContext ctx) throws SQLException {
-        return roleRegistry.role(r.getString(columnNumber)).orElseThrow();
+        return roleRegistry.value(r.getString(columnNumber)).orElseThrow();
     }
 }

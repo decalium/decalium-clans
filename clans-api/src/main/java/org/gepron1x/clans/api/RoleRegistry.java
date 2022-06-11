@@ -7,12 +7,12 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.Collection;
 import java.util.Optional;
 
-public interface RoleRegistry {
+public interface RoleRegistry extends Registry<String, ClanRole> {
     @NotNull ClanRole defaultRole();
     @NotNull ClanRole ownerRole();
 
-    Optional<ClanRole> role(@NotNull String name);
+    Optional<ClanRole> value(@NotNull String name);
 
-    @NotNull @Unmodifiable Collection<ClanRole> roles();
+    @NotNull @Unmodifiable Collection<ClanRole> values();
 
 }

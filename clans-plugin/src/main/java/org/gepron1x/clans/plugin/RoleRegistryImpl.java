@@ -5,7 +5,7 @@ import org.gepron1x.clans.api.RoleRegistry;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.plugin.util.MapOf;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.UnmodifiableView;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 import java.util.Map;
@@ -36,12 +36,12 @@ public final class RoleRegistryImpl implements RoleRegistry {
     }
 
     @Override
-    public Optional<ClanRole> role(@NotNull String name) {
+    public Optional<ClanRole> value(@NotNull String name) {
         return Optional.ofNullable(roleMap.get(name));
     }
 
     @Override
-    public @NotNull @UnmodifiableView Collection<ClanRole> roles() {
+    public @NotNull @Unmodifiable Collection<ClanRole> values() {
         return roleMap.values();
     }
 
