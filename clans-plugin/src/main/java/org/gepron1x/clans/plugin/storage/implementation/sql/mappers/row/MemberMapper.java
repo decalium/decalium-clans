@@ -13,8 +13,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
-import static java.util.Objects.requireNonNull;
-
 public final class MemberMapper extends PrefixedRowMapper<ClanMember> {
     private static final String UNIQUE_ID = "uuid", ROLE = "role";
     private final ClanBuilderFactory builderFactory;
@@ -29,7 +27,7 @@ public final class MemberMapper extends PrefixedRowMapper<ClanMember> {
     public ClanMember map(ResultSet rs, StatementContext ctx) throws SQLException {
         ColumnMapper<UUID> uuidMapper = ctx.findColumnMapperFor(UUID.class).orElseThrow();
         return builderFactory.memberBuilder().uuid(uuidMapper.map(rs, prefixed(UNIQUE_ID), ctx))
-                .role(requireNonNull(roleRegistry.role(rs.getString(prefixed(ROLE)))))
+                .role(roleRegistry.role(rs.getString(prefixed(ROLE))).orElseThrow())
                 .build();
     }
 }

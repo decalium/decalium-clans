@@ -18,12 +18,12 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.clan.Clan;
-import org.gepron1x.clans.api.clan.ClanHome;
+import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.api.edition.ClanEdition;
-import org.gepron1x.clans.api.edition.HomeEdition;
-import org.gepron1x.clans.api.edition.MemberEdition;
+import org.gepron1x.clans.api.edition.home.HomeEdition;
+import org.gepron1x.clans.api.edition.member.MemberEdition;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.DecaliumClansPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -165,7 +165,7 @@ public final class PostClanEdition implements ClanEdition {
 
 
         @Override
-        public MemberEdition setRole(@NotNull ClanRole role) {
+        public MemberEdition appoint(@NotNull ClanRole role) {
             return this;
         }
     }

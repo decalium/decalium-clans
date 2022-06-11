@@ -1,14 +1,15 @@
 package org.gepron1x.clans.plugin.announce;
 
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Server;
 import org.gepron1x.clans.api.clan.Clan;
-import org.gepron1x.clans.api.clan.ClanHome;
+import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.api.edition.ClanEdition;
-import org.gepron1x.clans.api.edition.HomeEdition;
-import org.gepron1x.clans.api.edition.MemberEdition;
+import org.gepron1x.clans.api.edition.home.HomeEdition;
+import org.gepron1x.clans.api.edition.member.MemberEdition;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.jetbrains.annotations.NotNull;
@@ -20,17 +21,19 @@ import static java.util.Objects.requireNonNull;
 
 public final class AnnouncingClanEdition implements ClanEdition {
     private final Clan clan;
+    private final Audience audience;
     private final Server server;
     private final MessagesConfig messages;
 
-    public AnnouncingClanEdition(Clan clan, Server server, MessagesConfig messages) {
+    public AnnouncingClanEdition(Clan clan, Audience audience, Server server, MessagesConfig messages) {
         this.clan = clan;
+        this.audience = audience;
         this.server = server;
         this.messages = messages;
     }
     @Override
     public ClanEdition rename(@NotNull Component displayName) {
-        clan.sendMessage(messages.announcements().clanSetDisplayName().with("name", displayName));
+        this.audience.sendMessage(messages.announcements().clanSetDisplayName().with("name", displayName));
         return this;
     }
 
@@ -51,13 +54,13 @@ public final class AnnouncingClanEdition implements ClanEdition {
 
     @Override
     public ClanEdition addMember(@NotNull ClanMember member) {
-        clan.sendMessage(messages.announcements().memberAdded().with("member", member.renderName(server)));
+        this.audience.sendMessage(messages.announcements().memberAdded().with("member", member.renderName(server)));
         return this;
     }
 
     @Override
     public ClanEdition removeMember(@NotNull ClanMember member) {
-        clan.sendMessage(messages.announcements().memberRemoved().with("member", member.renderName(server)));
+        this.audience.sendMessage(messages.announcements().memberRemoved().with("member", member.renderName(server)));
         return this;
     }
 
@@ -69,7 +72,7 @@ public final class AnnouncingClanEdition implements ClanEdition {
 
     @Override
     public ClanEdition addHome(@NotNull ClanHome home) {
-        clan.sendMessage(messages.announcements().homeCreated()
+        this.audience.sendMessage(messages.announcements().homeCreated()
                 .with("member", requireNonNull(clan.member(home.creator())).orElseThrow().renderName(server))
                 .with("home_name", home));
         return this;
@@ -77,7 +80,7 @@ public final class AnnouncingClanEdition implements ClanEdition {
 
     @Override
     public ClanEdition removeHome(@NotNull ClanHome home) {
-        clan.sendMessage(messages.announcements().homeDeleted()
+        this.audience.sendMessage(messages.announcements().homeDeleted()
                 .with("home_name", home));
         return this;
     }
@@ -98,8 +101,8 @@ public final class AnnouncingClanEdition implements ClanEdition {
         }
 
         @Override
-        public MemberEdition setRole(@NotNull ClanRole role) {
-            clan.sendMessage(messages.announcements().memberPromoted().with("member", member.renderName(server)));
+        public MemberEdition appoint(@NotNull ClanRole role) {
+            AnnouncingClanEdition.this.audience.sendMessage(messages.announcements().memberPromoted().with("member", member.renderName(server)));
             return this;
         }
     }

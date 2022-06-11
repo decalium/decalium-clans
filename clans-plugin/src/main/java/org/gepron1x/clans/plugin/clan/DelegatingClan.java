@@ -1,8 +1,8 @@
 package org.gepron1x.clans.plugin.clan;
 
 import net.kyori.adventure.text.Component;
-import org.gepron1x.clans.api.clan.ClanHome;
 import org.gepron1x.clans.api.clan.DraftClan;
+import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.jetbrains.annotations.NotNull;

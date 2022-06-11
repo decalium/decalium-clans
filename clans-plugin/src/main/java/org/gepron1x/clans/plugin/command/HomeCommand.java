@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.clan.Clan;
-import org.gepron1x.clans.api.clan.ClanHome;
+import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.repository.CachingClanRepository;

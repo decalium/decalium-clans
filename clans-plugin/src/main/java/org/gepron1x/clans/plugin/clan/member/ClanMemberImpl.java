@@ -3,7 +3,7 @@ package org.gepron1x.clans.plugin.clan.member;
 import com.google.common.base.MoreObjects;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
-import org.gepron1x.clans.api.edition.MemberEdition;
+import org.gepron1x.clans.api.edition.member.MemberEdition;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -87,7 +87,7 @@ public record ClanMemberImpl(UUID uuid,
         private final class MemberEditionImpl implements MemberEdition {
 
             @Override
-            public MemberEdition setRole(@NotNull ClanRole role) {
+            public MemberEdition appoint(@NotNull ClanRole role) {
                 BuilderImpl.this.role(role);
                 return this;
             }

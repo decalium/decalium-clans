@@ -9,7 +9,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.edition.EditionApplicable;
-import org.gepron1x.clans.api.edition.MemberEdition;
+import org.gepron1x.clans.api.edition.member.MemberEdition;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 

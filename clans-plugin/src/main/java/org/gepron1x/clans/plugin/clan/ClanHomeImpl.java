@@ -4,8 +4,8 @@ import com.google.common.base.MoreObjects;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
-import org.gepron1x.clans.api.clan.ClanHome;
-import org.gepron1x.clans.api.edition.HomeEdition;
+import org.gepron1x.clans.api.clan.home.ClanHome;
+import org.gepron1x.clans.api.edition.home.HomeEdition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

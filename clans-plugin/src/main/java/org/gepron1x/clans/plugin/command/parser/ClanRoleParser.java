@@ -35,9 +35,7 @@ public final class ClanRoleParser<C> implements ArgumentParser<C, ClanRole> {
         if(name == null) return ArgumentParseResult.failure(new NoInputProvidedException(ClanRoleParser.class, commandContext));
         inputQueue.remove();
 
-        ClanRole role = roleRegistry.role(name);
-        if(role == null) return ArgumentParseResult.failure(new UnknownRoleException(commandContext));
-        return ArgumentParseResult.success(role);
+        return roleRegistry.role(name).map(ArgumentParseResult::success).orElseGet(() -> ArgumentParseResult.failure(new UnknownRoleException(commandContext)));
 
     }
 

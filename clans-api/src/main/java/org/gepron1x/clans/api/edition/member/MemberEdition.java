@@ -1,7 +1,8 @@
-package org.gepron1x.clans.api.edition;
+package org.gepron1x.clans.api.edition.member;
 
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
+import org.gepron1x.clans.api.edition.Edition;
 import org.jetbrains.annotations.NotNull;
 
 public interface MemberEdition extends Edition<ClanMember> {
@@ -12,6 +13,6 @@ public interface MemberEdition extends Edition<ClanMember> {
         return ClanMember.class;
     }
 
-    MemberEdition setRole(@NotNull ClanRole role);
+    MemberEdition appoint(@NotNull ClanRole role);
 
 }

@@ -3,7 +3,7 @@ package org.gepron1x.clans.plugin.storage.implementation.sql.edition;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
-import org.gepron1x.clans.api.edition.HomeEdition;
+import org.gepron1x.clans.api.edition.home.HomeEdition;
 import org.intellij.lang.annotations.Language;
 import org.jdbi.v3.core.Handle;
 import org.jetbrains.annotations.NotNull;

@@ -3,7 +3,7 @@ package org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row;
 import net.kyori.adventure.text.Component;
 import org.bukkit.inventory.ItemStack;
 import org.gepron1x.clans.api.ClanBuilderFactory;
-import org.gepron1x.clans.api.clan.ClanHome;
+import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.plugin.storage.implementation.sql.PrefixedRowMapper;
 import org.jdbi.v3.core.mapper.ColumnMapper;
 import org.jdbi.v3.core.statement.StatementContext;

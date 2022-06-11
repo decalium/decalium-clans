@@ -1,4 +1,4 @@
-package org.gepron1x.clans.api.clan;
+package org.gepron1x.clans.api.clan.statistic;
 
 import org.gepron1x.clans.api.statistic.StatisticType;
 

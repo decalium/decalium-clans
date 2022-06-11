@@ -1,7 +1,7 @@
 package org.gepron1x.clans.plugin.storage.implementation.sql.common;
 
 import org.bukkit.Location;
-import org.gepron1x.clans.api.clan.ClanHome;
+import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.statement.PreparedBatch;
 

@@ -1,9 +1,10 @@
-package org.gepron1x.clans.api.edition;
+package org.gepron1x.clans.api.edition.home;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
-import org.gepron1x.clans.api.clan.ClanHome;
+import org.gepron1x.clans.api.clan.home.ClanHome;
+import org.gepron1x.clans.api.edition.Edition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

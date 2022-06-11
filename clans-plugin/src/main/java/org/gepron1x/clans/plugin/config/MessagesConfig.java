@@ -103,6 +103,10 @@ public interface MessagesConfig {
         @DefaultString("<prefix> Display name was set to <name>.")
         Message displayNameSet();
 
+        @ConfKey("left-clan")
+        @DefaultString("<prefix> Successfully left the clan.")
+        Message left();
+
         @ConfKey("creation")
         @SubSection
         Creation creation();

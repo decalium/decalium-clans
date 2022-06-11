@@ -8,7 +8,7 @@ import io.leangen.geantyref.TypeToken;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gepron1x.clans.api.clan.Clan;
-import org.gepron1x.clans.api.clan.ClanHome;
+import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 
 import java.util.Objects;

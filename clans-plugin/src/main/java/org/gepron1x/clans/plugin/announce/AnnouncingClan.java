@@ -2,6 +2,7 @@ package org.gepron1x.clans.plugin.announce;
 
 import com.google.common.base.MoreObjects;
 import org.bukkit.Server;
+import org.gepron1x.clans.api.audience.ClanAudience;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.edition.ClanEdition;
@@ -28,7 +29,7 @@ public final class AnnouncingClan implements Clan, DelegatingClan {
     @Override
     public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> consumer) {
         return this.delegate.edit(consumer).thenApplySync(clan -> {
-            consumer.accept(new AnnouncingClanEdition(clan, this.server, this.messages));
+            consumer.accept(new AnnouncingClanEdition(clan, new ClanAudience(clan, this.server), this.server, this.messages));
             return new AnnouncingClan(clan, this.messages, this.server);
         });
     }

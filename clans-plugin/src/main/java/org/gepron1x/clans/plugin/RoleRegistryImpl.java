@@ -5,11 +5,11 @@ import org.gepron1x.clans.api.RoleRegistry;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.plugin.util.MapOf;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public final class RoleRegistryImpl implements RoleRegistry {
@@ -36,8 +36,8 @@ public final class RoleRegistryImpl implements RoleRegistry {
     }
 
     @Override
-    public @Nullable ClanRole role(@NotNull String name) {
-        return roleMap.get(name);
+    public Optional<ClanRole> role(@NotNull String name) {
+        return Optional.ofNullable(roleMap.get(name));
     }
 
     @Override

@@ -82,6 +82,9 @@ public class ClanCommand extends AbstractClanCommand {
 
         manager.command(builder.literal("myclan").permission("clans.myclan")
                 .handler(new ClanExecutionHandler(this::myClan, this.clanRepository, this.messages)));
+
+        manager.command(builder.literal("leave").permission("clans.leave")
+                .handler(new ClanExecutionHandler(this::leaveClan, this.clanRepository, this.messages)));
     }
 
 
@@ -141,6 +144,14 @@ public class ClanCommand extends AbstractClanCommand {
                    .with("member", member));
        }
 
+    }
+
+    private void leaveClan(CommandContext<CommandSender> context) {
+        Player player = (Player) context.getSender();
+        Clan clan = context.get(ClanExecutionHandler.CLAN);
+        clan.edit(edition -> edition.removeMember(context.get(ClanExecutionHandler.CLAN_MEMBER))).thenAccept(c -> {
+            player.sendMessage(this.messages.commands().left());
+        });
     }
 
     private void deleteClan(CommandContext<CommandSender> context) {

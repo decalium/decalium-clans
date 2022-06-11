@@ -90,7 +90,7 @@ public class MemberCommand extends AbstractClanCommand {
             return;
         }
 
-        clan.edit(edition -> edition.editMember(other.uniqueId(), memberEdition -> memberEdition.setRole(role)))
+        clan.edit(edition -> edition.editMember(other.uniqueId(), memberEdition -> memberEdition.appoint(role)))
                 .thenAccept(c -> player.sendMessage(messages.commands().member().role().success()))
                 .exceptionally(this::exceptionHandler);
 
