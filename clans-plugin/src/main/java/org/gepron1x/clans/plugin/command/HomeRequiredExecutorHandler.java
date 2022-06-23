@@ -11,26 +11,26 @@ import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 
-import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 
 public final class HomeRequiredExecutorHandler implements CommandExecutionHandler<CommandSender> {
 
     public static final CloudKey<ClanHome> HOME = SimpleCloudKey.of("decaliumclans_home", TypeToken.get(ClanHome.class));
     private final CommandExecutionHandler<CommandSender> delegate;
-    private final String argument;
+    private final Function<CommandContext<CommandSender>, String> homeName;
     private final MessagesConfig messages;
 
-    public HomeRequiredExecutorHandler(CommandExecutionHandler<CommandSender> delegate, String argument, MessagesConfig messages) {
+    public HomeRequiredExecutorHandler(CommandExecutionHandler<CommandSender> delegate, Function<CommandContext<CommandSender>, String> homeName, MessagesConfig messages) {
 
         this.delegate = delegate;
-        this.argument = argument;
+        this.homeName = homeName;
         this.messages = messages;
     }
     @Override
     public void execute(@NonNull CommandContext<CommandSender> commandContext) {
         Clan clan = commandContext.get(ClanExecutionHandler.CLAN);
-        String homeName = Objects.requireNonNull(commandContext.get(argument));
+        String homeName = this.homeName.apply(commandContext);
         Optional<ClanHome> opt = clan.home(homeName);
 
         if (opt.isEmpty()) {

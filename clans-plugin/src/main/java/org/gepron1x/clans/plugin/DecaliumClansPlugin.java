@@ -2,7 +2,6 @@ package org.gepron1x.clans.plugin;
 
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
-import com.sk89q.worldguard.WorldGuard;
 import io.leangen.geantyref.TypeToken;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
@@ -38,7 +37,7 @@ import org.gepron1x.clans.plugin.papi.PlaceholderAPIHook;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
 import org.gepron1x.clans.plugin.storage.StorageCreation;
 import org.gepron1x.clans.plugin.util.AsciiArt;
-import org.gepron1x.clans.plugin.wg.WgRepositoryImpl;
+import org.gepron1x.clans.plugin.wg.WgExtension;
 import org.slf4j.Logger;
 import space.arim.dazzleconf.ConfigurationOptions;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
@@ -96,11 +95,10 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
 
         ClanRepository repository = new AnnouncingClanRepository(
-                new WgRepositoryImpl(
-                        new ClanRepositoryImpl(storage, futuresFactory),
-                        WorldGuard.getInstance(),
-                        getServer()
-                ),
+                new WgExtension(
+                        getServer(),
+                        new ClanRepositoryImpl(storage, futuresFactory)
+                                ).make(),
                 getServer(),
                 messages);
 

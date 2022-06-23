@@ -20,16 +20,11 @@ import org.gepron1x.clans.plugin.command.argument.ComponentArgument;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 public class HomeCommand extends AbstractClanCommand {
     private final ClanBuilderFactory builderFactory;
-
-    private record ClanAndHome(@Nullable Clan clan, @Nullable ClanHome home) {
-        static final ClanAndHome EMPTY = new ClanAndHome(null, null);
-    }
 
     public HomeCommand(@NotNull Logger logger,
                        @NotNull CachingClanRepository clanManager,
@@ -63,7 +58,7 @@ public class HomeCommand extends AbstractClanCommand {
                 .permission("clans.home.delete")
                 .argument(StringArgument.of("name"))
                 .handler(new ClanExecutionHandler(new PermissiveClanExecutionHandler(
-                        new HomeRequiredExecutorHandler(this::deleteHome, "name", this.messages),
+                        new HomeRequiredExecutorHandler(this::deleteHome, ctx -> ctx.get("name"), this.messages),
                         ClanPermission.REMOVE_HOME,
                         this.messages
 
@@ -74,13 +69,16 @@ public class HomeCommand extends AbstractClanCommand {
                 .permission("clans.home.teleport")
                 .argument(StringArgument.of("name"))
                 .handler(new ClanExecutionHandler(
-                        new HomeRequiredExecutorHandler(this::teleportToHome, "name", this.messages),
+                        new HomeRequiredExecutorHandler(this::teleportToHome, ctx -> ctx.get("name"), this.messages),
                         this.clanRepository,
                         this.messages)
                 )
         );
 
     }
+
+
+
 
     private void createHome(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();

@@ -102,7 +102,6 @@ bukkit {
     description = "Shining clans plugin"
     apiVersion = "1.18"
     authors = listOf("gepron1x", "manya")
-    depend = listOf("WorldGuard")
-    softDepend = listOf("PlaceholderAPI", "CarbonChat")
+    softDepend = listOf("PlaceholderAPI", "CarbonChat", "WorldGuard")
 }
 
