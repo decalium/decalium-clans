@@ -4,10 +4,10 @@ import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import com.sk89q.worldguard.WorldGuard;
 import io.leangen.geantyref.TypeToken;
-import io.papermc.paper.text.PaperComponents;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.ClanBuilderFactory;
@@ -115,7 +115,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
 
         if(getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            new PlaceholderAPIHook(getServer(), config, clanCache, PaperComponents.legacySectionSerializer()).register();
+            new PlaceholderAPIHook(getServer(), config, clanCache, LegacyComponentSerializer.legacySection()).register();
         }
 
         if(getServer().getPluginManager().getPlugin("CarbonChat") != null) {
@@ -143,7 +143,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        commandManager.getParserRegistry().registerParserSupplier(TypeToken.get(ClanRole.class), params -> new ClanRoleParser<>(roleRegistry));
+        commandManager.parserRegistry().registerParserSupplier(TypeToken.get(ClanRole.class), params -> new ClanRoleParser<>(roleRegistry));
         commandManager.registerBrigadier();
 
 

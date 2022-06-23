@@ -66,8 +66,8 @@ public class ClanCommand extends AbstractClanCommand {
                 )
         );
 
-        manager.command(builder.literal("set").literal("displayname")
-                .permission("clans.set.displayname")
+        manager.command(builder.literal("rename")
+                .permission("clans.rename")
                 .argument(ComponentArgument.greedy("display_name"))
                 .handler(
                         new ClanExecutionHandler(

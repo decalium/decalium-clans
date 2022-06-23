@@ -1,7 +1,7 @@
 package org.gepron1x.clans.api.clan.member;
 
 import org.bukkit.OfflinePlayer;
-import org.gepron1x.clans.api.Registry;
+import org.gepron1x.clans.api.registry.Registry;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;

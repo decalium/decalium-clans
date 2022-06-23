@@ -1,4 +1,4 @@
-package org.gepron1x.clans.api;
+package org.gepron1x.clans.api.registry;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
@@ -11,6 +11,8 @@ import java.util.Optional;
 public interface Registry<K, V> extends Iterable<V> {
 
     @NotNull @Unmodifiable Collection<V> values();
+
+
     Optional<V> value(K key);
 
     @NotNull @Unmodifiable  Map<K, V> asMap();

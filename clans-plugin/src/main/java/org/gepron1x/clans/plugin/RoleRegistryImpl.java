@@ -41,6 +41,11 @@ public final class RoleRegistryImpl implements RoleRegistry {
     }
 
     @Override
+    public @NotNull @Unmodifiable Map<String, ClanRole> asMap() {
+        return this.roleMap;
+    }
+
+    @Override
     public @NotNull @Unmodifiable Collection<ClanRole> values() {
         return roleMap.values();
     }

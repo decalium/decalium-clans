@@ -1,6 +1,5 @@
 package org.gepron1x.clans.plugin.chat.resolvers;
 
-import io.papermc.paper.text.PaperComponents;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.Context;
@@ -29,7 +28,7 @@ public final class PapiTagResolver implements TagResolver {
 
         Component component;
         if(result.indexOf(LegacyComponentSerializer.SECTION_CHAR) != -1) {
-            component = PaperComponents.legacySectionSerializer().deserialize(result);
+            component = LegacyComponentSerializer.legacyAmpersand().deserialize(result);
         } else {
             component = Component.text(result);
         }

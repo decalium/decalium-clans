@@ -1,6 +1,7 @@
 package org.gepron1x.clans.api;
 
 import org.gepron1x.clans.api.clan.member.ClanRole;
+import org.gepron1x.clans.api.registry.Registry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 

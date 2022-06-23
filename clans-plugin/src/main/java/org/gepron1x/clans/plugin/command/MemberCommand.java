@@ -78,8 +78,6 @@ public class MemberCommand extends AbstractClanCommand {
         }
         ClanMember other = opt.get();
 
-
-
         if(other.role().weight() > member.role().weight()) {
             player.sendMessage(messages.commands().member().memberHasHigherWeight().with("member", memberPlayer.getName()));
             return;

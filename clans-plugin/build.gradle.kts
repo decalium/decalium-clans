@@ -30,7 +30,7 @@ dependencies {
     implementation("org.jdbi:jdbi3-core:3.28.0") {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
-    implementation("cloud.commandframework:cloud-paper:1.6.2")
+    implementation("cloud.commandframework:cloud-paper:1.7.0-SNAPSHOT")
     implementation("space.arim.dazzleconf:dazzleconf-ext-snakeyaml:1.2.1") {
         exclude(group = "org.yaml", module = "snakeyaml")
     }
@@ -38,9 +38,6 @@ dependencies {
     compileOnly("me.clip:placeholderapi:2.10.9")
     implementation("com.zaxxer:HikariCP:5.0.1") {
         exclude(group = "org.slf4j", module = "slf4j-api")
-    }
-    implementation ("net.kyori:adventure-text-minimessage:4.10.1") {
-        exclude(group = "net.kyori", module = "adventure-api")
     }
     compileOnly("net.draycia:carbonchat-api:2.1.0-SNAPSHOT") {
         exclude("net.kyori", "adventure-text-minimessage")
@@ -58,7 +55,6 @@ tasks {
     shadowJar {
 
         relocate("org.antlr", "$libraryPackage.antlr")
-        relocate("net.kyori.adventure.text.minimessage", "$libraryPackage.minimessage")
         relocate("space.arim.dazzleconf", "$libraryPackage.dazzleconf")
         relocate("space.arim.omnibus", "$libraryPackage.omnibus")
         relocate("org.jdbi", "$libraryPackage.jdbi")

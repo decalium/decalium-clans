@@ -1,6 +1,6 @@
 package org.gepron1x.clans.api.edition;
 
-import org.gepron1x.clans.api.Registry;
+import org.gepron1x.clans.api.registry.Registry;
 
 import java.util.Collection;
 import java.util.function.Consumer;
