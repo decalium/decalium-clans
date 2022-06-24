@@ -1,9 +1,8 @@
 package org.gepron1x.clans.api.event;
 
 import org.bukkit.event.HandlerList;
-import org.gepron1x.clans.api.clan.IdentifiedDraftClan;
+import org.gepron1x.clans.api.clan.Clan;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public final class ClanCreatedEvent extends ClanEvent {
 
@@ -13,7 +12,7 @@ public final class ClanCreatedEvent extends ClanEvent {
         return handlers;
     }
 
-    public ClanCreatedEvent(@Nullable IdentifiedDraftClan clan) {
+    public ClanCreatedEvent(Clan clan) {
         super(clan);
     }
     @Override

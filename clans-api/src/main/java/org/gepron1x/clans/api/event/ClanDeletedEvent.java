@@ -1,15 +1,14 @@
 package org.gepron1x.clans.api.event;
 
 import org.bukkit.event.HandlerList;
-import org.gepron1x.clans.api.clan.IdentifiedDraftClan;
+import org.gepron1x.clans.api.clan.Clan;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public final class ClanDeletedEvent extends ClanEvent {
 
     private static final HandlerList handlers = new HandlerList();
 
-    public ClanDeletedEvent(@Nullable IdentifiedDraftClan clan) {
+    public ClanDeletedEvent(Clan clan) {
         super(clan);
     }
 
