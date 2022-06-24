@@ -51,18 +51,20 @@ dependencies {
 
 var libraryPackage = "org.gepron1x.clans.libraries"
 
+fun com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar.relocateDependency(pkg: String) {
+    relocate(pkg, "$libraryPackage.$pkg")
+}
+
 tasks {
     shadowJar {
-
-        relocate("org.antlr", "$libraryPackage.antlr")
-        relocate("space.arim.dazzleconf", "$libraryPackage.dazzleconf")
-        relocate("space.arim.omnibus", "$libraryPackage.omnibus")
-        relocate("org.jdbi", "$libraryPackage.jdbi")
-        relocate("org.h2", "$libraryPackage.h2")
-        relocate("cloud.commandframework", "$libraryPackage.cloud.commandframework")
-        relocate("com.github.benmanes.caffeine", "$libraryPackage.caffeine")
-        relocate("io.leangen.geantyref", "$libraryPackage.geantyref")
-        relocate("com.zaxxer.hikari", "$libraryPackage.hikari")
+        relocateDependency("org.antlr")
+        relocateDependency("space.arim")
+        relocateDependency("org.jdbi")
+        relocateDependency("org.h2")
+        relocateDependency("cloud.commandframework")
+        relocateDependency("com.github.benmanes.caffeine")
+        relocateDependency("io.leangen.geantyref")
+        relocateDependency("com.zaxxer.hikari")
 
     }
 
