@@ -26,7 +26,7 @@ import org.gepron1x.clans.plugin.command.InviteCommand;
 import org.gepron1x.clans.plugin.command.MemberCommand;
 import org.gepron1x.clans.plugin.command.parser.ClanRoleParser;
 import org.gepron1x.clans.plugin.config.ClansConfig;
-import org.gepron1x.clans.plugin.config.ConfigManager;
+import org.gepron1x.clans.plugin.config.Configuration;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.gepron1x.clans.plugin.config.serializer.AdventureComponentSerializer;
 import org.gepron1x.clans.plugin.config.serializer.ClanPermissionSerializer;
@@ -56,8 +56,8 @@ public final class DecaliumClansPlugin extends JavaPlugin {
     private CachingClanRepository clanRepository;
     private DecaliumClansApi clansApi;
 
-    private ConfigManager<ClansConfig> configManager;
-    private ConfigManager<MessagesConfig> messagesConfigManager;
+    private Configuration<ClansConfig> configuration;
+    private Configuration<MessagesConfig> messagesConfiguration;
 
 
     @Override
@@ -77,11 +77,11 @@ public final class DecaliumClansPlugin extends JavaPlugin {
                 .addSerialiser(new ClanRoleSerializer(builderFactory))
                 .addSerialiser(new ClanPermissionSerializer())
                 .build();
-        this.messagesConfigManager = ConfigManager.create(this, "messages.yml", MessagesConfig.class, options);
-        this.configManager = ConfigManager.create(this, "config.yml", ClansConfig.class, options);
+        this.messagesConfiguration = Configuration.create(this, "messages.yml", MessagesConfig.class, options);
+        this.configuration = Configuration.create(this, "config.yml", ClansConfig.class, options);
 
-        this.messagesConfigManager.reloadConfig();
-        this.configManager.reloadConfig();
+        this.messagesConfiguration.reloadConfig();
+        this.configuration.reloadConfig();
 
         buildRoleRegistry();
         ClansConfig config = getClansConfig();
@@ -184,11 +184,11 @@ public final class DecaliumClansPlugin extends JavaPlugin {
     }
 
     public ClansConfig getClansConfig() {
-        return configManager.getConfigData();
+        return configuration.data();
     }
 
     public MessagesConfig getMessages() {
-        return messagesConfigManager.getConfigData();
+        return messagesConfiguration.data();
     }
 
 }

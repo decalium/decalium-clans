@@ -9,7 +9,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import java.util.Arrays;
 import java.util.Collection;
 
-public interface WithTags<T extends WithTags<T>> { // i have no clue how to call this
+public interface Formatted<T extends Formatted<T>> { // i have no clue how to call this
 
 
     T with(TagResolver tagResolver);

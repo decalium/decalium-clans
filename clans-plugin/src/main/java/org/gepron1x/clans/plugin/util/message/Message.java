@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.List;
 
 public record Message(MiniMessage miniMessage,
-                      String value) implements ComponentLike, WithTags<Message.Container> {
+                      String value) implements ComponentLike, Formatted<Message.Container> {
 
     public static Message message(@NotNull String value, @NotNull MiniMessage miniMessage) {
         return new Message(miniMessage, value);
@@ -39,7 +39,7 @@ public record Message(MiniMessage miniMessage,
     }
 
 
-    public static final class Container implements WithTags<Container>, ComponentLike {
+    public static final class Container implements Formatted<Container>, ComponentLike {
 
         private final String value;
         private final MiniMessage miniMessage;

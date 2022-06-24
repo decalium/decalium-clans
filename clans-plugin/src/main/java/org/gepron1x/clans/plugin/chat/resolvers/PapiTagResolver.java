@@ -2,17 +2,14 @@ package org.gepron1x.clans.plugin.chat.resolvers;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.Context;
-import net.kyori.adventure.text.minimessage.ParsingException;
 import net.kyori.adventure.text.minimessage.tag.Tag;
-import net.kyori.adventure.text.minimessage.tag.resolver.ArgumentQueue;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class PapiTagResolver implements TagResolver {
+public final class PapiTagResolver implements TagResolver.WithoutArguments {
 
     private final OfflinePlayer player;
 
@@ -21,8 +18,9 @@ public final class PapiTagResolver implements TagResolver {
         this.player = player;
     }
 
+
     @Override
-    public @Nullable Tag resolve(@NotNull String name, @NotNull ArgumentQueue arguments, @NotNull Context ctx) throws ParsingException {
+    public @Nullable Tag resolve(@NotNull String name) {
         if(!isPlaceholder(name)) return null;
         String result = PlaceholderAPI.setPlaceholders(this.player, name);
 

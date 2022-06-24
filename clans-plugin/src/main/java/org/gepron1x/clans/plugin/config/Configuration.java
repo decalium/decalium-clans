@@ -15,25 +15,25 @@ import space.arim.dazzleconf.helper.ConfigurationHelper;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public final class ConfigManager<C> {
+public final class Configuration<C> {
 
     private final Logger logger;
     private final ConfigurationHelper<C> configHelper;
     private volatile C configData;
 
-    private ConfigManager(Logger logger, ConfigurationHelper<C> configHelper) {
+    private Configuration(Logger logger, ConfigurationHelper<C> configHelper) {
         this.logger = logger;
         this.configHelper = configHelper;
     }
 
-    public static <C> ConfigManager<C> create(Plugin plugin,
+    public static <C> Configuration<C> create(Plugin plugin,
                                               String fileName,
                                               Class<C> configClass,
                                               ConfigurationOptions options) {
         return create(plugin.getSLF4JLogger(), plugin.getDataFolder().toPath(), fileName, configClass, options);
     }
 
-    public static <C> ConfigManager<C> create(Logger logger,
+    public static <C> Configuration<C> create(Logger logger,
                                               Path configFolder,
                                               String fileName,
                                               Class<C> configClass,
@@ -45,7 +45,7 @@ public final class ConfigManager<C> {
                 configClass,
                 options, // change this if desired
                 yamlOptions);
-        return new ConfigManager<>(logger, new ConfigurationHelper<>(configFolder, fileName, configFactory));
+        return new Configuration<>(logger, new ConfigurationHelper<>(configFolder, fileName, configFactory));
     }
 
     public void reloadConfig() {
@@ -71,7 +71,7 @@ public final class ConfigManager<C> {
         configData = configHelper.getFactory().loadDefaults();
     }
 
-    public C getConfigData() {
+    public C data() {
         C configData = this.configData;
         if (configData == null) {
             throw new IllegalStateException("Configuration has not been loaded yet.");
