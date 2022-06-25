@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 public final class SavableStatistics implements Savable {
-    private static final String INSERT_STATISTIC = "INSERT INTO statistics (clan_id, type, value) (?, ?, ?) ON DUPLICATE KEY UPDATE value=?";
+    private static final String INSERT_STATISTIC = "INSERT INTO statistics (`clan_id`, `type`, `value`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `value`= VALUES(`value`)";
     private final Handle handle;
     private final int clanId;
     private final Map<StatisticType, Integer> statistics;
@@ -23,6 +23,7 @@ public final class SavableStatistics implements Savable {
     public SavableStatistics(Handle handle, int clanId, StatisticType type, int value) {
         this(handle, clanId, Map.of(type, value));
     }
+
     @Override
     public int execute() {
         PreparedBatch batch = this.handle.prepareBatch(INSERT_STATISTIC);
