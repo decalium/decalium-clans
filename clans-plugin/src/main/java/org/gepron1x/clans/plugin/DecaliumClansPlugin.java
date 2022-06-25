@@ -8,6 +8,7 @@ import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.DecaliumClansApi;
@@ -53,6 +54,8 @@ public final class DecaliumClansPlugin extends JavaPlugin {
     private RoleRegistry roleRegistry;
     private ClanBuilderFactory builderFactory;
     private ClanCacheImpl clanCache;
+
+    private ClanStorage storage;
     private CachingClanRepository clanRepository;
     private DecaliumClansApi clansApi;
 
@@ -66,10 +69,13 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         this.futuresFactory = new BukkitFactoryOfTheFuture(this);
         this.builderFactory = new ClanBuilderFactoryImpl();
 
-        MiniMessage miniMessage = MiniMessage.builder().tags(TagResolver.resolver((TagResolver.WithoutArguments) (text) -> switch(text) {
-            case "prefix" -> Tag.selfClosingInserting(getMessages().prefix());
-            default -> null;
-        }, TagResolver.standard())).build();
+        TagResolver resolver = TagResolver.resolver(
+                TagResolver.standard(),
+                TagResolver.resolver(
+                        "prefix", (queue, ctx) -> Tag.selfClosingInserting(getMessages().prefix())
+                )
+        );
+        MiniMessage miniMessage = MiniMessage.builder().tags(resolver).build();
 
         ConfigurationOptions options = new ConfigurationOptions.Builder()
                 .addSerialiser(new MessageSerializer(miniMessage))
@@ -89,7 +95,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
 
 
-        ClanStorage storage = new StorageCreation(this, getClansConfig(), builderFactory, roleRegistry).create();
+        storage = new StorageCreation(this, getClansConfig(), builderFactory, roleRegistry).create();
         storage.initialize();
         this.clanCache = new ClanCacheImpl();
 
@@ -112,11 +118,11 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
 
 
-        if(getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+        if(isEnabled("PlaceholderAPI")) {
             new PlaceholderAPIHook(getServer(), config, clanCache, LegacyComponentSerializer.legacySection()).register();
         }
 
-        if(getServer().getPluginManager().getPlugin("CarbonChat") != null) {
+        if(isEnabled("CarbonChat")) {
             new CarbonChatHook(getServer(), clanCache, messages, config).register();
         }
 
@@ -152,6 +158,8 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
 
         new AsciiArt(logger).print();
+        logger.info("Plugin successfully loaded!");
+        getServer().getServicesManager().register(DecaliumClansApi.class, clansApi, this, ServicePriority.Normal);
     }
 
 
@@ -174,12 +182,17 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
     }
 
+    private boolean isEnabled(String pluginName) {
+        return getServer().getPluginManager().isPluginEnabled(pluginName);
+    }
+
 
 
 
 
     @Override
     public void onDisable() {
+        this.storage.shutdown();
 
     }
 

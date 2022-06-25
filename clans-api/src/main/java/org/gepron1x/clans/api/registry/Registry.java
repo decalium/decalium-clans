@@ -15,6 +15,7 @@ public interface Registry<K, V> extends Iterable<V> {
 
     Optional<V> value(K key);
 
+
     @NotNull @Unmodifiable  Map<K, V> asMap();
 
     @NotNull

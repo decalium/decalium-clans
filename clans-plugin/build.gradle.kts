@@ -27,10 +27,12 @@ dependencies {
     implementation(project(":clans-api"))
     compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
     // paperDevBundle("1.18.2-R0.1-SNAPSHOT")
-    implementation("org.jdbi:jdbi3-core:3.28.0") {
+    implementation("org.jdbi:jdbi3-core:3.30.0") {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
-    implementation("cloud.commandframework:cloud-paper:1.7.0-SNAPSHOT")
+    implementation("cloud.commandframework:cloud-paper:1.7.0-SNAPSHOT") {
+        exclude("org.checkerframework", "checker-qual")
+    }
     implementation("space.arim.dazzleconf:dazzleconf-ext-snakeyaml:1.2.1") {
         exclude(group = "org.yaml", module = "snakeyaml")
     }
@@ -58,6 +60,7 @@ fun com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar.relocateDependenc
 tasks {
     shadowJar {
         relocateDependency("org.antlr")
+        relocateDependency("org.apiguardian")
         relocateDependency("space.arim")
         relocateDependency("org.jdbi")
         relocateDependency("org.h2")

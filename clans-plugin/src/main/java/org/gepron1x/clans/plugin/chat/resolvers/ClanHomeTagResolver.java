@@ -1,10 +1,10 @@
 package org.gepron1x.clans.plugin.chat.resolvers;
 
-import com.google.common.base.Strings;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
+import org.gepron1x.clans.api.audience.RenderedPlayerName;
 import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,7 +33,7 @@ public record ClanHomeTagResolver(@NotNull ClanHome clanHome) implements TagReso
             case NAME -> Component.text(clanHome.name());
             case DISPLAY_NAME -> clanHome.displayName();
             case OWNER_UUID -> Component.text(clanHome.creator().toString());
-            case OWNER_NAME -> Component.text(Strings.nullToEmpty(Bukkit.getOfflinePlayer(clanHome.creator()).getName()));
+            case OWNER_NAME -> new RenderedPlayerName(this.clanHome.creator(), Bukkit.getServer()).asComponent();
             case LOCATION_X -> Component.text(clanHome.location().getBlockX());
             case LOCATION_Y -> Component.text(clanHome.location().getBlockY());
             case LOCATION_Z -> Component.text(clanHome.location().getBlockZ());

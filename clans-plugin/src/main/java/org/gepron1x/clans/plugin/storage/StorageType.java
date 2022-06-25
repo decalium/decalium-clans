@@ -25,7 +25,7 @@ public enum StorageType {
         this.onDisable.accept(handle);
     }
 
-    public String getDriverClassName() {
+    public String driverClassName() {
         return driverClassName;
     }
 }

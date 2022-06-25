@@ -78,7 +78,7 @@ public final class StorageCreation {
         } else {
             throw new UnsupportedOperationException("postrges/other databases are not supported yet.");
         }
-        hikariConfig.setDriverClassName(type.getDriverClassName());
+        hikariConfig.setDriverClassName(type.driverClassName());
         hikariConfig.setJdbcUrl(url);
         hikariConfig.setUsername(username);
         hikariConfig.setPassword(password);
