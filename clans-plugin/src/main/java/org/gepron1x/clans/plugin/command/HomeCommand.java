@@ -85,6 +85,10 @@ public class HomeCommand extends AbstractClanCommand {
         String name = context.get("name");
         Component displayName = context.<Component>getOptional("display_name").orElseGet(() -> Component.text(name, NamedTextColor.GRAY));
         ItemStack icon = player.getInventory().getItemInMainHand();
+        if(icon.getType().isAir()) {
+            player.sendMessage(this.messages.commands().home().holdAnItem());
+            return;
+        }
         Location location = player.getLocation();
 
         ClanHome home = builderFactory.homeBuilder()
@@ -122,9 +126,9 @@ public class HomeCommand extends AbstractClanCommand {
     private void teleportToHome(CommandContext<CommandSender> context) {
 
         Player player = (Player) context.getSender();
-
-        player.teleportAsync(context.get(HomeRequiredExecutorHandler.HOME).location()).thenAccept(bool -> {
-            if(bool) player.sendMessage(Component.text("Teleported succesfully."));
+        ClanHome home = context.get(HomeRequiredExecutorHandler.HOME);
+        player.teleportAsync(home.location()).thenAccept(bool -> {
+            if(bool) player.sendMessage(this.messages.commands().home().teleported().with("name", home.displayName()));
         });
     }
 

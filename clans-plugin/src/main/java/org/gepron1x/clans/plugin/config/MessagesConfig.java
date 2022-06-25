@@ -251,6 +251,14 @@ public interface MessagesConfig {
             @DefaultString("<prefix> Deleted home succesfully.")
             Message deleted();
 
+            @ConfKey("please-hold-an-icon")
+            @DefaultString("<prefix> Please, hold an item in your hand. It will be used as home's icon.")
+            Message holdAnItem();
+
+            @ConfKey("teleported")
+            @DefaultString("<prefix> Teleported to <home>")
+            Message teleported();
+
 
         }
 
