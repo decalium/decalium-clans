@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.gepron1x.clans.api.ClanBuilderFactory;
+import org.gepron1x.clans.api.Validations;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
@@ -83,6 +84,12 @@ public class HomeCommand extends AbstractClanCommand {
     private void createHome(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
         String name = context.get("name");
+
+        if(!Validations.checkHomeName(name)) {
+            player.sendMessage(this.messages.commands().home().invalidHomeName());
+            return;
+        }
+
         Component displayName = context.<Component>getOptional("display_name").orElseGet(() -> Component.text(name, NamedTextColor.GRAY));
         ItemStack icon = player.getInventory().getItemInMainHand();
         if(icon.getType().isAir()) {

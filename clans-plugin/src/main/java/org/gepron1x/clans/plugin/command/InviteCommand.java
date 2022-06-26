@@ -130,9 +130,9 @@ public class InviteCommand extends AbstractClanCommand {
                     return clan.get().edit(edition -> edition.addMember(member)).thenApply(c -> true);
                 }).thenAcceptSync(bool -> {
                     if (!bool) return;
-                        if (senderPlayer != null) {
-                            senderPlayer.sendMessage(messages.commands().invitation().playerAccepted().with("receiver", player.displayName()));
-                        }
+                    if (senderPlayer != null) {
+                        senderPlayer.sendMessage(messages.commands().invitation().playerAccepted().with("receiver", player.displayName()));
+                    }
                 }).exceptionally(this::exceptionHandler);
     }
 

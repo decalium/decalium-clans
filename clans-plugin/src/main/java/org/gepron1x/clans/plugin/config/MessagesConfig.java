@@ -19,6 +19,10 @@ public interface MessagesConfig {
     @DefaultString("<prefix> You do not have permission to use this.")
     Message noPermission();
 
+    @ConfKey("cannot-do-action-on-yourself")
+    @DefaultString("<prefix> You can't do that with yourself!")
+    Message cannotDoActionOnYourSelf();
+
 
 
     @ConfKey("no-clan-permission")
@@ -107,6 +111,10 @@ public interface MessagesConfig {
         @DefaultString("<prefix> Successfully left the clan.")
         Message left();
 
+        @ConfKey("owner-cannot-leave")
+        @DefaultString("<prefix> You cannot leave the clan because you are the owner.")
+        Message ownerCannotLeave();
+
         @ConfKey("creation")
         @SubSection
         Creation creation();
@@ -132,6 +140,10 @@ public interface MessagesConfig {
             @ConfKey("clan-with-tag-already-exists")
             @DefaultString("<prefix> Clan with given tag already exists! Think about something more original!")
             Message clanWithTagAlreadyExists();
+
+            @ConfKey("invalid-tag")
+            @DefaultString("<prefix> Error! Invalid tag. you can only use english letters and numbers. [a-z0-9]")
+            Message invalidTag();
 
             @ConfKey("success")
             @DefaultString("<prefix> Clan <name> created successfully")
@@ -215,6 +227,7 @@ public interface MessagesConfig {
                 @ConfKey("role-has-higher-weight")
                 @DefaultString("<prefix> Role <role> has higher weight than yours. You cannot set it.")
                 Message roleHasHigherWeight();
+
             }
 
             interface Kick {
@@ -238,6 +251,10 @@ public interface MessagesConfig {
             @ConfKey("home-not-found")
             @DefaultString("<prefix> No home with name <name> found.")
             Message homeNotFound();
+
+            @ConfKey("invalid-name")
+            @DefaultString("<prefix> Error! Invalid home name. you can only use english letters and numbers. [a-z0-9]")
+            Message invalidHomeName();
 
             @ConfKey("home-already-exists")
             @DefaultString("<prefix> Home with name <name> already exists!")

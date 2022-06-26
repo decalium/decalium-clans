@@ -34,6 +34,7 @@ import org.gepron1x.clans.plugin.config.serializer.ClanPermissionSerializer;
 import org.gepron1x.clans.plugin.config.serializer.ClanRoleSerializer;
 import org.gepron1x.clans.plugin.config.serializer.MessageSerializer;
 import org.gepron1x.clans.plugin.listener.CacheListener;
+import org.gepron1x.clans.plugin.listener.StatisticListener;
 import org.gepron1x.clans.plugin.papi.PlaceholderAPIHook;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
 import org.gepron1x.clans.plugin.storage.StorageCreation;
@@ -49,6 +50,8 @@ import java.util.function.UnaryOperator;
 
 
 public final class DecaliumClansPlugin extends JavaPlugin {
+
+    public static final String VERSION = "0.1";
 
     private FactoryOfTheFuture futuresFactory;
     private RoleRegistry roleRegistry;
@@ -155,6 +158,10 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         inviteCommand.register(commandManager);
         memberCommand.register(commandManager);
         homeCommand.register(commandManager);
+
+        StatisticListener statisticListener = new StatisticListener(this.clanRepository, this, this.futuresFactory);
+        getServer().getPluginManager().registerEvents(statisticListener, this);
+        statisticListener.start();
 
 
         new AsciiArt(logger).print();

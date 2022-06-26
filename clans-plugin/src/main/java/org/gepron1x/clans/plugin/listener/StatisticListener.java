@@ -40,6 +40,8 @@ public final class StatisticListener implements Listener {
 
     }
 
+
+
     private void incrementStatistic(UUID uuid, StatisticType type) {
         Optional<Clan> opt = repository.userClanIfCached(uuid);
         if(opt.isEmpty()) return;
@@ -54,7 +56,7 @@ public final class StatisticListener implements Listener {
 
 
     public void start() {
-        long ticks = 20 * 60 * 5;
+        long ticks = 20 * 60;
         plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
             Map<String, Map<StatisticType, Integer>> map = statisticsTable.rowMap();
             futuresFactory.allOf(map.entrySet().stream().map(entry -> {
@@ -63,9 +65,7 @@ public final class StatisticListener implements Listener {
                     if(opt.isEmpty()) return futuresFactory.completedFuture(null);
                     Clan clan = opt.get();
                     return clan.edit(edition -> {
-                        copy.forEach((type, val) -> {
-                            edition.setStatistic(type, clan.statisticOr(type, 0) + val);
-                        });
+                        edition.setStatistics(copy);
                     });
                 });
 

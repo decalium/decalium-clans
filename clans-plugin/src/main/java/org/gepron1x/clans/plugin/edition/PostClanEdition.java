@@ -148,7 +148,9 @@ public final class PostClanEdition implements ClanEdition {
 
     @Override
     public ClanEdition editHome(@NotNull String name, @NotNull Consumer<HomeEdition> consumer) {
-        consumer.accept(new PostHomeEdition());
+        ClanHome home = clan.home(name).orElseThrow();
+        RegionManager mgr = getRegionManager(home.location());
+        consumer.accept(new PostHomeEdition(home, mgr));
         return this;
     }
 
@@ -172,6 +174,14 @@ public final class PostClanEdition implements ClanEdition {
 
     private static class PostHomeEdition implements HomeEdition {
 
+        private final ClanHome home;
+        private final RegionManager regionManager;
+        private PostHomeEdition(ClanHome home, RegionManager regionManager) {
+            this.home = home;
+            this.regionManager = regionManager;
+        }
+
+
         @Override
         public HomeEdition setIcon(@Nullable ItemStack icon) {
             return this;
@@ -183,7 +193,7 @@ public final class PostClanEdition implements ClanEdition {
         }
 
         @Override
-        public HomeEdition setDisplayName(@NotNull Component displayName) {
+        public HomeEdition rename(@NotNull Component displayName) {
             return this;
         }
     }

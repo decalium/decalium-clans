@@ -50,7 +50,7 @@ public final class SqlHomeEdition implements HomeEdition {
     }
 
     @Override
-    public HomeEdition setDisplayName(@NotNull Component displayName) {
+    public HomeEdition rename(@NotNull Component displayName) {
         handle.createUpdate(UPDATE_DISPLAY_NAME)
                 .bind(1, homeName)
                 .bind(2, clanId)

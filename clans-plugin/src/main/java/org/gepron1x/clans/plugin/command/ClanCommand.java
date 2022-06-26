@@ -10,11 +10,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.RoleRegistry;
+import org.gepron1x.clans.api.Validations;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
+import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.command.argument.ComponentArgument;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
@@ -25,6 +27,7 @@ import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.util.UUID;
 
+import static net.kyori.adventure.text.Component.newline;
 import static net.kyori.adventure.text.Component.text;
 
 public class ClanCommand extends AbstractClanCommand {
@@ -91,6 +94,11 @@ public class ClanCommand extends AbstractClanCommand {
     private void createClan(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
         String tag = context.get("tag");
+        if(!Validations.checkTag(tag)) {
+            player.sendMessage(this.messages.commands().creation().invalidTag());
+            return;
+        }
+
         Component displayName = context.<Component>getOptional("display_name")
                 .orElseGet(() -> text(tag, NamedTextColor.GRAY));
 
@@ -133,6 +141,11 @@ public class ClanCommand extends AbstractClanCommand {
         Player player = (Player) context.getSender();
         Clan clan = context.get(ClanExecutionHandler.CLAN);
         player.sendMessage(Component.textOfChildren(text("You are member of "), clan, text("clan")));
+        player.sendMessage(Component.textOfChildren(
+                Component.textOfChildren(text("Kills: "), text(clan.statisticOr(StatisticType.KILLS, 0))),
+                newline(),
+                Component.textOfChildren(text("Deaths: "), text(clan.statisticOr(StatisticType.DEATHS, 0)))
+        ));
     }
 
     private void listMembers(CommandContext<CommandSender> context) {

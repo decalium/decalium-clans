@@ -200,7 +200,7 @@ public final class ClanHomeImpl implements ClanHome {
             }
 
             @Override
-            public HomeEdition setDisplayName(@NotNull Component displayName) {
+            public HomeEdition rename(@NotNull Component displayName) {
                 BuilderImpl.this.displayName(displayName);
                 return this;
             }

@@ -78,6 +78,11 @@ public class MemberCommand extends AbstractClanCommand {
         }
         ClanMember other = opt.get();
 
+        if(other.equals(member)) {
+            player.sendMessage(messages.cannotDoActionOnYourSelf());
+            return;
+        }
+
         if(other.role().weight() > member.role().weight()) {
             player.sendMessage(messages.commands().member().memberHasHigherWeight().with("member", memberPlayer.getName()));
             return;
@@ -109,9 +114,13 @@ public class MemberCommand extends AbstractClanCommand {
             return;
         }
         ClanMember other = opt.get();
+        if(other.equals(member)) {
+            player.sendMessage(messages.cannotDoActionOnYourSelf());
+            return;
+        }
+
 
         if (other.role().weight() >= member.role().weight()) {
-            System.out.println("other: " + other.role().weight() + " member: " + member.role().weight());
             player.sendMessage(messages.commands().member().memberHasHigherWeight().with("member", memberPlayer.getName()));
         }
 
