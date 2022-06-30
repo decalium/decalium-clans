@@ -68,15 +68,14 @@ public final class Configuration<C> {
 
     private void loadDefault() {
         logger.error("Failed to load configuration! Loading defaults!");
-        configData = configHelper.getFactory().loadDefaults();
+        this.configData = configHelper.getFactory().loadDefaults();
     }
 
     public C data() {
-        C configData = this.configData;
-        if (configData == null) {
-            throw new IllegalStateException("Configuration has not been loaded yet.");
+        if(this.configData == null) {
+            this.reloadConfig();
         }
-        return configData;
+        return this.configData;
     }
 
 }
