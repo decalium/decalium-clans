@@ -37,7 +37,7 @@ public final class SqlHomeEdition implements HomeEdition {
     }
 
     @Override
-    public HomeEdition setLocation(@NotNull Location location) {
+    public HomeEdition move(@NotNull Location location) {
         handle.createUpdate(UPDATE_LOCATION)
                 .bind(5, homeName)
                 .bind(4, clanId)

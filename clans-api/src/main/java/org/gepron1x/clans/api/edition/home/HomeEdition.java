@@ -15,6 +15,6 @@ public interface HomeEdition extends Edition<ClanHome> {
     default Class<ClanHome> getTarget() { return ClanHome.class; }
 
     HomeEdition setIcon(@Nullable ItemStack icon);
-    HomeEdition setLocation(@NotNull Location location);
+    HomeEdition move(@NotNull Location location);
     HomeEdition rename(@NotNull Component displayName);
 }

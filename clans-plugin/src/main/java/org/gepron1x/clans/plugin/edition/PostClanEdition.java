@@ -8,7 +8,6 @@ import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.LinearComponents;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.ArmorStand;
@@ -26,6 +25,7 @@ import org.gepron1x.clans.api.edition.home.HomeEdition;
 import org.gepron1x.clans.api.edition.member.MemberEdition;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.DecaliumClansPlugin;
+import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,10 +39,12 @@ public final class PostClanEdition implements ClanEdition {
     private static final NamespacedKey CLAN_NAME = new NamespacedKey(JavaPlugin.getPlugin(DecaliumClansPlugin.class), "clan_name");
     private static final NamespacedKey CLAN_HOME_NAME = new NamespacedKey(JavaPlugin.getPlugin(DecaliumClansPlugin.class), "clan_home_name");
     private final Clan clan;
+    private final ClansConfig clansConfig;
     private final RegionContainer regionContainer;
 
-    public PostClanEdition(Clan clan, RegionContainer regionContainer) {
+    public PostClanEdition(Clan clan, ClansConfig clansConfig, RegionContainer regionContainer) {
         this.clan = clan;
+        this.clansConfig = clansConfig;
         this.regionContainer = regionContainer;
     }
     @Override
@@ -109,19 +111,19 @@ public final class PostClanEdition implements ClanEdition {
             PersistentDataContainer pdc = stand.getPersistentDataContainer();
             pdc.set(CLAN_NAME, PersistentDataType.STRING, clan.tag());
             pdc.set(CLAN_HOME_NAME, PersistentDataType.STRING, home.name());
-            stand.customName(LinearComponents.linear(Component.text("База "), home.displayName()));
+            stand.customName(this.clansConfig.homes().hologramFormat().with("home_name", home.displayName()).asComponent());
             stand.setDisabledSlots(EquipmentSlot.values());
             stand.getEquipment().setHelmet(home.icon());
         });
         regionManager.addRegion(region);
+
         return this;
     }
 
 
     private ProtectedCuboidRegion createForHome(ClanHome home) {
         Location location = home.location();
-        double size = 30;
-        double halfSize = size / 2;
+        double halfSize = this.clansConfig.homes().homeRegionRadius();
         int x = location.getBlockX();
         int y = location.getBlockY();
         int z = location.getBlockZ();
@@ -188,7 +190,7 @@ public final class PostClanEdition implements ClanEdition {
         }
 
         @Override
-        public HomeEdition setLocation(@NotNull Location location) {
+        public HomeEdition move(@NotNull Location location) {
             return this;
         }
 

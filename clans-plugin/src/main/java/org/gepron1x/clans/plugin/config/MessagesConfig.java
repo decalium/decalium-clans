@@ -247,6 +247,10 @@ public interface MessagesConfig {
 
         interface Home {
 
+            @ConfKey("too-many-homes")
+            @DefaultString("<prefix> Too many homes already exist!")
+            Message tooManyHomes();
+
 
             @ConfKey("home-not-found")
             @DefaultString("<prefix> No home with name <name> found.")

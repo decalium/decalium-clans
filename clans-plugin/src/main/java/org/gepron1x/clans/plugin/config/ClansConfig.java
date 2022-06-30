@@ -21,6 +21,7 @@ public interface ClansConfig {
     @ConfKey("not-clan-placeholder")
     Component noClanPlaceholder();
 
+
     @ConfKey("roles")
     @SubSection
     Roles roles();
@@ -67,6 +68,29 @@ public interface ClansConfig {
                             .build()
             );
         }
+
+
+    }
+
+    @SubSection Homes homes();
+
+    interface Homes {
+
+        @ConfKey("max-homes-per-clan")
+        @DefaultInteger(10)
+        int maxHomes();
+
+        @ConfKey("max-home-display-name")
+        @DefaultInteger(10)
+        int maxHomeDisplayNameSize();
+
+        @ConfKey("home-region-radius")
+        @DefaultDouble(30.0)
+        double homeRegionRadius();
+
+        @ConfKey("hologram-format")
+        @DefaultString("База <home_name>")
+        Message hologramFormat();
 
 
     }

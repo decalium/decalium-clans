@@ -32,8 +32,8 @@ public final class RenderedPlayerName implements ComponentLike {
 
         return Component.text().append(
                 Component.text("Unknown player "),
-                Component.text("("+uuid+")").clickEvent(ClickEvent.copyToClipboard(uuid.toString()))
-        ).color(NamedTextColor.GRAY).build();
+                Component.text("("+uuid+")", NamedTextColor.GRAY).clickEvent(ClickEvent.copyToClipboard(uuid.toString()))
+        ).build();
 
     }
 }

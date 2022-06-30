@@ -106,6 +106,10 @@ public class HomeCommand extends AbstractClanCommand {
                 .icon(icon).build();
 
         Clan clan = context.get(ClanExecutionHandler.CLAN);
+        if(clan.homes().size() >= this.clansConfig.homes().maxHomes()) {
+            player.sendMessage(messages.commands().home().tooManyHomes());
+            return;
+        }
         if(clan.home(name).isPresent()) {
             player.sendMessage(messages.commands().home().homeAlreadyExists().with("name", name));
             return;

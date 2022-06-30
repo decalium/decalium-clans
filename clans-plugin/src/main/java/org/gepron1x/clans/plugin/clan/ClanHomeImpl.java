@@ -194,7 +194,7 @@ public final class ClanHomeImpl implements ClanHome {
             }
 
             @Override
-            public HomeEdition setLocation(@NotNull Location location) {
+            public HomeEdition move(@NotNull Location location) {
                 BuilderImpl.this.location(location);
                 return this;
             }

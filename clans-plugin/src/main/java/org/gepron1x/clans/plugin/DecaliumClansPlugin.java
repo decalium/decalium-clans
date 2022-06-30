@@ -106,6 +106,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         ClanRepository repository = new AnnouncingClanRepository(
                 new WgExtension(
                         getServer(),
+                        getClansConfig(),
                         new ClanRepositoryImpl(storage, futuresFactory)
                                 ).make(),
                 getServer(),
