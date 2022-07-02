@@ -14,9 +14,8 @@ public interface Formatted<T extends Formatted<T>> { // i have no clue how to ca
 
     T with(TagResolver tagResolver);
 
-    default T with(String key, Tag tag) {
-        return with(TagResolver.resolver(key, tag));
-    }
+    T with(String key, Tag tag);
+
 
     T with(Collection<? extends TagResolver> resolvers);
 
