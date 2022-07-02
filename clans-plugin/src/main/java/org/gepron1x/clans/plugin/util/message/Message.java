@@ -3,12 +3,11 @@ package org.gepron1x.clans.plugin.util.message;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public record Message(MiniMessage miniMessage,
                       String value) implements ComponentLike, Formatted<Message.Container> {
@@ -28,14 +27,17 @@ public record Message(MiniMessage miniMessage,
 
     @Override
     public Container with(TagResolver tagResolver) {
-        ArrayList<TagResolver> resolvers = new ArrayList<>(1);
-        resolvers.add(tagResolver);
-        return new Container(value, miniMessage, resolvers);
+        return new Container(value, miniMessage, TagResolver.builder().resolver(tagResolver));
+    }
+
+    @Override
+    public Container with(String key, Tag tag) {
+        return new Container(value, miniMessage, TagResolver.builder().tag(key, tag));
     }
 
     @Override
     public Container with(Collection<? extends TagResolver> resolvers) {
-        return new Container(value, miniMessage, new ArrayList<>(resolvers));
+        return new Container(value, miniMessage, TagResolver.builder().resolvers(resolvers));
     }
 
 
@@ -43,31 +45,37 @@ public record Message(MiniMessage miniMessage,
 
         private final String value;
         private final MiniMessage miniMessage;
-        private final List<TagResolver> resolvers;
+        private final TagResolver.Builder builder;
 
-        private Container(String value, MiniMessage miniMessage, List<TagResolver> resolvers) {
+        private Container(String value, MiniMessage miniMessage, TagResolver.Builder builder) {
             this.value = value;
             this.miniMessage = miniMessage;
-            this.resolvers = resolvers;
+            this.builder = builder;
         }
 
         @Override
         public @NotNull Component asComponent() {
             return this.miniMessage.deserialize(this.value,
-                   TagResolver.resolver(resolvers)
+                   builder.build()
             );
 
         }
 
         @Override
         public Container with(TagResolver tagResolver) {
-            this.resolvers.add(tagResolver);
+            this.builder.resolver(tagResolver);
             return this;
         }
 
         @Override
         public Container with(Collection<? extends TagResolver> resolvers) {
-            this.resolvers.addAll(resolvers);
+            this.builder.resolvers(resolvers);
+            return this;
+        }
+
+        @Override
+        public Container with(String key, Tag tag) {
+            this.builder.tag(key, tag);
             return this;
         }
     }

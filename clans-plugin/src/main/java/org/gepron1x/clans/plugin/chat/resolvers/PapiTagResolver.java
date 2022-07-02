@@ -22,7 +22,7 @@ public final class PapiTagResolver implements TagResolver.WithoutArguments {
     @Override
     public @Nullable Tag resolve(@NotNull String name) {
         if(!isPlaceholder(name)) return null;
-        String result = PlaceholderAPI.setPlaceholders(this.player, name);
+        String result = PlaceholderAPI.setPlaceholders(this.player, "%" + name + "%");
 
         Component component;
         if(result.indexOf(LegacyComponentSerializer.SECTION_CHAR) != -1) {
@@ -35,7 +35,7 @@ public final class PapiTagResolver implements TagResolver.WithoutArguments {
     }
 
     private boolean isPlaceholder(String name) {
-       return name.charAt(0) == '%' && name.charAt(name.length() - 1) == '%';
+       return name.startsWith("papi_");
     }
 
     @Override
