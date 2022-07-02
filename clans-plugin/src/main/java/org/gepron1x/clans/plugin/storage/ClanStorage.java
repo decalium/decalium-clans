@@ -7,7 +7,6 @@ import org.gepron1x.clans.api.repository.ClanCreationResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.OptionalInt;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -23,9 +22,6 @@ public interface ClanStorage {
     @Nullable IdentifiedDraftClan loadClan(int id);
     @Nullable IdentifiedDraftClan loadUserClan(@NotNull UUID uuid);
 
-    OptionalInt lookupId(@NotNull String tag);
-    OptionalInt lookupId(@NotNull UUID member);
-    Set<Integer> clanIds();
 
     @NotNull Set<IdentifiedDraftClanImpl> loadClans();
 

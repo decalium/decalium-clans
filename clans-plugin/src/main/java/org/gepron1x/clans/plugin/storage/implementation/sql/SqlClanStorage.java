@@ -21,7 +21,6 @@ import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.ClanBuil
 import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.ClanHomeBuilderMapper;
 import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.LocationMapper;
 import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.MemberMapper;
-import org.gepron1x.clans.plugin.util.Optionals;
 import org.intellij.lang.annotations.Language;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.Query;
@@ -128,19 +127,8 @@ public final class SqlClanStorage implements ClanStorage {
     private static final String INSERT_CLAN = "INSERT IGNORE INTO clans(`tag`, `owner`, `display_name`) VALUES (?, ?, ?)";
 
     @Language("SQL")
-    private static final String INSERT_MEMBER = "INSERT IGNORE INTO members(`clan_id`, `uuid`, `role`) VALUES (?, ?, ?)";
-
-    @Language("SQL")
     private static final String DELETE_CLAN = "DELETE FROM clans WHERE id=?";
 
-    @Language("SQL")
-    private static final String SELECT_CLAN_ID_WITH_TAG = "SELECT `id` FROM clans WHERE `tag`=?";
-
-    @Language("SQL")
-    private static final String SELECT_CLAN_ID_WITH_MEMBER = "SELECT `clan_id` FROM members WHERE `uuid`=?";
-
-    @Language("SQL")
-    private static final String SELECT_IDS = "SELECT `id` FROM clans";
 
     private final Jdbi jdbi;
     private final StorageType type;
@@ -197,27 +185,6 @@ public final class SqlClanStorage implements ClanStorage {
     public @Nullable IdentifiedDraftClan loadUserClan(@NotNull UUID uuid) {
         return jdbi.withHandle(handle -> collectClans(handle.createQuery(SELECT_USER_CLAN).bind(0, uuid)))
                 .findFirst().orElse(null);
-    }
-
-    @Override
-    public OptionalInt lookupId(@NotNull String tag) {
-        return jdbi.withHandle(handle -> Optionals.ofNullable(
-                handle.createQuery(SELECT_CLAN_ID_WITH_TAG).bind(0, tag).mapTo(Integer.class)
-                        .findFirst().orElse(null)
-        ));
-    }
-
-    @Override
-    public OptionalInt lookupId(@NotNull UUID member) {
-        return jdbi.withHandle(handle -> Optionals.ofNullable(
-                handle.createQuery(SELECT_CLAN_ID_WITH_MEMBER).bind(0, member).mapTo(Integer.class)
-                        .findFirst().orElse(null)
-        ));
-    }
-
-    @Override
-    public Set<Integer> clanIds() {
-        return jdbi.withHandle(handle -> handle.createQuery(SELECT_IDS).mapTo(Integer.class).collect(Collectors.toUnmodifiableSet()));
     }
 
     @Override
