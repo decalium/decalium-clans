@@ -75,7 +75,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         TagResolver resolver = TagResolver.resolver(
                 TagResolver.standard(),
                 TagResolver.resolver(
-                        "prefix", (queue, ctx) -> Tag.selfClosingInserting(getMessages().prefix())
+                        "prefix", (queue, ctx) -> Tag.selfClosingInserting(messages().prefix())
                 )
         );
         MiniMessage miniMessage = MiniMessage.builder().tags(resolver).build();
@@ -93,22 +93,22 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         this.configuration.reloadConfig();
 
         buildRoleRegistry();
-        ClansConfig config = getClansConfig();
-        MessagesConfig messages = getMessages();
+        ClansConfig config = config();
+        MessagesConfig messages = messages();
 
 
 
-        storage = new StorageCreation(this, getClansConfig(), builderFactory, roleRegistry).create();
+        storage = new StorageCreation(this, config(), builderFactory, roleRegistry).create();
         storage.initialize();
         this.clanCache = new ClanCacheImpl();
 
+        ClanRepository base = new ClanRepositoryImpl(storage, futuresFactory);
 
         ClanRepository repository = new AnnouncingClanRepository(
-                new WgExtension(
+                isEnabled("WorldGuard") ? new WgExtension(
                         getServer(),
-                        getClansConfig(),
-                        new ClanRepositoryImpl(storage, futuresFactory)
-                                ).make(),
+                        config(),
+                        base).make() : base,
                 getServer(),
                 messages);
 
@@ -172,9 +172,9 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
 
     private void buildRoleRegistry() {
-        ClanRole ownerRole = getClansConfig().roles().ownerRole();
-        ClanRole defaultRole = getClansConfig().roles().defaultRole();
-        List<ClanRole> otherRoles = getClansConfig().roles().otherRoles();
+        ClanRole ownerRole = config().roles().ownerRole();
+        ClanRole defaultRole = config().roles().defaultRole();
+        List<ClanRole> otherRoles = config().roles().otherRoles();
 
         ArrayList<ClanRole> roles = new ArrayList<>(otherRoles.size() + 2);
         roles.add(ownerRole);
@@ -204,11 +204,11 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
     }
 
-    public ClansConfig getClansConfig() {
+    public ClansConfig config() {
         return configuration.data();
     }
 
-    public MessagesConfig getMessages() {
+    public MessagesConfig messages() {
         return messagesConfiguration.data();
     }
 

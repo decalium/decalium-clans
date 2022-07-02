@@ -1,5 +1,6 @@
 package org.gepron1x.clans.plugin.util;
 
+import org.gepron1x.clans.plugin.DecaliumClansPlugin;
 import org.slf4j.Logger;
 
 public final class AsciiArt {
@@ -37,6 +38,7 @@ public final class AsciiArt {
         for(String str : ART.split("\n")) {
             this.logger.info(str);
         }
+        this.logger.info("Version: " + DecaliumClansPlugin.VERSION);
 
     }
 }

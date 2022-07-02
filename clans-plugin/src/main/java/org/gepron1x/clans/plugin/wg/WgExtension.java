@@ -18,9 +18,6 @@ public final class WgExtension {
 
 
     public ClanRepository make() {
-        if(server.getPluginManager().isPluginEnabled("WorldGuard")) {
-            return new WgRepositoryImpl(this.repository, this.clansConfig, WorldGuard.getInstance(), this.server);
-        }
-        return this.repository;
+        return new WgRepositoryImpl(this.repository, this.clansConfig, WorldGuard.getInstance(), this.server);
     }
 }
