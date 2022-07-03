@@ -10,11 +10,7 @@ import com.sk89q.worldguard.protection.regions.RegionContainer;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.home.ClanHome;
@@ -26,10 +22,10 @@ import org.gepron1x.clans.api.edition.member.MemberEdition;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.DecaliumClansPlugin;
 import org.gepron1x.clans.plugin.config.ClansConfig;
+import org.gepron1x.clans.plugin.wg.HologramOfHome;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -101,20 +97,7 @@ public final class PostClanEdition implements ClanEdition {
         ProtectedCuboidRegion region = createForHome(home);
         DefaultDomain members = region.getMembers();
         clan.memberMap().keySet().forEach(members::addPlayer);
-        home.location().getWorld().spawn(home.location(), ArmorStand.class, stand -> {
-            stand.setPersistent(true);
-            stand.setCanMove(false);
-            stand.setCanTick(false);
-            stand.setCustomNameVisible(true);
-            stand.setMarker(true);
-            stand.setInvisible(true);
-            PersistentDataContainer pdc = stand.getPersistentDataContainer();
-            pdc.set(CLAN_NAME, PersistentDataType.STRING, clan.tag());
-            pdc.set(CLAN_HOME_NAME, PersistentDataType.STRING, home.name());
-            stand.customName(this.clansConfig.homes().hologramFormat().with("home_name", home.displayName()).asComponent());
-            stand.setDisabledSlots(EquipmentSlot.values());
-            stand.getEquipment().setHelmet(home.icon());
-        });
+        new HologramOfHome(this.clansConfig, this.clan, home).spawnIfNotPresent();
         regionManager.addRegion(region);
 
         return this;
@@ -137,14 +120,7 @@ public final class PostClanEdition implements ClanEdition {
     public ClanEdition removeHome(@NotNull ClanHome home) {
         RegionManager regionManager = getRegionManager(home.location());
         regionManager.removeRegion(nameFor(clan, home));
-        home.location().getNearbyEntitiesByType(ArmorStand.class, 2).forEach(as -> {
-            PersistentDataContainer pdc = as.getPersistentDataContainer();
-            String clanTag = pdc.get(CLAN_NAME, PersistentDataType.STRING);
-            String homeName = pdc.get(CLAN_HOME_NAME, PersistentDataType.STRING);
-            if(Objects.equals(clanTag, clan.tag()) && Objects.equals(homeName, home.name())) {
-                as.remove();
-            }
-        });
+        new HologramOfHome(this.clansConfig, this.clan, home).destroy();
         return this;
     }
 
@@ -174,7 +150,7 @@ public final class PostClanEdition implements ClanEdition {
         }
     }
 
-    private static class PostHomeEdition implements HomeEdition {
+    private class PostHomeEdition implements HomeEdition {
 
         private final ClanHome home;
         private final RegionManager regionManager;
@@ -186,6 +162,7 @@ public final class PostClanEdition implements ClanEdition {
 
         @Override
         public HomeEdition setIcon(@Nullable ItemStack icon) {
+            new HologramOfHome(PostClanEdition.this.clansConfig, PostClanEdition.this.clan, this.home).icon(icon);
             return this;
         }
 
@@ -196,6 +173,7 @@ public final class PostClanEdition implements ClanEdition {
 
         @Override
         public HomeEdition rename(@NotNull Component displayName) {
+            new HologramOfHome(PostClanEdition.this.clansConfig, PostClanEdition.this.clan, this.home);
             return this;
         }
     }

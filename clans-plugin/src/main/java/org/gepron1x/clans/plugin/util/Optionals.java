@@ -2,9 +2,7 @@ package org.gepron1x.clans.plugin.util;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
+import java.util.*;
 
 public final class Optionals {
     private Optionals() {
@@ -24,8 +22,8 @@ public final class Optionals {
         return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
     }
 
-
-
-
+    public static <T> Optional<T> ofIterator(Iterator<T> iterator) {
+        return iterator.hasNext() ? Optional.of(iterator.next()) : Optional.empty();
+    }
 
 }
