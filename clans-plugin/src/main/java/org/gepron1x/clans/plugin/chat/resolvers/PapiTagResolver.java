@@ -22,7 +22,7 @@ public final class PapiTagResolver implements TagResolver.WithoutArguments {
     @Override
     public @Nullable Tag resolve(@NotNull String name) {
         if(!isPlaceholder(name)) return null;
-        String result = PlaceholderAPI.setPlaceholders(this.player, "%" + name + "%");
+        String result = PlaceholderAPI.setPlaceholders(this.player, "%" + name.substring("papi_".length()) + "%");
 
         Component component;
         if(result.indexOf(LegacyComponentSerializer.SECTION_CHAR) != -1) {
