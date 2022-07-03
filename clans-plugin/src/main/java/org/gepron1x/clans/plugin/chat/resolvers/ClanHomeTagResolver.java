@@ -38,7 +38,7 @@ public record ClanHomeTagResolver(@NotNull ClanHome clanHome) implements TagReso
             case LOCATION_Y -> Component.text(clanHome.location().getBlockY());
             case LOCATION_Z -> Component.text(clanHome.location().getBlockZ());
             case LOCATION_WORLD -> Component.text(clanHome.location().getWorld().getName());
-            case ICON -> Component.text("[]").hoverEvent(clanHome.icon());
+            case ICON -> Component.text("[Icon]").hoverEvent(clanHome.icon());
             default -> null;
         };
         return component == null ? null : Tag.inserting(component);
