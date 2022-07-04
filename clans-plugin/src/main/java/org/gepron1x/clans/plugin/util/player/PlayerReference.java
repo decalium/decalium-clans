@@ -9,6 +9,11 @@ import java.util.function.Consumer;
 
 public interface PlayerReference extends ForwardingAudience.Single {
 
+
+    static PlayerReference reference(Player player) {
+        return new UuidPlayerReference(player.getServer(), player.getUniqueId());
+    }
+
     boolean ifOnline(Consumer<Player> consumer);
 
     Optional<Player> player();

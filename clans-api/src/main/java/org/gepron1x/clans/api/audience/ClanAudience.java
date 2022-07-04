@@ -6,14 +6,11 @@ import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.pointer.Pointers;
 import org.bukkit.Server;
-import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.clan.DraftClan;
-import org.gepron1x.clans.api.clan.member.ClanMember;
+import org.gepron1x.clans.api.util.ClanOnlinePlayers;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 public final class ClanAudience implements ForwardingAudience {
 
@@ -29,12 +26,7 @@ public final class ClanAudience implements ForwardingAudience {
 
     @Override
     public @NotNull Iterable<? extends Audience> audiences() {
-        Set<Player> players = new HashSet<>(clan.members().size());
-        for(ClanMember member : clan.members()) {
-            Player player = member.asPlayer(this.server);
-            if(player != null) players.add(player);
-        }
-        return Set.copyOf(players);
+        return new ClanOnlinePlayers(this.clan, this.server);
     }
 
     @Override

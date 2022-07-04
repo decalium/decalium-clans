@@ -41,7 +41,7 @@ public final class HologramOfHome {
             return Objects.equals(pdc.get(CLAN_NAME, PersistentDataType.STRING), clan.tag()) &&
                     Objects.equals(pdc.get(CLAN_HOME_NAME, PersistentDataType.STRING), home.name());
         });
-        Preconditions.checkState(armorStands.size() > 1, "Too many holograms spawned");
+        Preconditions.checkState(armorStands.size() <= 1, "Too many holograms spawned");
         return Optionals.ofIterator(armorStands.iterator());
 
     }
@@ -55,7 +55,7 @@ public final class HologramOfHome {
     }
 
     public ArmorStand spawn() {
-        Preconditions.checkState(entity().isPresent(), "Already spawned.");
+        Preconditions.checkState(entity().isEmpty(), "Already spawned.");
         return this.home.location().getWorld().spawn(this.home.location(), ArmorStand.class, stand -> {
             stand.setPersistent(true);
             stand.setCanMove(false);
