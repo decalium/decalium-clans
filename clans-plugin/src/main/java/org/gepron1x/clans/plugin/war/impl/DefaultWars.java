@@ -7,6 +7,7 @@ import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.reference.ClanReference;
 import org.gepron1x.clans.api.util.ClanOnlinePlayers;
 import org.gepron1x.clans.plugin.util.player.PlayerReference;
+import org.gepron1x.clans.plugin.war.Team;
 import org.gepron1x.clans.plugin.war.War;
 import org.gepron1x.clans.plugin.war.Wars;
 
@@ -23,17 +24,27 @@ public final class DefaultWars implements Wars {
 
         this.server = server;
     }
-    @Override
-    public War create(ClanReference first, ClanReference second) {
-        Preconditions.checkState(first.cached().isPresent() || second.cached().isPresent(), "no online players in some of clan!");
-        return new DefaultWar(
-                List.of(createFromClan(first), createFromClan(second))
-        );
 
+    @Override
+    public void start(War war) {
+        Preconditions.checkArgument(!this.currentWars.contains(war), "war already started");
+        this.currentWars.add(war);
+    }
+
+    @Override
+    public War create(Team first, Team second) {
+        Preconditions.checkState(first.clan().cached().isPresent() || second.clan().cached().isPresent(), "no online players in some of clan!");
+        return new DefaultWar(
+                List.of(first, second)
+        );
+    }
+
+    @Override
+    public Team createTeam(ClanReference ref) {
+        return createFromClan(ref);
     }
 
     private DefaultTeam createFromClan(ClanReference reference) {
-        Preconditions.checkState(reference.cached().isPresent(), "No online players in clan "+ reference);
         Clan clan = reference.cached().orElseThrow();
         return new DefaultTeam(
                 reference,
@@ -56,8 +67,24 @@ public final class DefaultWars implements Wars {
 
     @Override
     public void onDeath(Player player) {
-        for(War war : this.currentWars) {
-            if(war.onPlayerDeath(player)) return;
+        Iterator<War> iterator = this.currentWars.iterator();
+        while(iterator.hasNext()) {
+            War war = iterator.next();
+            if(!war.onPlayerDeath(player)) continue;
+            if(war.isEnded()) iterator.remove();
         }
+
     }
+
+    @Override
+    public void end(War war) {
+        this.currentWars.remove(war);
+
+    }
+
+    @Override
+    public void cleanEnded() {
+        this.currentWars.removeIf(War::isEnded);
+    }
+
 }

@@ -19,6 +19,10 @@ public interface ClanReference {
 
     Optional<Clan> cached();
 
+    default Clan orElseThrow() {
+        return cached().orElseThrow();
+    }
+
 
 
 

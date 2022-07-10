@@ -8,14 +8,21 @@ import java.util.Optional;
 
 public interface Wars {
 
+    void start(War war);
 
-    War create(ClanReference first, ClanReference second);
+    War create(Team first, Team second);
+
+    Team createTeam(ClanReference ref);
 
     Optional<War> currentWar(Player player);
 
     Collection<War> currentWars();
 
     void onDeath(Player player);
+
+    void end(War war);
+
+    void cleanEnded();
 
 
 }

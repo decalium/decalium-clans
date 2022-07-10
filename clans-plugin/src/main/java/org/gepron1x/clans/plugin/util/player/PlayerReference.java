@@ -20,6 +20,6 @@ public interface PlayerReference extends ForwardingAudience.Single {
 
     @Override
     @NotNull default Audience audience() {
-        return player().isEmpty() ? Audience.empty() : player().get();
+        return player().isEmpty() ? Audience.empty() : player().orElseThrow();
     }
 }

@@ -21,10 +21,7 @@ import org.gepron1x.clans.plugin.async.BukkitFactoryOfTheFuture;
 import org.gepron1x.clans.plugin.cache.CachingClanRepositoryImpl;
 import org.gepron1x.clans.plugin.cache.ClanCacheImpl;
 import org.gepron1x.clans.plugin.chat.CarbonChatHook;
-import org.gepron1x.clans.plugin.command.ClanCommand;
-import org.gepron1x.clans.plugin.command.HomeCommand;
-import org.gepron1x.clans.plugin.command.InviteCommand;
-import org.gepron1x.clans.plugin.command.MemberCommand;
+import org.gepron1x.clans.plugin.command.*;
 import org.gepron1x.clans.plugin.command.parser.ClanRoleParser;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.Configuration;
@@ -39,6 +36,10 @@ import org.gepron1x.clans.plugin.papi.PlaceholderAPIHook;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
 import org.gepron1x.clans.plugin.storage.StorageCreation;
 import org.gepron1x.clans.plugin.util.AsciiArt;
+import org.gepron1x.clans.plugin.war.Wars;
+import org.gepron1x.clans.plugin.war.announce.AnnouncingWars;
+import org.gepron1x.clans.plugin.war.impl.DefaultWars;
+import org.gepron1x.clans.plugin.war.listener.DeathListener;
 import org.gepron1x.clans.plugin.wg.WgExtension;
 import org.slf4j.Logger;
 import space.arim.dazzleconf.ConfigurationOptions;
@@ -138,6 +139,10 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         MemberCommand memberCommand = new MemberCommand(logger, this.clanRepository, config, messages, futuresFactory);
         HomeCommand homeCommand = new HomeCommand(logger, this.clanRepository, config, messages, futuresFactory, builderFactory);
 
+        Wars wars = new AnnouncingWars(new DefaultWars(getServer()), messages);
+        ClanWarCommand clanWarCommand = new ClanWarCommand(logger, this.clanRepository, config, messages, futuresFactory, wars);
+        getServer().getPluginManager().registerEvents(new DeathListener(wars), this);
+
 
 
         PaperCommandManager<CommandSender> commandManager;
@@ -159,10 +164,12 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         inviteCommand.register(commandManager);
         memberCommand.register(commandManager);
         homeCommand.register(commandManager);
+        clanWarCommand.register(commandManager);
 
         StatisticListener statisticListener = new StatisticListener(this.clanRepository, this, this.futuresFactory);
         getServer().getPluginManager().registerEvents(statisticListener, this);
         statisticListener.start();
+
 
 
         new AsciiArt(logger).print();
