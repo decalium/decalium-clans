@@ -12,6 +12,7 @@ import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.repository.ClanRepository;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
+import org.slf4j.Logger;
 
 public final class ClanExecutionHandler implements CommandExecutionHandler<CommandSender> {
 
@@ -21,13 +22,16 @@ public final class ClanExecutionHandler implements CommandExecutionHandler<Comma
     private final CommandExecutionHandler<CommandSender> delegate;
     private final ClanRepository repository;
     private final MessagesConfig messages;
+    private final Logger logger;
 
     public ClanExecutionHandler(CommandExecutionHandler<CommandSender> delegate,
                                 ClanRepository repository,
-                                MessagesConfig messages) {
+                                MessagesConfig messages,
+                                Logger logger) {
         this.delegate = delegate;
         this.repository = repository;
         this.messages = messages;
+        this.logger = logger;
     }
 
     @Override
@@ -40,7 +44,7 @@ public final class ClanExecutionHandler implements CommandExecutionHandler<Comma
                 this.delegate.execute(commandContext);
             }, () -> player.sendMessage(messages.notInTheClan()));
         }).exceptionally(t -> {
-            t.printStackTrace();
+            this.logger.error("Error happened.", t);
             return null;
         });
     }
