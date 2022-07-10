@@ -24,6 +24,9 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
+import java.util.Collections;
+import java.util.List;
+
 public class HomeCommand extends AbstractClanCommand {
     private final ClanBuilderFactory builderFactory;
 
@@ -49,30 +52,29 @@ public class HomeCommand extends AbstractClanCommand {
                 .argument(StringArgument.of("name"))
                 .argument(ComponentArgument.optional("display_name", StringArgument.StringMode.GREEDY))
                 .handler(
-                        new ClanExecutionHandler(
-                                new PermissiveClanExecutionHandler(this::createHome, ClanPermission.ADD_HOME, this.messages),
-                                this.clanRepository, this.messages)
+                       clanExecutionHandler(
+                                new PermissiveClanExecutionHandler(this::createHome, ClanPermission.ADD_HOME, this.messages)
+                               )
                 )
         );
 
         manager.command(builder.literal("delete")
                 .permission("clans.home.delete")
-                .argument(StringArgument.of("name"))
-                .handler(new ClanExecutionHandler(new PermissiveClanExecutionHandler(
+                .argument(StringArgument.<CommandSender>newBuilder("name").withSuggestionsProvider(this::homesCompletion).build())
+                .handler(clanExecutionHandler(new PermissiveClanExecutionHandler(
                         new HomeRequiredExecutorHandler(this::deleteHome, ctx -> ctx.get("name"), this.messages),
                         ClanPermission.REMOVE_HOME,
                         this.messages
 
-                ), this.clanRepository, this.messages))
+                )))
         );
 
         manager.command(builder.literal("teleport")
                 .permission("clans.home.teleport")
-                .argument(StringArgument.of("name"))
-                .handler(new ClanExecutionHandler(
-                        new HomeRequiredExecutorHandler(this::teleportToHome, ctx -> ctx.get("name"), this.messages),
-                        this.clanRepository,
-                        this.messages)
+                .argument(StringArgument.<CommandSender>newBuilder("name").withSuggestionsProvider(this::homesCompletion).build())
+                .handler(clanExecutionHandler(
+                        new HomeRequiredExecutorHandler(this::teleportToHome, ctx -> ctx.get("name"), this.messages)
+                        )
                 )
         );
 
@@ -84,6 +86,7 @@ public class HomeCommand extends AbstractClanCommand {
     private void createHome(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
         String name = context.get("name");
+
 
         if(!Validations.checkHomeName(name)) {
             player.sendMessage(this.messages.commands().home().invalidHomeName());
@@ -141,6 +144,13 @@ public class HomeCommand extends AbstractClanCommand {
         player.teleportAsync(home.location()).thenAccept(bool -> {
             if(bool) player.sendMessage(this.messages.commands().home().teleported().with("name", home.displayName()));
         });
+    }
+
+     private List<String> homesCompletion(CommandContext<CommandSender> context, String s) {
+        if (!(context.getSender() instanceof Player player)) return Collections.emptyList();
+        return clanRepository.userClanIfCached(player.getUniqueId()).map(Clan::homes)
+                .map(homes -> homes.stream().map(ClanHome::name).toList()).orElse(Collections.emptyList());
+
     }
 
 
