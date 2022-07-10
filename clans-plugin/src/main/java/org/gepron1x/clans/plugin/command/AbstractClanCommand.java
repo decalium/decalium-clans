@@ -1,6 +1,7 @@
 package org.gepron1x.clans.plugin.command;
 
 import cloud.commandframework.CommandManager;
+import cloud.commandframework.execution.CommandExecutionHandler;
 import org.bukkit.command.CommandSender;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.plugin.config.ClansConfig;
@@ -36,8 +37,11 @@ public abstract class AbstractClanCommand {
     
     protected <T> T exceptionHandler(Throwable throwable) {
         logger.error("A future completed exceptionally: ", throwable);
-        throwable.printStackTrace();
         return null;
+    }
+
+    protected ClanExecutionHandler clanExecutionHandler(CommandExecutionHandler<CommandSender> delegate) {
+        return new ClanExecutionHandler(delegate, this.clanRepository, this.messages, this.logger);
     }
 
 

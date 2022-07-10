@@ -61,11 +61,9 @@ public class ClanCommand extends AbstractClanCommand {
 
         manager.command(builder.literal("delete")
                 .permission("clans.delete")
-                .handler(
-                        new ClanExecutionHandler(
-                                new PermissiveClanExecutionHandler(this::deleteClan, ClanPermission.DISBAND, this.messages),
-                                this.clanRepository,
-                                this.messages)
+                .handler(clanExecutionHandler(
+                                new PermissiveClanExecutionHandler(this::deleteClan, ClanPermission.DISBAND, this.messages)
+                                )
                 )
         );
 
@@ -73,21 +71,20 @@ public class ClanCommand extends AbstractClanCommand {
                 .permission("clans.rename")
                 .argument(ComponentArgument.greedy("display_name"))
                 .handler(
-                        new ClanExecutionHandler(
-                                new PermissiveClanExecutionHandler(this::setDisplayName, ClanPermission.SET_DISPLAY_NAME, this.messages),
-                                this.clanRepository,
-                                this.messages)
+                        clanExecutionHandler(
+                                new PermissiveClanExecutionHandler(this::setDisplayName, ClanPermission.SET_DISPLAY_NAME, this.messages)
+                        )
                 )
         );
 
         manager.command(builder.literal("memberlist").permission("clans.memberlist")
-                .handler(new ClanExecutionHandler(this::listMembers, this.clanRepository, this.messages)));
+                .handler(clanExecutionHandler(this::listMembers)));
 
         manager.command(builder.literal("myclan").permission("clans.myclan")
-                .handler(new ClanExecutionHandler(this::myClan, this.clanRepository, this.messages)));
+                .handler(clanExecutionHandler(this::myClan)));
 
         manager.command(builder.literal("leave").permission("clans.leave")
-                .handler(new ClanExecutionHandler(this::leaveClan, this.clanRepository, this.messages)));
+                .handler(clanExecutionHandler(this::leaveClan)));
     }
 
 
