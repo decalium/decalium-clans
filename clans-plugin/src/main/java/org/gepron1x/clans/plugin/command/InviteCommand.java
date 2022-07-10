@@ -61,9 +61,8 @@ public class InviteCommand extends AbstractClanCommand {
                 .permission("clans.invite")
                 .argument(SinglePlayerSelectorArgument.of("receiver"))
                 .handler(
-                        new ClanExecutionHandler(
-                                new PermissiveClanExecutionHandler(this::invite, ClanPermission.INVITE, this.messages),
-                                this.clanRepository, this.messages
+                        clanExecutionHandler(
+                                new PermissiveClanExecutionHandler(this::invite, ClanPermission.INVITE, this.messages)
                         )
                 )
         );

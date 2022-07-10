@@ -44,19 +44,18 @@ public class MemberCommand extends AbstractClanCommand {
                 .permission("clans.member.set.role")
                 .argument(OfflinePlayerArgument.<CommandSender>newBuilder("member").withSuggestionsProvider(this::memberCompletion))
                 .argument(manager.argumentBuilder(ClanRole.class, "role"))
-                .handler(new ClanExecutionHandler(
+                .handler(clanExecutionHandler(
                         new PermissiveClanExecutionHandler(
-                                this::setRole, ClanPermission.SET_ROLE, this.messages),
-                        this.clanRepository, this.messages)
+                                this::setRole, ClanPermission.SET_ROLE, this.messages)
+                        )
                 )
         );
 
         manager.command(builder.literal("kick")
                 .permission("clans.member.kick")
                 .argument(OfflinePlayerArgument.<CommandSender>newBuilder("member").withSuggestionsProvider(this::memberCompletion))
-                .handler(new ClanExecutionHandler(
-                        new PermissiveClanExecutionHandler(this::kickMember, ClanPermission.SET_ROLE, this.messages),
-                        this.clanRepository, this.messages)
+                .handler(clanExecutionHandler(
+                        new PermissiveClanExecutionHandler(this::kickMember, ClanPermission.SET_ROLE, this.messages))
                 )
         );
 
