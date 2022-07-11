@@ -40,6 +40,7 @@ import org.gepron1x.clans.plugin.war.Wars;
 import org.gepron1x.clans.plugin.war.announce.AnnouncingWars;
 import org.gepron1x.clans.plugin.war.impl.DefaultWars;
 import org.gepron1x.clans.plugin.war.listener.DeathListener;
+import org.gepron1x.clans.plugin.war.listener.Navigation;
 import org.gepron1x.clans.plugin.wg.WgExtension;
 import org.slf4j.Logger;
 import space.arim.dazzleconf.ConfigurationOptions;
@@ -142,6 +143,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         Wars wars = new AnnouncingWars(new DefaultWars(getServer()), messages);
         ClanWarCommand clanWarCommand = new ClanWarCommand(logger, this.clanRepository, config, messages, futuresFactory, wars);
         getServer().getPluginManager().registerEvents(new DeathListener(wars), this);
+        getServer().getScheduler().runTaskTimer(this, new Navigation(wars), 5, 5);
 
 
 

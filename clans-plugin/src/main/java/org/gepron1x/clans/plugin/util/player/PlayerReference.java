@@ -18,6 +18,16 @@ public interface PlayerReference extends ForwardingAudience.Single {
 
     Optional<Player> player();
 
+    default boolean online() {
+        return player().isPresent();
+    }
+
+    default Player orElseThrow() {
+        return player().orElseThrow();
+    }
+
+
+
     @Override
     @NotNull default Audience audience() {
         return player().isEmpty() ? Audience.empty() : player().orElseThrow();
