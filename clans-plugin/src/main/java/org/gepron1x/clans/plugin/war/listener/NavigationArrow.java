@@ -1,5 +1,6 @@
 package org.gepron1x.clans.plugin.war.listener;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableRangeMap;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeMap;
@@ -39,8 +40,7 @@ public final class NavigationArrow {
         this.second = second;
     }
 
-    @Override
-    public String toString() {
+    public static String arrow(Location first, Location second) {
         Location snd = second.clone();
         Location fst = first.clone();
         snd.setY(0);
@@ -55,6 +55,12 @@ public final class NavigationArrow {
         if(angle < 0) {
             angle += 360.0;
         }
-        return RANGE_MAP.get(angle);
+
+        return Strings.nullToEmpty(RANGE_MAP.get(angle));
+    }
+
+    @Override
+    public String toString() {
+       return arrow(first, second);
     }
 }

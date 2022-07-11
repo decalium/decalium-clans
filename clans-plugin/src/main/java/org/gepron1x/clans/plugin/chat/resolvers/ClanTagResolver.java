@@ -15,7 +15,6 @@ public record ClanTagResolver(@NotNull DraftClan clan) implements TagResolver.Wi
         return new ClanTagResolver(clan);
     }
 
-    private static final String ID = "id";
     private static final String TAG = "tag";
     private static final String DISPLAY_NAME = "display_name";
     private static final String MEMBERS_SIZE = "members_size";

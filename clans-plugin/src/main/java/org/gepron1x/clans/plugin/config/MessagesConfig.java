@@ -19,6 +19,10 @@ public interface MessagesConfig {
     @DefaultString("<prefix> You do not have permission to use this.")
     Message noPermission();
 
+    @ConfKey("no-online-players-in-clan")
+    @DefaultString("<prefix> No online players in the clan.")
+    Message noOnlinePlayers();
+
     @ConfKey("cannot-do-action-on-yourself")
     @DefaultString("<prefix> You can't do that with yourself!")
     Message cannotDoActionOnYourSelf();
@@ -89,13 +93,26 @@ public interface MessagesConfig {
     }
 
     interface War {
+
         @ConfKey("player-died")
         @DefaultString("<prefix> ClanWar -> <member> died!")
         Message playerDied();
 
         @ConfKey("win")
-        @DefaultString("<prefix> ClanWar -> <clan> won! Congratulations!")
+        @DefaultString("<prefix> ClanWar -> <clan_display_name> wins! Congratulations!")
         Message win();
+
+        @ConfKey("preparation-title")
+        @DefaultString("<first_display_name> vs <second_display_name>")
+        Message preparationTitle();
+
+        @ConfKey("boss-bar-format")
+        @DefaultString("<display_name> <alive>/<members>")
+        Message bossBarFormat();
+
+        @ConfKey("navigation-bar-format")
+        @DefaultString("Distance to <target>: <distance> <arrow>")
+        Message navigationBarFormat();
     }
 
 
@@ -134,6 +151,10 @@ public interface MessagesConfig {
         @ConfKey("home")
         @SubSection
         Home home();
+
+        @ConfKey("war")
+        @SubSection
+        WarRequest wars();
 
         interface Creation {
 
@@ -281,6 +302,25 @@ public interface MessagesConfig {
             Message teleported();
 
 
+        }
+
+        interface WarRequest {
+            @ConfKey("request-message")
+            @DefaultString("<prefix> <clan_display_name> Invites you to the clan war!")
+            Message requestMessage();
+
+            @ConfKey("accepter-message")
+            @DefaultString("<prefix> <click:run_command:'/clan war accept <clan_tag>'><red>Click here</red></click> to accept the request" +
+                    "         or run /clan war accept <clan_tag>")
+            Message acceptMessage();
+
+            @ConfKey("no-requests")
+            @DefaultString("<prefix> No requests from <tag>.")
+            Message noRequests();
+
+            @ConfKey("request-sent")
+            @DefaultString("<prefix> War request sent.")
+            Message requestSent();
         }
 
 

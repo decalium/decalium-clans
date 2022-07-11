@@ -21,8 +21,12 @@ import org.gepron1x.clans.plugin.async.BukkitFactoryOfTheFuture;
 import org.gepron1x.clans.plugin.cache.CachingClanRepositoryImpl;
 import org.gepron1x.clans.plugin.cache.ClanCacheImpl;
 import org.gepron1x.clans.plugin.chat.CarbonChatHook;
-import org.gepron1x.clans.plugin.command.*;
+import org.gepron1x.clans.plugin.command.ClanCommand;
+import org.gepron1x.clans.plugin.command.HomeCommand;
+import org.gepron1x.clans.plugin.command.InviteCommand;
+import org.gepron1x.clans.plugin.command.MemberCommand;
 import org.gepron1x.clans.plugin.command.parser.ClanRoleParser;
+import org.gepron1x.clans.plugin.command.war.ClanWarCommand;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.Configuration;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
@@ -143,7 +147,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         Wars wars = new AnnouncingWars(new DefaultWars(getServer()), messages);
         ClanWarCommand clanWarCommand = new ClanWarCommand(logger, this.clanRepository, config, messages, futuresFactory, wars);
         getServer().getPluginManager().registerEvents(new DeathListener(wars), this);
-        getServer().getScheduler().runTaskTimer(this, new Navigation(wars), 5, 5);
+        getServer().getScheduler().runTaskTimer(this, new Navigation(wars, messages), 5, 5);
 
 
 

@@ -50,7 +50,7 @@ public final class AnnouncingTeam implements Team {
         // alive - x
         bar.progress((float) alive().size() / members().size());
         bar.name(
-               new TeamTitle(this.team)
+               new TeamTitle(this.team, this.messages)
         );
         return true;
     }

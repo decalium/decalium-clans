@@ -2,9 +2,9 @@ package org.gepron1x.clans.plugin.war.announce;
 
 import com.google.common.base.MoreObjects;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
-import org.gepron1x.clans.api.clan.Clan;
+import org.gepron1x.clans.plugin.chat.resolvers.ClanTagResolver;
+import org.gepron1x.clans.plugin.chat.resolvers.PrefixedTagResolver;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.gepron1x.clans.plugin.war.Team;
 import org.gepron1x.clans.plugin.war.War;
@@ -41,12 +41,13 @@ public final class AnnouncingWar implements War {
         if(!this.war.onPlayerDeath(player)) return false;
         Audience audience = new WarAudience(this.war);
         player.getWorld().strikeLightningEffect(player.getLocation());
+        audience.sendMessage(this.messages.war().playerDied().with("member", player.displayName()));
         if(this.war.isEnded()) {
             bars.hide(audience);
-            audience.sendMessage(Component.text("War has ended."));
             this.war.teams().stream().filter(Team::isAlive).findFirst()
-                    .flatMap(team -> team.clan().cached())
-                    .map(Clan::displayName).ifPresent(name -> audience.sendMessage(Component.textOfChildren(name, Component.text(" wins"))));
+                    .flatMap(team -> team.clan().cached()).ifPresent(clan -> {
+                        audience.sendMessage(this.messages.war().win().with(PrefixedTagResolver.prefixed(ClanTagResolver.clan(clan), "clan")));
+                    });
         }
         return true;
     }

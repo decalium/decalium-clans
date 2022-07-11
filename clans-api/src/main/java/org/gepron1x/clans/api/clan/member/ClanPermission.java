@@ -19,11 +19,15 @@ public record ClanPermission(@NotNull String value) {
     public static final ClanPermission PROMOTE_OWNER = new ClanPermission("promote_owner");
     public static final ClanPermission DISBAND = new ClanPermission("disband");
 
+
+    public static final ClanPermission SEND_WAR_REQUEST = new ClanPermission("send_war_request");
+    public static final ClanPermission ACCEPT_WAR = new ClanPermission("accept_war");
+
     private static final Index<String, ClanPermission> NAMES =
             Index.create(ClanPermission::value,
                     INVITE, KICK, SET_ROLE,
                     ADD_HOME, REMOVE_HOME, EDIT_OTHERS_HOMES,
-                    SET_DISPLAY_NAME, PROMOTE_OWNER, DISBAND);
+                    SET_DISPLAY_NAME, PROMOTE_OWNER, DISBAND, SEND_WAR_REQUEST, ACCEPT_WAR);
 
     public static Index<String, ClanPermission> registry() {
         return NAMES;

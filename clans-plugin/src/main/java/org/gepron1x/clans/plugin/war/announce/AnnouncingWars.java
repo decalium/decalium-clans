@@ -5,7 +5,10 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.bukkit.entity.Player;
+import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.reference.ClanReference;
+import org.gepron1x.clans.plugin.chat.resolvers.ClanTagResolver;
+import org.gepron1x.clans.plugin.chat.resolvers.PrefixedTagResolver;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.gepron1x.clans.plugin.war.Team;
 import org.gepron1x.clans.plugin.war.TeamTitle;
@@ -37,9 +40,11 @@ public final class AnnouncingWars implements Wars {
         BossBar firstBossBar = teamBossBar(first, BossBar.Color.BLUE);
         BossBar secondBossBar = teamBossBar(second, BossBar.Color.RED);
         War war = this.wars.create(new AnnouncingTeam(first, firstBossBar, messages), new AnnouncingTeam(second, secondBossBar, messages));
-        Component firstName = first.clan().orElseThrow().displayName();
-        Component secondName = second.clan().orElseThrow().displayName();
-        Title title = Title.title(Component.textOfChildren(firstName, Component.text(" vs "), secondName), Component.empty());
+        Clan firstClan = first.clan().orElseThrow();
+        Clan secondClan = second.clan().orElseThrow();
+        Title title = Title.title(this.messages.war().preparationTitle()
+                .with(PrefixedTagResolver.prefixed(ClanTagResolver.clan(firstClan), "first"))
+                .with(PrefixedTagResolver.prefixed(ClanTagResolver.clan(secondClan), "second")).asComponent(), Component.empty());
 
         Audience warAudience = new WarAudience(war);
         warAudience.showTitle(title);
@@ -53,7 +58,7 @@ public final class AnnouncingWars implements Wars {
 
     private BossBar teamBossBar(Team team, BossBar.Color color) {
         return BossBar.bossBar(
-                new TeamTitle(team),
+                new TeamTitle(team, this.messages),
                 1,
                 color,
                 BossBar.Overlay.NOTCHED_6

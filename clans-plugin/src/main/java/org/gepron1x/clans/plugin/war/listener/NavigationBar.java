@@ -2,19 +2,19 @@ package org.gepron1x.clans.plugin.war.listener;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.jetbrains.annotations.NotNull;
-
-import static net.kyori.adventure.text.Component.text;
 
 public final class NavigationBar implements ComponentLike {
 
+    private final MessagesConfig messages;
     private final Player player;
     private final Player target;
 
-    public NavigationBar(Player player, Player target) {
+    public NavigationBar(MessagesConfig messages, Player player, Player target) {
+        this.messages = messages;
         this.player = player;
         this.target = target;
     }
@@ -24,13 +24,9 @@ public final class NavigationBar implements ComponentLike {
         Location first = player.getEyeLocation();
         Location second = target.getLocation();
         double distance = player.getLocation().distance(target.getLocation());
-        return text()
-                .append(text("Distance to "))
-                .append(target.displayName())
-                .append(text(": "))
-                .append(text(String.format("%.1f", distance)))
-                .append(text(new NavigationArrow(first, second).toString()).color(NamedTextColor.DARK_RED))
-                .color(NamedTextColor.GRAY)
-                .build();
+        return messages.war().navigationBarFormat()
+                .with("target", target.displayName())
+                .with("distance", "%.1f".formatted(distance))
+                .with("arrow", NavigationArrow.arrow(player.getLocation(), target.getLocation())).asComponent();
     }
 }
