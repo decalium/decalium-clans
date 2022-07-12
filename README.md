@@ -17,4 +17,5 @@ A free, open-source, powerful and performant clans plugin. Like in dreams.
 - Multiple server setups support
 
 
-<b>Currently, there's no stable releases.
+~~<b>Currently, there's no stable releases.~~
+Check our discord for test builds: https://discord.decalium.ru
