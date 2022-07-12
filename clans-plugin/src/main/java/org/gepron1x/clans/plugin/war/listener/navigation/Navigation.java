@@ -1,5 +1,6 @@
 package org.gepron1x.clans.plugin.war.listener.navigation;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.gepron1x.clans.plugin.util.player.PlayerReference;
@@ -7,6 +8,8 @@ import org.gepron1x.clans.plugin.war.Team;
 import org.gepron1x.clans.plugin.war.War;
 import org.gepron1x.clans.plugin.war.Wars;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 
 public final class Navigation implements Runnable {
@@ -40,7 +43,10 @@ public final class Navigation implements Runnable {
         double minDistance = 0;
         for(PlayerReference reference : team.alive()) {
             Player p = reference.orElseThrow();
-            double distance = p.getLocation().distanceSquared(player.getLocation());
+            Location first = p.getLocation();
+            Location second = player.getLocation();
+            if(!Objects.equals(first.getWorld(), second.getWorld())) continue;
+            double distance = first.distanceSquared(second);
             if(currentPlayer == null || distance < minDistance) {
                 currentPlayer = p;
                 minDistance = distance;
