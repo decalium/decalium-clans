@@ -23,10 +23,10 @@ public final class NavigationBar implements ComponentLike {
     public @NotNull Component asComponent() {
         Location first = player.getEyeLocation();
         Location second = target.getLocation();
-        double distance = player.getLocation().distance(target.getLocation());
+        double distance = first.distance(second);
         return messages.war().navigationBarFormat()
                 .with("target", target.displayName())
                 .with("distance", "%.1f".formatted(distance))
-                .with("arrow", NavigationArrow.arrow(player.getLocation(), target.getLocation())).asComponent();
+                .with("arrow", NavigationArrow.arrow(first, second)).asComponent();
     }
 }
