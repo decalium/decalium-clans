@@ -1,4 +1,4 @@
-package org.gepron1x.clans.plugin.war.listener;
+package org.gepron1x.clans.plugin.war.listener.navigation;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;

@@ -1,4 +1,4 @@
-package org.gepron1x.clans.plugin.war.listener;
+package org.gepron1x.clans.plugin.war.listener.navigation;
 
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.plugin.config.MessagesConfig;

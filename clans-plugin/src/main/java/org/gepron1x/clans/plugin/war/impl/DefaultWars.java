@@ -57,6 +57,9 @@ public final class DefaultWars implements Wars {
 
     @Override
     public Optional<War> currentWar(Player player) {
+        for(War war : this.currentWars) {
+            if(war.team(player).isPresent()) return Optional.of(war);
+        }
         return Optional.empty();
     }
 

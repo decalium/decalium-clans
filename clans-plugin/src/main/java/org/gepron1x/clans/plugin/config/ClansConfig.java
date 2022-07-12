@@ -173,4 +173,12 @@ public interface ClansConfig {
         Message format();
 
     }
+
+    @SubSection Wars wars();
+    interface Wars {
+
+        @ConfKey("disable-team-damage")
+        @DefaultBoolean(true)
+        boolean disableTeamDamage();
+    }
 }

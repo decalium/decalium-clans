@@ -1,4 +1,4 @@
-package org.gepron1x.clans.plugin.war.listener;
+package org.gepron1x.clans.plugin.war.listener.navigation;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableRangeMap;

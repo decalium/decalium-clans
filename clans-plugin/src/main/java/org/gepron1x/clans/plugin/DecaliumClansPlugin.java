@@ -44,7 +44,8 @@ import org.gepron1x.clans.plugin.war.Wars;
 import org.gepron1x.clans.plugin.war.announce.AnnouncingWars;
 import org.gepron1x.clans.plugin.war.impl.DefaultWars;
 import org.gepron1x.clans.plugin.war.listener.DeathListener;
-import org.gepron1x.clans.plugin.war.listener.Navigation;
+import org.gepron1x.clans.plugin.war.listener.NoTeamDamageListener;
+import org.gepron1x.clans.plugin.war.listener.navigation.Navigation;
 import org.gepron1x.clans.plugin.wg.WgExtension;
 import org.slf4j.Logger;
 import space.arim.dazzleconf.ConfigurationOptions;
@@ -144,9 +145,11 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         MemberCommand memberCommand = new MemberCommand(logger, this.clanRepository, config, messages, futuresFactory);
         HomeCommand homeCommand = new HomeCommand(logger, this.clanRepository, config, messages, futuresFactory, builderFactory);
 
+
         Wars wars = new AnnouncingWars(new DefaultWars(getServer()), messages);
         ClanWarCommand clanWarCommand = new ClanWarCommand(logger, this.clanRepository, config, messages, futuresFactory, wars);
         getServer().getPluginManager().registerEvents(new DeathListener(wars), this);
+        if(config.wars().disableTeamDamage()) getServer().getPluginManager().registerEvents(new NoTeamDamageListener(wars), this);
         getServer().getScheduler().runTaskTimer(this, new Navigation(wars, messages), 5, 5);
 
 
