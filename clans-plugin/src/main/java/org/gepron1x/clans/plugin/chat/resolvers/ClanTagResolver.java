@@ -15,6 +15,14 @@ public record ClanTagResolver(@NotNull DraftClan clan) implements TagResolver.Wi
         return new ClanTagResolver(clan);
     }
 
+    public static TagResolver prefixed(@NotNull DraftClan clan, String prefix) {
+        return PrefixedTagResolver.prefixed(clan(clan), prefix);
+    }
+
+    public static TagResolver prefixed(@NotNull DraftClan clan) {
+        return prefixed(clan, "clan");
+    }
+
     private static final String TAG = "tag";
     private static final String DISPLAY_NAME = "display_name";
     private static final String MEMBERS_SIZE = "members_size";

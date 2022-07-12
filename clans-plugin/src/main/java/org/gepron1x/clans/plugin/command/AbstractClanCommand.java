@@ -3,6 +3,7 @@ package org.gepron1x.clans.plugin.command;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.CommandExecutionHandler;
 import org.bukkit.command.CommandSender;
+import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
@@ -42,6 +43,10 @@ public abstract class AbstractClanCommand {
 
     protected ClanExecutionHandler clanExecutionHandler(CommandExecutionHandler<CommandSender> delegate) {
         return new ClanExecutionHandler(delegate, this.clanRepository, this.messages, this.logger);
+    }
+
+    protected PermissiveClanExecutionHandler permissionRequired(CommandExecutionHandler<CommandSender> delegate, ClanPermission permission) {
+        return new PermissiveClanExecutionHandler(delegate, permission, this.messages);
     }
 
 

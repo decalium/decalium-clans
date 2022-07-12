@@ -310,8 +310,8 @@ public interface MessagesConfig {
             Message requestMessage();
 
             @ConfKey("accepter-message")
-            @DefaultString("<prefix> <click:run_command:'/clan war accept <clan_tag>'><red>Click here</red></click> to accept the request" +
-                    "         or run /clan war accept <clan_tag>")
+            @DefaultString("<prefix> <click:run_command:'/clan war accept <tag>'><red>Click here</red></click> to accept the request" +
+                    "         or run /clan war accept <tag>")
             Message acceptMessage();
 
             @ConfKey("no-requests")
@@ -321,6 +321,22 @@ public interface MessagesConfig {
             @ConfKey("request-sent")
             @DefaultString("<prefix> War request sent.")
             Message requestSent();
+
+            @ConfKey("declined-message")
+            @DefaultString("<prefix> Denied war request from <clan_display_name>.")
+            Message declined();
+
+            @ConfKey("accepted-message")
+            @DefaultString("<prefix> Accepted war request from <clan_display_name>.")
+            Message accepted();
+
+            @ConfKey("victim-declined")
+            @DefaultString("<prefix> <clan_display_name> declined war request.")
+            Message victimDeclined();
+
+            @ConfKey("victim-accepted")
+            @DefaultString("<prefix> <clan_display_name> accepted war request.")
+            Message victimAccepted();
         }
 
 
