@@ -3,6 +3,7 @@ package org.gepron1x.clans.plugin.war.listener;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -45,7 +46,13 @@ public final class NoTeamDamageListener implements Listener {
     }
 
     public Optional<Player> getDamager(Entity entity) {
-        if(entity instanceof Player player) return Optional.of(player);
+        if(entity instanceof Player player) {
+            return Optional.of(player);
+        }
+        else if(entity instanceof Projectile projectile) {
+            return Optional.ofNullable(projectile.getShooter())
+                    .filter(Player.class::isInstance).map(Player.class::cast);
+        }
         return new OwnedEntity(entity).owner().map(entity.getServer()::getPlayer);
     }
 
