@@ -44,7 +44,7 @@ public class HomeCommand extends AbstractClanCommand {
     @Override
     public void register(CommandManager<CommandSender> manager) {
 
-        StringArgument<CommandSender> name = StringArgument.<CommandSender>newBuilder("name").withSuggestionsProvider(this::homesCompletion).build();
+        var name = StringArgument.<CommandSender>newBuilder("name").withSuggestionsProvider(this::homesCompletion);
 
         Command.Builder<CommandSender> builder = manager.commandBuilder("clan")
                 .literal("home")
@@ -84,7 +84,7 @@ public class HomeCommand extends AbstractClanCommand {
         manager.command(builder.literal("rename").permission("clans.home.rename")
                 .argument(name)
                 .handler(clanExecutionHandler(
-                        new HomeRequiredExecutorHandler(checkHomeOwner(this::renameHome), ctx -> ctx.get(name), this.messages)
+                        new HomeRequiredExecutorHandler(checkHomeOwner(this::renameHome), ctx -> ctx.get("name"), this.messages)
                 )
                 )
         );

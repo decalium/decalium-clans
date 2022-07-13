@@ -38,7 +38,7 @@ public class MemberCommand extends AbstractClanCommand {
     public void register(CommandManager<CommandSender> manager) {
 
         var memberArgument = OfflinePlayerArgument.<CommandSender>newBuilder("member")
-                .withSuggestionsProvider(this::memberCompletion).build();
+                .withSuggestionsProvider(this::memberCompletion);
         Command.Builder<CommandSender> builder = manager.commandBuilder("clan").literal("member").senderType(Player.class);
         manager.command(builder
                 .literal("set")
