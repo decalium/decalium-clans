@@ -1,5 +1,6 @@
 package org.gepron1x.clans.plugin.storage.implementation.sql;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 import org.gepron1x.clans.api.ClanBuilderFactory;
@@ -131,6 +132,7 @@ public final class SqlClanStorage implements ClanStorage {
 
 
     private final Jdbi jdbi;
+    private final HikariDataSource dataSource;
     private final StorageType type;
     private final ClanBuilderFactory builderFactory;
     private final RoleRegistry roleRegistry;
@@ -139,11 +141,13 @@ public final class SqlClanStorage implements ClanStorage {
 
     public SqlClanStorage(@NotNull Plugin plugin,
                           @NotNull Jdbi jdbi,
+                          @NotNull HikariDataSource dataSource,
                           @NotNull StorageType type,
                           @NotNull ClanBuilderFactory builderFactory,
                           @NotNull RoleRegistry roleRegistry) {
         this.plugin = plugin;
         this.jdbi = jdbi;
+        this.dataSource = dataSource;
         this.type = type;
         this.builderFactory = builderFactory;
         this.roleRegistry = roleRegistry;
@@ -166,6 +170,7 @@ public final class SqlClanStorage implements ClanStorage {
     @Override
     public void shutdown() {
         jdbi.useHandle(type::disable);
+        dataSource.close();
 
     }
 

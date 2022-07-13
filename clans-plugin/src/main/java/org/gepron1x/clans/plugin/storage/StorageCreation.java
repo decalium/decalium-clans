@@ -39,12 +39,12 @@ public final class StorageCreation {
         HikariConfig config = new HikariConfig();
         setupConnection(config);
         setupPooling(config);
-
-        Jdbi jdbi = Jdbi.create(new HikariDataSource(config));
+        HikariDataSource ds = new HikariDataSource(config);
+        Jdbi jdbi = Jdbi.create(ds);
         registerColumnMappers(jdbi);
         registerArguments(jdbi);
         
-        return new SqlClanStorage(plugin, jdbi, clansConfig.storage().type(), factory, roleRegistry);
+        return new SqlClanStorage(plugin, jdbi, ds, clansConfig.storage().type(), factory, roleRegistry);
 
     }
 
