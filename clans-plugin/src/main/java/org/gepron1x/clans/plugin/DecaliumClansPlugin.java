@@ -8,6 +8,7 @@ import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.ClanBuilderFactory;
@@ -18,6 +19,7 @@ import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.repository.ClanRepository;
 import org.gepron1x.clans.plugin.announce.AnnouncingClanRepository;
 import org.gepron1x.clans.plugin.async.BukkitFactoryOfTheFuture;
+import org.gepron1x.clans.plugin.bootstrap.WarsCreation;
 import org.gepron1x.clans.plugin.cache.CachingClanRepositoryImpl;
 import org.gepron1x.clans.plugin.cache.ClanCacheImpl;
 import org.gepron1x.clans.plugin.chat.CarbonChatHook;
@@ -41,11 +43,6 @@ import org.gepron1x.clans.plugin.storage.ClanStorage;
 import org.gepron1x.clans.plugin.storage.StorageCreation;
 import org.gepron1x.clans.plugin.util.AsciiArt;
 import org.gepron1x.clans.plugin.war.Wars;
-import org.gepron1x.clans.plugin.war.announce.AnnouncingWars;
-import org.gepron1x.clans.plugin.war.impl.DefaultWars;
-import org.gepron1x.clans.plugin.war.listener.DeathListener;
-import org.gepron1x.clans.plugin.war.listener.NoTeamDamageListener;
-import org.gepron1x.clans.plugin.war.listener.navigation.Navigation;
 import org.gepron1x.clans.plugin.wg.WgExtension;
 import org.slf4j.Logger;
 import space.arim.dazzleconf.ConfigurationOptions;
@@ -75,7 +72,28 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        enable();
+        new AsciiArt(getSLF4JLogger()).print();
+        getSLF4JLogger().info("Plugin successfully loaded!");
+    }
 
+
+    private void buildRoleRegistry() {
+        ClanRole ownerRole = config().roles().ownerRole();
+        ClanRole defaultRole = config().roles().defaultRole();
+        List<ClanRole> otherRoles = config().roles().otherRoles();
+
+        ArrayList<ClanRole> roles = new ArrayList<>(otherRoles.size() + 2);
+        roles.add(ownerRole);
+        roles.add(defaultRole);
+        roles.addAll(otherRoles);
+
+        this.roleRegistry = new RoleRegistryImpl(defaultRole, ownerRole, roles);
+
+
+    }
+
+    private void enable() {
         this.futuresFactory = new BukkitFactoryOfTheFuture(this);
         this.builderFactory = new ClanBuilderFactoryImpl();
 
@@ -137,7 +155,6 @@ public final class DecaliumClansPlugin extends JavaPlugin {
             new CarbonChatHook(getServer(), clanCache, messages, config).register();
         }
 
-
         Logger logger = getSLF4JLogger();
 
         ClanCommand command = new ClanCommand(logger, this.clanRepository, config, messages, futuresFactory, builderFactory, roleRegistry);
@@ -145,18 +162,14 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         MemberCommand memberCommand = new MemberCommand(logger, this.clanRepository, config, messages, futuresFactory);
         HomeCommand homeCommand = new HomeCommand(logger, this.clanRepository, config, messages, futuresFactory, builderFactory);
 
-
-        Wars wars = new AnnouncingWars(new DefaultWars(getServer()), messages);
+        Wars wars = new WarsCreation(this, config, messages).create();
         ClanWarCommand clanWarCommand = new ClanWarCommand(logger, this.clanRepository, config, messages, futuresFactory, wars);
-        getServer().getPluginManager().registerEvents(new DeathListener(wars), this);
-        if(config.wars().disableTeamDamage()) getServer().getPluginManager().registerEvents(new NoTeamDamageListener(wars), this);
-        getServer().getScheduler().runTaskTimer(this, new Navigation(wars, messages), 5, 5);
 
 
 
         PaperCommandManager<CommandSender> commandManager;
         try {
-             commandManager = new PaperCommandManager<>(
+            commandManager = new PaperCommandManager<>(
                     this,
                     CommandExecutionCoordinator.simpleCoordinator(),
                     UnaryOperator.identity(), UnaryOperator.identity());
@@ -168,7 +181,6 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         commandManager.parserRegistry().registerParserSupplier(TypeToken.get(ClanRole.class), params -> new ClanRoleParser<>(roleRegistry));
         commandManager.registerBrigadier();
 
-
         command.register(commandManager);
         inviteCommand.register(commandManager);
         memberCommand.register(commandManager);
@@ -179,32 +191,18 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(statisticListener, this);
         statisticListener.start();
 
-
-
-        new AsciiArt(logger).print();
-        logger.info("Plugin successfully loaded!");
+        this.clansApi = new DecaliumClansApiImpl(this.clanRepository, this.roleRegistry, this.builderFactory, this.futuresFactory);
         getServer().getServicesManager().register(DecaliumClansApi.class, clansApi, this, ServicePriority.Normal);
     }
 
-
-    private void buildRoleRegistry() {
-        ClanRole ownerRole = config().roles().ownerRole();
-        ClanRole defaultRole = config().roles().defaultRole();
-        List<ClanRole> otherRoles = config().roles().otherRoles();
-
-        ArrayList<ClanRole> roles = new ArrayList<>(otherRoles.size() + 2);
-        roles.add(ownerRole);
-        roles.add(defaultRole);
-        roles.addAll(otherRoles);
-
-        this.roleRegistry = new RoleRegistryImpl(defaultRole, ownerRole, roles);
-
-
+    private void disable() {
+        this.storage.shutdown();
+        HandlerList.unregisterAll(this);
+        this.getServer().getScheduler().cancelTasks(this);
+        getServer().getServicesManager().unregisterAll(this);
     }
 
-    private void registerCommands() {
 
-    }
 
     private boolean isEnabled(String pluginName) {
         return getServer().getPluginManager().isPluginEnabled(pluginName);
@@ -216,7 +214,8 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        this.storage.shutdown();
+        disable();
+        getSLF4JLogger().info("Goodbye!");
 
     }
 
