@@ -4,6 +4,7 @@ import cloud.commandframework.Command;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.context.CommandContext;
+import cloud.commandframework.execution.CommandExecutionHandler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
@@ -43,6 +44,8 @@ public class HomeCommand extends AbstractClanCommand {
     @Override
     public void register(CommandManager<CommandSender> manager) {
 
+        StringArgument<CommandSender> name = StringArgument.<CommandSender>newBuilder("name").withSuggestionsProvider(this::homesCompletion).build();
+
         Command.Builder<CommandSender> builder = manager.commandBuilder("clan")
                 .literal("home")
                 .senderType(Player.class);
@@ -60,9 +63,9 @@ public class HomeCommand extends AbstractClanCommand {
 
         manager.command(builder.literal("delete")
                 .permission("clans.home.delete")
-                .argument(StringArgument.<CommandSender>newBuilder("name").withSuggestionsProvider(this::homesCompletion).build())
+                .argument(name)
                 .handler(clanExecutionHandler(new PermissiveClanExecutionHandler(
-                        new HomeRequiredExecutorHandler(this::deleteHome, ctx -> ctx.get("name"), this.messages),
+                        new HomeRequiredExecutorHandler(checkHomeOwner(this::deleteHome), ctx -> ctx.get("name"), this.messages),
                         ClanPermission.REMOVE_HOME,
                         this.messages
 
@@ -71,10 +74,18 @@ public class HomeCommand extends AbstractClanCommand {
 
         manager.command(builder.literal("teleport")
                 .permission("clans.home.teleport")
-                .argument(StringArgument.<CommandSender>newBuilder("name").withSuggestionsProvider(this::homesCompletion).build())
+                .argument(name)
                 .handler(clanExecutionHandler(
                         new HomeRequiredExecutorHandler(this::teleportToHome, ctx -> ctx.get("name"), this.messages)
                         )
+                )
+        );
+
+        manager.command(builder.literal("rename").permission("clans.home.rename")
+                .argument(name)
+                .handler(clanExecutionHandler(
+                        new HomeRequiredExecutorHandler(checkHomeOwner(this::renameHome), ctx -> ctx.get(name), this.messages)
+                )
                 )
         );
 
@@ -125,16 +136,11 @@ public class HomeCommand extends AbstractClanCommand {
         Player player = (Player) context.getSender();
 
         Clan clan = context.get(ClanExecutionHandler.CLAN);
-        ClanMember member = context.get(ClanExecutionHandler.CLAN_MEMBER);
         ClanHome home = context.get(HomeRequiredExecutorHandler.HOME);
 
-        if(!home.creator().equals(player.getUniqueId()) && !member.hasPermission(ClanPermission.EDIT_OTHERS_HOMES)) {
-            player.sendMessage(messages.noClanPermission());
-            return;
-        }
        clan.edit(edition -> edition.removeHome(home)).thenAccept(c -> {
             if(c != null) player.sendMessage(messages.commands().home().deleted());
-        }).exceptionallyCompose(this::exceptionHandler);
+        }).exceptionally(this::exceptionHandler);
     }
 
     private void teleportToHome(CommandContext<CommandSender> context) {
@@ -143,14 +149,39 @@ public class HomeCommand extends AbstractClanCommand {
         ClanHome home = context.get(HomeRequiredExecutorHandler.HOME);
         player.teleportAsync(home.location()).thenAccept(bool -> {
             if(bool) player.sendMessage(this.messages.commands().home().teleported().with("name", home.displayName()));
-        });
+        }).exceptionally(this::exceptionHandler);
     }
+
+    private void renameHome(CommandContext<CommandSender> context) {
+        Clan clan = context.get(ClanExecutionHandler.CLAN);
+        ClanHome home = context.get(HomeRequiredExecutorHandler.HOME);
+        Component name = context.get("name");
+        clan.edit(edition -> edition.editHome(home.name(), homeEdition -> {
+            homeEdition.rename(name);
+        })).thenAccept(c -> {
+            context.getSender().sendMessage(this.messages.commands().home().renamed());
+        }).exceptionally(this::exceptionHandler);
+    }
+
 
      private List<String> homesCompletion(CommandContext<CommandSender> context, String s) {
         if (!(context.getSender() instanceof Player player)) return Collections.emptyList();
         return clanRepository.userClanIfCached(player.getUniqueId()).map(Clan::homes)
                 .map(homes -> homes.stream().map(ClanHome::name).toList()).orElse(Collections.emptyList());
 
+    }
+
+
+    private CommandExecutionHandler<CommandSender> checkHomeOwner(CommandExecutionHandler<CommandSender> delegate) {
+        return ctx -> {
+            ClanMember member = ctx.get(ClanExecutionHandler.CLAN_MEMBER);
+            ClanHome home = ctx.get(HomeRequiredExecutorHandler.HOME);
+            if(!home.creator().equals(member.uniqueId()) && !member.hasPermission(ClanPermission.EDIT_OTHERS_HOMES)) {
+                ctx.getSender().sendMessage(this.messages.noClanPermission());
+                return;
+            }
+            delegate.execute(ctx);
+        };
     }
 
 

@@ -301,6 +301,10 @@ public interface MessagesConfig {
             @DefaultString("<prefix> Teleported to <home>")
             Message teleported();
 
+            @ConfKey("renamed")
+            @DefaultString("<prefix> Successfully renamed the clan home")
+            Message renamed();
+
 
         }
 

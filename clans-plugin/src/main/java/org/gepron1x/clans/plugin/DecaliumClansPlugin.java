@@ -187,6 +187,14 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         homeCommand.register(commandManager);
         clanWarCommand.register(commandManager);
 
+        commandManager.command(
+                commandManager.commandBuilder("clan").literal("reload").permission("clans.admin.reload").handler(ctx -> {
+                    disable();
+                    enable();
+                    ctx.getSender().sendMessage("[DecaliumClans] Successfully reloaded.");
+                })
+        );
+
         StatisticListener statisticListener = new StatisticListener(this.clanRepository, this, this.futuresFactory);
         getServer().getPluginManager().registerEvents(statisticListener, this);
         statisticListener.start();

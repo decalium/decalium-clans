@@ -26,4 +26,8 @@ public final class Optionals {
         return iterator.hasNext() ? Optional.of(iterator.next()) : Optional.empty();
     }
 
+    public static <T> Optional<T> ofIterable(Iterable<T> iterable) {
+        return ofIterator(iterable.iterator());
+    }
+
 }
