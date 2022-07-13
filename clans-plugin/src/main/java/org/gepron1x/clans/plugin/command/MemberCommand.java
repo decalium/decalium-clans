@@ -37,14 +37,13 @@ public class MemberCommand extends AbstractClanCommand {
     @Override
     public void register(CommandManager<CommandSender> manager) {
 
-        var memberArgument = OfflinePlayerArgument.<CommandSender>newBuilder("member")
-                .withSuggestionsProvider(this::memberCompletion);
         Command.Builder<CommandSender> builder = manager.commandBuilder("clan").literal("member").senderType(Player.class);
         manager.command(builder
                 .literal("set")
                 .literal("role")
                 .permission("clans.member.set.role")
-                .argument(memberArgument)
+                .argument(OfflinePlayerArgument.<CommandSender>newBuilder("member")
+                        .withSuggestionsProvider(this::memberCompletion))
                 .argument(manager.argumentBuilder(ClanRole.class, "role"))
                 .handler(clanExecutionHandler(
                         new PermissiveClanExecutionHandler(
@@ -55,7 +54,8 @@ public class MemberCommand extends AbstractClanCommand {
 
         manager.command(builder.literal("kick")
                 .permission("clans.member.kick")
-                .argument(memberArgument)
+                .argument(OfflinePlayerArgument.<CommandSender>newBuilder("member")
+                        .withSuggestionsProvider(this::memberCompletion))
                 .handler(clanExecutionHandler(
                         new PermissiveClanExecutionHandler(this::kickMember, ClanPermission.SET_ROLE, this.messages))
                 )

@@ -44,7 +44,6 @@ public class HomeCommand extends AbstractClanCommand {
     @Override
     public void register(CommandManager<CommandSender> manager) {
 
-        var name = StringArgument.<CommandSender>newBuilder("name").withSuggestionsProvider(this::homesCompletion);
 
         Command.Builder<CommandSender> builder = manager.commandBuilder("clan")
                 .literal("home")
@@ -63,7 +62,7 @@ public class HomeCommand extends AbstractClanCommand {
 
         manager.command(builder.literal("delete")
                 .permission("clans.home.delete")
-                .argument(name)
+                .argument(StringArgument.<CommandSender>newBuilder("name").withSuggestionsProvider(this::homesCompletion))
                 .handler(clanExecutionHandler(new PermissiveClanExecutionHandler(
                         new HomeRequiredExecutorHandler(checkHomeOwner(this::deleteHome), ctx -> ctx.get("name"), this.messages),
                         ClanPermission.REMOVE_HOME,
@@ -74,7 +73,7 @@ public class HomeCommand extends AbstractClanCommand {
 
         manager.command(builder.literal("teleport")
                 .permission("clans.home.teleport")
-                .argument(name)
+                .argument(StringArgument.<CommandSender>newBuilder("name").withSuggestionsProvider(this::homesCompletion))
                 .handler(clanExecutionHandler(
                         new HomeRequiredExecutorHandler(this::teleportToHome, ctx -> ctx.get("name"), this.messages)
                         )
@@ -82,7 +81,8 @@ public class HomeCommand extends AbstractClanCommand {
         );
 
         manager.command(builder.literal("rename").permission("clans.home.rename")
-                .argument(name)
+                .argument(StringArgument.<CommandSender>newBuilder("name").withSuggestionsProvider(this::homesCompletion))
+                .argument(ComponentArgument.of("display_name"))
                 .handler(clanExecutionHandler(
                         new HomeRequiredExecutorHandler(checkHomeOwner(this::renameHome), ctx -> ctx.get("name"), this.messages)
                 )
@@ -155,7 +155,7 @@ public class HomeCommand extends AbstractClanCommand {
     private void renameHome(CommandContext<CommandSender> context) {
         Clan clan = context.get(ClanExecutionHandler.CLAN);
         ClanHome home = context.get(HomeRequiredExecutorHandler.HOME);
-        Component name = context.get("name");
+        Component name = context.get("display_name");
         clan.edit(edition -> edition.editHome(home.name(), homeEdition -> {
             homeEdition.rename(name);
         })).thenAccept(c -> {
