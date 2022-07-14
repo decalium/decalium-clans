@@ -173,7 +173,7 @@ public final class PostClanEdition implements ClanEdition {
 
         @Override
         public HomeEdition rename(@NotNull Component displayName) {
-            new HologramOfHome(PostClanEdition.this.clansConfig, PostClanEdition.this.clan, this.home);
+            new HologramOfHome(PostClanEdition.this.clansConfig, PostClanEdition.this.clan, this.home).rename(displayName);
             return this;
         }
     }
