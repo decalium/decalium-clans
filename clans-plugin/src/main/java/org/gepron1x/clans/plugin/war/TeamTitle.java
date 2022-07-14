@@ -2,6 +2,7 @@ package org.gepron1x.clans.plugin.war;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
+import org.gepron1x.clans.api.war.Team;
 import org.gepron1x.clans.plugin.chat.resolvers.ClanTagResolver;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.jetbrains.annotations.NotNull;

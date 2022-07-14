@@ -2,9 +2,9 @@ package org.gepron1x.clans.plugin.war.listener.navigation;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.gepron1x.clans.api.util.player.PlayerReference;
+import org.gepron1x.clans.api.war.Team;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
-import org.gepron1x.clans.plugin.util.player.PlayerReference;
-import org.gepron1x.clans.plugin.war.Team;
 import org.gepron1x.clans.plugin.war.War;
 import org.gepron1x.clans.plugin.war.Wars;
 import org.jetbrains.annotations.Nullable;

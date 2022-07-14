@@ -30,6 +30,10 @@ import org.gepron1x.clans.plugin.war.Wars;
 import org.slf4j.Logger;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 public final class ClanWarCommand extends AbstractClanCommand {
     private final Wars wars;
 
@@ -62,7 +66,7 @@ public final class ClanWarCommand extends AbstractClanCommand {
         );
 
         manager.command(builder.literal("accept").permission("clans.war.accept")
-                .argument(StringArgument.of("tag"))
+                .argument(StringArgument.<CommandSender>newBuilder("tag").withSuggestionsProvider(this::requestsCompletion))
                 .handler(
                         clanExecutionHandler(
                                 permissionRequired(requireRequest(this::acceptWar), ClanPermission.ACCEPT_WAR)
@@ -71,7 +75,7 @@ public final class ClanWarCommand extends AbstractClanCommand {
         );
 
         manager.command(builder.literal("decline").permission("clans.war.decline")
-                .argument(StringArgument.of("tag"))
+                .argument(StringArgument.<CommandSender>newBuilder("tag").withSuggestionsProvider(this::requestsCompletion))
                 .handler(clanExecutionHandler(permissionRequired(requireRequest(this::declineWar), ClanPermission.ACCEPT_WAR)))
         );
 
@@ -91,12 +95,11 @@ public final class ClanWarCommand extends AbstractClanCommand {
             return;
         }
 
-
         victim.cached().map(Clan::members).ifPresent(members -> {
             TagResolver resolver = PrefixedTagResolver.prefixed(ClanTagResolver.clan(clan), "clan");
             for(ClanMember member : members) {
                 Player p = member.asPlayer(player.getServer());
-                if(p == null) return;
+                if(p == null) continue;
                 p.sendMessage(this.messages.commands().wars().requestMessage().with(resolver));
                 if(member.hasPermission(ClanPermission.ACCEPT_WAR)) {
                     p.sendMessage(this.messages.commands().wars().acceptMessage().with(resolver).withMiniMessage("tag", clan.tag()));
@@ -151,5 +154,14 @@ public final class ClanWarCommand extends AbstractClanCommand {
             delegate.execute(ctx);
             requestMap.remove(clan.tag(), tag);
         };
+    }
+
+    private List<String> requestsCompletion(CommandContext<CommandSender> context, String s) {
+        if(!(context.getSender() instanceof Player player)) return Collections.emptyList();
+        return this.clanRepository.userClanIfCached(player.getUniqueId())
+                .map(Clan::tag)
+                .map(requestMap::column)
+                .map(Map::keySet).map(List::copyOf)
+                .orElse(Collections.emptyList());
     }
 }

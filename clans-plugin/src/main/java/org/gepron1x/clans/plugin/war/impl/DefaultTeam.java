@@ -3,8 +3,8 @@ package org.gepron1x.clans.plugin.war.impl;
 import com.google.common.base.MoreObjects;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.reference.ClanReference;
-import org.gepron1x.clans.plugin.util.player.PlayerReference;
-import org.gepron1x.clans.plugin.war.Team;
+import org.gepron1x.clans.api.util.player.PlayerReference;
+import org.gepron1x.clans.api.war.Team;
 
 import java.util.Collection;
 import java.util.Collections;

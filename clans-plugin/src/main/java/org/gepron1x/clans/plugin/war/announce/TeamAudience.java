@@ -2,7 +2,7 @@ package org.gepron1x.clans.plugin.war.announce;
 
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
-import org.gepron1x.clans.plugin.war.Team;
+import org.gepron1x.clans.api.war.Team;
 import org.jetbrains.annotations.NotNull;
 
 public final class TeamAudience implements ForwardingAudience {

@@ -33,5 +33,6 @@ public final class WarsCreation {
         if(config.wars().disableTeamDamage()) pm.registerEvents(new NoTeamDamageListener(base), plugin);
         plugin.getServer().getScheduler().runTaskTimer(plugin, new Navigation(base, messages), 5, 5);
         return wars;
+
     }
 }

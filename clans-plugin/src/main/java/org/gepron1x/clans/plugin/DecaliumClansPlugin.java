@@ -57,14 +57,11 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
     public static final String VERSION = "0.1";
 
-    private FactoryOfTheFuture futuresFactory;
     private RoleRegistry roleRegistry;
-    private ClanBuilderFactory builderFactory;
-    private ClanCacheImpl clanCache;
 
     private ClanStorage storage;
-    private CachingClanRepository clanRepository;
-    private DecaliumClansApi clansApi;
+
+    private PaperCommandManager<CommandSender> commandManager;
 
     private Configuration<ClansConfig> configuration;
     private Configuration<MessagesConfig> messagesConfiguration;
@@ -87,15 +84,14 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         roles.add(ownerRole);
         roles.add(defaultRole);
         roles.addAll(otherRoles);
-
         this.roleRegistry = new RoleRegistryImpl(defaultRole, ownerRole, roles);
 
 
     }
 
     private void enable() {
-        this.futuresFactory = new BukkitFactoryOfTheFuture(this);
-        this.builderFactory = new ClanBuilderFactoryImpl();
+        FactoryOfTheFuture futuresFactory = new BukkitFactoryOfTheFuture(this);
+        ClanBuilderFactory builderFactory = new ClanBuilderFactoryImpl();
 
         TagResolver resolver = TagResolver.resolver(
                 TagResolver.standard(),
@@ -123,11 +119,11 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
 
 
-        storage = new StorageCreation(this, config(), builderFactory, roleRegistry).create();
-        storage.initialize();
-        this.clanCache = new ClanCacheImpl();
+        this.storage = new StorageCreation(this, config(), builderFactory, roleRegistry).create();
+        this.storage.initialize();
+        ClanCacheImpl clanCache = new ClanCacheImpl();
 
-        ClanRepository base = new ClanRepositoryImpl(storage, futuresFactory);
+        ClanRepository base = new ClanRepositoryImpl(this.storage, futuresFactory);
 
         ClanRepository repository = new AnnouncingClanRepository(
                 isEnabled("WorldGuard") ? new WgExtension(
@@ -137,7 +133,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
                 getServer(),
                 messages);
 
-        this.clanRepository = new CachingClanRepositoryImpl(
+        CachingClanRepository clanRepository = new CachingClanRepositoryImpl(
                 repository,
                 futuresFactory,
                 clanCache
@@ -157,19 +153,16 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
         Logger logger = getSLF4JLogger();
 
-        ClanCommand command = new ClanCommand(logger, this.clanRepository, config, messages, futuresFactory, builderFactory, roleRegistry);
-        InviteCommand inviteCommand = new InviteCommand(logger, this.clanRepository, config, messages, futuresFactory, builderFactory, roleRegistry);
-        MemberCommand memberCommand = new MemberCommand(logger, this.clanRepository, config, messages, futuresFactory);
-        HomeCommand homeCommand = new HomeCommand(logger, this.clanRepository, config, messages, futuresFactory, builderFactory);
+        ClanCommand command = new ClanCommand(logger, clanRepository, config, messages, futuresFactory, builderFactory, roleRegistry);
+        InviteCommand inviteCommand = new InviteCommand(logger, clanRepository, config, messages, futuresFactory, builderFactory, roleRegistry);
+        MemberCommand memberCommand = new MemberCommand(logger, clanRepository, config, messages, futuresFactory);
+        HomeCommand homeCommand = new HomeCommand(logger, clanRepository, config, messages, futuresFactory, builderFactory);
 
         Wars wars = new WarsCreation(this, config, messages).create();
-        ClanWarCommand clanWarCommand = new ClanWarCommand(logger, this.clanRepository, config, messages, futuresFactory, wars);
+        ClanWarCommand clanWarCommand = new ClanWarCommand(logger, clanRepository, config, messages, futuresFactory, wars);
 
-
-
-        PaperCommandManager<CommandSender> commandManager;
         try {
-            commandManager = new PaperCommandManager<>(
+            this.commandManager = new PaperCommandManager<>(
                     this,
                     CommandExecutionCoordinator.simpleCoordinator(),
                     UnaryOperator.identity(), UnaryOperator.identity());
@@ -195,16 +188,19 @@ public final class DecaliumClansPlugin extends JavaPlugin {
                 })
         );
 
-        StatisticListener statisticListener = new StatisticListener(this.clanRepository, this, this.futuresFactory);
+        StatisticListener statisticListener = new StatisticListener(clanRepository, this, futuresFactory);
         getServer().getPluginManager().registerEvents(statisticListener, this);
         statisticListener.start();
 
-        this.clansApi = new DecaliumClansApiImpl(this.clanRepository, this.roleRegistry, this.builderFactory, this.futuresFactory);
+        DecaliumClansApi clansApi = new DecaliumClansApiImpl(clanRepository, this.roleRegistry, builderFactory, futuresFactory);
         getServer().getServicesManager().register(DecaliumClansApi.class, clansApi, this, ServicePriority.Normal);
     }
 
     private void disable() {
         this.storage.shutdown();
+        if(commandManager != null) {
+            commandManager.deleteRootCommand("clan");
+        }
         HandlerList.unregisterAll(this);
         this.getServer().getScheduler().cancelTasks(this);
         getServer().getServicesManager().unregisterAll(this);

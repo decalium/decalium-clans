@@ -3,10 +3,9 @@ package org.gepron1x.clans.plugin.war.announce;
 import com.google.common.base.MoreObjects;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.entity.Player;
+import org.gepron1x.clans.api.war.Team;
 import org.gepron1x.clans.plugin.chat.resolvers.ClanTagResolver;
-import org.gepron1x.clans.plugin.chat.resolvers.PrefixedTagResolver;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
-import org.gepron1x.clans.plugin.war.Team;
 import org.gepron1x.clans.plugin.war.War;
 import org.gepron1x.clans.plugin.war.announce.bossbar.BossBars;
 
@@ -46,7 +45,7 @@ public final class AnnouncingWar implements War {
             bars.hide(audience);
             this.war.teams().stream().filter(Team::isAlive).findFirst()
                     .flatMap(team -> team.clan().cached()).ifPresent(clan -> {
-                        audience.sendMessage(this.messages.war().win().with(PrefixedTagResolver.prefixed(ClanTagResolver.clan(clan), "clan")));
+                        audience.sendMessage(this.messages.war().win().with(ClanTagResolver.prefixed(clan)));
                     });
         }
         return true;

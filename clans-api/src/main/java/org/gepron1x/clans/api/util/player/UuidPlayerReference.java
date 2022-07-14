@@ -1,4 +1,4 @@
-package org.gepron1x.clans.plugin.util.player;
+package org.gepron1x.clans.api.util.player;
 
 import com.google.common.base.MoreObjects;
 import org.bukkit.Server;

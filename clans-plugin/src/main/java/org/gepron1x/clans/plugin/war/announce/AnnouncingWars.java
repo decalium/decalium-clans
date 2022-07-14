@@ -7,10 +7,9 @@ import net.kyori.adventure.title.Title;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.reference.ClanReference;
+import org.gepron1x.clans.api.war.Team;
 import org.gepron1x.clans.plugin.chat.resolvers.ClanTagResolver;
-import org.gepron1x.clans.plugin.chat.resolvers.PrefixedTagResolver;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
-import org.gepron1x.clans.plugin.war.Team;
 import org.gepron1x.clans.plugin.war.TeamTitle;
 import org.gepron1x.clans.plugin.war.War;
 import org.gepron1x.clans.plugin.war.Wars;
@@ -43,8 +42,8 @@ public final class AnnouncingWars implements Wars {
         Clan firstClan = first.clan().orElseThrow();
         Clan secondClan = second.clan().orElseThrow();
         Title title = Title.title(this.messages.war().preparationTitle()
-                .with(PrefixedTagResolver.prefixed(ClanTagResolver.clan(firstClan), "first"))
-                .with(PrefixedTagResolver.prefixed(ClanTagResolver.clan(secondClan), "second")).asComponent(), Component.empty());
+                .with(ClanTagResolver.prefixed(firstClan, "first"))
+                .with(ClanTagResolver.prefixed(secondClan, "second")).asComponent(), Component.empty());
 
         Audience warAudience = new WarAudience(war);
         warAudience.showTitle(title);

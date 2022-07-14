@@ -1,4 +1,4 @@
-package org.gepron1x.clans.plugin.util.player;
+package org.gepron1x.clans.api.util.player;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import org.bukkit.entity.Player;

@@ -3,7 +3,7 @@ package org.gepron1x.clans.plugin.war.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import org.bukkit.entity.Player;
-import org.gepron1x.clans.plugin.war.Team;
+import org.gepron1x.clans.api.war.Team;
 import org.gepron1x.clans.plugin.war.War;
 
 import java.util.Collection;
