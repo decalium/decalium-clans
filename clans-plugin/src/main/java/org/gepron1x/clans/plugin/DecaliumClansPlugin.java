@@ -17,6 +17,7 @@ import org.gepron1x.clans.api.RoleRegistry;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.repository.ClanRepository;
+import org.gepron1x.clans.api.war.Wars;
 import org.gepron1x.clans.plugin.announce.AnnouncingClanRepository;
 import org.gepron1x.clans.plugin.async.BukkitFactoryOfTheFuture;
 import org.gepron1x.clans.plugin.bootstrap.WarsCreation;
@@ -42,7 +43,6 @@ import org.gepron1x.clans.plugin.papi.PlaceholderAPIHook;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
 import org.gepron1x.clans.plugin.storage.StorageCreation;
 import org.gepron1x.clans.plugin.util.AsciiArt;
-import org.gepron1x.clans.plugin.war.Wars;
 import org.gepron1x.clans.plugin.wg.WgExtension;
 import org.slf4j.Logger;
 import space.arim.dazzleconf.ConfigurationOptions;
@@ -192,7 +192,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(statisticListener, this);
         statisticListener.start();
 
-        DecaliumClansApi clansApi = new DecaliumClansApiImpl(clanRepository, this.roleRegistry, builderFactory, futuresFactory);
+        DecaliumClansApi clansApi = new DecaliumClansApiImpl(clanRepository, this.roleRegistry, builderFactory, futuresFactory, wars);
         getServer().getServicesManager().register(DecaliumClansApi.class, clansApi, this, ServicePriority.Normal);
     }
 

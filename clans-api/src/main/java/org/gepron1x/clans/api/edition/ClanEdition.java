@@ -28,6 +28,7 @@ public interface ClanEdition extends Edition<DraftClan> {
         statistics.forEach(this::setStatistic);
         return this;
     }
+
     ClanEdition incrementStatistic(@NotNull StatisticType type);
     ClanEdition removeStatistic(@NotNull StatisticType type);
 

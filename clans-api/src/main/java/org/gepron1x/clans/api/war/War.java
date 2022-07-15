@@ -1,7 +1,6 @@
-package org.gepron1x.clans.plugin.war;
+package org.gepron1x.clans.api.war;
 
 import org.bukkit.entity.Player;
-import org.gepron1x.clans.api.war.Team;
 
 import java.util.Collection;
 import java.util.Optional;

@@ -1,7 +1,7 @@
 package org.gepron1x.clans.plugin.war.announce.bossbar;
 
 import net.kyori.adventure.bossbar.BossBar;
-import org.gepron1x.clans.plugin.war.War;
+import org.gepron1x.clans.api.war.War;
 import org.gepron1x.clans.plugin.war.announce.WarAudience;
 import org.jetbrains.annotations.NotNull;
 

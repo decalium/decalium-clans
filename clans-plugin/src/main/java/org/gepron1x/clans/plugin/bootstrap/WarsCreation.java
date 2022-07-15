@@ -2,9 +2,9 @@ package org.gepron1x.clans.plugin.bootstrap;
 
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+import org.gepron1x.clans.api.war.Wars;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
-import org.gepron1x.clans.plugin.war.Wars;
 import org.gepron1x.clans.plugin.war.announce.AnnouncingWars;
 import org.gepron1x.clans.plugin.war.impl.DefaultWars;
 import org.gepron1x.clans.plugin.war.listener.DeathListener;

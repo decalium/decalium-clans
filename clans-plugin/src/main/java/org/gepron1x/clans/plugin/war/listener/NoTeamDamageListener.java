@@ -8,8 +8,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.gepron1x.clans.api.war.Wars;
 import org.gepron1x.clans.plugin.util.pdc.OwnedEntity;
-import org.gepron1x.clans.plugin.war.Wars;
 
 import java.util.Optional;
 

@@ -20,13 +20,13 @@ import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.reference.ClanReference;
 import org.gepron1x.clans.api.reference.TagClanReference;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
+import org.gepron1x.clans.api.war.Wars;
 import org.gepron1x.clans.plugin.chat.resolvers.ClanTagResolver;
 import org.gepron1x.clans.plugin.chat.resolvers.PrefixedTagResolver;
 import org.gepron1x.clans.plugin.command.AbstractClanCommand;
 import org.gepron1x.clans.plugin.command.ClanExecutionHandler;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
-import org.gepron1x.clans.plugin.war.Wars;
 import org.slf4j.Logger;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 

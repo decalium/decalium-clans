@@ -8,8 +8,8 @@ import org.gepron1x.clans.api.reference.ClanReference;
 import org.gepron1x.clans.api.util.ClanOnlinePlayers;
 import org.gepron1x.clans.api.util.player.PlayerReference;
 import org.gepron1x.clans.api.war.Team;
-import org.gepron1x.clans.plugin.war.War;
-import org.gepron1x.clans.plugin.war.Wars;
+import org.gepron1x.clans.api.war.War;
+import org.gepron1x.clans.api.war.Wars;
 
 import java.util.*;
 import java.util.stream.Collectors;
