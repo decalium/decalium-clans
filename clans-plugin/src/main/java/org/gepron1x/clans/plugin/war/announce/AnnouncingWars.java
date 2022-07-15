@@ -1,5 +1,6 @@
 package org.gepron1x.clans.plugin.war.announce;
 
+import com.google.common.base.MoreObjects;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
@@ -16,6 +17,7 @@ import org.gepron1x.clans.plugin.war.TeamTitle;
 import org.gepron1x.clans.plugin.war.announce.bossbar.BossBars;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -93,5 +95,25 @@ public final class AnnouncingWars implements Wars {
     @Override
     public void cleanEnded() {
         this.wars.cleanEnded();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AnnouncingWars that = (AnnouncingWars) o;
+        return wars.equals(that.wars) && messages.equals(that.messages);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(wars, messages);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("wars", wars)
+                .toString();
     }
 }

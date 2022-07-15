@@ -1,5 +1,6 @@
 package org.gepron1x.clans.plugin.war.impl;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -83,6 +84,26 @@ public final class DefaultWars implements Wars {
     public void end(War war) {
         this.currentWars.remove(war);
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DefaultWars that = (DefaultWars) o;
+        return currentWars.equals(that.currentWars) && server.equals(that.server);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(currentWars, server);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("currentWars", currentWars)
+                .toString();
     }
 
     @Override

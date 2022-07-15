@@ -47,7 +47,8 @@ public class WgClan implements DelegatingClan, Clan {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         WgClan wgClan = (WgClan) o;
-        return delegate.equals(wgClan.delegate) && clansConfig.equals(wgClan.clansConfig) && worldGuard.equals(wgClan.worldGuard) && server.equals(wgClan.server);
+        return delegate.equals(wgClan.delegate) && clansConfig.equals(wgClan.clansConfig) &&
+                worldGuard.equals(wgClan.worldGuard) && server.equals(wgClan.server);
     }
 
     @Override

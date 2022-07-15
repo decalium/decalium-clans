@@ -1,5 +1,6 @@
 package org.gepron1x.clans.plugin.wg;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
@@ -42,7 +43,7 @@ public final class HologramOfHome {
                     Objects.equals(pdc.get(CLAN_HOME_NAME, PersistentDataType.STRING), home.name());
         });
         Preconditions.checkState(armorStands.size() <= 1, "Too many holograms spawned");
-        return Optionals.ofIterator(armorStands.iterator());
+        return Optionals.ofIterable(armorStands);
 
     }
 
@@ -80,7 +81,24 @@ public final class HologramOfHome {
         entity().ifPresent(as -> as.getEquipment().setHelmet(icon));
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        HologramOfHome that = (HologramOfHome) o;
+        return config.equals(that.config) && clan.equals(that.clan) && home.equals(that.home);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(config, clan, home);
+    }
 
-
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("clan", clan)
+                .add("home", home)
+                .toString();
+    }
 }

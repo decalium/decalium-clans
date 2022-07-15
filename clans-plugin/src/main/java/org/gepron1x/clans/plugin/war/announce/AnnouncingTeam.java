@@ -1,5 +1,6 @@
 package org.gepron1x.clans.plugin.war.announce;
 
+import com.google.common.base.MoreObjects;
 import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.reference.ClanReference;
@@ -9,12 +10,13 @@ import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.gepron1x.clans.plugin.war.TeamTitle;
 
 import java.util.Collection;
+import java.util.Objects;
 
 public final class AnnouncingTeam implements Team {
 
     private final Team team;
     private final BossBar bar;
-    private final MessagesConfig messages;
+    private final transient MessagesConfig messages;
 
     public AnnouncingTeam(Team team, BossBar bar, MessagesConfig messages) {
 
@@ -53,6 +55,27 @@ public final class AnnouncingTeam implements Team {
                new TeamTitle(this.team, this.messages)
         );
         return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AnnouncingTeam that = (AnnouncingTeam) o;
+        return team.equals(that.team) && bar.equals(that.bar);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(team, bar);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("team", team)
+                .add("bar", bar)
+                .toString();
     }
 
     @Override
