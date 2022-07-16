@@ -9,13 +9,12 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Server;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.gepron1x.clans.api.chat.ClanTagResolver;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.IdentifiedDraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.plugin.cache.ClanCacheImpl;
-import org.gepron1x.clans.plugin.chat.resolvers.ClanTagResolver;
 import org.gepron1x.clans.plugin.chat.resolvers.PapiTagResolver;
-import org.gepron1x.clans.plugin.chat.resolvers.PrefixedTagResolver;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.jetbrains.annotations.NotNull;
@@ -111,7 +110,7 @@ public final class ClanChatChannel implements ChatChannel {
         ClanMember member = clan.member(sender.uuid()).orElseThrow();
         return new RenderedMessage(clansConfig.chat().format()
                 .with(new PapiTagResolver(this.server.getPlayer(sender.uuid())))
-                .with(PrefixedTagResolver.prefixed(ClanTagResolver.clan(clan), "clan"))
+                .with(ClanTagResolver.prefixed(clan))
                 .with("role", member.role())
                 .with("member", CarbonPlayer.renderName(sender))
                 .with("message", message)

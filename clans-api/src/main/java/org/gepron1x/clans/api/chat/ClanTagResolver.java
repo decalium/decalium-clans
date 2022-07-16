@@ -1,7 +1,10 @@
-package org.gepron1x.clans.plugin.chat.resolvers;
+package org.gepron1x.clans.api.chat;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.Context;
+import net.kyori.adventure.text.minimessage.ParsingException;
 import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.ArgumentQueue;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
@@ -9,7 +12,7 @@ import org.gepron1x.clans.api.statistic.StatisticType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public record ClanTagResolver(@NotNull DraftClan clan) implements TagResolver.WithoutArguments {
+public record ClanTagResolver(@NotNull DraftClan clan) implements TagResolver {
 
     public static ClanTagResolver clan(@NotNull DraftClan clan) {
         return new ClanTagResolver(clan);
@@ -32,9 +35,9 @@ public record ClanTagResolver(@NotNull DraftClan clan) implements TagResolver.Wi
     private static final String MEMBER = "member_";
     private static final String OWNER = "owner_";
 
-    @Override
-    public @Nullable Tag resolve(@NotNull String name) {
 
+    @Override
+    public @Nullable Tag resolve(@NotNull String name, @NotNull ArgumentQueue arguments, @NotNull Context ctx) throws ParsingException {
         Component component = switch (name) {
             case TAG -> Component.text(clan.tag());
             case DISPLAY_NAME -> clan.displayName();
@@ -53,11 +56,14 @@ public record ClanTagResolver(@NotNull DraftClan clan) implements TagResolver.Wi
 
         if(name.startsWith(OWNER)) {
             ClanMember member = clan.owner();
-            return PrefixedTagResolver.prefixed(new ClanMemberTagResolver(member), "owner").resolve(name);
+            return PrefixedTagResolver.prefixed(new ClanMemberTagResolver(member), "owner").resolve(name, arguments, ctx);
         }
 
         return null;
+    }
 
-
+    @Override
+    public boolean has(@NotNull String name) {
+        return false;
     }
 }

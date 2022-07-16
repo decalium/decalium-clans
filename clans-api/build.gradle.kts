@@ -14,9 +14,9 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.18-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
     api("space.arim.omnibus:omnibus:1.1.0-RC2")
-    compileOnly("org.jetbrains:annotations:22.0.0")
+    compileOnly("org.jetbrains:annotations:23.0.0")
 }
 
 tasks {

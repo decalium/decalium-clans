@@ -3,9 +3,9 @@ package org.gepron1x.clans.plugin.war.announce;
 import com.google.common.base.MoreObjects;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.entity.Player;
+import org.gepron1x.clans.api.chat.ClanTagResolver;
 import org.gepron1x.clans.api.war.Team;
 import org.gepron1x.clans.api.war.War;
-import org.gepron1x.clans.plugin.chat.resolvers.ClanTagResolver;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.gepron1x.clans.plugin.war.announce.bossbar.BossBars;
 

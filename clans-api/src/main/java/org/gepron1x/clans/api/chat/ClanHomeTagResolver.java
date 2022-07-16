@@ -1,4 +1,4 @@
-package org.gepron1x.clans.plugin.chat.resolvers;
+package org.gepron1x.clans.api.chat;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
