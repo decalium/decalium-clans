@@ -29,5 +29,5 @@ bukkit {
     description = "A gui addon for Decalium Clans"
     depend = listOf("DecaliumClans")
     author = "gepron1x"
-    main = "org.gepron1x.clans.gui"
+    main = "org.gepron1x.clans.gui.DecaliumClansGui"
 }
