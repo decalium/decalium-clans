@@ -15,6 +15,7 @@ public final class ClanCreatedEvent extends ClanEvent {
     public ClanCreatedEvent(Clan clan) {
         super(clan);
     }
+
     @Override
     public @NotNull HandlerList getHandlers() {
         return handlers;

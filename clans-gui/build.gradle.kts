@@ -15,5 +15,19 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
     compileOnly(project(":clans-api"))
+    implementation("com.github.stefvanschie.inventoryframework:IF:0.10.6")
+}
 
+tasks {
+    shadowJar {
+        relocate("com.github.stefvanschie.inventoryframework", "org.gepron1x.clans.gui.libraries.if")
+    }
+}
+
+bukkit {
+    name = "DecaliumClansGUI"
+    description = "A gui addon for Decalium Clans"
+    depend = listOf("DecaliumClans")
+    author = "gepron1x"
+    main = "org.gepron1x.clans.gui"
 }
