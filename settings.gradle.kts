@@ -10,5 +10,4 @@ pluginManagement {
 rootProject.name = "decalium-clans-rewrite"
 include("clans-plugin")
 include("clans-api")
-
-
+include("clans-gui")
