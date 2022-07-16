@@ -1,5 +1,6 @@
 package org.gepron1x.clans.plugin;
 
+import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import io.leangen.geantyref.TypeToken;
@@ -173,6 +174,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         }
         commandManager.parserRegistry().registerParserSupplier(TypeToken.get(ClanRole.class), params -> new ClanRoleParser<>(roleRegistry));
         commandManager.registerBrigadier();
+        commandManager.setSetting(CommandManager.ManagerSettings.OVERRIDE_EXISTING_COMMANDS, true);
 
         command.register(commandManager);
         inviteCommand.register(commandManager);
@@ -198,9 +200,6 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
     private void disable() {
         this.storage.shutdown();
-        if(commandManager != null) {
-            commandManager.deleteRootCommand("clan");
-        }
         HandlerList.unregisterAll(this);
         this.getServer().getScheduler().cancelTasks(this);
         getServer().getServicesManager().unregisterAll(this);

@@ -29,6 +29,8 @@ public interface ClanEdition extends Edition<DraftClan> {
         return this;
     }
 
+    ClanEdition addStatistics(@NotNull Map<StatisticType, Integer> statistics);
+
     ClanEdition incrementStatistic(@NotNull StatisticType type);
     ClanEdition removeStatistic(@NotNull StatisticType type);
 

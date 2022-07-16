@@ -12,23 +12,21 @@ public final class SavableMembers implements Savable {
 
     private static final String INSERT_MEMBERS = "INSERT INTO members (clan_id, uuid, role) VALUES (?, ?, ?)";
 
-    private final Handle handle;
     private final int clanId;
     private final Collection<? extends ClanMember> members;
 
-    public SavableMembers(Handle handle, int clanId, Collection<? extends ClanMember> members) {
-        this.handle = handle;
+    public SavableMembers(int clanId, Collection<? extends ClanMember> members) {
         this.clanId = clanId;
         this.members = members;
     }
 
 
-    public SavableMembers(Handle handle, int clanId, ClanMember member) {
-        this(handle, clanId, Collections.singleton(member));
+    public SavableMembers(int clanId, ClanMember member) {
+        this(clanId, Collections.singleton(member));
     }
     @Override
-    public int execute() {
-        PreparedBatch batch = this.handle.prepareBatch(INSERT_MEMBERS);
+    public int execute(Handle handle) {
+        PreparedBatch batch = handle.prepareBatch(INSERT_MEMBERS);
         for(ClanMember member : this.members) {
             batch.add(this.clanId, member.uniqueId(), member.role());
         }

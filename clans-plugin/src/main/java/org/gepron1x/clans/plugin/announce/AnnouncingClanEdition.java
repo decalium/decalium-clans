@@ -14,6 +14,7 @@ import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -39,6 +40,11 @@ public final class AnnouncingClanEdition implements ClanEdition {
 
     @Override
     public ClanEdition setStatistic(@NotNull StatisticType type, int value) {
+        return this;
+    }
+
+    @Override
+    public ClanEdition addStatistics(@NotNull Map<StatisticType, Integer> statistics) {
         return this;
     }
 

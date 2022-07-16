@@ -9,9 +9,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
@@ -20,20 +18,18 @@ import org.gepron1x.clans.api.edition.ClanEdition;
 import org.gepron1x.clans.api.edition.home.HomeEdition;
 import org.gepron1x.clans.api.edition.member.MemberEdition;
 import org.gepron1x.clans.api.statistic.StatisticType;
-import org.gepron1x.clans.plugin.DecaliumClansPlugin;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.wg.HologramOfHome;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 import static java.util.Objects.requireNonNull;
 
 public final class PostClanEdition implements ClanEdition {
-    private static final NamespacedKey CLAN_NAME = new NamespacedKey(JavaPlugin.getPlugin(DecaliumClansPlugin.class), "clan_name");
-    private static final NamespacedKey CLAN_HOME_NAME = new NamespacedKey(JavaPlugin.getPlugin(DecaliumClansPlugin.class), "clan_home_name");
     private final Clan clan;
     private final ClansConfig clansConfig;
     private final RegionContainer regionContainer;
@@ -50,6 +46,11 @@ public final class PostClanEdition implements ClanEdition {
 
     @Override
     public ClanEdition setStatistic(@NotNull StatisticType type, int value) {
+        return this;
+    }
+
+    @Override
+    public ClanEdition addStatistics(@NotNull Map<StatisticType, Integer> statistics) {
         return this;
     }
 

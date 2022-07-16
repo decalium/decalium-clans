@@ -9,24 +9,22 @@ import java.util.Map;
 
 public final class SavableStatistics implements Savable {
     private static final String INSERT_STATISTIC = "INSERT INTO statistics (`clan_id`, `type`, `value`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `value`=`value` + VALUES(`value`)";
-    private final Handle handle;
     private final int clanId;
     private final Map<StatisticType, Integer> statistics;
 
-    public SavableStatistics(Handle handle, int clanId, Map<StatisticType, Integer> statistics) {
+    public SavableStatistics(int clanId, Map<StatisticType, Integer> statistics) {
 
-        this.handle = handle;
         this.clanId = clanId;
         this.statistics = statistics;
     }
 
-    public SavableStatistics(Handle handle, int clanId, StatisticType type, int value) {
-        this(handle, clanId, Map.of(type, value));
+    public SavableStatistics(int clanId, StatisticType type, int value) {
+        this(clanId, Map.of(type, value));
     }
 
     @Override
-    public int execute() {
-        PreparedBatch batch = this.handle.prepareBatch(INSERT_STATISTIC);
+    public int execute(Handle handle) {
+        PreparedBatch batch = handle.prepareBatch(INSERT_STATISTIC);
         this.statistics.forEach((key, value) -> {
             batch.add(this.clanId, key, value);
         });

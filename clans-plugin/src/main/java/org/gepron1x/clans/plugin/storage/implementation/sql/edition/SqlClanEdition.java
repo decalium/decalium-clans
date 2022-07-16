@@ -24,18 +24,10 @@ public final class SqlClanEdition implements ClanEdition {
     @Language("SQL")
     private static final String UPDATE_DISPLAY_NAME = "UPDATE `clans` SET `display_name`=? WHERE `id`=?";
     @Language("SQL")
-    private static final String UPDATE_STATISTIC = "UPDATE `statistics` SET `value`=? WHERE `clan_id`=? AND type=?";
-    @Language("SQL")
     private static final String DELETE_STATISTIC = "DELETE FROM `statistics` WHERE `clan_id`=? AND `type`=?";
-    @Language("SQL")
-    private static final String INSERT_MEMBER = "INSERT IGNORE INTO `members` (`clan_id`, `uuid`, `role`) VALUES (?, ?, ?)";
-    @Language("SQL")
-    private static final String DELETE_MEMBER = "DELETE FROM `members` WHERE `uuid`=?";
-    @Language("SQL")
-    private static final String INSERT_HOME = "INSERT IGNORE INTO `homes` (`clan_id`, `name`, `creator`, `display_name`, `icon`) VALUES (?, ?, ?, ?, ?)";
 
     @Language("SQL")
-    private static final String INSERT_LOCATION = "INSERT INTO `locations` (`home_id`, `x`, `y`, `z`, `world`) VALUES (?, ?, ?, ?, ?)";
+    private static final String DELETE_MEMBER = "DELETE FROM `members` WHERE `uuid`=?";
     @Language("SQL")
     private static final String DELETE_HOME = "DELETE FROM `homes` WHERE `clan_id`=? AND `name`=?";
     private final Handle handle;
@@ -61,8 +53,13 @@ public final class SqlClanEdition implements ClanEdition {
 
     @Override
     public ClanEdition setStatistics(@NotNull Map<StatisticType, Integer> statistics) {
-        new SavableStatistics(handle, clanId, statistics).execute();
+        new SavableStatistics(clanId, statistics).execute(handle);
         return this;
+    }
+
+    @Override
+    public ClanEdition addStatistics(@NotNull Map<StatisticType, Integer> statistics) {
+        return setStatistics(statistics);
     }
 
     @Override
@@ -86,7 +83,7 @@ public final class SqlClanEdition implements ClanEdition {
 
     @Override
     public ClanEdition addMembers(@NotNull Collection<ClanMember> members) {
-        new SavableMembers(handle, clanId, members).execute();
+        new SavableMembers(clanId, members).execute(handle);
         return this;
     }
 
@@ -109,7 +106,7 @@ public final class SqlClanEdition implements ClanEdition {
 
     @Override
     public ClanEdition addHomes(@NotNull Collection<ClanHome> homes) {
-        new SavableHomes(handle, clanId, homes).execute();
+        new SavableHomes(clanId, homes).execute(handle);
         return this;
     }
 

@@ -15,22 +15,20 @@ public final class SavableHomes implements Savable {
     private static final String INSERT_HOME = "INSERT INTO homes (clan_id, name, display_name, creator, icon) VALUES (?, ?, ?, ?, ?)";
     private static final String INSERT_LOCATION = "INSERT INTO `locations` (`home_id`, `x`, `y`, `z`, `world`) VALUES (?, ?, ?, ?, ?)";
 
-    private final Handle handle;
     private final int clanId;
     private final Collection<? extends ClanHome> homes;
 
-    public SavableHomes(Handle handle, int clanId, Collection<? extends ClanHome> homes) {
+    public SavableHomes(int clanId, Collection<? extends ClanHome> homes) {
 
-        this.handle = handle;
         this.clanId = clanId;
         this.homes = homes;
     }
 
     public SavableHomes(Handle handle, int clanId, ClanHome home) {
-        this(handle, clanId, Collections.singletonList(home));
+        this(clanId, Collections.singletonList(home));
     }
     @Override
-    public int execute() {
+    public int execute(Handle handle) {
         PreparedBatch batch = handle.prepareBatch(INSERT_HOME);
         List<ClanHome> homeList = List.copyOf(homes);
         for(ClanHome home : homeList) {

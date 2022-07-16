@@ -65,7 +65,7 @@ public final class StatisticListener implements Listener {
                     if(opt.isEmpty()) return futuresFactory.completedFuture(null);
                     Clan clan = opt.get();
                     return clan.edit(edition -> {
-                        edition.setStatistics(copy);
+                        edition.addStatistics(copy);
                     });
                 });
 

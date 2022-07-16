@@ -211,15 +211,15 @@ public final class SqlClanStorage implements ClanStorage {
             }
             int id = optionalId.get();
 
-            int updates = new SavableMembers(handle, id, draftClan.members()).execute(); // some members weren't added; those are already in other clans;
+            int updates = new SavableMembers(id, draftClan.members()).execute(handle); // some members weren't added; those are already in other clans;
 
             if(updates != draftClan.members().size()) {
                 handle.rollback();
                 return SaveResult.MEMBERS_IN_OTHER_CLANS;
             }
 
-            new SavableHomes(handle, id, draftClan.homes()).execute();
-            new SavableStatistics(handle, id, draftClan.statistics()).execute();
+            new SavableHomes(id, draftClan.homes()).execute(handle);
+            new SavableStatistics(id, draftClan.statistics()).execute(handle);
             return SaveResult.success(id);
         });
     }
