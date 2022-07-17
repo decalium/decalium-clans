@@ -1,10 +1,7 @@
 package org.gepron1x.clans.api.chat;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.Context;
-import net.kyori.adventure.text.minimessage.ParsingException;
 import net.kyori.adventure.text.minimessage.tag.Tag;
-import net.kyori.adventure.text.minimessage.tag.resolver.ArgumentQueue;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
@@ -12,7 +9,7 @@ import org.gepron1x.clans.api.statistic.StatisticType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public record ClanTagResolver(@NotNull DraftClan clan) implements TagResolver {
+public record ClanTagResolver(@NotNull DraftClan clan) implements TagResolver.WithoutArguments {
 
     public static ClanTagResolver clan(@NotNull DraftClan clan) {
         return new ClanTagResolver(clan);
@@ -37,7 +34,7 @@ public record ClanTagResolver(@NotNull DraftClan clan) implements TagResolver {
 
 
     @Override
-    public @Nullable Tag resolve(@NotNull String name, @NotNull ArgumentQueue arguments, @NotNull Context ctx) throws ParsingException {
+    public @Nullable Tag resolve(@NotNull String name) {
         Component component = switch (name) {
             case TAG -> Component.text(clan.tag());
             case DISPLAY_NAME -> clan.displayName();
@@ -56,14 +53,9 @@ public record ClanTagResolver(@NotNull DraftClan clan) implements TagResolver {
 
         if(name.startsWith(OWNER)) {
             ClanMember member = clan.owner();
-            return PrefixedTagResolver.prefixed(new ClanMemberTagResolver(member), "owner").resolve(name, arguments, ctx);
+            return PrefixedTagResolver.prefixed(new ClanMemberTagResolver(member), "owner").resolve(name);
         }
 
         return null;
-    }
-
-    @Override
-    public boolean has(@NotNull String name) {
-        return false;
     }
 }
