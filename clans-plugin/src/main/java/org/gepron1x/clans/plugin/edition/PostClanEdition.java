@@ -50,6 +50,11 @@ public final class PostClanEdition implements ClanEdition {
     }
 
     @Override
+    public ClanEdition owner(@NotNull ClanMember owner) {
+        return this;
+    }
+
+    @Override
     public ClanEdition addStatistics(@NotNull Map<StatisticType, Integer> statistics) {
         return this;
     }

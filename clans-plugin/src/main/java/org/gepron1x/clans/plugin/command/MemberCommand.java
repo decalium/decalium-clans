@@ -100,6 +100,7 @@ public class MemberCommand extends AbstractClanCommand {
 
     }
 
+
     private void kickMember(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
         OfflinePlayer memberPlayer = context.get("member");

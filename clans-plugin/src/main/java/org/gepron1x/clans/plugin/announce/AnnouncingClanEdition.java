@@ -44,6 +44,12 @@ public final class AnnouncingClanEdition implements ClanEdition {
     }
 
     @Override
+    public ClanEdition owner(@NotNull ClanMember owner) {
+        this.audience.sendMessage(messages.announcements().clanOwnerChanged().with("member", owner.renderName(server)));
+        return this;
+    }
+
+    @Override
     public ClanEdition addStatistics(@NotNull Map<StatisticType, Integer> statistics) {
         return this;
     }
@@ -87,6 +93,7 @@ public final class AnnouncingClanEdition implements ClanEdition {
     @Override
     public ClanEdition removeHome(@NotNull ClanHome home) {
         this.audience.sendMessage(messages.announcements().homeDeleted()
+                .with("member", clan.member(home.creator()).orElseThrow().renderName(server))
                 .with("home_name", home));
         return this;
     }
@@ -108,7 +115,10 @@ public final class AnnouncingClanEdition implements ClanEdition {
 
         @Override
         public MemberEdition appoint(@NotNull ClanRole role) {
-            AnnouncingClanEdition.this.audience.sendMessage(messages.announcements().memberPromoted().with("member", member.renderName(server)));
+            AnnouncingClanEdition.this.audience.sendMessage(messages.announcements().memberPromoted()
+                    .with("member", member.renderName(server))
+                    .with("role", role)
+            );
             return this;
         }
     }

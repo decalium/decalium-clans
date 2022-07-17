@@ -32,8 +32,6 @@ public final class ClanRoleSerializer implements ValueSerialiser<ClanRole> {
     public ClanRole deserialise(FlexibleType flexibleType) throws BadValueException {
         ClanRole.Builder builder = builderFactory.roleBuilder();
         Map<String, FlexibleType> map = flexibleType.getMap((key, value) -> Map.entry(key.getString(), value));
-
-
         return builder.name(map.get(NAME).getString())
                 .displayName(map.get(DISPLAY_NAME).getObject(Component.class))
                 .weight(map.get(WEIGHT).getInteger())

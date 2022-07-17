@@ -24,10 +24,13 @@ public interface ClanEdition extends Edition<DraftClan> {
 
     ClanEdition setStatistic(@NotNull StatisticType type, int value);
 
+    ClanEdition owner(@NotNull ClanMember owner);
+
     default ClanEdition setStatistics(@NotNull Map<StatisticType, Integer> statistics) {
         statistics.forEach(this::setStatistic);
         return this;
     }
+
 
     ClanEdition addStatistics(@NotNull Map<StatisticType, Integer> statistics);
 

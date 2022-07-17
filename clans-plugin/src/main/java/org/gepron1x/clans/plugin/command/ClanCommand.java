@@ -52,6 +52,7 @@ public class ClanCommand extends AbstractClanCommand {
 
         Command.Builder<CommandSender> builder = manager.commandBuilder("clan").senderType(Player.class);
 
+
         manager.command(builder.literal("create")
                 .permission("clans.create")
                 .argument(StringArgument.of("tag"))
@@ -72,12 +73,12 @@ public class ClanCommand extends AbstractClanCommand {
                 .argument(ComponentArgument.greedy("display_name"))
                 .handler(
                         clanExecutionHandler(
-                                new PermissiveClanExecutionHandler(this::setDisplayName, ClanPermission.SET_DISPLAY_NAME, this.messages)
+                                new PermissiveClanExecutionHandler(this::rename, ClanPermission.SET_DISPLAY_NAME, this.messages)
                         )
                 )
         );
 
-        manager.command(builder.literal("memberlist").permission("clans.memberlist")
+        manager.command(builder.literal("member").literal("list").permission("clans.member.list")
                 .handler(clanExecutionHandler(this::listMembers)));
 
         manager.command(builder.literal("myclan").permission("clans.myclan")
@@ -126,12 +127,13 @@ public class ClanCommand extends AbstractClanCommand {
 
     }
 
-    private void setDisplayName(CommandContext<CommandSender> context) {
+    private void rename(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
         Clan clan = context.get(ClanExecutionHandler.CLAN);
         Component displayName = context.get("display_name");
         clan.edit(edition -> edition.rename(displayName))
-                .thenAccept(c -> player.sendMessage(this.messages.commands().displayNameSet().with("name", displayName)));
+                .thenAccept(c -> player.sendMessage(this.messages.commands().displayNameSet().with("name", displayName)))
+                .exceptionally(this::exceptionHandler);
     }
 
     private void myClan(CommandContext<CommandSender> context) {
@@ -153,15 +155,20 @@ public class ClanCommand extends AbstractClanCommand {
                    .with("role", member.role())
                    .with("member", member));
        }
-
     }
+
+
 
     private void leaveClan(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
         Clan clan = context.get(ClanExecutionHandler.CLAN);
+        if(clan.owner().uniqueId().equals(player.getUniqueId())) {
+            player.sendMessage(this.messages.commands().ownerCannotLeave());
+            return;
+        }
         clan.edit(edition -> edition.removeMember(context.get(ClanExecutionHandler.CLAN_MEMBER))).thenAccept(c -> {
             player.sendMessage(this.messages.commands().left());
-        });
+        }).exceptionally(this::exceptionHandler);
     }
 
     private void deleteClan(CommandContext<CommandSender> context) {
@@ -169,6 +176,6 @@ public class ClanCommand extends AbstractClanCommand {
         Clan clan = context.get(ClanExecutionHandler.CLAN);
         clanRepository.removeClan(clan).thenAcceptSync(success -> {
             if(success) player.sendMessage(this.messages.commands().deletion().success());
-        });
+        }).exceptionally(this::exceptionHandler);
     }
 }

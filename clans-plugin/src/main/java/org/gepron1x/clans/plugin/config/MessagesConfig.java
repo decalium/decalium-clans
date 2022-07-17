@@ -89,6 +89,10 @@ public interface MessagesConfig {
         @DefaultString("<prefix> <member> deleted home <home_name>")
         Message homeDeleted();
 
+        @ConfKey("clan-owner-changed")
+        @DefaultString("<prefix> <member> is the owner now.")
+        Message clanOwnerChanged();
+
 
     }
 

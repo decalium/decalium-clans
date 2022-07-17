@@ -2,7 +2,11 @@ package org.gepron1x.clans.plugin.command;
 
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.CommandExecutionHandler;
+import cloud.commandframework.keys.SimpleCloudKey;
+import cloud.commandframework.permission.CommandPermission;
+import cloud.commandframework.permission.PredicatePermission;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.plugin.config.ClansConfig;
@@ -48,6 +52,24 @@ public abstract class AbstractClanCommand {
     protected PermissiveClanExecutionHandler permissionRequired(CommandExecutionHandler<CommandSender> delegate, ClanPermission permission) {
         return new PermissiveClanExecutionHandler(delegate, permission, this.messages);
     }
+
+    protected CommandPermission clanRequired() {
+        return PredicatePermission.of(SimpleCloudKey.of("clan_required"), sender -> {
+            if(!(sender instanceof Player player)) return false;
+            return this.clanRepository.userClanIfCached(player.getUniqueId()).isPresent();
+        });
+    }
+
+    protected CommandPermission permissionRequired(ClanPermission permission) {
+        return clanRequired().and(PredicatePermission.<CommandSender>of(SimpleCloudKey.of("permission_required"), sender -> {
+            Player player = (Player) sender;
+            return this.clanRepository.userClanIfCached(player.getUniqueId()).flatMap(clan -> clan.member(player))
+                    .map(member -> member.hasPermission(permission)).orElse(false);
+        }));
+    }
+
+
+
 
 
 

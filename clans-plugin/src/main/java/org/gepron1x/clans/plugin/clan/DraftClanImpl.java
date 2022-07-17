@@ -1,5 +1,6 @@
 package org.gepron1x.clans.plugin.clan;
 
+import com.google.common.base.Preconditions;
 import net.kyori.adventure.text.Component;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.home.ClanHome;
@@ -243,6 +244,13 @@ public final class DraftClanImpl implements DraftClan {
             @Override
             public ClanEdition setStatistic(@NotNull StatisticType type, int value) {
                 BuilderImpl.this.statistic(type, value);
+                return this;
+            }
+
+            @Override
+            public ClanEdition owner(@NotNull ClanMember owner) {
+                Preconditions.checkArgument(BuilderImpl.this.members.containsValue(owner));
+                BuilderImpl.this.owner = owner;
                 return this;
             }
 

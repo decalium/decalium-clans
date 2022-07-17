@@ -30,6 +30,9 @@ public final class SqlClanEdition implements ClanEdition {
     private static final String DELETE_MEMBER = "DELETE FROM `members` WHERE `uuid`=?";
     @Language("SQL")
     private static final String DELETE_HOME = "DELETE FROM `homes` WHERE `clan_id`=? AND `name`=?";
+
+    @Language("SQL")
+    private static final String UPDATE_OWNER = "UPDATE `clans` SET `owner`=? WHERE `id`=?";
     private final Handle handle;
     private final int clanId;
 
@@ -49,6 +52,12 @@ public final class SqlClanEdition implements ClanEdition {
     @Override
     public ClanEdition setStatistic(@NotNull StatisticType type, int value) {;
         return setStatistics(Map.of(type, value));
+    }
+
+    @Override
+    public ClanEdition owner(@NotNull ClanMember owner) {
+        handle.createUpdate(UPDATE_OWNER).bind(0, owner.uniqueId()).bind(1, clanId).execute();
+        return this;
     }
 
     @Override

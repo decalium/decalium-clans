@@ -15,7 +15,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.audience.ClanAudience;
 import org.gepron1x.clans.api.chat.ClanTagResolver;
-import org.gepron1x.clans.api.chat.PrefixedTagResolver;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
@@ -96,7 +95,7 @@ public final class ClanWarCommand extends AbstractClanCommand {
         }
 
         victim.cached().map(Clan::members).ifPresent(members -> {
-            TagResolver resolver = PrefixedTagResolver.prefixed(ClanTagResolver.clan(clan), "clan");
+            TagResolver resolver = ClanTagResolver.prefixed(clan);
             for(ClanMember member : members) {
                 Player p = member.asPlayer(player.getServer());
                 if(p == null) continue;
@@ -124,7 +123,8 @@ public final class ClanWarCommand extends AbstractClanCommand {
                 .with(ClanTagResolver.prefixed(actor))
         );
         new ClanAudience(actor, player.getServer()).sendMessage(
-                this.messages.commands().wars().victimAccepted().with(ClanTagResolver.prefixed(victim))
+                this.messages.commands().wars().victimAccepted()
+                        .with(ClanTagResolver.prefixed(victim))
         );
 
 
@@ -162,6 +162,6 @@ public final class ClanWarCommand extends AbstractClanCommand {
                 .map(Clan::tag)
                 .map(requestMap::column)
                 .map(Map::keySet).map(List::copyOf)
-                .orElse(Collections.emptyList());
+                .orElseGet(Collections::emptyList);
     }
 }
