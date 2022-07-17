@@ -96,8 +96,6 @@ public class InviteCommand extends AbstractClanCommand {
         Clan clan = context.get(ClanExecutionHandler.CLAN);
 
         this.clanRepository.requestUserClan(receiver.getUniqueId()).thenAcceptSync(opt -> {
-
-
             if (opt.isPresent()) {
                 player.sendMessage(messages.playerIsAlreadyInClan().with("player", receiver.displayName()));
                 return;

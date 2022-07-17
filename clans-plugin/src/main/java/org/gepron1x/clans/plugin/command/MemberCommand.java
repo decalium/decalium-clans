@@ -2,10 +2,8 @@ package org.gepron1x.clans.plugin.command;
 
 import cloud.commandframework.Command;
 import cloud.commandframework.CommandManager;
-import cloud.commandframework.bukkit.parsers.OfflinePlayerArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.permission.Permission;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -23,7 +21,6 @@ import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class MemberCommand extends AbstractClanCommand {
@@ -43,8 +40,7 @@ public class MemberCommand extends AbstractClanCommand {
                 .literal("set")
                 .literal("role")
                 .permission(Permission.of("clans.member.set.role"))
-                .argument(OfflinePlayerArgument.<CommandSender>newBuilder("member")
-                        .withSuggestionsProvider(this::memberCompletion))
+                .argument(manager.argumentBuilder(ClanMember.class, "member"))
                 .argument(manager.argumentBuilder(ClanRole.class, "role"))
                 .handler(clanExecutionHandler(
                         new PermissiveClanExecutionHandler(
@@ -55,11 +51,15 @@ public class MemberCommand extends AbstractClanCommand {
 
         manager.command(builder.literal("kick")
                 .permission(Permission.of("clans.member.kick"))
-                .argument(OfflinePlayerArgument.<CommandSender>newBuilder("member")
-                        .withSuggestionsProvider(this::memberCompletion))
+                .argument(manager.argumentBuilder(ClanMember.class, "member"))
                 .handler(clanExecutionHandler(
                         new PermissiveClanExecutionHandler(this::kickMember, ClanPermission.SET_ROLE, this.messages))
                 )
+        );
+
+        manager.command(builder.literal("set").literal("owner")
+                .argument(manager.argumentBuilder(ClanMember.class, "member"))
+                .handler(clanExecutionHandler(this::setOwner))
         );
 
     }
@@ -67,18 +67,12 @@ public class MemberCommand extends AbstractClanCommand {
 
     private void setRole(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
-        OfflinePlayer memberPlayer = context.get("member");
+        ClanMember other = context.get("member");
         ClanRole role = context.get("role");
         Clan clan = context.get(ClanExecutionHandler.CLAN);
         ClanMember member = context.get(ClanExecutionHandler.CLAN_MEMBER);
 
-        Optional<ClanMember> opt = clan.member(memberPlayer.getUniqueId());
-        if (opt.isEmpty()) {
-            player.sendMessage(messages.commands().member().notAMember()
-                    .with("player", memberPlayer.getName()));
-            return;
-        }
-        ClanMember other = opt.get();
+
 
         if(other.equals(member)) {
             player.sendMessage(messages.cannotDoActionOnYourSelf());
@@ -86,7 +80,7 @@ public class MemberCommand extends AbstractClanCommand {
         }
 
         if(other.role().weight() > member.role().weight()) {
-            player.sendMessage(messages.commands().member().memberHasHigherWeight().with("member", memberPlayer.getName()));
+            player.sendMessage(messages.commands().member().memberHasHigherWeight().with("member", member));
             return;
         }
 
@@ -101,22 +95,31 @@ public class MemberCommand extends AbstractClanCommand {
 
     }
 
+    private void setOwner(CommandContext<CommandSender> context) {
+        Clan clan = context.get(ClanExecutionHandler.CLAN);
+        ClanMember member = context.get(ClanExecutionHandler.CLAN_MEMBER);
+        Player player = (Player) context.getSender();
+        ClanMember newOwner = context.get("member");
+        if(!clan.owner().equals(member)) {
+            player.sendMessage(this.messages.commands().member().onlyOwnerCanDoThis());
+            return;
+        }
+        clan.edit(edition -> {
+            edition.owner(newOwner).editMember(newOwner.uniqueId(), memberEdition -> memberEdition.appoint(member.role()));
+        }).exceptionally(this::exceptionHandler);
+
+    }
+
+
+
 
     private void kickMember(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
-        OfflinePlayer memberPlayer = context.get("member");
 
         Clan clan = context.get(ClanExecutionHandler.CLAN);
         ClanMember member = context.get(ClanExecutionHandler.CLAN_MEMBER);
 
-        Optional<ClanMember> opt = clan.member(memberPlayer);
-
-        if(opt.isEmpty()) {
-            player.sendMessage(messages.commands().member().notAMember()
-                    .with("player", memberPlayer.getName()));
-            return;
-        }
-        ClanMember other = opt.get();
+        ClanMember other = context.get("member");
         if(other.equals(member)) {
             player.sendMessage(messages.cannotDoActionOnYourSelf());
             return;
@@ -124,7 +127,7 @@ public class MemberCommand extends AbstractClanCommand {
 
 
         if (other.role().weight() >= member.role().weight()) {
-            player.sendMessage(messages.commands().member().memberHasHigherWeight().with("member", memberPlayer.getName()));
+            player.sendMessage(messages.commands().member().memberHasHigherWeight().with("member", member));
         }
 
 

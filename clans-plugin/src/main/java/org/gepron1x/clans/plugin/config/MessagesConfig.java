@@ -235,6 +235,10 @@ public interface MessagesConfig {
             @DefaultString("<prefix> Member <member> has higher weight than you. You cannot do any sanctions on him.")
             Message memberHasHigherWeight();
 
+            @ConfKey("only-owner-can-do-this")
+            @DefaultString("<prefix> Only owner can do this!")
+            Message onlyOwnerCanDoThis();
+
 
             @ConfKey("role")
             @SubSection Role role();
