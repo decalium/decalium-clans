@@ -5,7 +5,6 @@ import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.execution.CommandExecutionHandler;
-import cloud.commandframework.permission.CommandPermission;
 import cloud.commandframework.permission.Permission;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -51,10 +50,9 @@ public class HomeCommand extends AbstractClanCommand {
                 .literal("home")
                 .senderType(Player.class);
 
-        CommandPermission permission = clanRequired();
 
         manager.command(builder.literal("create")
-                .permission(Permission.of("clans.home.create").and(permission))
+                .permission(Permission.of("clans.home.create"))
                 .argument(StringArgument.of("name"))
                 .argument(ComponentArgument.optional("display_name", StringArgument.StringMode.GREEDY))
                 .handler(
@@ -65,7 +63,7 @@ public class HomeCommand extends AbstractClanCommand {
         );
 
         manager.command(builder.literal("delete")
-                .permission(Permission.of("clans.home.delete").and(permission))
+                .permission(Permission.of("clans.home.delete"))
                 .argument(StringArgument.<CommandSender>newBuilder("name").withSuggestionsProvider(this::homesCompletion))
                 .handler(clanExecutionHandler(new PermissiveClanExecutionHandler(
                         new HomeRequiredExecutorHandler(checkHomeOwner(this::deleteHome), ctx -> ctx.get("name"), this.messages),
@@ -76,7 +74,7 @@ public class HomeCommand extends AbstractClanCommand {
         );
 
         manager.command(builder.literal("teleport")
-                .permission(Permission.of("clans.home.teleport").and(permission))
+                .permission(Permission.of("clans.home.teleport"))
                 .argument(StringArgument.<CommandSender>newBuilder("name").withSuggestionsProvider(this::homesCompletion))
                 .handler(clanExecutionHandler(
                         new HomeRequiredExecutorHandler(this::teleportToHome, ctx -> ctx.get("name"), this.messages)
@@ -85,7 +83,7 @@ public class HomeCommand extends AbstractClanCommand {
         );
 
         manager.command(builder.literal("rename")
-                .permission(Permission.of("clans.home.rename").and(permission))
+                .permission(Permission.of("clans.home.rename"))
                 .argument(StringArgument.<CommandSender>newBuilder("name").withSuggestionsProvider(this::homesCompletion))
                 .argument(ComponentArgument.of("display_name"))
                 .handler(clanExecutionHandler(

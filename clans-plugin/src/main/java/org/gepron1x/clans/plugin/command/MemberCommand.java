@@ -4,7 +4,6 @@ import cloud.commandframework.Command;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.bukkit.parsers.OfflinePlayerArgument;
 import cloud.commandframework.context.CommandContext;
-import cloud.commandframework.permission.CommandPermission;
 import cloud.commandframework.permission.Permission;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
@@ -40,11 +39,10 @@ public class MemberCommand extends AbstractClanCommand {
     public void register(CommandManager<CommandSender> manager) {
 
         Command.Builder<CommandSender> builder = manager.commandBuilder("clan").literal("member").senderType(Player.class);
-        CommandPermission permission = clanRequired();
         manager.command(builder
                 .literal("set")
                 .literal("role")
-                .permission(Permission.of("clans.member.set.role").and(permission))
+                .permission(Permission.of("clans.member.set.role"))
                 .argument(OfflinePlayerArgument.<CommandSender>newBuilder("member")
                         .withSuggestionsProvider(this::memberCompletion))
                 .argument(manager.argumentBuilder(ClanRole.class, "role"))
@@ -56,7 +54,7 @@ public class MemberCommand extends AbstractClanCommand {
         );
 
         manager.command(builder.literal("kick")
-                .permission(Permission.of("clans.member.kick").and(permission))
+                .permission(Permission.of("clans.member.kick"))
                 .argument(OfflinePlayerArgument.<CommandSender>newBuilder("member")
                         .withSuggestionsProvider(this::memberCompletion))
                 .handler(clanExecutionHandler(

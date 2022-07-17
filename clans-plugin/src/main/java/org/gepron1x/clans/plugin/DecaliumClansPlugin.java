@@ -1,6 +1,7 @@
 package org.gepron1x.clans.plugin;
 
 import cloud.commandframework.CommandManager;
+import cloud.commandframework.exceptions.NoPermissionException;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import io.leangen.geantyref.TypeToken;
@@ -175,6 +176,10 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         commandManager.parserRegistry().registerParserSupplier(TypeToken.get(ClanRole.class), params -> new ClanRoleParser<>(roleRegistry));
         commandManager.registerBrigadier();
         commandManager.setSetting(CommandManager.ManagerSettings.OVERRIDE_EXISTING_COMMANDS, true);
+
+        commandManager.registerExceptionHandler(NoPermissionException.class, (sender, ex) -> {
+            sender.sendMessage(this.messages().noPermission());
+        });
 
         command.register(commandManager);
         inviteCommand.register(commandManager);
