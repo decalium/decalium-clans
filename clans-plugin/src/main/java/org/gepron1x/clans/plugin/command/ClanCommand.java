@@ -4,6 +4,8 @@ import cloud.commandframework.Command;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.context.CommandContext;
+import cloud.commandframework.permission.CommandPermission;
+import cloud.commandframework.permission.Permission;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
@@ -52,6 +54,8 @@ public class ClanCommand extends AbstractClanCommand {
 
         Command.Builder<CommandSender> builder = manager.commandBuilder("clan").senderType(Player.class);
 
+        CommandPermission permission = clanRequired();
+
 
         manager.command(builder.literal("create")
                 .permission("clans.create")
@@ -61,7 +65,7 @@ public class ClanCommand extends AbstractClanCommand {
         );
 
         manager.command(builder.literal("delete")
-                .permission("clans.delete")
+                .permission(Permission.of("clans.delete").and(permission))
                 .handler(clanExecutionHandler(
                                 new PermissiveClanExecutionHandler(this::deleteClan, ClanPermission.DISBAND, this.messages)
                                 )
@@ -69,7 +73,7 @@ public class ClanCommand extends AbstractClanCommand {
         );
 
         manager.command(builder.literal("rename")
-                .permission("clans.rename")
+                .permission(Permission.of("clans.rename").and(permission))
                 .argument(ComponentArgument.greedy("display_name"))
                 .handler(
                         clanExecutionHandler(
@@ -78,13 +82,16 @@ public class ClanCommand extends AbstractClanCommand {
                 )
         );
 
-        manager.command(builder.literal("member").literal("list").permission("clans.member.list")
+        manager.command(builder.literal("member").literal("list")
+                .permission(Permission.of("clans.member.list").and(permission))
                 .handler(clanExecutionHandler(this::listMembers)));
 
-        manager.command(builder.literal("myclan").permission("clans.myclan")
+        manager.command(builder.literal("myclan")
+                .permission(Permission.of("clans.myclan").and(permission))
                 .handler(clanExecutionHandler(this::myClan)));
 
-        manager.command(builder.literal("leave").permission("clans.leave")
+        manager.command(builder.literal("leave")
+                .permission(Permission.of("clans.leave").and(permission))
                 .handler(clanExecutionHandler(this::leaveClan)));
     }
 

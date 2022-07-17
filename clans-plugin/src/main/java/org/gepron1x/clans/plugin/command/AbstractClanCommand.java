@@ -2,6 +2,7 @@ package org.gepron1x.clans.plugin.command;
 
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.CommandExecutionHandler;
+import cloud.commandframework.keys.CloudKey;
 import cloud.commandframework.keys.SimpleCloudKey;
 import cloud.commandframework.permission.CommandPermission;
 import cloud.commandframework.permission.PredicatePermission;
@@ -15,6 +16,9 @@ import org.slf4j.Logger;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 public abstract class AbstractClanCommand {
+
+
+    public static final CloudKey<Void> CLAN_REQUIRED = SimpleCloudKey.of("clan_required");
 
 
     private final Logger logger;
@@ -61,7 +65,7 @@ public abstract class AbstractClanCommand {
     }
 
     protected CommandPermission permissionRequired(ClanPermission permission) {
-        return clanRequired().and(PredicatePermission.<CommandSender>of(SimpleCloudKey.of("permission_required"), sender -> {
+        return clanRequired().and(PredicatePermission.<CommandSender>of(CLAN_REQUIRED, sender -> {
             Player player = (Player) sender;
             return this.clanRepository.userClanIfCached(player.getUniqueId()).flatMap(clan -> clan.member(player))
                     .map(member -> member.hasPermission(permission)).orElse(false);

@@ -6,6 +6,8 @@ import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.bukkit.arguments.selector.SinglePlayerSelector;
 import cloud.commandframework.bukkit.parsers.selector.SinglePlayerSelectorArgument;
 import cloud.commandframework.context.CommandContext;
+import cloud.commandframework.permission.CommandPermission;
+import cloud.commandframework.permission.Permission;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import org.bukkit.command.CommandSender;
@@ -57,8 +59,10 @@ public class InviteCommand extends AbstractClanCommand {
     public void register(CommandManager<CommandSender> manager) {
         Command.Builder<CommandSender> builder = manager.commandBuilder("clan").senderType(Player.class);
 
+        CommandPermission permission = clanRequired();
+
         manager.command(builder.literal("invite")
-                .permission("clans.invite")
+                .permission(Permission.of("clans.invite").and(permission))
                 .argument(SinglePlayerSelectorArgument.of("receiver"))
                 .handler(
                         clanExecutionHandler(
@@ -68,14 +72,14 @@ public class InviteCommand extends AbstractClanCommand {
         );
 
         manager.command(builder.literal("accept")
-                .permission("clans.invite.accept")
+                .permission(Permission.of("clans.invite.accept").and(permission))
                 .argument(StringArgument.<CommandSender>newBuilder("sender_name")
                         .withSuggestionsProvider(this::invitationCompletion))
                 .handler(this::acceptInvite)
         );
 
         manager.command(builder.literal("decline")
-                .permission("clans.invite.decline")
+                .permission(Permission.of("clans.invite.decline").and(permission))
                 .argument(StringArgument.<CommandSender>newBuilder("sender_name").withSuggestionsProvider(this::invitationCompletion))
                 .handler(this::declineInvite)
         );
