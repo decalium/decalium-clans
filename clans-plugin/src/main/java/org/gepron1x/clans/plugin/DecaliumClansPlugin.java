@@ -6,6 +6,7 @@ import cloud.commandframework.exceptions.NoPermissionException;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import io.leangen.geantyref.TypeToken;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -207,6 +208,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
                 commandManager.commandBuilder("clan").literal("reload").permission("clans.admin.reload").handler(ctx -> {
                     disable();
                     enable();
+                    ctx.getSender().getServer().getOnlinePlayers().forEach(player -> player.kick(Component.text("Please rejoin to update the caches.")));
                     ctx.getSender().sendMessage("[DecaliumClans] Successfully reloaded.");
                 })
         );
