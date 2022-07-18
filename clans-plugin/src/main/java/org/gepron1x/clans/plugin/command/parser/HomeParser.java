@@ -3,6 +3,7 @@ package org.gepron1x.clans.plugin.command.parser;
 import cloud.commandframework.arguments.parser.ArgumentParseResult;
 import cloud.commandframework.arguments.parser.ArgumentParser;
 import cloud.commandframework.captions.Caption;
+import cloud.commandframework.captions.CaptionVariable;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.exceptions.parsing.ParserException;
 import org.bukkit.command.CommandSender;
@@ -28,7 +29,7 @@ public final class HomeParser implements ArgumentParser<CommandSender, ClanHome>
         String name = Objects.requireNonNull(inputQueue.peek());
         return new ClanOfSender(this.repository, commandContext.getSender()).clan()
                 .flatMap(clan -> clan.home(name)).map(ArgumentParseResult::success)
-                .orElseGet(() -> ArgumentParseResult.failure(new HomeNotFoundException(commandContext)));
+                .orElseGet(() -> ArgumentParseResult.failure(new HomeNotFoundException(commandContext, name)));
     }
 
     @Override
@@ -45,8 +46,8 @@ public final class HomeParser implements ArgumentParser<CommandSender, ClanHome>
 
     public static final class HomeNotFoundException extends ParserException {
 
-        private HomeNotFoundException(@NonNull CommandContext<?> context) {
-            super(HomeParser.class, context, Caption.of("home.not.found"));
+        private HomeNotFoundException(@NonNull CommandContext<?> context, String name) {
+            super(HomeParser.class, context, Caption.of("home.not.found"), CaptionVariable.of("name", name));
         }
     }
 }

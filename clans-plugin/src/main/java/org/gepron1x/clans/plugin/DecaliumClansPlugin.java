@@ -36,6 +36,7 @@ import org.gepron1x.clans.plugin.command.MemberCommand;
 import org.gepron1x.clans.plugin.command.parser.ClanRoleParser;
 import org.gepron1x.clans.plugin.command.parser.HomeParser;
 import org.gepron1x.clans.plugin.command.parser.MemberParser;
+import org.gepron1x.clans.plugin.command.parser.MessagingParser;
 import org.gepron1x.clans.plugin.command.war.ClanWarCommand;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.Configuration;
@@ -183,8 +184,12 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
         ParserRegistry<CommandSender> parserRegistry = commandManager.parserRegistry();
         parserRegistry.registerParserSupplier(TypeToken.get(ClanRole.class), params -> new ClanRoleParser<>(roleRegistry));
-        parserRegistry.registerParserSupplier(TypeToken.get(ClanMember.class), params -> new MemberParser(clanRepository, getServer()));
-        parserRegistry.registerParserSupplier(TypeToken.get(ClanHome.class), params -> new HomeParser(clanRepository));
+        parserRegistry.registerParserSupplier(TypeToken.get(ClanMember.class), params -> {
+            return new MessagingParser<>(new MemberParser(clanRepository, getServer()), messages.commands().member().notAMember());
+        });
+        parserRegistry.registerParserSupplier(TypeToken.get(ClanHome.class), params ->  new MessagingParser<>(
+                new HomeParser(clanRepository), messages.commands().home().homeNotFound())
+        );
         commandManager.registerBrigadier();
         commandManager.setSetting(CommandManager.ManagerSettings.OVERRIDE_EXISTING_COMMANDS, true);
 
