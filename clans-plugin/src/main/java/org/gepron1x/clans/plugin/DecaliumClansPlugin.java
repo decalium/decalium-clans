@@ -1,3 +1,21 @@
+/*
+ * decalium-clans
+ * Copyright © 2022 George Pronyuk <https://vk.com/gpronyuk>
+ *
+ * decalium-clans is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * decalium-clans is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with decalium-clans. If not, see <https://www.gnu.org/licenses/>
+ * and navigate to version 3 of the GNU Lesser General Public License.
+ */
 package org.gepron1x.clans.plugin;
 
 import cloud.commandframework.CommandManager;
@@ -37,7 +55,6 @@ import org.gepron1x.clans.plugin.command.MemberCommand;
 import org.gepron1x.clans.plugin.command.parser.ClanRoleParser;
 import org.gepron1x.clans.plugin.command.parser.HomeParser;
 import org.gepron1x.clans.plugin.command.parser.MemberParser;
-import org.gepron1x.clans.plugin.command.parser.MessagingParser;
 import org.gepron1x.clans.plugin.command.war.ClanWarCommand;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.Configuration;
@@ -186,10 +203,10 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         ParserRegistry<CommandSender> parserRegistry = commandManager.parserRegistry();
         parserRegistry.registerParserSupplier(TypeToken.get(ClanRole.class), params -> new ClanRoleParser<>(roleRegistry));
         parserRegistry.registerParserSupplier(TypeToken.get(ClanMember.class), params -> {
-            return new MessagingParser<>(new MemberParser(clanRepository, getServer()), messages.commands().member().notAMember());
+            return new MemberParser(clanRepository, getServer());
         });
-        parserRegistry.registerParserSupplier(TypeToken.get(ClanHome.class), params ->  new MessagingParser<>(
-                new HomeParser(clanRepository), messages.commands().home().homeNotFound())
+        parserRegistry.registerParserSupplier(TypeToken.get(ClanHome.class), params ->
+                new HomeParser(clanRepository)
         );
         commandManager.registerBrigadier();
         commandManager.setSetting(CommandManager.ManagerSettings.OVERRIDE_EXISTING_COMMANDS, true);
