@@ -3,12 +3,12 @@ package org.gepron1x.clans.plugin.command.parser;
 import cloud.commandframework.arguments.parser.ArgumentParseResult;
 import cloud.commandframework.arguments.parser.ArgumentParser;
 import cloud.commandframework.captions.Caption;
+import cloud.commandframework.captions.CaptionVariable;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.exceptions.parsing.ParserException;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
@@ -51,8 +51,7 @@ public final class MemberParser implements ArgumentParser<CommandSender, ClanMem
     }
 
     public Optional<Clan> clan(CommandSender sender) {
-        return Optional.of(sender).filter(Player.class::isInstance)
-                .map(Player.class::cast).flatMap(player -> repository.userClanIfCached(player.getUniqueId()));
+        return new ClanOfSender(this.repository, sender).clan();
     }
 
     @Override
@@ -65,7 +64,7 @@ public final class MemberParser implements ArgumentParser<CommandSender, ClanMem
         private final String name;
 
         protected NoMemberFoundException(@NonNull CommandContext<?> context, String name) {
-            super(ClanRoleParser.class, context, UNKNOWN_MEMBER);
+            super(ClanRoleParser.class, context, UNKNOWN_MEMBER, CaptionVariable.of("name", name));
             this.name = name;
         }
 
