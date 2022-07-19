@@ -23,13 +23,16 @@ import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import org.gepron1x.clans.api.chat.PrefixedTagResolver;
 
 import java.util.Arrays;
 import java.util.Collection;
 
 public interface Formatted<T extends Formatted<T>> { // i have no clue how to call this
 
-
+    default T with(String prefix, TagResolver resolver) {
+        return with(PrefixedTagResolver.prefixed(resolver, prefix));
+    }
     T with(TagResolver tagResolver);
 
     T with(String key, Tag tag);
