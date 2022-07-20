@@ -21,6 +21,7 @@ package org.gepron1x.clans.plugin.war.listener;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -44,6 +45,7 @@ public final class NoTeamDamageListener implements Listener {
         if(opt.isEmpty()) return;
         Player damager = opt.orElseThrow();
         if(!(event.getEntity() instanceof Player player)) return;
+        if(damager.equals(player)) return;
         wars.currentWar(damager).flatMap(war -> war.team(damager)).ifPresent(team -> {
             if(team.isMember(player)) {
                 event.setCancelled(true);
@@ -58,6 +60,8 @@ public final class NoTeamDamageListener implements Listener {
         else if(entity instanceof Projectile projectile) {
             return Optional.ofNullable(projectile.getShooter())
                     .filter(Player.class::isInstance).map(Player.class::cast);
+        } else if(entity instanceof TNTPrimed tnt) {
+            return Optional.ofNullable(tnt.getSource()).filter(Player.class::isInstance).map(Player.class::cast);
         }
         return new OwnedEntity(entity).owner().map(entity.getServer()::getPlayer);
     }
