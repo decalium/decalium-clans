@@ -19,11 +19,9 @@
 package org.gepron1x.clans.plugin.war.listener;
 
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.gepron1x.clans.api.war.Wars;
@@ -37,16 +35,6 @@ public final class NoTeamDamageListener implements Listener {
 
     public NoTeamDamageListener(Wars wars) {
         this.wars = wars;
-    }
-
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-    public void onCrystalExplode(EntityDamageByEntityEvent event) {
-        Entity entity = event.getEntity();
-        if(entity.getType() != EntityType.ENDER_CRYSTAL) return;
-        if(!(event.getDamager() instanceof Player damager)) return;
-        new OwnedEntity(entity).owner(damager.getUniqueId());
-
     }
 
 

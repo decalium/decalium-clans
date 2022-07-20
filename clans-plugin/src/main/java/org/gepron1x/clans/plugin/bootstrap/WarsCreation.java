@@ -23,6 +23,7 @@ import org.bukkit.plugin.PluginManager;
 import org.gepron1x.clans.api.war.Wars;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
+import org.gepron1x.clans.plugin.listener.CrystalExplosionListener;
 import org.gepron1x.clans.plugin.war.announce.AnnouncingWars;
 import org.gepron1x.clans.plugin.war.impl.DefaultWars;
 import org.gepron1x.clans.plugin.war.listener.DeathListener;
@@ -49,6 +50,7 @@ public final class WarsCreation {
         Wars wars = new AnnouncingWars(base, messages);
         pm.registerEvents(new DeathListener(wars), plugin);
         if(config.wars().disableTeamDamage()) pm.registerEvents(new NoTeamDamageListener(base), plugin);
+        pm.registerEvents(new CrystalExplosionListener(), plugin);
         plugin.getServer().getScheduler().runTaskTimer(plugin, new Navigation(base, messages), 5, 5);
         return wars;
 

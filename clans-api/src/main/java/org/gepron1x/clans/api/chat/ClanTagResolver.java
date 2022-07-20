@@ -24,12 +24,14 @@ import net.kyori.adventure.text.minimessage.ParsingException;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.ArgumentQueue;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import org.bukkit.Bukkit;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.Set;
 
 public record ClanTagResolver(@NotNull DraftClan clan) implements TagResolver {
@@ -52,7 +54,7 @@ public record ClanTagResolver(@NotNull DraftClan clan) implements TagResolver {
     private static final String HOMES_SIZE = "homes_size";
 
     private static final String STATISTIC = "statistic_";
-    private static final String MEMBER = "member_";
+    private static final String MEMBER = "member";
     private static final String OWNER = "owner_";
 
     private static final Set<String> KEYS = Set.of(TAG, DISPLAY_NAME, MEMBERS_SIZE, HOMES_SIZE, STATISTIC, MEMBER, OWNER);
@@ -67,6 +69,15 @@ public record ClanTagResolver(@NotNull DraftClan clan) implements TagResolver {
             case HOMES_SIZE -> Component.text(clan.homes().size());
             default -> null;
         };
+
+        if(name.equals(MEMBER)) {
+            String playerName = arguments.popOr("Player name required.").value();
+            String tag = arguments.popOr("Value type required").value();
+            return Optional.ofNullable(Bukkit.getOfflinePlayerIfCached(playerName))
+                    .flatMap(clan::member).map(ClanMemberTagResolver::new)
+                    .map(resolver -> resolver.resolve(tag))
+                    .orElse(null);
+        }
 
         if(component != null) return Tag.inserting(component);
 
