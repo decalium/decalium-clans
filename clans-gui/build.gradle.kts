@@ -9,6 +9,7 @@ version = "0.1"
 
 repositories {
     mavenCentral()
+    maven { url = uri("https://mvn-repo.arim.space/lesser-gpl3/") }
     maven { url = uri("https://papermc.io/repo/repository/maven-public/") }
 }
 
