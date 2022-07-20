@@ -56,12 +56,12 @@ public final class NoTeamDamageListener implements Listener {
     public Optional<Player> getDamager(Entity entity) {
         if(entity instanceof Player player) {
             return Optional.of(player);
-        }
-        else if(entity instanceof Projectile projectile) {
+        } else if(entity instanceof Projectile projectile) {
             return Optional.ofNullable(projectile.getShooter())
                     .filter(Player.class::isInstance).map(Player.class::cast);
         } else if(entity instanceof TNTPrimed tnt) {
-            return Optional.ofNullable(tnt.getSource()).filter(Player.class::isInstance).map(Player.class::cast);
+            return Optional.ofNullable(tnt.getSource())
+                    .filter(Player.class::isInstance).map(Player.class::cast);
         }
         return new OwnedEntity(entity).owner().map(entity.getServer()::getPlayer);
     }
