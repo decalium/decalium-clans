@@ -44,7 +44,7 @@ public final class CrystalExplosionListener implements Listener {
         if(damager.getType() != EntityType.ENDER_CRYSTAL) return;
         if(!(event.getEntity() instanceof LivingEntity entity)) return;
 
-        if(entity.getHealth() - event.getFinalDamage() <= 0.0) {
+        if(entity.getHealth() - event.getFinalDamage() <= 0.0 && !entity.equals(damager)) {
             new OwnedEntity(damager).owner().map(damager.getServer()::getPlayer).ifPresent(entity::setKiller);
         }
     }
