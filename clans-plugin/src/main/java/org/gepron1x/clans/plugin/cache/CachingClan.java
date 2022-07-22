@@ -31,9 +31,9 @@ import java.util.function.Consumer;
 public final class CachingClan implements Clan, DelegatingClan {
 
     private final Clan delegate;
-    private final ClanCacheImpl cache;
+    private final ClanCache cache;
 
-    public CachingClan(Clan delegate, ClanCacheImpl cache) {
+    public CachingClan(Clan delegate, ClanCache cache) {
         this.delegate = delegate;
         this.cache = cache;
     }

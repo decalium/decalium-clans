@@ -29,11 +29,11 @@ import org.jetbrains.annotations.UnmodifiableView;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class ClanCacheImpl {
+public final class ClanCache {
     private final Map<String, Clan> clanMap = new ConcurrentHashMap<>();
     private final Map<UUID, Clan> userClanMap = new ConcurrentHashMap<>();
 
-    public ClanCacheImpl() {
+    public ClanCache() {
 
     }
 
@@ -85,7 +85,7 @@ public final class ClanCacheImpl {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ClanCacheImpl clanCache = (ClanCacheImpl) o;
+        ClanCache clanCache = (ClanCache) o;
         return clanMap.equals(clanCache.clanMap) && userClanMap.equals(clanCache.userClanMap);
     }
 

@@ -26,7 +26,7 @@ import org.gepron1x.clans.api.clan.IdentifiedDraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.api.statistic.StatisticType;
-import org.gepron1x.clans.plugin.cache.ClanCacheImpl;
+import org.gepron1x.clans.plugin.cache.ClanCache;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,10 +42,10 @@ public final class ClansExpansion extends PlaceholderExpansion {
 
     private final Server server;
     private final ClansConfig clansConfig;
-    private final ClanCacheImpl cache;
+    private final ClanCache cache;
     private final LegacyComponentSerializer legacy;
 
-    public ClansExpansion(@NotNull Server server, @NotNull ClansConfig clansConfig, @NotNull ClanCacheImpl cache, @NotNull LegacyComponentSerializer legacy) {
+    public ClansExpansion(@NotNull Server server, @NotNull ClansConfig clansConfig, @NotNull ClanCache cache, @NotNull LegacyComponentSerializer legacy) {
         this.server = server;
         this.clansConfig = clansConfig;
         this.cache = cache;

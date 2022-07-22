@@ -190,6 +190,10 @@ public interface ClansConfig {
         @DefaultString("<role> <member> <white>➟ <#cbd4d2><message>")
         Message format();
 
+        @ConfKey("prefix")
+        @DefaultString("~")
+        String prefix();
+
     }
 
     @SubSection Wars wars();

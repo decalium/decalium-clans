@@ -24,12 +24,12 @@ import cloud.commandframework.exceptions.NoPermissionException;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import io.leangen.geantyref.TypeToken;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -46,7 +46,8 @@ import org.gepron1x.clans.plugin.announce.AnnouncingClanRepository;
 import org.gepron1x.clans.plugin.async.BukkitFactoryOfTheFuture;
 import org.gepron1x.clans.plugin.bootstrap.WarsCreation;
 import org.gepron1x.clans.plugin.cache.CachingClanRepositoryImpl;
-import org.gepron1x.clans.plugin.cache.ClanCacheImpl;
+import org.gepron1x.clans.plugin.cache.ClanCache;
+import org.gepron1x.clans.plugin.cache.UserCaching;
 import org.gepron1x.clans.plugin.chat.CarbonChatHook;
 import org.gepron1x.clans.plugin.command.ClanCommand;
 import org.gepron1x.clans.plugin.command.HomeCommand;
@@ -76,6 +77,7 @@ import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.UnaryOperator;
 
 
@@ -87,12 +89,11 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
     private ClanStorage storage;
 
-    private ClanCacheImpl clanCache;
-
     private PaperCommandManager<CommandSender> commandManager;
 
     private Configuration<ClansConfig> configuration;
     private Configuration<MessagesConfig> messagesConfiguration;
+    private UserCaching userCaching;
 
 
     @Override
@@ -149,7 +150,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
         this.storage = new StorageCreation(this, config(), builderFactory, roleRegistry).create();
         this.storage.initialize();
-        this.clanCache = new ClanCacheImpl();
+        ClanCache clanCache = new ClanCache();
 
         ClanRepository base = new ClanRepositoryImpl(this.storage, futuresFactory);
 
@@ -161,13 +162,17 @@ public final class DecaliumClansPlugin extends JavaPlugin {
                 getServer(),
                 messages);
 
+        userCaching = new UserCaching(repository, clanCache, getServer());
+
         CachingClanRepository clanRepository = new CachingClanRepositoryImpl(
                 repository,
                 futuresFactory,
                 clanCache
         );
 
-        getServer().getPluginManager().registerEvents(new CacheListener(clanCache, getServer(), repository), this);
+
+
+        getServer().getPluginManager().registerEvents(new CacheListener(userCaching), this);
 
 
 
@@ -225,8 +230,10 @@ public final class DecaliumClansPlugin extends JavaPlugin {
                 commandManager.commandBuilder("clan").literal("reload").permission("clans.admin.reload").handler(ctx -> {
                     disable();
                     enable();
-                    ctx.getSender().getServer().getOnlinePlayers().forEach(player -> player.kick(Component.text("Please rejoin to update the caches.")));
-                    ctx.getSender().sendMessage("[DecaliumClans] Successfully reloaded.");
+                    List<UUID> uuids = getServer().getOnlinePlayers().stream().map(Player::getUniqueId).toList();
+                    futuresFactory.runAsync(() -> uuids.forEach(this.userCaching::cacheUser)).thenAccept(ignored -> {
+                        ctx.getSender().sendMessage("[DecaliumClans] Successfully reloaded.");
+                    });
                 })
         );
 

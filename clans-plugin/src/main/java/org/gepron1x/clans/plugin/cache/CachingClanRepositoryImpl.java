@@ -36,9 +36,9 @@ public final class CachingClanRepositoryImpl extends AdaptingClanRepository impl
 
     private final FactoryOfTheFuture futuresFactory;
     private final ClanRepository repository;
-    private final ClanCacheImpl cache;
+    private final ClanCache cache;
 
-    public CachingClanRepositoryImpl(ClanRepository repository, FactoryOfTheFuture futuresFactory, ClanCacheImpl cache) {
+    public CachingClanRepositoryImpl(ClanRepository repository, FactoryOfTheFuture futuresFactory, ClanCache cache) {
         super(repository, clan -> new CachingClan(clan, cache));
         this.futuresFactory = futuresFactory;
         this.repository = repository;

@@ -31,7 +31,7 @@ import org.gepron1x.clans.api.chat.ClanTagResolver;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.IdentifiedDraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
-import org.gepron1x.clans.plugin.cache.ClanCacheImpl;
+import org.gepron1x.clans.plugin.cache.ClanCache;
 import org.gepron1x.clans.plugin.chat.resolvers.PapiTagResolver;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
@@ -46,11 +46,11 @@ import java.util.stream.Collectors;
 public final class ClanChatChannel implements ChatChannel {
     private static final Key KEY = Key.key("decaliumclans", "clanchat");
     private final Server server;
-    private final ClanCacheImpl cache;
+    private final ClanCache cache;
     private final MessagesConfig messages;
     private final ClansConfig clansConfig;
 
-    public ClanChatChannel(@NotNull Server server, @NotNull ClanCacheImpl cache, @NotNull MessagesConfig messages, @NotNull ClansConfig clansConfig) {
+    public ClanChatChannel(@NotNull Server server, @NotNull ClanCache cache, @NotNull MessagesConfig messages, @NotNull ClansConfig clansConfig) {
         this.server = server;
         this.cache = cache;
         this.messages = messages;
@@ -131,7 +131,7 @@ public final class ClanChatChannel implements ChatChannel {
                 .with(ClanTagResolver.prefixed(clan))
                 .with("role", member.role())
                 .with("member", CarbonPlayer.renderName(sender))
-                .with("message", message)
+                .with("message", originalMessage)
                 .asComponent(), MessageType.CHAT);
     }
 

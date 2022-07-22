@@ -23,7 +23,6 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
@@ -42,10 +41,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
-
-import static java.util.Objects.requireNonNull;
 
 public final class PostClanEdition implements ClanEdition {
     private final Clan clan;
@@ -90,10 +88,9 @@ public final class PostClanEdition implements ClanEdition {
     @Override
     public ClanEdition addMember(@NotNull ClanMember member) {
         for(ClanHome home : clan.homes()) {
-            RegionManager regionManager =  getRegionManager(home.location());
-            ProtectedRegion region = regionManager.getRegion(nameFor(clan, home));
-            if(region == null) continue;
-            region.getMembers().addPlayer(member.uniqueId());
+            getRegionManager(home.location()).map(regionManager -> regionManager.getRegion(nameFor(clan, home))).ifPresent(region -> {
+                region.getMembers().addPlayer(member.uniqueId());
+            });
         }
         return this;
     }
@@ -101,10 +98,9 @@ public final class PostClanEdition implements ClanEdition {
     @Override
     public ClanEdition removeMember(@NotNull ClanMember member) {
         for(ClanHome home : clan.homes()) {
-            RegionManager regionManager = getRegionManager(home.location());
-            ProtectedRegion region = regionManager.getRegion(nameFor(clan, home));
-            if(region == null) continue;
-            region.getMembers().removePlayer(member.uniqueId());
+            getRegionManager(home.location()).map(regionManager -> regionManager.getRegion(nameFor(clan, home))).ifPresent(region -> {
+                region.getMembers().removePlayer(member.uniqueId());
+            });
         }
         return this;
     }
@@ -117,12 +113,13 @@ public final class PostClanEdition implements ClanEdition {
 
     @Override
     public ClanEdition addHome(@NotNull ClanHome home) {
-        RegionManager regionManager = getRegionManager(home.location());
-        ProtectedCuboidRegion region = createForHome(home);
-        DefaultDomain members = region.getMembers();
-        clan.memberMap().keySet().forEach(members::addPlayer);
-        new HologramOfHome(this.clansConfig, this.clan, home).spawnIfNotPresent();
-        regionManager.addRegion(region);
+        getRegionManager(home.location()).ifPresent(regionManager -> {
+            ProtectedCuboidRegion region = createForHome(home);
+            DefaultDomain members = region.getMembers();
+            clan.memberMap().keySet().forEach(members::addPlayer);
+            new HologramOfHome(this.clansConfig, this.clan, home).spawnIfNotPresent();
+            regionManager.addRegion(region);
+        });
 
         return this;
     }
@@ -142,22 +139,25 @@ public final class PostClanEdition implements ClanEdition {
 
     @Override
     public ClanEdition removeHome(@NotNull ClanHome home) {
-        RegionManager regionManager = getRegionManager(home.location());
-        regionManager.removeRegion(nameFor(clan, home));
-        new HologramOfHome(this.clansConfig, this.clan, home).destroy();
+        getRegionManager(home.location()).ifPresent(mgr -> {
+            mgr.removeRegion(nameFor(clan, home));
+            new HologramOfHome(this.clansConfig, this.clan, home).destroy();
+        });
+
         return this;
     }
 
     @Override
     public ClanEdition editHome(@NotNull String name, @NotNull Consumer<HomeEdition> consumer) {
         ClanHome home = clan.home(name).orElseThrow();
-        RegionManager mgr = getRegionManager(home.location());
-        consumer.accept(new PostHomeEdition(home, mgr));
+        getRegionManager(home.location()).ifPresent(mgr -> {
+            consumer.accept(new PostHomeEdition(home, mgr));
+        });
         return this;
     }
 
-    private RegionManager getRegionManager(Location location) {
-        return requireNonNull(regionContainer.get(BukkitAdapter.adapt(requireNonNull(location.getWorld()))));
+    private Optional<RegionManager> getRegionManager(Location location) {
+        return Optional.ofNullable(location.getWorld()).map(BukkitAdapter::adapt).map(regionContainer::get);
 
     }
 

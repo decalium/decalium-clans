@@ -24,9 +24,9 @@ import org.jetbrains.annotations.NotNull;
 public final class Validations {
 
     private static final int MAX_TAG_SIZE = 16;
-    private static final int MIN_TAG_SIZE = 4;
+    private static final int MIN_TAG_SIZE = 2;
 
-    private static final int MIN_HOME_NAME_SIZE = 4;
+    private static final int MIN_HOME_NAME_SIZE = 3;
     private static final int MAX_HOME_NAME_SIZE = 32;
 
     private static final CharPredicate TAG_PREDICATE = c -> c == '_' || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
