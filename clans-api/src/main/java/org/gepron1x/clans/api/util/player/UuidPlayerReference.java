@@ -18,6 +18,7 @@
  */
 package org.gepron1x.clans.api.util.player;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import com.google.common.base.MoreObjects;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -48,6 +49,15 @@ public final class UuidPlayerReference implements PlayerReference {
     @Override
     public Optional<Player> player() {
         return Optional.ofNullable(this.server.getPlayer(this.uniqueId));
+    }
+
+    @Override
+    public PlayerProfile profile() {
+        return player().map(Player::getPlayerProfile).orElseGet(() -> {
+            PlayerProfile profile = server.createProfile(this.uniqueId);
+            profile.completeFromCache();
+            return profile;
+        });
     }
 
     @Override

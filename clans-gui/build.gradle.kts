@@ -16,12 +16,15 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
     compileOnly(project(":clans-api"))
+    compileOnly("cloud.commandframework:cloud-paper:1.7.0-SNAPSHOT")
     implementation("com.github.stefvanschie.inventoryframework:IF:0.10.6")
 }
 
 tasks {
     shadowJar {
+        relocate("space.arim", "org.gepron1x.clans.libraries.space.arim")
         relocate("com.github.stefvanschie.inventoryframework", "org.gepron1x.clans.gui.libraries.if")
+        relocate("cloud.commandframework", "org.gepron1x.clans.libraries.cloud.commandframework")
     }
 }
 
@@ -30,5 +33,6 @@ bukkit {
     description = "A gui addon for Decalium Clans"
     depend = listOf("DecaliumClans")
     author = "gepron1x"
+    apiVersion = "1.18"
     main = "org.gepron1x.clans.gui.DecaliumClansGui"
 }

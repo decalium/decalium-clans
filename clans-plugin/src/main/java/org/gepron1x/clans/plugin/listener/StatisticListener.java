@@ -20,6 +20,8 @@ package org.gepron1x.clans.plugin.listener;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -31,7 +33,6 @@ import org.gepron1x.clans.api.statistic.StatisticType;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -51,25 +52,24 @@ public final class StatisticListener implements Listener {
 
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
-        incrementStatistic(event.getEntity().getUniqueId(), StatisticType.DEATHS);
+        Entity entity = event.getEntity();
+        if(entity.getType() != EntityType.PLAYER) return;
+        incrementStatistic(entity.getUniqueId(), StatisticType.DEATHS);
         Player killer = event.getEntity().getKiller();
-        if(killer == null) return;
+        if(killer == null || killer.equals(entity)) return;
         this.incrementStatistic(killer.getUniqueId(), StatisticType.KILLS);
 
     }
 
 
 
-    private void incrementStatistic(UUID uuid, StatisticType type) {
-        Optional<Clan> opt = repository.userClanIfCached(uuid);
-        if(opt.isEmpty()) return;
-        Clan clan = opt.get();
-
-        Integer value = statisticsTable.get(clan.tag(), type);
-        if(value == null) value = 0;
-        value += 1;
-        statisticsTable.put(clan.tag(), type, value);
-
+    private void incrementStatistic(UUID uuid, final StatisticType type) {
+        repository.userClanIfCached(uuid).map(Clan::tag).ifPresent(tag -> {
+            Integer value = statisticsTable.get(tag, type);
+            if(value == null) value = 0;
+            value += 1;
+            statisticsTable.put(tag, type, value);
+        });
     }
 
 

@@ -18,7 +18,16 @@
  */
 package org.gepron1x.clans.gui;
 
+import cloud.commandframework.execution.CommandExecutionCoordinator;
+import cloud.commandframework.paper.PaperCommandManager;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.gepron1x.clans.api.DecaliumClansApi;
+
+import java.util.Optional;
+import java.util.function.UnaryOperator;
 
 public final class DecaliumClansGui extends JavaPlugin {
 
@@ -29,6 +38,29 @@ public final class DecaliumClansGui extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        super.onEnable();
+        DecaliumClansApi api = Optional.ofNullable(this.getServer().getServicesManager()
+                        .getRegistration(DecaliumClansApi.class))
+                .map(RegisteredServiceProvider::getProvider).orElseThrow();
+        PaperCommandManager<CommandSender> commandManager;
+        try {
+            commandManager = new PaperCommandManager<>(this,
+                    CommandExecutionCoordinator.simpleCoordinator(),
+                    UnaryOperator.identity(), UnaryOperator.identity());
+        } catch (Exception e) {
+            getSLF4JLogger().error("Error initializing command manager: ", e);
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        commandManager.registerBrigadier();
+        commandManager.command(commandManager.commandBuilder("clangui").senderType(Player.class)
+                .permission("clans.gui")
+                .handler(ctx -> {
+                    Player player = (Player) ctx.getSender();
+                    api.repository().userClanIfCached(player).ifPresent(clan -> {
+                        new ClanGui(getServer(), clan).asGui().show(player);
+                    });
+                })
+        );
+
     }
 }
