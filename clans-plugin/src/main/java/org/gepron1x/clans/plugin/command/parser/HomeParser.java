@@ -45,6 +45,7 @@ public final class HomeParser implements ArgumentParser<CommandSender, ClanHome>
     @Override
     public @NonNull ArgumentParseResult<@NonNull ClanHome> parse(@NonNull CommandContext<@NonNull CommandSender> commandContext, @NonNull Queue<@NonNull String> inputQueue) {
         String name = Objects.requireNonNull(inputQueue.peek());
+        inputQueue.remove();
         return new ClanOfSender(this.repository, commandContext.getSender()).clan()
                 .flatMap(clan -> clan.home(name)).map(ArgumentParseResult::success)
                 .orElseGet(() -> ArgumentParseResult.failure(new HomeNotFoundException(commandContext, name)));
