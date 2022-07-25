@@ -100,7 +100,7 @@ public class HomeCommand extends AbstractClanCommand {
         manager.command(builder.literal("rename")
                 .permission(Permission.of("clans.home.rename"))
                 .argument(manager.argumentBuilder(ClanHome.class, "home"))
-                .argument(ComponentArgument.of("display_name"))
+                .argument(ComponentArgument.greedy("display_name"))
                 .handler(clanExecutionHandler(
                         checkHomeOwner(this::renameHome)
                 )
