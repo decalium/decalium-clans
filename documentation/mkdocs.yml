@@ -1,0 +1,12 @@
+site_name: Decalium Clans
+theme:
+  name: material
+nav:
+    - 'index.md'
+    - 'Installation.md'
+    - 'Creating your first clan.md'
+    - 'Member Managment.md'
+    - 'Roles.md'
+    - 'Homes.md'
+markdown_extensions:
+  - tables
