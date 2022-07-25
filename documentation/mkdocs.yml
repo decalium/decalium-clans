@@ -18,5 +18,6 @@ nav:
     - 'Messages.md'
     - 'PlaceholderAPI Placeholders.md'
     - 'Permissions.md'
+    - 'API.md'
 markdown_extensions:
   - tables

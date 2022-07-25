@@ -6,7 +6,7 @@ To create your first clan, type a command:
 Technically, clan has two names: A tag and a display name. Defining a display name is optional.
 A tag is a short clan identifier. Only english letters and numbers are allowed. Maximum tag size is 16, and 2 is minimum.
 
-Display name is, well, a display name of the clan. There's no limitations, and you even can use decorations from [MiniMessage](https://https://docs.adventure.kyori.net/minimessage/format.html).
+Display name is, well, a display name of the clan. There's no limitations, and you even can use decorations from [MiniMessage](https://docs.adventure.kyori.net/minimessage/format.html).
 
 ## Inviting members
 

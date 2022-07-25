@@ -1,5 +1,5 @@
 All messages are configurable in the messages.yml.
-Plugin uses [MiniMessage](https://https://docs.adventure.kyori.net/minimessage/format.html) format, you should really give a read to it's documentation.
+Plugin uses [MiniMessage](https://docs.adventure.kyori.net/minimessage/format.html) format, you should really give a read to it's documentation.
 
 ## Why MiniMessage?
 

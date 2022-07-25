@@ -3,3 +3,7 @@ Simply put the plugin jar in plugins folder.
 Here you go! Plugin will work out of the box.
 
 To get all features working, i recommend installing WorldGuard as well.
+
+## Reloading plugin
+Use
+> /clan reload
