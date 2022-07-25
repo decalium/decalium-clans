@@ -161,11 +161,11 @@ public class ClanCommand extends AbstractClanCommand {
     private void myClan(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
         Clan clan = context.get(ClanExecutionHandler.CLAN);
-        player.sendMessage(Component.textOfChildren(text("You are member of "), clan, text("clan")));
-        player.sendMessage(Component.textOfChildren(
-                Component.textOfChildren(text("Kills: "), text(clan.statisticOr(StatisticType.KILLS, 0))),
+        player.sendMessage(text().append(text("You are member of "), clan, text("clan")));
+        player.sendMessage(text().append(
+                text().append(text("Kills: "), text(clan.statisticOr(StatisticType.KILLS, 0))),
                 newline(),
-                Component.textOfChildren(text("Deaths: "), text(clan.statisticOr(StatisticType.DEATHS, 0)))
+                text().append(text("Deaths: "), text(clan.statisticOr(StatisticType.DEATHS, 0)))
         ));
     }
 

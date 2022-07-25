@@ -16,6 +16,7 @@
             <option value="$PROJECT_DIR$/clans-api" />
             <option value="$PROJECT_DIR$/clans-gui" />
             <option value="$PROJECT_DIR$/clans-plugin" />
+            <option value="$PROJECT_DIR$/clans-plugin-legacy" />
           </set>
         </option>
       </GradleProjectSettings>

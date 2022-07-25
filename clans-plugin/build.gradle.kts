@@ -105,8 +105,9 @@ bukkit {
     name = "DecaliumClans"
     main = "org.gepron1x.clans.plugin.DecaliumClansPlugin"
     description = "Shining clans plugin"
-    apiVersion = "1.18"
+    apiVersion = "1.16"
     authors = listOf("gepron1x", "manya")
+    website = "https://clans.decalium.ru"
     softDepend = listOf("PlaceholderAPI", "CarbonChat", "WorldGuard")
 }
 

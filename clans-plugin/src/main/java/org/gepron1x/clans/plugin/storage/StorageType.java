@@ -23,7 +23,7 @@ import org.jdbi.v3.core.Handle;
 import java.util.function.Consumer;
 
 public enum StorageType {
-    H2(org.h2.Driver.class.getName(), handle -> handle.execute("SHUTDOWN")),
+    H2(org.h2.Driver.class.getName()),
     MYSQL("com.mysql.cj.jdbc.Driver"),
     POSTGRESQL("");
 
