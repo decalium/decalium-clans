@@ -1,6 +1,11 @@
 site_name: Decalium Clans
 theme:
   name: material
+  logo: 'kristall.png'
+  favicon: 'kristall.png'
+  palette:
+    scheme: slate
+    primary: black
 nav:
     - 'index.md'
     - 'Installation.md'
@@ -8,5 +13,10 @@ nav:
     - 'Member Managment.md'
     - 'Roles.md'
     - 'Homes.md'
+    - 'Wars.md'
+    - 'Chat.md'
+    - 'Messages.md'
+    - 'PlaceholderAPI Placeholders.md'
+    - 'Permissions.md'
 markdown_extensions:
   - tables
