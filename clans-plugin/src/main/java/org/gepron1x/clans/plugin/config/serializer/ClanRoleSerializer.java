@@ -29,7 +29,9 @@ import space.arim.dazzleconf.serialiser.FlexibleType;
 import space.arim.dazzleconf.serialiser.ValueSerialiser;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public final class ClanRoleSerializer implements ValueSerialiser<ClanRole> {
 
@@ -50,10 +52,17 @@ public final class ClanRoleSerializer implements ValueSerialiser<ClanRole> {
     public ClanRole deserialise(FlexibleType flexibleType) throws BadValueException {
         ClanRole.Builder builder = builderFactory.roleBuilder();
         Map<String, FlexibleType> map = flexibleType.getMap((key, value) -> Map.entry(key.getString(), value));
+        List<String> s = map.get(PERMISSIONS).getList(FlexibleType::getString);
+        Set<ClanPermission> permissions;
+        if(s.size() == 1 && s.get(0).equals("*")) {
+            permissions = ClanPermission.all();
+        } else {
+            permissions = flexibleType.getSet(flexType -> flexType.getObject(ClanPermission.class));
+        }
         return builder.name(map.get(NAME).getString())
                 .displayName(map.get(DISPLAY_NAME).getObject(Component.class))
                 .weight(map.get(WEIGHT).getInteger())
-                .permissions(map.get(PERMISSIONS).getList(flexType -> flexType.getObject(ClanPermission.class)))
+                .permissions(permissions)
                 .build();
     }
 
@@ -64,7 +73,14 @@ public final class ClanRoleSerializer implements ValueSerialiser<ClanRole> {
         map.put(NAME, value.name());
         map.put(DISPLAY_NAME, decomposer.decompose(Component.class, value.displayName()));
         map.put(WEIGHT, value.weight());
-        map.put(PERMISSIONS, decomposer.decomposeCollection(ClanPermission.class, value.permissions()));
+
+        Object permissions;
+        if(ClanPermission.all().containsAll(value.permissions())) {
+            permissions = List.of("*");
+        } else {
+            permissions = decomposer.decomposeCollection(ClanPermission.class, value.permissions());
+        }
+        map.put(PERMISSIONS, permissions);
 
         return map;
     }
