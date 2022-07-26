@@ -16,30 +16,13 @@
  * along with decalium-clans-rewrite. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package org.gepron1x.clans.plugin.chat.common;
+package org.gepron1x.clans.plugin.chat.paper;
 
-import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
-import org.bukkit.entity.Player;
 
-import java.util.Set;
+import java.util.Optional;
 
-public interface Channel {
-    Component render(Player sender, Audience recipient, Component message, Component originalMessage);
-
-    String prefix();
-
-    boolean usePermitted(Player player);
-
-    Set<? extends Audience> recipients(Player player);
-
-    Set<Player> filter(Player sender, Set<Player> receivers);
-
-
-
-    Key key();
-
-
-
+public interface ChatUser {
+    Optional<Key> currentChannelKey();
+    void currentChannelKey(Key key);
 }

@@ -48,7 +48,7 @@ import org.gepron1x.clans.plugin.bootstrap.WarsCreation;
 import org.gepron1x.clans.plugin.cache.CachingClanRepositoryImpl;
 import org.gepron1x.clans.plugin.cache.ClanCache;
 import org.gepron1x.clans.plugin.cache.UserCaching;
-import org.gepron1x.clans.plugin.chat.CarbonChatHook;
+import org.gepron1x.clans.plugin.chat.carbon.CarbonChatHook;
 import org.gepron1x.clans.plugin.command.ClanCommand;
 import org.gepron1x.clans.plugin.command.HomeCommand;
 import org.gepron1x.clans.plugin.command.InviteCommand;

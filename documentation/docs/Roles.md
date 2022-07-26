@@ -18,18 +18,18 @@ For example, member having role with lower weight wouldnt be able to kick member
 You can setup permissions for every role. For example, default members wouldnt be able to invite members or create homes.
 There's a simple table of all available clan permissions:
 
-| Name  | Value |
-| ------------- | ------------- |
-| invite  | Invite members  |
-| kick | Kick members  |
-| set_role | Set members role  |
-| add_home | Create homes  |
-| remove_home | Remove homes  |
+| Name              | Value                            |
+|-------------------|----------------------------------|
+| invite            | Invite members                   |
+| kick              | Kick members                     |
+| set_role          | Set members role                 |
+| add_home          | Create homes                     |
+| remove_home       | Remove homes                     |
 | edit_others_homes | Edit/Delete other members homes  |
-| set_display_name | Rename the clan  |
-| disband | Disband the clan  |
-| send_war_request | Send war requests to other clans  |
-| accept_war | Accept war requests |
+| set_display_name  | Rename the clan                  |
+| disband           | Disband the clan                 |
+| send_war_request  | Send war requests to other clans |
+| accept_war        | Accept war requests              |
 
 You can add as many roles as you want, but keep in mind that **Owner should always have the highest weight and Default the smallest one.**
 

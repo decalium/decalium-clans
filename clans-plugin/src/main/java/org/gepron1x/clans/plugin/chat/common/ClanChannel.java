@@ -18,7 +18,9 @@
  */
 package org.gepron1x.clans.plugin.chat.common;
 
+import com.google.common.base.MoreObjects;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -31,9 +33,13 @@ import org.gepron1x.clans.plugin.chat.resolvers.PapiTagResolver;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public final class ClanChannel implements Channel {
+
+    private static final Key KEY = Key.key("decaliumclans:chat");
     private final CachingClanRepository repository;
     private final Server server;
     private final ClansConfig config;
@@ -73,4 +79,38 @@ public final class ClanChannel implements Channel {
                 .map(Set::copyOf).orElse(Collections.emptySet());
     }
 
+    @Override
+    public Set<Player> filter(Player sender, Set<Player> receivers) {
+        return this.repository.userClanIfCached(sender).map(clan -> {
+            Set<Player> filtered = new HashSet<>(receivers);
+            filtered.removeIf(p -> clan.member(p).isEmpty());
+            return filtered;
+        }).map(Set::copyOf).orElse(Collections.emptySet());
+    }
+
+    @Override
+    public Key key() {
+        return KEY;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClanChannel that = (ClanChannel) o;
+        return repository.equals(that.repository) && server.equals(that.server) && config.equals(that.config);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(repository, server, config);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("repository", repository)
+                .add("server", server)
+                .toString();
+    }
 }

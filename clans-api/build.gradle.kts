@@ -24,6 +24,7 @@ dependencies {
 tasks {
 
 
+
     compileJava {
         options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
         // Set the release flag. This configures what version bytecode the compiler will emit, as well as what JDK APIs are usable.

@@ -16,30 +16,28 @@
  * along with decalium-clans-rewrite. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package org.gepron1x.clans.plugin.chat.common;
+package org.gepron1x.clans.plugin.bootstrap;
 
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
-import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.gepron1x.clans.api.repository.CachingClanRepository;
+import org.gepron1x.clans.plugin.config.Configs;
 
-import java.util.Set;
+public final class ChatCreation {
 
-public interface Channel {
-    Component render(Player sender, Audience recipient, Component message, Component originalMessage);
+    private final Plugin plugin;
+    private final Configs configs;
+    private final CachingClanRepository repository;
 
-    String prefix();
+    public ChatCreation(Plugin plugin, Configs configs, CachingClanRepository repository) {
 
-    boolean usePermitted(Player player);
+        this.plugin = plugin;
+        this.configs = configs;
+        this.repository = repository;
+    }
 
-    Set<? extends Audience> recipients(Player player);
-
-    Set<Player> filter(Player sender, Set<Player> receivers);
-
-
-
-    Key key();
-
-
-
+    public void create() {
+        if(plugin.getServer().getPluginManager().isPluginEnabled("CarbonChat")) {
+            // new CarbonChatHook(plugin.getServer(), configs.config(), configs.messages());
+        }
+    }
 }

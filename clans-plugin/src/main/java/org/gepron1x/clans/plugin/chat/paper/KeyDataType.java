@@ -16,30 +16,33 @@
  * along with decalium-clans-rewrite. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package org.gepron1x.clans.plugin.chat.common;
+package org.gepron1x.clans.plugin.chat.paper;
 
-import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
-import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataAdapterContext;
+import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Set;
+public final class KeyDataType implements PersistentDataType<String, Key> {
 
-public interface Channel {
-    Component render(Player sender, Audience recipient, Component message, Component originalMessage);
+    public static final KeyDataType KEY = new KeyDataType();
+    @Override
+    public @NotNull Class<String> getPrimitiveType() {
+        return String.class;
+    }
 
-    String prefix();
+    @Override
+    public @NotNull Class<Key> getComplexType() {
+        return Key.class;
+    }
 
-    boolean usePermitted(Player player);
+    @Override
+    public @NotNull String toPrimitive(@NotNull Key key, @NotNull PersistentDataAdapterContext persistentDataAdapterContext) {
+        return key.asString();
+    }
 
-    Set<? extends Audience> recipients(Player player);
-
-    Set<Player> filter(Player sender, Set<Player> receivers);
-
-
-
-    Key key();
-
-
-
+    @Override
+    public @NotNull Key fromPrimitive(@NotNull String s, @NotNull PersistentDataAdapterContext persistentDataAdapterContext) {
+        return Key.key(s);
+    }
 }
