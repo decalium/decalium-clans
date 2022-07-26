@@ -32,7 +32,7 @@ There's a simple table of all available clan permissions:
 | accept_war        | Accept war requests              |
 
 You can add as many roles as you want, but keep in mind that **Owner should always have the highest weight and Default the smallest one.**
-
+To give all permissions to the role, simply use '*' like in example.
 Use config.yml to setup roles.
 That's how it looks like:
 
@@ -42,16 +42,7 @@ That's how it looks like:
             display_name: '<red>Owner'
             weight: 10
             permissions:
-            - 'set_role'
-            - 'accept_war'
-            - 'promote_owner'
-            - 'disband'
-            - 'kick'
-            - 'remove_home'
-            - 'send_war_request'
-            - 'add_home'
-            - 'invite'
-            - 'set_display_name'
+            - '*'
 
         default-role:
             name: 'default'
