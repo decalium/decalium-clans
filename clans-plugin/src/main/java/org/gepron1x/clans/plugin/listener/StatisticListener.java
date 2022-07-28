@@ -30,6 +30,8 @@ import org.bukkit.plugin.Plugin;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.statistic.StatisticType;
+import org.gepron1x.clans.plugin.config.ClansConfig;
+import org.gepron1x.clans.plugin.util.TicksOfDuration;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.util.Map;
@@ -41,12 +43,14 @@ public final class StatisticListener implements Listener {
     private final CachingClanRepository repository;
     private final Plugin plugin;
     private final FactoryOfTheFuture futuresFactory;
+    private final ClansConfig config;
     private final Table<String, StatisticType, Integer> statisticsTable = HashBasedTable.create();
 
-    public StatisticListener(CachingClanRepository repository, Plugin plugin, FactoryOfTheFuture futuresFactory) {
+    public StatisticListener(CachingClanRepository repository, Plugin plugin, FactoryOfTheFuture futuresFactory, ClansConfig config) {
         this.repository = repository;
         this.plugin = plugin;
         this.futuresFactory = futuresFactory;
+        this.config = config;
     }
 
 
@@ -74,8 +78,10 @@ public final class StatisticListener implements Listener {
 
 
     public void start() {
-        long ticks = 20 * 60;
+        long ticks = new TicksOfDuration(config.statisticUpdatePeriod()).getAsLong();
         plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
+            if(statisticsTable.isEmpty()) return;
+            plugin.getSLF4JLogger().info("Started updating statistics.");
             Map<String, Map<StatisticType, Integer>> map = statisticsTable.rowMap();
             futuresFactory.allOf(map.entrySet().stream().map(entry -> {
                 Map<StatisticType, Integer> copy = Map.copyOf(entry.getValue());
@@ -89,6 +95,10 @@ public final class StatisticListener implements Listener {
 
             }).collect(Collectors.toList())).thenAcceptSync(ignored -> {
                 statisticsTable.clear();
+                plugin.getSLF4JLogger().info("Statistic updated sucessfully.");
+            }).exceptionally(t -> {
+                plugin.getSLF4JLogger().error("Exception caught during statistic update.", t);
+                return null;
             });
         }, ticks, ticks);
     }

@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 public final class SavableStatistics implements Savable {
-    private static final String INSERT_STATISTIC = "INSERT INTO statistics (`clan_id`, `type`, `value`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `value`=`value` + VALUES(`value`)";
+    private static final String INSERT_STATISTIC = "INSERT INTO `statistics` (`clan_id`, `type`, `value`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `value`=`value` + VALUES(`value`)";
     private final int clanId;
     private final Map<StatisticType, Integer> statistics;
 

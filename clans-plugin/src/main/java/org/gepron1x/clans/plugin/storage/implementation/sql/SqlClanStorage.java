@@ -112,9 +112,10 @@ public final class SqlClanStorage implements ClanStorage {
     @Language("SQL")
     private static final String CREATE_STATISTICS_TABLE = """
     CREATE TABLE IF NOT EXISTS `statistics` (
-    `clan_id` INTEGER NOT NULL UNIQUE,
-    `type` VARCHAR(16) NOT NULL UNIQUE,
+    `clan_id` INTEGER NOT NULL,
+    `type` VARCHAR(16) NOT NULL,
     `value` INTEGER NOT NULL,
+    UNIQUE(`clan_id`, `type`),
     FOREIGN KEY(`clan_id`) REFERENCES `clans` (`id`) ON DELETE CASCADE
     )
     """;

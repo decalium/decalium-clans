@@ -60,10 +60,7 @@ import org.gepron1x.clans.plugin.command.war.ClanWarCommand;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.Configuration;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
-import org.gepron1x.clans.plugin.config.serializer.AdventureComponentSerializer;
-import org.gepron1x.clans.plugin.config.serializer.ClanPermissionSerializer;
-import org.gepron1x.clans.plugin.config.serializer.ClanRoleSerializer;
-import org.gepron1x.clans.plugin.config.serializer.MessageSerializer;
+import org.gepron1x.clans.plugin.config.serializer.*;
 import org.gepron1x.clans.plugin.listener.CacheListener;
 import org.gepron1x.clans.plugin.listener.StatisticListener;
 import org.gepron1x.clans.plugin.papi.PlaceholderAPIHook;
@@ -131,6 +128,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         MiniMessage miniMessage = MiniMessage.builder().tags(resolver).build();
 
         ConfigurationOptions options = new ConfigurationOptions.Builder()
+                .addSerialiser(new DurationSerializer())
                 .addSerialiser(new MessageSerializer(miniMessage))
                 .addSerialiser(new AdventureComponentSerializer(miniMessage))
                 .addSerialiser(new ClanRoleSerializer(builderFactory))
@@ -237,7 +235,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
                 })
         );
 
-        StatisticListener statisticListener = new StatisticListener(clanRepository, this, futuresFactory);
+        StatisticListener statisticListener = new StatisticListener(clanRepository, this, futuresFactory, config);
         getServer().getPluginManager().registerEvents(statisticListener, this);
         statisticListener.start();
 

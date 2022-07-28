@@ -57,7 +57,7 @@ public final class ClanRoleSerializer implements ValueSerialiser<ClanRole> {
         if(s.size() == 1 && s.get(0).equals("*")) {
             permissions = ClanPermission.all();
         } else {
-            permissions = flexibleType.getSet(flexType -> flexType.getObject(ClanPermission.class));
+            permissions = map.get(PERMISSIONS).getSet(flexType -> flexType.getObject(ClanPermission.class));
         }
         return builder.name(map.get(NAME).getString())
                 .displayName(map.get(DISPLAY_NAME).getObject(Component.class))

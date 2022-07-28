@@ -28,11 +28,16 @@ import org.gepron1x.clans.plugin.util.message.Message;
 import space.arim.dazzleconf.annote.ConfKey;
 import space.arim.dazzleconf.annote.SubSection;
 
+import java.time.Duration;
 import java.util.List;
 
 import static space.arim.dazzleconf.annote.ConfDefault.*;
 
 public interface ClansConfig {
+
+    @DefaultString("2m")
+    @ConfKey("statistic-update-period")
+    Duration statisticUpdatePeriod();
 
 
     @DefaultString("<gray>Not in clan")
