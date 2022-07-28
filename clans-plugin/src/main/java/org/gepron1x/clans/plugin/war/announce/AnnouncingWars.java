@@ -44,8 +44,8 @@ public final class AnnouncingWars implements Wars {
         Clan firstClan = first.clan().orElseThrow();
         Clan secondClan = second.clan().orElseThrow();
         Title title = Title.title(this.messages.war().preparationTitle()
-                .with(ClanTagResolver.prefixed(firstClan, "first"))
-                .with(ClanTagResolver.prefixed(secondClan, "second")).asComponent(), Component.empty());
+                .with("first", ClanTagResolver.clan(firstClan))
+                .with("second", ClanTagResolver.clan(secondClan)).asComponent(), Component.empty());
 
         Audience warAudience = new WarAudience(war);
         warAudience.showTitle(title);

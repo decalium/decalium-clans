@@ -18,6 +18,7 @@
  */
 package org.gepron1x.clans.plugin.listener;
 
+import org.bukkit.Statistic;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -33,19 +34,23 @@ public final class CrystalExplosionListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onCrystalExplode(EntityDamageByEntityEvent event) {
         Entity entity = event.getEntity();
-        if(entity.getType() != EntityType.ENDER_CRYSTAL) return;
-        if(!(event.getDamager() instanceof Player damager)) return;
+        if (entity.getType() != EntityType.ENDER_CRYSTAL) return;
+        if (!(event.getDamager() instanceof Player damager)) return;
         new OwnedEntity(entity).owner(damager.getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDamage(EntityDamageByEntityEvent event) {
         Entity damager = event.getDamager();
-        if(damager.getType() != EntityType.ENDER_CRYSTAL) return;
-        if(!(event.getEntity() instanceof LivingEntity entity)) return;
+        if (damager.getType() != EntityType.ENDER_CRYSTAL) return;
+        if (!(event.getEntity() instanceof LivingEntity entity)) return;
+        new OwnedEntity(damager).owner().map(damager.getServer()::getPlayer).ifPresent(player -> {
+            player.incrementStatistic(Statistic.DAMAGE_DEALT, (int) event.getFinalDamage());
+            if (entity.getHealth() - event.getFinalDamage() <= 0.0) {
+                entity.setKiller(player);
+            }
 
-        if(entity.getHealth() - event.getFinalDamage() <= 0.0 && !entity.equals(damager)) {
-            new OwnedEntity(damager).owner().map(damager.getServer()::getPlayer).ifPresent(entity::setKiller);
-        }
+        });
+
     }
 }

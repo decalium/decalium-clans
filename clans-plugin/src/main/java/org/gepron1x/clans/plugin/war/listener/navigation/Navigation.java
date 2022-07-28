@@ -57,12 +57,12 @@ public final class Navigation implements Runnable {
 
     @Nullable
     private Player closestPlayer(final Player player, final Team team) {
+        Location second = player.getLocation();
         Player currentPlayer = null;
         double minDistance = 0;
         for(PlayerReference reference : team.alive()) {
             Player p = reference.orElseThrow();
             Location first = p.getLocation();
-            Location second = player.getLocation();
             if(!Objects.equals(first.getWorld(), second.getWorld())) continue;
             double distance = first.distanceSquared(second);
             if(currentPlayer == null || distance < minDistance) {

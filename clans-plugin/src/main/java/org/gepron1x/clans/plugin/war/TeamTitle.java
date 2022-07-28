@@ -18,12 +18,15 @@
  */
 package org.gepron1x.clans.plugin.war;
 
+import com.google.common.base.MoreObjects;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import org.gepron1x.clans.api.chat.ClanTagResolver;
 import org.gepron1x.clans.api.war.Team;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 public final class TeamTitle implements ComponentLike {
 
@@ -39,5 +42,25 @@ public final class TeamTitle implements ComponentLike {
     public @NotNull Component asComponent() {
         return messages.war().bossBarFormat().with(ClanTagResolver.clan(team.clan().orElseThrow()))
                 .with("alive", team.alive().size()).with("members", team.members().size()).asComponent();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TeamTitle teamTitle = (TeamTitle) o;
+        return team.equals(teamTitle.team) && messages.equals(teamTitle.messages);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(team, messages);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("team", team)
+                .toString();
     }
 }

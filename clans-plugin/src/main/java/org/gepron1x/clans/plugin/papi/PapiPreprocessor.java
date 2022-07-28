@@ -16,28 +16,28 @@
  * along with decalium-clans-rewrite. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package org.gepron1x.clans.plugin.bootstrap;
+package org.gepron1x.clans.plugin.papi;
 
-import org.bukkit.plugin.Plugin;
-import org.gepron1x.clans.api.repository.CachingClanRepository;
-import org.gepron1x.clans.plugin.config.Configs;
+import me.clip.placeholderapi.PlaceholderAPI;
 
-public final class ChatCreation {
+import java.util.function.UnaryOperator;
+import java.util.regex.Matcher;
 
-    private final Plugin plugin;
-    private final Configs configs;
-    private final CachingClanRepository repository;
-
-    public ChatCreation(Plugin plugin, Configs configs, CachingClanRepository repository) {
-
-        this.plugin = plugin;
-        this.configs = configs;
-        this.repository = repository;
+public final class PapiPreprocessor implements UnaryOperator<String> {
+    @Override
+    public String apply(String s) {
+        Matcher matcher = PlaceholderAPI.getPlaceholderPattern().matcher(s);
+        StringBuilder builder = new StringBuilder();
+        while(matcher.find()) {
+            String match = matcher.group();
+            matcher.appendReplacement(builder, placeholder(match));
+        }
+        matcher.appendTail(builder);
+        return builder.toString();
     }
 
-    public void create() {
-        if(plugin.getServer().getPluginManager().isPluginEnabled("CarbonChat")) {
-            // cnew CarbonChatHook(plugin.getServer(), configs.config(), configs.messages());
-        }
+
+    private String placeholder(String placeholder) {
+        return "<papi:'" + placeholder.substring(1, placeholder.length() - 1) + "'>";
     }
 }
