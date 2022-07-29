@@ -46,7 +46,10 @@ import org.jdbi.v3.core.statement.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -174,16 +177,7 @@ public final class SqlClanStorage implements ClanStorage {
 
     @Override
     public void initialize() {
-        jdbi.useTransaction(handle -> {
-            List.of(CREATE_CLANS_TABLE,
-                    CREATE_MEMBERS_TABLE,
-                    CREATE_HOMES_TABLE,
-                    CREATE_LOCATIONS_TABLE,
-                    CREATE_STATISTICS_TABLE).forEach(s -> handle.createUpdate(s).execute());
-
-            List.of(CREATE_SIMPLE_CLANS_VIEW).forEach(s -> handle.createUpdate(s).execute());
-        });
-
+        plugin.getSLF4JLogger().info("boop");
     }
 
     @Override

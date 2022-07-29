@@ -7,6 +7,11 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
+val shadowJar: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar by tasks
+shadowJar.apply {
+    mergeServiceFiles()
+}
+
 group = "org.gepron1x"
 version = "0.1"
 
@@ -30,6 +35,8 @@ dependencies {
     implementation("org.jdbi:jdbi3-core:3.30.0") {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
+    implementation("org.flywaydb:flyway-core:9.0.4")
+    implementation("org.flywaydb:flyway-mysql:9.0.4")
     implementation("cloud.commandframework:cloud-paper:1.7.0-SNAPSHOT") {
         exclude("org.checkerframework", "checker-qual")
     }
@@ -57,9 +64,11 @@ fun com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar.relocateDependenc
     relocate(pkg, "$libraryPackage.$pkg")
 }
 
+
 tasks {
     shadowJar {
         relocateDependency("org.antlr")
+        relocateDependency("org.flywaydb")
         relocateDependency("org.apiguardian")
         relocateDependency("space.arim")
         relocateDependency("org.jdbi")
@@ -108,6 +117,7 @@ bukkit {
     apiVersion = "1.16"
     authors = listOf("gepron1x", "manya")
     website = "https://clans.decalium.ru"
+    libraries = listOf("org.flywaydb:flyway-core:9.0.1")
     softDepend = listOf("PlaceholderAPI", "CarbonChat", "WorldGuard")
 }
 

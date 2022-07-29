@@ -75,7 +75,7 @@ public final class ClanRoleSerializer implements ValueSerialiser<ClanRole> {
         map.put(WEIGHT, value.weight());
 
         Object permissions;
-        if(ClanPermission.all().containsAll(value.permissions())) {
+        if(value.permissions().containsAll(ClanPermission.all())) {
             permissions = List.of("*");
         } else {
             permissions = decomposer.decomposeCollection(ClanPermission.class, value.permissions());

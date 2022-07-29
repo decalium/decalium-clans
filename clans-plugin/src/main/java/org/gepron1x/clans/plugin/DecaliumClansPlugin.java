@@ -244,7 +244,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
     }
 
     private void disable() {
-        this.storage.shutdown();
+        if(this.storage != null) this.storage.shutdown();
         HandlerList.unregisterAll(this);
         this.getServer().getScheduler().cancelTasks(this);
         getServer().getServicesManager().unregisterAll(this);
