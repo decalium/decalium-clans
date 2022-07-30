@@ -38,7 +38,7 @@ import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class MemberCommand extends AbstractClanCommand {
@@ -163,7 +163,8 @@ public class MemberCommand extends AbstractClanCommand {
                 .map(members ->
                         members.stream()
                                 .map(m -> m.asPlayer(server))
-                                .filter(Objects::nonNull)
+                                .filter(Optional::isPresent)
+                                .map(Optional::get)
                                 .map(Player::getName)
                                 .collect(Collectors.toList())
                 ).orElse(Collections.emptyList());
