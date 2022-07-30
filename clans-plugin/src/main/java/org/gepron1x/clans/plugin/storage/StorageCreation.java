@@ -21,10 +21,8 @@ package org.gepron1x.clans.plugin.storage;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.plugin.Plugin;
-import org.flywaydb.core.Flyway;
 import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.RoleRegistry;
-import org.gepron1x.clans.plugin.DecaliumClansPlugin;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.storage.implementation.sql.SqlClanStorage;
 import org.gepron1x.clans.plugin.storage.implementation.sql.argument.Arguments;
@@ -60,14 +58,6 @@ public final class StorageCreation {
         setupConnection(config);
         setupPooling(config);
         HikariDataSource ds = new HikariDataSource(config);
-        Flyway flyway = Flyway.configure(DecaliumClansPlugin.class.getClassLoader())
-                .dataSource(ds)
-                .baselineVersion("0")
-                .locations("classpath:db/migration")
-                .baselineOnMigrate(true)
-                .validateOnMigrate(true)
-                .load();
-        flyway.migrate();
         Jdbi jdbi = Jdbi.create(ds);
         registerColumnMappers(jdbi);
         registerArguments(jdbi);

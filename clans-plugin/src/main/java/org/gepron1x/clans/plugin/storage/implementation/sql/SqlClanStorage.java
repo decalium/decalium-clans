@@ -21,6 +21,7 @@ package org.gepron1x.clans.plugin.storage.implementation.sql;
 import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
+import org.flywaydb.core.Flyway;
 import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.RoleRegistry;
 import org.gepron1x.clans.api.clan.DraftClan;
@@ -177,7 +178,12 @@ public final class SqlClanStorage implements ClanStorage {
 
     @Override
     public void initialize() {
-        plugin.getSLF4JLogger().info("boop");
+        Flyway flyway = Flyway.configure(plugin.getClass().getClassLoader())
+                .dataSource(dataSource).baselineVersion("0")
+                .locations("classpath:db/migration")
+                .baselineOnMigrate(true)
+                .validateOnMigrate(true).load();
+        flyway.migrate();
     }
 
     @Override

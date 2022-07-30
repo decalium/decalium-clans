@@ -19,17 +19,16 @@
 package org.gepron1x.clans.api.event;
 
 import org.bukkit.event.Event;
-import org.gepron1x.clans.api.clan.Clan;
+import org.gepron1x.clans.api.clan.DraftClan;
 
 public abstract class ClanEvent extends Event {
-    protected final Clan clan;
+    protected final DraftClan clan;
 
-    public ClanEvent(Clan clan) {
-
+    public ClanEvent(DraftClan clan) {
         this.clan = clan;
     }
 
-    public Clan clan() {
+    public DraftClan clan() {
         return clan;
     }
 }
