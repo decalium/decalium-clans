@@ -26,6 +26,7 @@ import org.gepron1x.clans.plugin.clan.member.ClanRoleImpl;
 import org.gepron1x.clans.plugin.storage.StorageType;
 import org.gepron1x.clans.plugin.util.message.Message;
 import space.arim.dazzleconf.annote.ConfComments;
+import space.arim.dazzleconf.annote.ConfHeader;
 import space.arim.dazzleconf.annote.ConfKey;
 import space.arim.dazzleconf.annote.SubSection;
 
@@ -33,7 +34,7 @@ import java.time.Duration;
 import java.util.List;
 
 import static space.arim.dazzleconf.annote.ConfDefault.*;
-
+@ConfHeader({"Welcome to the decalium clans config.", "Use /clan reload to reload the configuration."})
 public interface ClansConfig {
 
     @DefaultString("2m")
