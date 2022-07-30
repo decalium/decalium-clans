@@ -27,9 +27,11 @@ import cloud.commandframework.permission.Permission;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.Validations;
 import org.gepron1x.clans.api.clan.Clan;
@@ -125,8 +127,8 @@ public class HomeCommand extends AbstractClanCommand {
         Component displayName = context.<Component>getOptional("display_name").orElseGet(() -> Component.text(name, NamedTextColor.GRAY));
         ItemStack icon = player.getInventory().getItemInMainHand();
         if(icon.getType().isAir()) {
-            player.sendMessage(this.messages.commands().home().holdAnItem());
-            return;
+            icon = new ItemStack(Material.PLAYER_HEAD);
+            icon.editMeta(SkullMeta.class, meta -> meta.setPlayerProfile(player.getPlayerProfile()));
         }
         Location location = player.getLocation();
 
@@ -165,7 +167,7 @@ public class HomeCommand extends AbstractClanCommand {
         Player player = (Player) context.getSender();
         ClanHome home = context.get("home");
         player.teleportAsync(home.location()).thenAccept(bool -> {
-            if(bool) player.sendMessage(this.messages.commands().home().teleported().with("name", home.displayName()));
+            if(bool) player.sendMessage(this.messages.commands().home().teleported().with("home", home.displayName()));
         }).exceptionally(this::exceptionHandler);
     }
 
