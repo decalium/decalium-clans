@@ -39,7 +39,7 @@ public abstract class AbstractClanCommand {
     public static final CloudKey<Void> CLAN_REQUIRED = SimpleCloudKey.of("clan_required");
 
 
-    private final Logger logger;
+    protected final Logger logger;
     protected final CachingClanRepository clanRepository;
     protected final ClansConfig clansConfig;
     protected final MessagesConfig messages;

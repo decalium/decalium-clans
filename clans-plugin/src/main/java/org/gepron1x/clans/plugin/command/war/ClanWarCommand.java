@@ -44,6 +44,7 @@ import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.war.Wars;
 import org.gepron1x.clans.plugin.command.AbstractClanCommand;
 import org.gepron1x.clans.plugin.command.ClanExecutionHandler;
+import org.gepron1x.clans.plugin.command.parser.ClanOfSender;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.slf4j.Logger;
@@ -115,6 +116,10 @@ public final class ClanWarCommand extends AbstractClanCommand {
             player.sendMessage(this.messages.noOnlinePlayers());
             return;
         }
+        if(enacted.equals(victim)) {
+            player.sendMessage(this.messages.cannotDoActionOnYourSelf());
+            return;
+        }
 
         victim.cached().map(Clan::members).ifPresent(members -> {
             TagResolver resolver = ClanTagResolver.prefixed(clan);
@@ -179,11 +184,12 @@ public final class ClanWarCommand extends AbstractClanCommand {
     }
 
     private List<String> requestsCompletion(CommandContext<CommandSender> context, String s) {
-        if(!(context.getSender() instanceof Player player)) return Collections.emptyList();
-        return this.clanRepository.userClanIfCached(player.getUniqueId())
+        return new ClanOfSender(this.clanRepository, context.getSender()).clan()
                 .map(Clan::tag)
-                .map(requestMap::column)
+                .map(requestMap::row)
                 .map(Map::keySet).map(List::copyOf)
                 .orElseGet(Collections::emptyList);
     }
+
+
 }

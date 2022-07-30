@@ -18,11 +18,13 @@
  */
 package org.gepron1x.clans.api.reference;
 
+import com.google.common.base.MoreObjects;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.jetbrains.annotations.NotNull;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -47,4 +49,24 @@ public final class UuidClanReference implements ClanReference {
         return this.repository.userClanIfCached(uniqueId);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UuidClanReference that = (UuidClanReference) o;
+        return repository.equals(that.repository) && uniqueId.equals(that.uniqueId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(repository, uniqueId);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("repository", repository)
+                .add("uniqueId", uniqueId)
+                .toString();
+    }
 }

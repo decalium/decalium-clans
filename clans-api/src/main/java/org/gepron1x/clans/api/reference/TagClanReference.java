@@ -18,11 +18,13 @@
  */
 package org.gepron1x.clans.api.reference;
 
+import com.google.common.base.MoreObjects;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.jetbrains.annotations.NotNull;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public final class TagClanReference implements ClanReference {
@@ -44,4 +46,24 @@ public final class TagClanReference implements ClanReference {
         return this.repository.clanIfCached(tag);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TagClanReference that = (TagClanReference) o;
+        return repository.equals(that.repository) && tag.equals(that.tag);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(repository, tag);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("repository", repository)
+                .add("tag", tag)
+                .toString();
+    }
 }
