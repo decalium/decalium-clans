@@ -52,8 +52,8 @@ public final class DefaultWars implements Wars {
 
     @Override
     public War create(Team first, Team second) {
-        Preconditions.checkState(first.clan().cached().isPresent() || second.clan().cached().isPresent(), "no online players in some of clan!");
-        Preconditions.checkState(first.clan().equals(second.clan()), "Cannot start a war against itself");
+        Preconditions.checkState(first.clan().cached().isPresent() && second.clan().cached().isPresent(), "no online players in some of clan!");
+        Preconditions.checkState(!first.clan().equals(second.clan()), "Cannot start a war against itself");
         return new DefaultWar(
                 List.of(first, second)
         );
