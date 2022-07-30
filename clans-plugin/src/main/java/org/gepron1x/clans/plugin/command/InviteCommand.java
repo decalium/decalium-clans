@@ -42,11 +42,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.*;
 
 import static net.kyori.adventure.text.Component.text;
 
@@ -180,17 +176,12 @@ public class InviteCommand extends AbstractClanCommand {
     }
 
     private List<String> invitationCompletion(CommandContext<CommandSender> ctx, String s) {
-        if(!(ctx.getSender() instanceof Player player)) return Collections.emptyList();
-        UUID uuid = player.getUniqueId();
-        return this.clanRepository.userClanIfCached(uuid).map(Clan::members)
-                .map(members ->
-                        members.stream()
-                                .map(m -> m.asPlayer(player.getServer()))
-                                .filter(Objects::nonNull)
-                                .map(Player::getName)
-                                .collect(Collectors.toList())
-                )
-                .orElse(Collections.emptyList());
+        return Optional.of(ctx.getSender())
+                .filter(Player.class::isInstance)
+                .map(Player.class::cast)
+                .map(Player::getUniqueId)
+                .map(invitations::row).map(Map::keySet)
+                .map(List::copyOf).orElse(Collections.emptyList());
 
     }
 
