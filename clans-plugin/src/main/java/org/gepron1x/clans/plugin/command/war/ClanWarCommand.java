@@ -116,7 +116,7 @@ public final class ClanWarCommand extends AbstractClanCommand {
             player.sendMessage(this.messages.noOnlinePlayers());
             return;
         }
-        if(victim.cached().map(Clan::tag).map(tag::equals).orElse(false)) {
+        if(!victim.cached().map(Clan::tag).map(tag::equals).orElse(true)) {
             player.sendMessage(this.messages.cannotDoActionOnYourSelf());
             return;
         }
