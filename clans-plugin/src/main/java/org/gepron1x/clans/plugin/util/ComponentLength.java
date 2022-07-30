@@ -18,10 +18,14 @@
  */
 package org.gepron1x.clans.plugin.util;
 
+import com.google.common.base.MoreObjects;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
-public final class ComponentLength {
+import java.util.Objects;
+import java.util.function.IntSupplier;
+
+public final class ComponentLength implements IntSupplier {
 
     private final Component component;
 
@@ -30,7 +34,29 @@ public final class ComponentLength {
         this.component = component;
     }
 
-    public int asInt() {
+
+    @Override
+    public int getAsInt() {
         return PlainTextComponentSerializer.plainText().serialize(component).length();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ComponentLength that = (ComponentLength) o;
+        return Objects.equals(component, that.component);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(component);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("component", component)
+                .toString();
     }
 }

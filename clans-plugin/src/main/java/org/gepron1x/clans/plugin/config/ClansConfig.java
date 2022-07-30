@@ -25,6 +25,7 @@ import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.plugin.clan.member.ClanRoleImpl;
 import org.gepron1x.clans.plugin.storage.StorageType;
 import org.gepron1x.clans.plugin.util.message.Message;
+import space.arim.dazzleconf.annote.ConfComments;
 import space.arim.dazzleconf.annote.ConfKey;
 import space.arim.dazzleconf.annote.SubSection;
 
@@ -37,25 +38,30 @@ public interface ClansConfig {
 
     @DefaultString("2m")
     @ConfKey("statistic-update-period")
+    @ConfComments("How often should we update statistics? Format is 2d3h31m1s.")
     Duration statisticUpdatePeriod();
 
 
     @DefaultString("<gray>Not in clan")
     @ConfKey("not-clan-placeholder")
+    @ConfComments("What should we display instead of placeholders, if player is not in the clan?")
     Component noClanPlaceholder();
 
 
     @ConfKey("roles")
     @SubSection
+    @ConfComments({"Roles.", "Every role has name, display name, weight, and list of permissions.", "If you wish to give all permissions to the role, use *."})
     Roles roles();
     interface Roles {
 
         @ConfKey("default-role")
         @DefaultObject("defaultRoleDefault")
+        @ConfComments("Default member role. Will be given to all joined members.")
         ClanRole defaultRole();
 
         @ConfKey("owner-role")
         @DefaultObject("ownerRoleDefault")
+        @ConfComments("Owner member role. Given to owner, usually should have highest weight and all permissions.")
         ClanRole ownerRole();
 
         @ConfKey("other-roles")
@@ -86,7 +92,7 @@ public interface ClansConfig {
                             .name("moderator")
                             .displayName(Component.text("Модератор", NamedTextColor.AQUA))
                             .permissions(ClanPermission.INVITE, ClanPermission.KICK,
-                                    ClanPermission.ADD_HOME, ClanPermission.SET_ROLE)
+                                    ClanPermission.ADD_HOME, ClanPermission.REMOVE_HOME, ClanPermission.SET_ROLE, ClanPermission.ACCEPT_WAR)
                             .weight(8)
                             .build()
             );
@@ -101,18 +107,22 @@ public interface ClansConfig {
 
         @ConfKey("max-homes-per-clan")
         @DefaultInteger(10)
+        @ConfComments("Clan home limit.")
         int maxHomes();
 
         @ConfKey("max-home-display-name")
-        @DefaultInteger(10)
+        @DefaultInteger(20)
+        @ConfComments("Maximum display name size.")
         int maxHomeDisplayNameSize();
 
         @ConfKey("home-region-radius")
         @DefaultDouble(30.0)
+        @ConfComments("Default protection radius of clan homes.")
         double homeRegionRadius();
 
         @ConfKey("hologram-format")
-        @DefaultString("База <home_name>")
+        @DefaultString("Home <home_name>")
+        @ConfComments("Hologram format.")
         Message hologramFormat();
 
 
@@ -120,19 +130,22 @@ public interface ClansConfig {
 
     @SubSection
     @ConfKey("storage")
+    @ConfComments("Storage options. At the moment only H2 and MYSQL are supported.")
     Storage storage();
 
     interface Storage {
-
         @ConfKey("type")
         @DefaultString("H2")
+        @ConfComments("Type of the database. H2 or MYSQL")
         StorageType type();
 
 
         @ConfKey("auth-details")
+        @ConfComments("Auth Details. Used only with MySQL storage type.")
         @SubSection AuthDetails authDetails();
 
         @ConfKey("hikari-pool")
+        @ConfComments("Hikari Connection pool settings. Don't touch that if you don't know what are you doing.")
         @SubSection HikariPoolSettings hikariPool();
 
 
@@ -187,25 +200,28 @@ public interface ClansConfig {
 
 
     }
-
+    @ConfComments("Chat settings.")
     @SubSection Chat chat();
 
     interface Chat {
         @ConfKey("format")
+        @ConfComments({"The chat format. Available placeholders:", "<role> - Member's role.", "<member> Member's name.", "<message> - chat message."})
         @DefaultString("<role> <member> <white>➟ <#cbd4d2><message>")
         Message format();
 
         @ConfKey("prefix")
         @DefaultString("~")
+        @ConfComments("The chat prefix. If message starts with that, it will be sent to the clan chat channel.")
         String prefix();
 
     }
-
+    @ConfComments("Clan wars options.")
     @SubSection Wars wars();
     interface Wars {
 
         @ConfKey("disable-team-damage")
         @DefaultBoolean(true)
+        @ConfComments("Disables damage between team members.")
         boolean disableTeamDamage();
     }
 }
