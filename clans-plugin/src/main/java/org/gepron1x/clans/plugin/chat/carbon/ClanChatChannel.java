@@ -37,10 +37,7 @@ import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public final class ClanChatChannel implements ChatChannel {
@@ -79,7 +76,7 @@ public final class ClanChatChannel implements ChatChannel {
         if(clan == null) return Collections.emptyList();
         return clan.members().stream()
                 .map(m -> m.asPlayer(server))
-                .filter(Objects::nonNull)
+                .filter(Optional::isPresent).map(Optional::get)
                 .collect(Collectors.toList());
     }
 

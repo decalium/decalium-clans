@@ -41,8 +41,7 @@ public final class ClanOnlinePlayers implements Iterable<Player> {
     public Collection<Player> players() {
         Set<Player> players = new HashSet<>(clan.members().size());
         for(ClanMember member : clan.members()) {
-            Player player = member.asPlayer(this.server);
-            if(player != null) players.add(player);
+            member.asPlayer(server).ifPresent(players::add);
         }
         return Set.copyOf(players);
     }

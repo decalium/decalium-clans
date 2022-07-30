@@ -116,7 +116,7 @@ public final class ClanWarCommand extends AbstractClanCommand {
             player.sendMessage(this.messages.noOnlinePlayers());
             return;
         }
-        if(enacted.equals(victim)) {
+        if(victim.cached().map(Clan::tag).map(tag::equals).orElse(false)) {
             player.sendMessage(this.messages.cannotDoActionOnYourSelf());
             return;
         }
@@ -124,12 +124,12 @@ public final class ClanWarCommand extends AbstractClanCommand {
         victim.cached().map(Clan::members).ifPresent(members -> {
             TagResolver resolver = ClanTagResolver.prefixed(clan);
             for(ClanMember member : members) {
-                Player p = member.asPlayer(player.getServer());
-                if(p == null) continue;
-                p.sendMessage(this.messages.commands().wars().requestMessage().with(resolver));
-                if(member.hasPermission(ClanPermission.ACCEPT_WAR)) {
-                    p.sendMessage(this.messages.commands().wars().acceptMessage().with(resolver).withMiniMessage("tag", clan.tag()));
-                }
+                member.asPlayer(player.getServer()).ifPresent(p -> {
+                    p.sendMessage(this.messages.commands().wars().requestMessage().with(resolver));
+                    if(member.hasPermission(ClanPermission.ACCEPT_WAR)) {
+                        p.sendMessage(this.messages.commands().wars().acceptMessage().with(resolver).withMiniMessage("tag", clan.tag()));
+                    }
+                });
             }
         });
 

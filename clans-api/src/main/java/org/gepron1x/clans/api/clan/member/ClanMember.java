@@ -31,6 +31,7 @@ import org.gepron1x.clans.api.edition.member.MemberEdition;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ClanMember extends Buildable<ClanMember, ClanMember.Builder>, ComponentLike {
@@ -46,8 +47,8 @@ public interface ClanMember extends Buildable<ClanMember, ClanMember.Builder>, C
     @Contract("_ -> new")
     @NotNull ClanMember withRole(@NotNull ClanRole role);
 
-    default Player asPlayer(@NotNull Server server) {
-        return server.getPlayer(uniqueId());
+    default Optional<Player> asPlayer(@NotNull Server server) {
+        return Optional.ofNullable(server.getPlayer(uniqueId()));
     }
 
     @NotNull
@@ -68,6 +69,11 @@ public interface ClanMember extends Buildable<ClanMember, ClanMember.Builder>, C
     interface Builder extends Buildable.Builder<ClanMember>, EditionApplicable<ClanMember, MemberEdition> {
         @Contract("_ -> this")
         @NotNull Builder uuid(UUID uuid);
+
+        @Contract("_ -> this")
+        @NotNull default Builder player(OfflinePlayer player) {
+            return uuid(player.getUniqueId());
+        }
 
         @Contract("_ -> this")
         @NotNull Builder role(@NotNull ClanRole role);

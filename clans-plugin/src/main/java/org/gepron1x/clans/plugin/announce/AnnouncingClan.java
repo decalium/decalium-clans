@@ -79,7 +79,6 @@ public final class AnnouncingClan implements Clan, DelegatingClan {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("delegate", delegate)
-                .add("messages", messages)
                 .add("server", server)
                 .toString();
     }
