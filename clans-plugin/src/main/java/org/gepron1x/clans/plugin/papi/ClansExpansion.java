@@ -35,7 +35,11 @@ import java.util.Optional;
 
 public final class ClansExpansion extends PlaceholderExpansion {
 
-    private static final String TAG = "tag", DISPLAY_NAME = "display_name", OWNER = "owner", MEMBER_COUNT = "member_count", MEMBER_ROLE = "member_role";
+    private static final String TAG = "tag",
+            DISPLAY_NAME = "display_name",
+            OWNER = "owner", MEMBER_COUNT = "member_count",
+            MEMBERS_ONLINE_COUNT = "member_online_count",
+            MEMBER_ROLE = "member_role";
 
     private static final String STATISTIC = "statistic_";
 
@@ -56,6 +60,11 @@ public final class ClansExpansion extends PlaceholderExpansion {
     @Override
     public @NotNull String getIdentifier() {
         return "clans";
+    }
+
+    @Override
+    public boolean persist() {
+        return true;
     }
 
     @Override
@@ -84,7 +93,7 @@ public final class ClansExpansion extends PlaceholderExpansion {
             case DISPLAY_NAME -> legacy.serialize(clan.displayName());
             case OWNER -> legacy.serialize(clan.owner().renderName(server));
             case MEMBER_COUNT -> String.valueOf(clan.members().size());
-            case MEMBER_ROLE -> (member.map(ClanMember::role).map(ClanRole::displayName).map(this.legacy::serialize).orElse(""));
+            case MEMBER_ROLE -> member.map(ClanMember::role).map(ClanRole::displayName).map(this.legacy::serialize).orElse("");
             default -> null;
         };
     }
