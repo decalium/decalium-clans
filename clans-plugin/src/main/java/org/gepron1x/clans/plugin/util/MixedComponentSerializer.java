@@ -36,7 +36,7 @@ public final class MixedComponentSerializer implements ComponentSerializer<Compo
     }
     @Override
     public @NotNull Component deserialize(@NotNull String input) {
-        input = miniMessage.serialize(legacySerializer.deserialize(input));
+        input = miniMessage.serialize(legacySerializer.deserialize(input)).replace("\\<", "<");
         return miniMessage.deserialize(input);
     }
 
