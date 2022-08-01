@@ -20,11 +20,14 @@ package org.gepron1x.clans.plugin.config;
 
 import net.kyori.adventure.text.Component;
 import org.gepron1x.clans.plugin.util.message.Message;
+import space.arim.dazzleconf.annote.ConfHeader;
 import space.arim.dazzleconf.annote.ConfKey;
 import space.arim.dazzleconf.annote.SubSection;
 
 import static space.arim.dazzleconf.annote.ConfDefault.DefaultString;
-
+@ConfHeader({"Messages configuration. Placeholders are based on message context.",
+        "Plugin uses minimessage format, legacy color codes (&a, &b, &c) WILL NOT WORK.",
+        "See https://docs.adventure.kyori.net/minimessage/format.html to get understanding."})
 public interface MessagesConfig {
 
 
