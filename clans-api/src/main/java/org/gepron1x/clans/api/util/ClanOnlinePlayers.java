@@ -46,6 +46,7 @@ public final class ClanOnlinePlayers implements Iterable<Player> {
         return Set.copyOf(players);
     }
 
+
     @NotNull
     @Override
     public Iterator<Player> iterator() {

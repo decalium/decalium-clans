@@ -75,7 +75,8 @@ public class ClanCommand extends AbstractClanCommand {
         manager.command(builder.literal("create")
                 .permission("clans.create")
                 .argument(StringArgument.of("tag"))
-                .argument(ComponentArgument.optional("display_name", StringArgument.StringMode.GREEDY))
+                .argument(ComponentArgument.<CommandSender>builder("display_name").greedy()
+                        .serializer(clansConfig.userComponentFormat()).asOptional())
                 .handler(this::createClan)
         );
 
@@ -89,7 +90,7 @@ public class ClanCommand extends AbstractClanCommand {
 
         manager.command(builder.literal("rename")
                 .permission(Permission.of("clans.rename"))
-                .argument(ComponentArgument.greedy("display_name"))
+                .argument(ComponentArgument.greedy("display_name", clansConfig.userComponentFormat()))
                 .handler(
                         clanExecutionHandler(
                                 new PermissiveClanExecutionHandler(this::rename, ClanPermission.SET_DISPLAY_NAME, this.messages)

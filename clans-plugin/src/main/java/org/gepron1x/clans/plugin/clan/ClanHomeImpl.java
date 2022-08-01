@@ -96,8 +96,8 @@ public final class ClanHomeImpl implements ClanHome {
     }
 
     @Override
-    public @Nullable ItemStack icon() {
-        return icon == null ? null : icon.clone();
+    public @NotNull ItemStack icon() {
+        return icon.clone();
     }
 
 
@@ -153,7 +153,7 @@ public final class ClanHomeImpl implements ClanHome {
         }
 
         @Override
-        public @NotNull Builder icon(@Nullable ItemStack icon) {
+        public @NotNull Builder icon(@NotNull ItemStack icon) {
             this.icon = icon;
             return this;
         }
@@ -165,7 +165,7 @@ public final class ClanHomeImpl implements ClanHome {
                     displayName,
                     creator,
                     location.clone(),
-                    icon == null ? null : icon.clone()
+                    icon.clone()
             );
         }
 

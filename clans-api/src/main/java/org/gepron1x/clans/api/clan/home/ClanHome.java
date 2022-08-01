@@ -27,7 +27,6 @@ import org.gepron1x.clans.api.edition.EditionApplicable;
 import org.gepron1x.clans.api.edition.home.HomeEdition;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -42,7 +41,7 @@ public interface ClanHome extends Buildable<ClanHome, ClanHome.Builder>, Compone
     @NotNull Component displayName();
     @NotNull UUID creator();
     @NotNull Location location();
-    @Nullable ItemStack icon();
+    @NotNull ItemStack icon();
 
 
 
@@ -60,7 +59,7 @@ public interface ClanHome extends Buildable<ClanHome, ClanHome.Builder>, Compone
         @NotNull Builder location(@NotNull Location location);
 
         @Contract("_ -> this")
-        @NotNull Builder icon(@Nullable ItemStack icon);
+        @NotNull Builder icon(@NotNull ItemStack icon);
 
 
 

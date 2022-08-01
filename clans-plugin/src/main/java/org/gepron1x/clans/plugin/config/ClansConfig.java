@@ -48,6 +48,11 @@ public interface ClansConfig {
     @ConfComments("What should we display instead of placeholders, if player is not in the clan?")
     Component noClanPlaceholder();
 
+    @DefaultString("MINI_MESSAGE")
+    @ConfKey("user-component-format")
+    @ConfComments("What format should we use for user input? MINI_MESSAGE - MiniMessage, LEGACY - legacy color codes (&a, &b, &c) or MIXED (both, minimessage and legacy)")
+    UserComponentSerializer userComponentFormat();
+
 
     @ConfKey("roles")
     @SubSection

@@ -71,7 +71,7 @@ public class HomeCommand extends AbstractClanCommand {
         manager.command(builder.literal("create")
                 .permission(Permission.of("clans.home.create"))
                 .argument(StringArgument.of("name"))
-                .argument(ComponentArgument.optional("display_name", StringArgument.StringMode.GREEDY))
+                .argument(ComponentArgument.<CommandSender>builder("display_name").greedy().serializer(clansConfig.userComponentFormat()).asOptional())
                 .handler(
                        clanExecutionHandler(
                                 new PermissiveClanExecutionHandler(this::createHome, ClanPermission.ADD_HOME, this.messages)
@@ -102,7 +102,7 @@ public class HomeCommand extends AbstractClanCommand {
         manager.command(builder.literal("rename")
                 .permission(Permission.of("clans.home.rename"))
                 .argument(manager.argumentBuilder(ClanHome.class, "home"))
-                .argument(ComponentArgument.greedy("display_name"))
+                .argument(ComponentArgument.greedy("display_name", clansConfig.userComponentFormat()))
                 .handler(clanExecutionHandler(
                         checkHomeOwner(this::renameHome)
                 )

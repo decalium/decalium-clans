@@ -70,6 +70,10 @@ public final class ComponentArgument<C> extends CommandArgument<C, Component> {
         return of(name, StringMode.GREEDY);
     }
 
+    public static <C> ComponentArgument<C> greedy(@NonNull String name, ComponentSerializer<Component, ? extends Component, String> serializer) {
+        return ComponentArgument.<C>builder(name).serializer(serializer).greedy().build();
+    }
+
     public static <C> ComponentArgument<C> quoted(@NonNull String name) {
         return of(name, StringMode.QUOTED);
     }

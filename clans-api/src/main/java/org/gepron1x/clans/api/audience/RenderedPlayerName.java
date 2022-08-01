@@ -48,9 +48,13 @@ public final class RenderedPlayerName implements ComponentLike {
         String name = player.getName();
         if(name != null) return Component.text(name, NamedTextColor.GRAY);
 
+        String uuidString = uuid.toString();
+        Component uniqueId = Component.text().content("("+uuidString+")").color(NamedTextColor.GRAY)
+                .clickEvent(ClickEvent.copyToClipboard(uuidString)).build();
+
         return Component.text().append(
                 Component.text("Unknown player "),
-                Component.text("("+uuid+")", NamedTextColor.GRAY).clickEvent(ClickEvent.copyToClipboard(uuid.toString()))
+                uniqueId
         ).build();
 
     }
