@@ -53,9 +53,9 @@ public class WgClan implements DelegatingClan, Clan {
 
 
     @Override
-    public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> consumer) {
-        return this.delegate.edit(consumer).thenApplySync(clan -> {
-            consumer.accept(new PostClanEdition(clan, this.clansConfig, worldGuard.getPlatform().getRegionContainer()));
+    public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
+        return this.delegate.edit(transaction).thenApplySync(clan -> {
+            transaction.accept(new PostClanEdition(clan, this.clansConfig, worldGuard.getPlatform().getRegionContainer()));
             return new WgClan(clan, this.clansConfig, this.worldGuard, this.server);
         });
     }

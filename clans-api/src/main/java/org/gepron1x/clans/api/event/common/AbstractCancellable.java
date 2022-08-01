@@ -16,28 +16,22 @@
  * along with decalium-clans-rewrite. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package org.gepron1x.clans.api.event;
+package org.gepron1x.clans.api.event.common;
 
-import org.bukkit.event.HandlerList;
-import org.gepron1x.clans.api.clan.Clan;
-import org.gepron1x.clans.api.event.common.AbstractClanEvent;
-import org.jetbrains.annotations.NotNull;
+import org.bukkit.event.Cancellable;
 
-public final class ClanCreatedEvent extends AbstractClanEvent {
+public interface AbstractCancellable extends Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    Cancellation cancellation();
 
-
-    public ClanCreatedEvent(Clan clan) {
-        super(clan);
+    @Override
+    default boolean isCancelled() {
+        return cancellation().isCancelled();
     }
 
     @Override
-    public @NotNull HandlerList getHandlers() {
-        return handlers;
+    default void setCancelled(boolean b) {
+        cancellation().setCancelled(b);
     }
 
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
 }

@@ -45,9 +45,9 @@ public final class AnnouncingClan implements Clan, DelegatingClan {
     }
 
     @Override
-    public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> consumer) {
-        return this.delegate.edit(consumer).thenApplySync(clan -> {
-            consumer.accept(new AnnouncingClanEdition(clan, new ClanAudience(clan, this.server), this.server, this.messages));
+    public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
+        return this.delegate.edit(transaction).thenApplySync(clan -> {
+            transaction.accept(new AnnouncingClanEdition(clan, new ClanAudience(clan, this.server), this.server, this.messages));
             return new AnnouncingClan(clan, this.messages, this.server);
         });
     }

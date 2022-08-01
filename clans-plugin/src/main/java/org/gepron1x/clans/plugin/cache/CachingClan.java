@@ -39,8 +39,8 @@ public final class CachingClan implements Clan, DelegatingClan {
     }
 
     @Override
-    public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> consumer) {
-        return this.delegate.edit(consumer).thenApply(clan -> {
+    public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
+        return this.delegate.edit(transaction).thenApply(clan -> {
             if(cache.isCached(clan.tag())) {
                 cache.removeClan(clan.tag());
                 cache.cacheClan(clan);
