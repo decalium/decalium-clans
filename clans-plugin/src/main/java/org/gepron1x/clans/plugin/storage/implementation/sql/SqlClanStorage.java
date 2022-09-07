@@ -183,6 +183,7 @@ public final class SqlClanStorage implements ClanStorage {
                 .locations("classpath:db/migration")
                 .baselineOnMigrate(true)
                 .validateOnMigrate(true).load();
+        flyway.repair();
         flyway.migrate();
     }
 

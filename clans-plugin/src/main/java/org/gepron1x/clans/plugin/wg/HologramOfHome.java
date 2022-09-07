@@ -85,14 +85,14 @@ public final class HologramOfHome {
             PersistentDataContainer pdc = stand.getPersistentDataContainer();
             pdc.set(CLAN_NAME, PersistentDataType.STRING, clan.tag());
             pdc.set(CLAN_HOME_NAME, PersistentDataType.STRING, home.name());
-            stand.customName(this.config.homes().hologramFormat().with("home_name", home.displayName()).asComponent());
+            stand.customName(this.config.homes().hologramFormat().with("home_name", home.displayName()).with("level", home.level()).asComponent());
             stand.setDisabledSlots(EquipmentSlot.values());
             stand.getEquipment().setHelmet(home.icon());
         });
     }
 
     public void rename(Component displayName) {
-        entity().ifPresent(as -> as.customName(this.config.homes().hologramFormat().with("home_name", displayName).asComponent()));
+        entity().ifPresent(as -> as.customName(this.config.homes().hologramFormat().with("home_name", displayName).with("level", home.level()).asComponent()));
     }
 
     public void icon(ItemStack icon) {

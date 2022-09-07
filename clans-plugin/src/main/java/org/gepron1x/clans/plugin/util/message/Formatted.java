@@ -21,7 +21,6 @@ package org.gepron1x.clans.plugin.util.message;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.minimessage.tag.Tag;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.gepron1x.clans.api.chat.PrefixedTagResolver;
 
@@ -48,11 +47,15 @@ public interface Formatted<T extends Formatted<T>> { // i have no clue how to ca
 
 
     default T with(String key, ComponentLike like) {
-        return with(Placeholder.component(key, like));
+        return with(key, like.asComponent());
+    }
+
+    default T with(String key, Component component) {
+        return with(key, Tag.selfClosingInserting(component));
     }
 
     default T withMiniMessage(String key, String value) {
-        return with(Placeholder.parsed(key, value));
+        return with(key, Tag.preProcessParsed(value));
     }
 
 

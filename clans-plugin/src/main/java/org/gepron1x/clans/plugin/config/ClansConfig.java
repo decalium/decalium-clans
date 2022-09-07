@@ -126,6 +126,11 @@ public interface ClansConfig {
         @ConfComments("Default protection radius of clan homes.")
         double homeRegionRadius();
 
+        @ConfKey("level-region-scale")
+        @DefaultDouble(0.25)
+        @ConfComments("How much should we scale the region size on home upgrades?")
+        double levelRegionScale();
+
         @ConfKey("hologram-format")
         @DefaultString("Home <home_name>")
         @ConfComments("Hologram format.")

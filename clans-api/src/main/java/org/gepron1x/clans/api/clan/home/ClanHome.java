@@ -43,6 +43,8 @@ public interface ClanHome extends Buildable<ClanHome, ClanHome.Builder>, Compone
     @NotNull Location location();
     @NotNull ItemStack icon();
 
+    int level();
+
 
 
     interface Builder extends Buildable.Builder<ClanHome>, EditionApplicable<ClanHome, HomeEdition> {
@@ -60,6 +62,9 @@ public interface ClanHome extends Buildable<ClanHome, ClanHome.Builder>, Compone
 
         @Contract("_ -> this")
         @NotNull Builder icon(@NotNull ItemStack icon);
+
+        @Contract("_ -> this")
+        @NotNull Builder level(int level);
 
 
 

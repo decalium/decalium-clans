@@ -34,6 +34,12 @@ public final class SqlHomeEdition implements HomeEdition {
     private static final String UPDATE_LOCATION = "UPDATE `locations` SET `x`=?, `y`=?, `z`=?, `world`=? WHERE `home_id`=(SELECT id FROM homes WHERE `clan_id`=? AND `name`=?)";
     @Language("SQL")
     private static final String UPDATE_DISPLAY_NAME = "UPDATE `homes` SET `display_name`=? WHERE `name`=? AND `clan_id`=?";
+
+    @Language("SQL")
+    private static final String INCREMENT_LEVEL = "UPDATE `homes` SET `level`=`level`+1 WHERE `name`=? AND `clan_id`=?";
+
+    @Language("SQL")
+    private static final String DECREMENT_LEVEL = "UPDATE `homes` SET `level`=`level`-1 WHERE `name`=? AND `clan_id`=?";
     private final Handle handle;
     private final int clanId;
     private final String homeName;
@@ -74,6 +80,18 @@ public final class SqlHomeEdition implements HomeEdition {
                 .bind(2, clanId)
                 .bind(0, displayName)
                 .execute();
+        return this;
+    }
+
+    @Override
+    public HomeEdition upgrade() {
+        handle.createUpdate(INCREMENT_LEVEL).bind(0, homeName).bind(1, clanId).execute();
+        return this;
+    }
+
+    @Override
+    public HomeEdition downgrade() {
+        handle.createUpdate(DECREMENT_LEVEL).bind(0, homeName).bind(1, clanId).execute();
         return this;
     }
 }

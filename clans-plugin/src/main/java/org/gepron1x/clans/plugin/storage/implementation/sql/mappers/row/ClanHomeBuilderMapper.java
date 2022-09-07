@@ -34,7 +34,7 @@ import java.util.UUID;
 
 public final class ClanHomeBuilderMapper extends PrefixedRowMapper<ClanHome.Builder> {
 
-    private static final String NAME = "name", CREATOR = "creator", DISPLAY_NAME = "display_name", ICON = "icon";
+    private static final String NAME = "name", CREATOR = "creator", DISPLAY_NAME = "display_name", ICON = "icon", LEVEL = "level";
     private final ClanBuilderFactory builderFactory;
 
     public ClanHomeBuilderMapper(@NotNull ClanBuilderFactory builderFactory, @Nullable String prefix) {
@@ -52,6 +52,6 @@ public final class ClanHomeBuilderMapper extends PrefixedRowMapper<ClanHome.Buil
                 .name(rs.getString(prefixed(NAME)))
                 .creator(uuidMapper.map(rs, prefixed(CREATOR), ctx))
                 .displayName(componentMapper.map(rs, prefixed(DISPLAY_NAME), ctx))
-                .icon(itemStackMapper.map(rs, prefixed(ICON), ctx));
+                .icon(itemStackMapper.map(rs, prefixed(ICON), ctx)).level(rs.getInt(prefixed(LEVEL)));
     }
 }

@@ -127,7 +127,9 @@ public final class PostClanEdition implements ClanEdition {
 
     private ProtectedCuboidRegion createForHome(ClanHome home) {
         Location location = home.location();
-        double halfSize = this.clansConfig.homes().homeRegionRadius();
+        double s = this.clansConfig.homes().homeRegionRadius();
+        double lvl = home.level() + 1;
+        double halfSize = Math.pow(1 + this.clansConfig.homes().levelRegionScale(), lvl) * s;
         int x = location.getBlockX();
         int y = location.getBlockY();
         int z = location.getBlockZ();
@@ -199,6 +201,19 @@ public final class PostClanEdition implements ClanEdition {
         public HomeEdition rename(@NotNull Component displayName) {
             new HologramOfHome(PostClanEdition.this.clansConfig, PostClanEdition.this.clan, this.home).rename(displayName);
             return this;
+        }
+
+        @Override
+        public HomeEdition upgrade() {
+            regionManager.removeRegion(nameFor(clan, home));
+            regionManager.addRegion(PostClanEdition.this.createForHome(home));
+            new HologramOfHome(clansConfig, clan, home).rename(home.displayName());
+            return this;
+        }
+
+        @Override
+        public HomeEdition downgrade() {
+            return upgrade();
         }
     }
 }

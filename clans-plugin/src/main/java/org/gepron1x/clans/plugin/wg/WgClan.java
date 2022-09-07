@@ -18,6 +18,7 @@
  */
 package org.gepron1x.clans.plugin.wg;
 
+import com.google.common.base.MoreObjects;
 import com.sk89q.worldguard.WorldGuard;
 import org.bukkit.Server;
 import org.gepron1x.clans.api.clan.Clan;
@@ -77,5 +78,14 @@ public class WgClan implements DelegatingClan, Clan {
     @Override
     public int id() {
         return this.delegate.id();
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("delegate", delegate)
+                .add("worldGuard", worldGuard)
+                .add("server", server)
+                .toString();
     }
 }

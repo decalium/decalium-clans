@@ -62,7 +62,7 @@ public final class ClanExecutionHandler implements CommandExecutionHandler<Comma
                 this.delegate.execute(commandContext);
             }, () -> player.sendMessage(messages.notInTheClan()));
         }).exceptionally(t -> {
-            this.logger.error("Error happened.", t);
+            this.logger.error("Exception caught during the future execution: ", t);
             return null;
         });
     }

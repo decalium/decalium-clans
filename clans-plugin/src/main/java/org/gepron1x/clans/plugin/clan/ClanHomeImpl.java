@@ -19,6 +19,7 @@
 package org.gepron1x.clans.plugin.clan;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
@@ -37,30 +38,28 @@ public final class ClanHomeImpl implements ClanHome {
     private final UUID creator;
     private final Location location;
     private final ItemStack icon;
+    private final int level;
 
-    public ClanHomeImpl(String name, Component component, UUID creator, Location location, ItemStack icon) {
+    public ClanHomeImpl(String name, Component component, UUID creator, Location location, ItemStack icon, int level) {
         this.name = name;
         displayName = component;
         this.creator = creator;
         this.location = location;
         this.icon = icon;
+        this.level = level;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClanHomeImpl clanHome = (ClanHomeImpl) o;
+        return level == clanHome.level && name.equals(clanHome.name) && displayName.equals(clanHome.displayName) && creator.equals(clanHome.creator) && location.equals(clanHome.location) && icon.equals(clanHome.icon);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, displayName, creator, location, icon);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if(this == obj) return true;
-        if(!(obj instanceof ClanHomeImpl that)) return false;
-        return name.equals(that.name) &&
-                displayName.equals(that.displayName) &&
-                creator.equals(that.creator) &&
-                location.equals(that.location) &&
-                Objects.equals(icon, that.icon);
-
+        return Objects.hash(name, displayName, creator, location, icon, level);
     }
 
     @Override
@@ -71,6 +70,7 @@ public final class ClanHomeImpl implements ClanHome {
                 .add("creator", creator)
                 .add("location", location)
                 .add("icon", icon)
+                .add("level", level)
                 .toString();
 
     }
@@ -100,10 +100,10 @@ public final class ClanHomeImpl implements ClanHome {
         return icon.clone();
     }
 
-
-
-
-
+    @Override
+    public int level() {
+        return level;
+    }
 
 
     @Override
@@ -113,7 +113,7 @@ public final class ClanHomeImpl implements ClanHome {
                 .displayName(displayName)
                 .creator(creator)
                 .location(location())
-                .icon(icon());
+                .icon(icon()).level(level);
     }
 
     public static BuilderImpl builder() {
@@ -127,6 +127,7 @@ public final class ClanHomeImpl implements ClanHome {
         private UUID creator;
         private Location location;
         private ItemStack icon;
+        private int level = 0;
 
         @Override
         public @NotNull Builder name(@NotNull String name) {
@@ -159,13 +160,20 @@ public final class ClanHomeImpl implements ClanHome {
         }
 
         @Override
+        public @NotNull Builder level(int level) {
+            this.level = level;
+            return this;
+        }
+
+        @Override
         public @NotNull ClanHome build() {
             return new ClanHomeImpl(
                     name,
                     displayName,
                     creator,
                     location.clone(),
-                    icon.clone()
+                    icon.clone(),
+                    level
             );
         }
 
@@ -178,12 +186,13 @@ public final class ClanHomeImpl implements ClanHome {
                     Objects.equals(displayName, builder.displayName) &&
                     Objects.equals(creator, builder.creator) &&
                     Objects.equals(location, builder.location) &&
-                    Objects.equals(icon, builder.icon);
+                    Objects.equals(icon, builder.icon) &&
+                    level == builder.level;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(name, displayName, creator, location, icon);
+            return Objects.hash(name, displayName, creator, location, icon, level);
         }
 
         @Override
@@ -194,6 +203,7 @@ public final class ClanHomeImpl implements ClanHome {
                     .add("creator", creator)
                     .add("location", location)
                     .add("icon", icon)
+                    .add("level", level)
                     .toString();
         }
 
@@ -220,6 +230,19 @@ public final class ClanHomeImpl implements ClanHome {
             @Override
             public HomeEdition rename(@NotNull Component displayName) {
                 BuilderImpl.this.displayName(displayName);
+                return this;
+            }
+
+            @Override
+            public HomeEdition upgrade() {
+                BuilderImpl.this.level += 1;
+                return this;
+            }
+
+            @Override
+            public HomeEdition downgrade() {
+                Preconditions.checkState(BuilderImpl.this.level >= 0, "Cant downgrade home with 0 level");
+                BuilderImpl.this.level -= 1;
                 return this;
             }
         }

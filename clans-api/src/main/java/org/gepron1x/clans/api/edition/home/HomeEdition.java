@@ -35,4 +35,7 @@ public interface HomeEdition extends Edition<ClanHome> {
     HomeEdition setIcon(@Nullable ItemStack icon);
     HomeEdition move(@NotNull Location location);
     HomeEdition rename(@NotNull Component displayName);
+
+    HomeEdition upgrade();
+    HomeEdition downgrade();
 }

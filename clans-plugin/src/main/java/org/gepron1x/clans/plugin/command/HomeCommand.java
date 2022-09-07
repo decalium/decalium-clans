@@ -38,6 +38,7 @@ import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
+import org.gepron1x.clans.api.edition.home.HomeEdition;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.plugin.command.argument.ComponentArgument;
 import org.gepron1x.clans.plugin.config.ClansConfig;
@@ -109,6 +110,10 @@ public class HomeCommand extends AbstractClanCommand {
                 )
         );
 
+        manager.command(builder.literal("upgrade").permission("clans.home.upgrade")
+                .argument(manager.argumentBuilder(ClanHome.class, "home"))
+                .handler(clanExecutionHandler(this::upgradeHome)));
+
     }
 
 
@@ -179,6 +184,14 @@ public class HomeCommand extends AbstractClanCommand {
             homeEdition.rename(name);
         })).thenAccept(c -> {
             context.getSender().sendMessage(this.messages.commands().home().renamed());
+        }).exceptionally(this::exceptionHandler);
+    }
+
+    private void upgradeHome(CommandContext<CommandSender> context) {
+        Clan clan = context.get(ClanExecutionHandler.CLAN);
+        ClanHome home = context.get("home");
+        clan.edit(edition -> edition.editHome(home.name(), HomeEdition::upgrade)).thenAccept(c -> {
+            context.getSender().sendMessage(Component.text("Clan home upgraded."));
         }).exceptionally(this::exceptionHandler);
     }
 

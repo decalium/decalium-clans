@@ -79,6 +79,8 @@ public record Message(MiniMessage miniMessage,
 
         }
 
+
+
         @Override
         public Container with(TagResolver tagResolver) {
             this.builder.resolver(tagResolver);

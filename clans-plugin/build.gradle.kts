@@ -117,7 +117,6 @@ bukkit {
     apiVersion = "1.16"
     authors = listOf("gepron1x", "manya")
     website = "https://clans.decalium.ru"
-    libraries = listOf("org.flywaydb:flyway-core:9.0.1")
     softDepend = listOf("PlaceholderAPI", "CarbonChat", "WorldGuard")
 }
 

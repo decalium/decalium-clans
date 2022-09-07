@@ -20,6 +20,7 @@ package org.gepron1x.clans.plugin;
 
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.parser.ParserRegistry;
+import cloud.commandframework.exceptions.ArgumentParseException;
 import cloud.commandframework.exceptions.NoPermissionException;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
@@ -54,6 +55,7 @@ import org.gepron1x.clans.plugin.command.HomeCommand;
 import org.gepron1x.clans.plugin.command.InviteCommand;
 import org.gepron1x.clans.plugin.command.MemberCommand;
 import org.gepron1x.clans.plugin.command.parser.ClanRoleParser;
+import org.gepron1x.clans.plugin.command.parser.DescribingException;
 import org.gepron1x.clans.plugin.command.parser.HomeParser;
 import org.gepron1x.clans.plugin.command.parser.MemberParser;
 import org.gepron1x.clans.plugin.command.war.ClanWarCommand;
@@ -216,6 +218,12 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
         commandManager.registerExceptionHandler(NoPermissionException.class, (sender, ex) -> {
             sender.sendMessage(this.messages().noPermission());
+        });
+
+        commandManager.registerExceptionHandler(ArgumentParseException.class, (sender, ex) -> {
+            if(ex.getCause() instanceof DescribingException) {
+                ((DescribingException) ex.getCause()).tagResolver();
+            }
         });
 
         command.register(commandManager);
