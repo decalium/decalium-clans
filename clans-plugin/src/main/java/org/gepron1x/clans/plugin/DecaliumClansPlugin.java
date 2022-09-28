@@ -20,7 +20,6 @@ package org.gepron1x.clans.plugin;
 
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.parser.ParserRegistry;
-import cloud.commandframework.exceptions.ArgumentParseException;
 import cloud.commandframework.exceptions.NoPermissionException;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
@@ -42,6 +41,7 @@ import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.repository.ClanRepository;
+import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.api.war.Wars;
 import org.gepron1x.clans.plugin.announce.AnnouncingClanRepository;
 import org.gepron1x.clans.plugin.async.BukkitFactoryOfTheFuture;
@@ -55,19 +55,21 @@ import org.gepron1x.clans.plugin.command.HomeCommand;
 import org.gepron1x.clans.plugin.command.InviteCommand;
 import org.gepron1x.clans.plugin.command.MemberCommand;
 import org.gepron1x.clans.plugin.command.parser.ClanRoleParser;
-import org.gepron1x.clans.plugin.command.parser.DescribingException;
 import org.gepron1x.clans.plugin.command.parser.HomeParser;
 import org.gepron1x.clans.plugin.command.parser.MemberParser;
 import org.gepron1x.clans.plugin.command.war.ClanWarCommand;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.Configuration;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
+import org.gepron1x.clans.plugin.config.PricesConfig;
 import org.gepron1x.clans.plugin.config.serializer.*;
+import org.gepron1x.clans.plugin.economy.VaultHook;
 import org.gepron1x.clans.plugin.listener.CacheListener;
 import org.gepron1x.clans.plugin.listener.StatisticListener;
 import org.gepron1x.clans.plugin.papi.PlaceholderAPIHook;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
 import org.gepron1x.clans.plugin.storage.StorageCreation;
+import org.gepron1x.clans.plugin.users.DefaultUsers;
 import org.gepron1x.clans.plugin.util.AsciiArt;
 import org.gepron1x.clans.plugin.wg.WgExtension;
 import org.slf4j.Logger;
@@ -92,6 +94,8 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
     private Configuration<ClansConfig> configuration;
     private Configuration<MessagesConfig> messagesConfiguration;
+
+    private Configuration<PricesConfig> prices;
     private UserCaching userCaching;
 
 
@@ -138,6 +142,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
                 .build();
         this.messagesConfiguration = Configuration.create(this, "messages.yml", MessagesConfig.class, options);
         this.configuration = Configuration.create(this, "config.yml", ClansConfig.class, options);
+        this.prices = Configuration.create(this, "prices.yml", PricesConfig.class, options);
 
         this.messagesConfiguration.reloadConfig();
         this.configuration.reloadConfig();
@@ -170,7 +175,10 @@ public final class DecaliumClansPlugin extends JavaPlugin {
                 clanCache
         );
 
-
+        Users users = new DefaultUsers(clanRepository);
+        if(isEnabled("Vault")) {
+            users = new VaultHook(users, getServer().getServicesManager(), prices.data(), futuresFactory).hook();
+        }
 
         getServer().getPluginManager().registerEvents(new CacheListener(userCaching), this);
 
@@ -220,12 +228,6 @@ public final class DecaliumClansPlugin extends JavaPlugin {
             sender.sendMessage(this.messages().noPermission());
         });
 
-        commandManager.registerExceptionHandler(ArgumentParseException.class, (sender, ex) -> {
-            if(ex.getCause() instanceof DescribingException) {
-                ((DescribingException) ex.getCause()).tagResolver();
-            }
-        });
-
         command.register(commandManager);
         inviteCommand.register(commandManager);
         memberCommand.register(commandManager);
@@ -247,7 +249,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(statisticListener, this);
         statisticListener.start();
 
-        DecaliumClansApi clansApi = new DecaliumClansApiImpl(clanRepository, this.roleRegistry, builderFactory, futuresFactory, wars);
+        DecaliumClansApi clansApi = new DecaliumClansApiImpl(clanRepository, users, this.roleRegistry, builderFactory, futuresFactory, wars);
         getServer().getServicesManager().register(DecaliumClansApi.class, clansApi, this, ServicePriority.Normal);
     }
 

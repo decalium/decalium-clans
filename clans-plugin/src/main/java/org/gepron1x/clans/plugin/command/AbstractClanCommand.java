@@ -27,11 +27,14 @@ import cloud.commandframework.permission.PredicatePermission;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
+import org.gepron1x.clans.api.exception.DescribingException;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.slf4j.Logger;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
+
+import java.util.function.Function;
 
 public abstract class AbstractClanCommand {
 
@@ -65,6 +68,13 @@ public abstract class AbstractClanCommand {
     protected <T> T exceptionHandler(Throwable throwable) {
         logger.error("A future completed exceptionally: ", throwable);
         return null;
+    }
+
+    protected <T> Function<Throwable, T> exceptionHandler(CommandSender sender) {
+        return t -> {
+            if(t instanceof DescribingException ex) sender.sendMessage(ex.description());
+            return exceptionHandler(t);
+        };
     }
 
     protected ClanExecutionHandler clanExecutionHandler(CommandExecutionHandler<CommandSender> delegate) {

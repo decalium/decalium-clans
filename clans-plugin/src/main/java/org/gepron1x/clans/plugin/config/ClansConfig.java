@@ -37,6 +37,11 @@ import static space.arim.dazzleconf.annote.ConfDefault.*;
 @ConfHeader({"Welcome to the decalium clans config.", "Use /clan reload to reload the configuration."})
 public interface ClansConfig {
 
+    @DefaultBoolean(false)
+    @ConfComments("Should we take money for actions?")
+    @ConfKey("enable-economy-hook")
+    boolean enableEconomy();
+
     @DefaultString("2m")
     @ConfKey("statistic-update-period")
     @ConfComments("How often should we update statistics? Format is 2d3h31m1s.")

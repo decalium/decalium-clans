@@ -154,7 +154,7 @@ public class HomeCommand extends AbstractClanCommand {
             return;
         }
        clan.edit(edition -> edition.addHome(home)).thenAccept(c -> player.sendMessage(messages.commands().home().created()))
-               .exceptionally(this::exceptionHandler);
+               .exceptionally(this.exceptionHandler(context.getSender()));
     }
 
     private void deleteHome(CommandContext<CommandSender> context) {
@@ -192,7 +192,7 @@ public class HomeCommand extends AbstractClanCommand {
         ClanHome home = context.get("home");
         clan.edit(edition -> edition.editHome(home.name(), HomeEdition::upgrade)).thenAccept(c -> {
             context.getSender().sendMessage(Component.text("Clan home upgraded."));
-        }).exceptionally(this::exceptionHandler);
+        }).exceptionally(this.exceptionHandler(context.getSender()));
     }
 
 

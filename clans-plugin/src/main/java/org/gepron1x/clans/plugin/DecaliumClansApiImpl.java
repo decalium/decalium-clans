@@ -22,6 +22,7 @@ import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.DecaliumClansApi;
 import org.gepron1x.clans.api.RoleRegistry;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
+import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.api.war.Wars;
 import org.jetbrains.annotations.NotNull;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
@@ -29,23 +30,32 @@ import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 public final class DecaliumClansApiImpl implements DecaliumClansApi {
 
     private final CachingClanRepository clanRepository;
+    private final Users users;
     private final RoleRegistry roleRegistry;
     private final ClanBuilderFactory builderFactory;
     private final FactoryOfTheFuture futuresFactory;
     private final Wars wars;
 
     public DecaliumClansApiImpl(@NotNull CachingClanRepository clanRepository,
+                                @NotNull Users users,
                                 @NotNull RoleRegistry roleRegistry,
                                 @NotNull ClanBuilderFactory builderFactory,
                                 @NotNull FactoryOfTheFuture futuresFactory,
                                 @NotNull Wars wars) {
 
         this.clanRepository = clanRepository;
+        this.users = users;
         this.roleRegistry = roleRegistry;
         this.builderFactory = builderFactory;
         this.futuresFactory = futuresFactory;
         this.wars = wars;
     }
+
+    @Override
+    public @NotNull Users users() {
+        return users;
+    }
+
     @Override
     public @NotNull CachingClanRepository repository() {
         return clanRepository;

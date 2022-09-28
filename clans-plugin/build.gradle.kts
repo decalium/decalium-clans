@@ -24,6 +24,7 @@ repositories {
     maven { url = uri("https://oss.sonatype.org/content/groups/public/") }
     maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
     maven { url = uri("https://repo.parks.dev/repository/maven-public/") }
+    maven { url = uri("https://jitpack.io") }
     maven("https://maven.enginehub.org/repo/")
 
 }
@@ -32,12 +33,12 @@ dependencies {
     implementation(project(":clans-api"))
     compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
     // paperDevBundle("1.18.2-R0.1-SNAPSHOT")
-    implementation("org.jdbi:jdbi3-core:3.30.0") {
+    implementation("org.jdbi:jdbi3-core:3.32.0") {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
     implementation("org.flywaydb:flyway-core:9.0.4")
     implementation("org.flywaydb:flyway-mysql:9.0.4")
-    implementation("cloud.commandframework:cloud-paper:1.7.0-SNAPSHOT") {
+    implementation("cloud.commandframework:cloud-paper:1.7.1") {
         exclude("org.checkerframework", "checker-qual")
     }
     implementation("space.arim.dazzleconf:dazzleconf-ext-snakeyaml:1.2.1") {
@@ -54,6 +55,10 @@ dependencies {
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.0") {
         exclude("org.bukkit", "bukkit")
     }
+    compileOnly("com.github.MilkBowl:VaultAPI:1.7") {
+        exclude("org.bukkit", "bukkit")
+    }
+
 
 }
 
