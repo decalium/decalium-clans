@@ -40,6 +40,7 @@ import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.edition.home.HomeEdition;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
+import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.plugin.command.argument.ComponentArgument;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
@@ -51,12 +52,13 @@ public class HomeCommand extends AbstractClanCommand {
     private final ClanBuilderFactory builderFactory;
 
     public HomeCommand(@NotNull Logger logger,
-                       @NotNull CachingClanRepository clanManager,
+                       @NotNull CachingClanRepository clanRepository,
+                       Users users,
                        @NotNull ClansConfig clansConfig,
                        @NotNull MessagesConfig messages,
                        @NotNull FactoryOfTheFuture futuresFactory,
                        @NotNull ClanBuilderFactory builderFactory) {
-        super(logger, clanManager, clansConfig, messages, futuresFactory);
+        super(logger, clanRepository, users, clansConfig, messages, futuresFactory);
         this.builderFactory = builderFactory;
     }
 
@@ -165,7 +167,7 @@ public class HomeCommand extends AbstractClanCommand {
 
        clan.edit(edition -> edition.removeHome(home)).thenAccept(c -> {
             if(c != null) player.sendMessage(messages.commands().home().deleted());
-        }).exceptionally(this::exceptionHandler);
+        }).exceptionally(exceptionHandler(player));
     }
 
     private void teleportToHome(CommandContext<CommandSender> context) {
@@ -173,7 +175,7 @@ public class HomeCommand extends AbstractClanCommand {
         ClanHome home = context.get("home");
         player.teleportAsync(home.location()).thenAccept(bool -> {
             if(bool) player.sendMessage(this.messages.commands().home().teleported().with("home", home.displayName()));
-        }).exceptionally(this::exceptionHandler);
+        }).exceptionally(exceptionHandler(player));
     }
 
     private void renameHome(CommandContext<CommandSender> context) {
@@ -184,7 +186,7 @@ public class HomeCommand extends AbstractClanCommand {
             homeEdition.rename(name);
         })).thenAccept(c -> {
             context.getSender().sendMessage(this.messages.commands().home().renamed());
-        }).exceptionally(this::exceptionHandler);
+        }).exceptionally(exceptionHandler(context.getSender()));
     }
 
     private void upgradeHome(CommandContext<CommandSender> context) {

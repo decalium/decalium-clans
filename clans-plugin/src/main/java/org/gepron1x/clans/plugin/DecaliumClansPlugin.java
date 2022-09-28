@@ -146,6 +146,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
         this.messagesConfiguration.reloadConfig();
         this.configuration.reloadConfig();
+        this.prices.reloadConfig();
 
         buildRoleRegistry();
         ClansConfig config = config();
@@ -194,13 +195,12 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
         Logger logger = getSLF4JLogger();
 
-        ClanCommand command = new ClanCommand(logger, clanRepository, config, messages, futuresFactory, builderFactory, roleRegistry);
-        InviteCommand inviteCommand = new InviteCommand(logger, clanRepository, config, messages, futuresFactory, builderFactory, roleRegistry);
-        MemberCommand memberCommand = new MemberCommand(logger, clanRepository, config, messages, futuresFactory);
-        HomeCommand homeCommand = new HomeCommand(logger, clanRepository, config, messages, futuresFactory, builderFactory);
-
+        ClanCommand command = new ClanCommand(logger, clanRepository, users, config, messages, futuresFactory, builderFactory, roleRegistry);
+        InviteCommand inviteCommand = new InviteCommand(logger, clanRepository, users, config, messages, futuresFactory, builderFactory, roleRegistry);
+        MemberCommand memberCommand = new MemberCommand(logger, clanRepository, users, config, messages, futuresFactory);
+        HomeCommand homeCommand = new HomeCommand(logger, clanRepository, users, config, messages, futuresFactory, builderFactory);
         Wars wars = new WarsCreation(this, config, messages).create();
-        ClanWarCommand clanWarCommand = new ClanWarCommand(logger, clanRepository, config, messages, futuresFactory, wars);
+        ClanWarCommand clanWarCommand = new ClanWarCommand(logger, clanRepository, users, config, messages, futuresFactory, wars);
 
         try {
             this.commandManager = new PaperCommandManager<>(

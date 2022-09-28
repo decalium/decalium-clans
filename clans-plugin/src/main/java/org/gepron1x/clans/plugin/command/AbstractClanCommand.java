@@ -24,16 +24,19 @@ import cloud.commandframework.keys.CloudKey;
 import cloud.commandframework.keys.SimpleCloudKey;
 import cloud.commandframework.permission.CommandPermission;
 import cloud.commandframework.permission.PredicatePermission;
+import net.kyori.adventure.audience.Audience;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.exception.DescribingException;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
+import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.slf4j.Logger;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
+import java.util.concurrent.CompletionException;
 import java.util.function.Function;
 
 public abstract class AbstractClanCommand {
@@ -43,17 +46,19 @@ public abstract class AbstractClanCommand {
 
 
     protected final Logger logger;
+    protected final Users users;
     protected final CachingClanRepository clanRepository;
     protected final ClansConfig clansConfig;
     protected final MessagesConfig messages;
     protected final FactoryOfTheFuture futuresFactory;
 
-    public AbstractClanCommand(Logger logger, CachingClanRepository clanRepository,
+    public AbstractClanCommand(Logger logger, CachingClanRepository clanRepository, Users users,
                                ClansConfig clansConfig,
                                MessagesConfig messages,
                                FactoryOfTheFuture futuresFactory) {
         this.logger = logger;
         this.clanRepository = clanRepository;
+        this.users = users;
         this.clansConfig = clansConfig;
         this.messages = messages;
         this.futuresFactory = futuresFactory;
@@ -70,15 +75,18 @@ public abstract class AbstractClanCommand {
         return null;
     }
 
-    protected <T> Function<Throwable, T> exceptionHandler(CommandSender sender) {
+    protected <T> Function<Throwable, T> exceptionHandler(Audience sender) {
         return t -> {
-            if(t instanceof DescribingException ex) sender.sendMessage(ex.description());
+            if(t instanceof CompletionException completionException && completionException.getCause() instanceof DescribingException ex) {
+                sender.sendMessage(ex.description());
+                return null;
+            }
             return exceptionHandler(t);
         };
     }
 
     protected ClanExecutionHandler clanExecutionHandler(CommandExecutionHandler<CommandSender> delegate) {
-        return new ClanExecutionHandler(delegate, this.clanRepository, this.messages, this.logger);
+        return new ClanExecutionHandler(delegate, this.users, this.messages, this.logger);
     }
 
     protected PermissiveClanExecutionHandler permissionRequired(CommandExecutionHandler<CommandSender> delegate, ClanPermission permission) {
@@ -88,17 +96,10 @@ public abstract class AbstractClanCommand {
     protected CommandPermission clanRequired() {
         return PredicatePermission.of(SimpleCloudKey.of("clan_required"), sender -> {
             if(!(sender instanceof Player player)) return false;
-            return this.clanRepository.userClanIfCached(player.getUniqueId()).isPresent();
+            return this.users.userFor(player).clan().isPresent();
         });
     }
 
-    protected CommandPermission permissionRequired(ClanPermission permission) {
-        return clanRequired().and(PredicatePermission.<CommandSender>of(CLAN_REQUIRED, sender -> {
-            Player player = (Player) sender;
-            return this.clanRepository.userClanIfCached(player.getUniqueId()).flatMap(clan -> clan.member(player))
-                    .map(member -> member.hasPermission(permission)).orElse(false);
-        }));
-    }
 
 
 

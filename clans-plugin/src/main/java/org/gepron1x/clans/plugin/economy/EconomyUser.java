@@ -50,5 +50,8 @@ public final class EconomyUser implements ClanUser {
         return user.create(draft);
     }
 
-
+    @Override
+    public CentralisedFuture<Boolean> delete() {
+        return user.delete();
+    }
 }

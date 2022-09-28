@@ -31,5 +31,7 @@ public interface ClanUser {
     
     CentralisedFuture<ClanCreationResult> create(DraftClan draft);
 
+    CentralisedFuture<Boolean> delete();
+
 
 }

@@ -122,6 +122,6 @@ bukkit {
     apiVersion = "1.16"
     authors = listOf("gepron1x", "manya")
     website = "https://clans.decalium.ru"
-    softDepend = listOf("PlaceholderAPI", "CarbonChat", "WorldGuard")
+    softDepend = listOf("PlaceholderAPI", "CarbonChat", "WorldGuard", "Vault")
 }
 

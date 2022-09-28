@@ -35,6 +35,7 @@ import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
+import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.jetbrains.annotations.NotNull;
@@ -56,14 +57,14 @@ public class InviteCommand extends AbstractClanCommand {
     private final Table<UUID, String, Invitation> invitations = HashBasedTable.create();
 
 
-    public InviteCommand(@NotNull Logger logger, @NotNull CachingClanRepository clanManager,
+    public InviteCommand(@NotNull Logger logger, @NotNull CachingClanRepository clanRepository, Users users,
                          @NotNull ClansConfig config,
                          @NotNull MessagesConfig messages,
                          @NotNull FactoryOfTheFuture futuresFactory,
                          @NotNull ClanBuilderFactory builderFactory,
                          @NotNull RoleRegistry roleRegistry)
     {
-        super(logger, clanManager, config, messages, futuresFactory);
+        super(logger, clanRepository, users, config, messages, futuresFactory);
         this.builderFactory = builderFactory;
         this.roleRegistry = roleRegistry;
     }
@@ -122,7 +123,7 @@ public class InviteCommand extends AbstractClanCommand {
                     .withMiniMessage("sender", player.getName())
                     .with("clan_display_name", clan.displayName())
             );
-        }).exceptionally(this::exceptionHandler);
+        }).exceptionally(exceptionHandler(player));
 
     }
 
@@ -146,7 +147,7 @@ public class InviteCommand extends AbstractClanCommand {
                     if (senderPlayer != null) {
                         senderPlayer.sendMessage(messages.commands().invitation().playerAccepted().with("receiver", player.displayName()));
                     }
-                }).exceptionally(this::exceptionHandler);
+                }).exceptionally(exceptionHandler(player));
     }
 
     private void declineInvite(CommandContext<CommandSender> context) {

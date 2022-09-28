@@ -46,4 +46,9 @@ public final class DefaultClanUser implements ClanUser {
     public CentralisedFuture<ClanCreationResult> create(DraftClan draft) {
         return this.repository.createClan(draft);
     }
+
+    @Override
+    public CentralisedFuture<Boolean> delete() {
+        return repository.removeClan(clan().orElseThrow());
+    }
 }

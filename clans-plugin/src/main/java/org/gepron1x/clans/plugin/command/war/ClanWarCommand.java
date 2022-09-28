@@ -41,6 +41,7 @@ import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.reference.ClanReference;
 import org.gepron1x.clans.api.reference.TagClanReference;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
+import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.api.war.Wars;
 import org.gepron1x.clans.plugin.command.AbstractClanCommand;
 import org.gepron1x.clans.plugin.command.ClanExecutionHandler;
@@ -62,12 +63,13 @@ public final class ClanWarCommand extends AbstractClanCommand {
 
     public ClanWarCommand(Logger logger,
                           CachingClanRepository clanRepository,
+                          Users users,
                           ClansConfig clansConfig,
                           MessagesConfig messages,
                           FactoryOfTheFuture futuresFactory,
                           Wars wars
                           ) {
-        super(logger, clanRepository, clansConfig, messages, futuresFactory);
+        super(logger, clanRepository, users, clansConfig, messages, futuresFactory);
         this.wars = wars;
     }
 

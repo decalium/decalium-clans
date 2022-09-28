@@ -20,9 +20,11 @@ package org.gepron1x.clans.plugin.command.parser;
 
 import cloud.commandframework.arguments.parser.ArgumentParseResult;
 import cloud.commandframework.arguments.parser.ArgumentParser;
+import cloud.commandframework.captions.Caption;
+import cloud.commandframework.captions.CaptionVariable;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.exceptions.parsing.NoInputProvidedException;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import cloud.commandframework.exceptions.parsing.ParserException;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gepron1x.clans.api.clan.Clan;
@@ -43,14 +45,21 @@ public final class ClanParser implements ArgumentParser<CommandSender, Clan> {
         String tag = inputQueue.peek();
         if(tag == null) return ArgumentParseResult.failure(new NoInputProvidedException(ClanParser.class, commandContext));
         Clan clan = cache.getClan(tag);
-        if(clan == null) return ArgumentParseResult.failure(new ClanNotFoundException(tag));
+        if(clan == null) return ArgumentParseResult.failure(new ClanNotFoundException(commandContext, tag));
         return ArgumentParseResult.success(clan);
     }
 
-    public static final class ClanNotFoundException extends DescribingException {
+    public static class ClanNotFoundException extends ParserException {
 
-        public ClanNotFoundException(String tag) {
-            super(Placeholder.parsed("tag", "tag"));
+        private final String name;
+
+        protected ClanNotFoundException(@NonNull CommandContext<?> context, String name) {
+            super(ClanRoleParser.class, context, Caption.of("clan.not.found"), CaptionVariable.of("name", name));
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
         }
     }
 }

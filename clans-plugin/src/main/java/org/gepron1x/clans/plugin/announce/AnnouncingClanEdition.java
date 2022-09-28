@@ -112,7 +112,7 @@ public final class AnnouncingClanEdition implements ClanEdition {
     public ClanEdition removeHome(@NotNull ClanHome home) {
         this.audience.sendMessage(messages.announcements().homeDeleted()
                 .with("member", clan.member(home.creator()).orElseThrow().renderName(server))
-                .with("home_name", home));
+                .with("home_name", home.displayName()));
         return this;
     }
 

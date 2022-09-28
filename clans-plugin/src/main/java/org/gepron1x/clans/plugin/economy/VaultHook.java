@@ -32,6 +32,7 @@ public record VaultHook(Users users, ServicesManager services, PricesConfig pric
     public Users hook() {
         return Optional.ofNullable(services.getRegistration(Economy.class))
                 .map(RegisteredServiceProvider::getProvider).<Users>map(economy -> {
+                    System.out.println("Registered");
                     return new EconomyUsers(users, economy, prices, futuresFactory);
                 }).orElse(users);
     }

@@ -22,7 +22,6 @@ import cloud.commandframework.Command;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.permission.Permission;
-import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.clan.Clan;
@@ -30,24 +29,20 @@ import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
+import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 public class MemberCommand extends AbstractClanCommand {
 
 
-    public MemberCommand(@NotNull Logger logger, CachingClanRepository clanManager,
+    public MemberCommand(@NotNull Logger logger, CachingClanRepository clanRepository, Users users,
                          @NotNull ClansConfig config,
                          @NotNull MessagesConfig messages, @NotNull FactoryOfTheFuture futuresFactory) {
-        super(logger, clanManager, config, messages, futuresFactory);
+        super(logger, clanRepository, users, config, messages, futuresFactory);
     }
 
     @Override
@@ -109,7 +104,7 @@ public class MemberCommand extends AbstractClanCommand {
 
         clan.edit(edition -> edition.editMember(other.uniqueId(), memberEdition -> memberEdition.appoint(role)))
                 .thenAccept(c -> player.sendMessage(messages.commands().member().role().success()))
-                .exceptionally(this::exceptionHandler);
+                .exceptionally(exceptionHandler(player));
 
     }
 
@@ -124,7 +119,7 @@ public class MemberCommand extends AbstractClanCommand {
         }
         clan.edit(edition -> {
             edition.owner(newOwner).editMember(newOwner.uniqueId(), memberEdition -> memberEdition.appoint(member.role()));
-        }).exceptionally(this::exceptionHandler);
+        }).exceptionally(exceptionHandler(player));
 
     }
 
@@ -151,23 +146,8 @@ public class MemberCommand extends AbstractClanCommand {
 
         clan.edit(clanEdition -> clanEdition.removeMember(other)).thenAccept(newClan -> {
             player.sendMessage(messages.commands().member().kick().success());
-        }).exceptionally(this::exceptionHandler);
+        }).exceptionally(exceptionHandler(player));
     }
 
 
-    private List<String> memberCompletion(CommandContext<CommandSender> context, String s) {
-        if (!(context.getSender() instanceof Player player)) return Collections.emptyList();
-        Server server = player.getServer();
-        return clanRepository.userClanIfCached(player.getUniqueId())
-                .map(Clan::members)
-                .map(members ->
-                        members.stream()
-                                .map(m -> m.asPlayer(server))
-                                .filter(Optional::isPresent)
-                                .map(Optional::get)
-                                .map(Player::getName)
-                                .collect(Collectors.toList())
-                ).orElse(Collections.emptyList());
-
-    }
 }
