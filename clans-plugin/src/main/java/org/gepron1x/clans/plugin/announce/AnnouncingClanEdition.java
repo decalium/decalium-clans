@@ -104,7 +104,7 @@ public final class AnnouncingClanEdition implements ClanEdition {
     public ClanEdition addHome(@NotNull ClanHome home) {
         this.audience.sendMessage(messages.announcements().homeCreated()
                 .with("member", requireNonNull(clan.member(home.creator())).orElseThrow().renderName(server))
-                .with("home_name", home));
+                .with("home_name", home.displayName()));
         return this;
     }
 
