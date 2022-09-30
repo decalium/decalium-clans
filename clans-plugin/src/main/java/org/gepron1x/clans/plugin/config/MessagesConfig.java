@@ -110,6 +110,10 @@ public interface MessagesConfig {
         @DefaultString("<prefix> <member> deleted home <home_name>")
         Message homeDeleted();
 
+        @ConfKey("home-upgraded")
+        @DefaultString("<prefix> Home <home> is level <level> now!")
+        Message homeUpgraded();
+
         @ConfKey("clan-owner-changed")
         @DefaultString("<prefix> <member> is the owner now.")
         Message clanOwnerChanged();
@@ -333,6 +337,10 @@ public interface MessagesConfig {
             @ConfKey("renamed")
             @DefaultString("<prefix> Successfully renamed the clan home")
             Message renamed();
+
+            @ConfKey("upgraded")
+            @DefaultString("<prefix> Successfully upgraded home to level <level>.")
+            Message upgraded();
 
 
         }

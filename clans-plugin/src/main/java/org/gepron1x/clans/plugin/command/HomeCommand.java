@@ -193,7 +193,7 @@ public class HomeCommand extends AbstractClanCommand {
         Clan clan = context.get(ClanExecutionHandler.CLAN);
         ClanHome home = context.get("home");
         clan.edit(edition -> edition.editHome(home.name(), HomeEdition::upgrade)).thenAccept(c -> {
-            context.getSender().sendMessage(Component.text("Clan home upgraded."));
+            context.getSender().sendMessage(this.messages.commands().home().upgraded().with("level", home.level() + 1));
         }).exceptionally(this.exceptionHandler(context.getSender()));
     }
 

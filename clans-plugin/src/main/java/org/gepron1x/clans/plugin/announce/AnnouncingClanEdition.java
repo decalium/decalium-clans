@@ -20,7 +20,9 @@ package org.gepron1x.clans.plugin.announce;
 
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Location;
 import org.bukkit.Server;
+import org.bukkit.inventory.ItemStack;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
@@ -31,6 +33,7 @@ import org.gepron1x.clans.api.edition.member.MemberEdition;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.UUID;
@@ -118,6 +121,7 @@ public final class AnnouncingClanEdition implements ClanEdition {
 
     @Override
     public ClanEdition editHome(@NotNull String name, @NotNull Consumer<HomeEdition> consumer) {
+        consumer.accept(new AnnouncingHomeEdition(clan.home(name).orElseThrow()));
         return this;
     }
 
@@ -138,6 +142,42 @@ public final class AnnouncingClanEdition implements ClanEdition {
                     .with("role", role)
             );
             return this;
+        }
+    }
+
+    private class AnnouncingHomeEdition implements HomeEdition {
+
+        private final ClanHome home;
+
+        private AnnouncingHomeEdition(ClanHome home) {
+            this.home = home;
+        }
+
+
+        @Override
+        public HomeEdition setIcon(@Nullable ItemStack icon) {
+            return this;
+        }
+
+        @Override
+        public HomeEdition move(@NotNull Location location) {
+            return this;
+        }
+
+        @Override
+        public HomeEdition rename(@NotNull Component displayName) {
+            return this;
+        }
+
+        @Override
+        public HomeEdition upgrade() {
+            audience.sendMessage(messages.announcements().homeUpgraded().with("home", home.displayName()).with("level", home.level()));
+            return this;
+        }
+
+        @Override
+        public HomeEdition downgrade() {
+            return upgrade();
         }
     }
 }
