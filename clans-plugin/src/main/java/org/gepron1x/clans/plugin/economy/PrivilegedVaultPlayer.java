@@ -18,10 +18,20 @@
  */
 package org.gepron1x.clans.plugin.economy;
 
-public interface VaultPlayer {
-    double balance();
+public final class PrivilegedVaultPlayer implements VaultPlayer {
 
-    boolean has(double amount);
+    @Override
+    public double balance() {
+        return 0;
+    }
 
-    void withdraw(double amount);
+    @Override
+    public boolean has(double amount) {
+        return false;
+    }
+
+    @Override
+    public void withdraw(double amount) {
+
+    }
 }

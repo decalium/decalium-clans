@@ -40,6 +40,6 @@ public final class EconomyUsers implements Users {
     }
     @Override
     public ClanUser userFor(Player player) {
-        return new EconomyUser(users.userFor(player), new VaultPlayer(player, economy), prices, futuresFactory);
+        return new EconomyUser(users.userFor(player), new VaultPlayerImpl(player, economy), prices, futuresFactory);
     }
 }
