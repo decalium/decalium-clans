@@ -13,9 +13,9 @@ Every home has:
 To create a home, hold some item in your hand. It is going to be used as home icon.
 Then simply type
 
-> /clan home create <name\> [display_name\]
+> /clan home create <display_name\>
 
-Seems very similiar, right? :)
+You can also explicitly set the home *name* with --name flag.
 
 **It is highly recommended to have WorldGuard installed**
 If you have one, a protection region and a fancy hologram is going to be created with home:
@@ -28,19 +28,27 @@ All clan members will be automatically added as region members.
 ## Teleporting to home
 
 Use the following command:
-> /clan home teleport <name\>
+> /clan home teleport \<name>
 
 ## Deleting a home
 To do that, you should be a home owner or have a permission to edit other's homes.
 
-> /clan home delete <name\>
+> /clan home delete \<name>
 
 ## Renaming a home
 
-> /clan home rename <name\> <new_display_name\>
+> /clan home rename \<name> \<new_display_name>
 
 
-You can setup a home limit per clan, the region size, region flags, hologram format and max display name size in config.yml.
+## Upgrading a home
+
+You can upgrade homes. Higher level means higher protection radius. To do that, use
+
+> /clan home upgrade \<name>
+
+
+You can setup a home limit per clan, the region size, region flags, 
+hologram format and max display name size in config.yml.
 
 
 

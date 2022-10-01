@@ -8,6 +8,7 @@ A free, open-source, powerful and performant clans plugin. Like in dreams.
 - Clan homes with WorldGuard integration.
 - Announcements and clan chat with Carbon hook.
 - Clan wars
+- Vault Economy Integration
 - PlaceholderAPI support
 - Efficient Storage. Plugin takes a full advantage of relation database. At the moment, we support MySQL/MariaDB and H2 databases.
 - Well-designed thread-safe api.
