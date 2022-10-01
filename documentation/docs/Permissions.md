@@ -6,7 +6,7 @@ Luckperms permission tab completion will help you.
 
 For admin only actions **clans.admin.*** is used.
 
-Here's a list of all permission plugin has (can be outdated, please contact me or do A PR if it is)
+Here's a list of all permission plugin has (can be outdated, please contact me or do a PR if it is)
 
 
 ## Player Permissions
@@ -27,6 +27,7 @@ Here's a list of all permission plugin has (can be outdated, please contact me o
 | clans.member.kick      | Kick members from the clan |
 | clans.home.create      | Create clan homes          |
 | clans.home.teleport    | Teleport to clan home      |
+| clans.home.upgrade     | Upgrade the clan home      |
 | clans.home.delete      | Delete clan homes          |
 | clans.home.rename      | Rename homes               |
 | clans.war.request      | Request clan war           |
