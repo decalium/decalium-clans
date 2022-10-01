@@ -18,10 +18,35 @@
  */
 package org.gepron1x.clans.plugin.config.format;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import space.arim.dazzleconf.annote.ConfKey;
+
+import java.util.regex.Pattern;
+
+import static space.arim.dazzleconf.annote.ConfDefault.DefaultInteger;
+import static space.arim.dazzleconf.annote.ConfDefault.DefaultString;
+
 public interface DisplayNameFormat {
+    @DefaultString("[a-zA-Z0-9а-яА-Я]")
+    @ConfKey("allowed-tag-characters")
+    Pattern allowedTagCharacters();
 
-    boolean valid(String tag);
+    @DefaultInteger(3)
+    @ConfKey("min-tag-size")
+    int minTagSize();
 
-    String formatTag(String tag);
+    default String formatTag(Component component) {
+        String text = PlainTextComponentSerializer.plainText().serialize(component);
+        text = text.replace(' ', '_');
+        Pattern allowedChars = allowedTagCharacters();
+        StringBuilder builder = new StringBuilder();
+        for(char c : text.toCharArray()) {
+            if(allowedChars.matcher(String.valueOf(c)).matches()) {
+                builder.append(c);
+            }
+        }
+        return builder.substring(0, Math.min(builder.length(), 16));
+    }
 
 }

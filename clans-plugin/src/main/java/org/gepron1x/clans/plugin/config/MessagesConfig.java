@@ -192,7 +192,7 @@ public interface MessagesConfig {
             Message clanWithTagAlreadyExists();
 
             @ConfKey("invalid-tag")
-            @DefaultString("<prefix> Error! Invalid tag. you can only use english letters and numbers. [a-z0-9]")
+            @DefaultString("<prefix> Error! Invalid tag/name. you can only use english letters and numbers. [a-z0-9]. The display name also should containt at least 3 english letters.")
             Message invalidTag();
 
             @ConfKey("success")

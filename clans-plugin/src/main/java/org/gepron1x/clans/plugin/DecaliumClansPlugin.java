@@ -139,6 +139,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
                 .addSerialiser(new AdventureComponentSerializer(miniMessage))
                 .addSerialiser(new ClanRoleSerializer(builderFactory))
                 .addSerialiser(new ClanPermissionSerializer())
+                .addSerialiser(new PatternSerializer())
                 .build();
         this.messagesConfiguration = Configuration.create(this, "messages.yml", MessagesConfig.class, options);
         this.configuration = Configuration.create(this, "config.yml", ClansConfig.class, options);

@@ -20,16 +20,15 @@ package org.gepron1x.clans.plugin.command;
 
 import cloud.commandframework.Command;
 import cloud.commandframework.CommandManager;
+import cloud.commandframework.arguments.flags.CommandFlag;
 import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.permission.Permission;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.RoleRegistry;
-import org.gepron1x.clans.api.Validations;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
@@ -75,9 +74,10 @@ public class ClanCommand extends AbstractClanCommand {
 
         manager.command(builder.literal("create")
                 .permission("clans.create")
-                .argument(StringArgument.of("tag"))
-                .argument(ComponentArgument.<CommandSender>builder("display_name").greedy()
-                        .serializer(clansConfig.userComponentFormat()).asOptional())
+                .flag(CommandFlag.newBuilder("tag")
+                        .withArgument(StringArgument.of("tag")).withAliases("t"))
+                .argument(ComponentArgument.<CommandSender>builder("display_name").mode(StringArgument.StringMode.GREEDY_FLAG_YIELDING)
+                        .serializer(clansConfig.userComponentFormat()))
                 .handler(this::createClan)
         );
 
@@ -115,15 +115,13 @@ public class ClanCommand extends AbstractClanCommand {
 
     private void createClan(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
-        String tag = context.get("tag");
-        if(!Validations.checkTag(tag)) {
+
+        Component displayName = context.get("display_name");
+        String tag = context.flags().get("tag");
+        if(tag == null) tag = clansConfig.displayNameFormat().formatTag(displayName);
+        if(tag.length() < clansConfig.displayNameFormat().minTagSize()) {
             player.sendMessage(this.messages.commands().creation().invalidTag());
-            return;
         }
-
-        Component displayName = context.<Component>getOptional("display_name")
-                .orElseGet(() -> text(tag, NamedTextColor.GRAY));
-
         UUID uuid = player.getUniqueId();
 
         ClanMember member = builderFactory.memberBuilder()
@@ -137,9 +135,10 @@ public class ClanCommand extends AbstractClanCommand {
                 .owner(member)
                 .build();
 
+        String finalTag = tag;
         users.userFor(player).create(clan).thenAcceptSync(result -> {
             if(result.isSuccess()) {
-                player.sendMessage(messages.commands().creation().success().with("tag", tag).with("name", displayName));
+                player.sendMessage(messages.commands().creation().success().with("tag", finalTag).with("name", displayName));
             } else {
                 player.sendMessage(switch (result.status()) {
                     case MEMBERS_IN_OTHER_CLANS -> messages.alreadyInClan();

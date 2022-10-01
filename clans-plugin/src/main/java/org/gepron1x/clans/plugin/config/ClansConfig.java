@@ -23,6 +23,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.plugin.clan.member.ClanRoleImpl;
+import org.gepron1x.clans.plugin.config.format.DisplayNameFormat;
 import org.gepron1x.clans.plugin.storage.StorageType;
 import org.gepron1x.clans.plugin.util.message.Message;
 import space.arim.dazzleconf.annote.ConfComments;
@@ -57,6 +58,10 @@ public interface ClansConfig {
     @ConfKey("user-component-format")
     @ConfComments("What format should we use for user input? MINI_MESSAGE - MiniMessage, LEGACY - legacy color codes (&a, &b, &c) or MIXED (both, minimessage and legacy)")
     UserComponentSerializer userComponentFormat();
+
+    @ConfKey("display-names")
+    @ConfComments("Display name format.")
+    @SubSection DisplayNameFormat displayNameFormat();
 
 
     @ConfKey("roles")
