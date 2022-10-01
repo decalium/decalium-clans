@@ -33,18 +33,18 @@ Use the following command:
 ## Deleting a home
 To do that, you should be a home owner or have a permission to edit other's homes.
 
-> /clan home delete \<name>
+> /clan home delete <name\>
 
 ## Renaming a home
 
-> /clan home rename \<name> \<new_display_name>
+> /clan home rename <name\> <new_display_name\>
 
 
 ## Upgrading a home
 
 You can upgrade homes. Higher level means higher protection radius. To do that, use
 
-> /clan home upgrade \<name>
+> /clan home upgrade <name\>
 
 
 You can setup a home limit per clan, the region size, region flags, 

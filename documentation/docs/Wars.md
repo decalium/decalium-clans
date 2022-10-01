@@ -6,7 +6,7 @@ If player leaves the game. he loses all items and automatically marked as dead.
 
 To start a war, you need to send a war request to your opponent. Type
 
-> /clan war request <tag/>
+> /clan war request <tag\>
 
 You need a special clan permission to send requests.
 
@@ -14,7 +14,7 @@ All members of opponent clan will receive a notification, and would be able to a
 
 ## Accepting and declining war requests
 To accept or decline incoming war requests use
-> /clan war accept/decline <tag/>
+> /clan war accept/decline <tag\>
 
 You also need a clan permission to do that.
 
