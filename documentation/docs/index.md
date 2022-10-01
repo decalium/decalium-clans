@@ -2,6 +2,8 @@
 
 A free, open-source, powerful and performant clans plugin. Like in dreams.
 
+![logo](hat.png)
+
 
 ## Features
 - A role and clan permission system.

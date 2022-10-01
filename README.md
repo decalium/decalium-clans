@@ -1,6 +1,8 @@
-# Decalium Clans
+![logo](documentation/docs/hat.png)
 
 A free, open-source, powerful and performant clans plugin. Like in dreams.
+
+
 
 ## Features
 - A role and clan permission system.
