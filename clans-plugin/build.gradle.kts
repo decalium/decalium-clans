@@ -41,11 +41,14 @@ dependencies {
     implementation("cloud.commandframework:cloud-paper:1.7.1") {
         exclude("org.checkerframework", "checker-qual")
     }
-    implementation("cloud.commandframework:cloud-minecraft-extras:1.7.1")
+    implementation("cloud.commandframework:cloud-minecraft-extras:1.7.1") {
+        exclude("net.kyori", "adventure-api")
+        exclude("net.kyori", "adventure-text-serializer-plain")
+    }
     implementation("space.arim.dazzleconf:dazzleconf-ext-snakeyaml:1.2.1") {
         exclude(group = "org.yaml", module = "snakeyaml")
     }
-    implementation("com.h2database:h2:2.1.212")
+    implementation("com.h2database:h2:2.1.214")
     compileOnly("me.clip:placeholderapi:2.10.9")
     implementation("com.zaxxer:HikariCP:5.0.1") {
         exclude(group = "org.slf4j", module = "slf4j-api")

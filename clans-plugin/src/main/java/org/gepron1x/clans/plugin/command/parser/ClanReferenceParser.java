@@ -49,6 +49,7 @@ public final class ClanReferenceParser implements ArgumentParser<CommandSender, 
     public @NonNull ArgumentParseResult<@NonNull ClanReference> parse(@NonNull CommandContext<@NonNull CommandSender> commandContext, @NonNull Queue<@NonNull String> inputQueue) {
         String value = inputQueue.peek();
         if(value == null) return ArgumentParseResult.failure(new NoInputProvidedException(ClanReferenceParser.class, commandContext));
+        inputQueue.remove();
         return cachingClanRepository.clanIfCached(value).<ClanReference>map(clan -> new TagClanReference(cachingClanRepository, value))
                 .map(ArgumentParseResult::success)
                 .orElseGet(() -> ArgumentParseResult.failure(new UnknownClanException(commandContext, value)));
