@@ -167,7 +167,7 @@ public class HomeCommand extends AbstractClanCommand {
         ClanHome home = context.get("home");
 
        clan.edit(edition -> edition.removeHome(home)).thenAccept(c -> {
-            if(c != null) player.sendMessage(messages.commands().home().deleted());
+            player.sendMessage(messages.commands().home().deleted());
         }).exceptionally(exceptionHandler(player));
     }
 
