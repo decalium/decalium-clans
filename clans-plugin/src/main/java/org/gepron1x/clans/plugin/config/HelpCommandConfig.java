@@ -20,6 +20,7 @@ package org.gepron1x.clans.plugin.config;
 
 
 import cloud.commandframework.minecraft.extras.MinecraftHelp;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.command.CommandSender;
 import org.gepron1x.clans.plugin.util.message.Message;
 import space.arim.dazzleconf.annote.ConfComments;
@@ -41,7 +42,13 @@ public interface HelpCommandConfig {
     MinecraftHelp.HelpColors colors();
 
     static MinecraftHelp.HelpColors colorsDefault() {
-        return MinecraftHelp.DEFAULT_HELP_COLORS;
+        return MinecraftHelp.HelpColors.of(
+                TextColor.color(0x38a5ff),
+                TextColor.color(0xc7e9ff),
+                TextColor.color(0x9bb5c7),
+                TextColor.color(0xa0dedb),
+                TextColor.color(0x304241)
+        );
     }
 
     @ConfKey("messages")
