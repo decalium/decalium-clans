@@ -42,6 +42,6 @@ public record ClanMemberTagResolver(@NotNull ClanMember member) implements TagRe
             case UUID -> Component.text(member.uniqueId().toString());
             default -> null;
         };
-        return component == null ? null : Tag.inserting(component);
+        return component == null ? null : Tag.selfClosingInserting(component);
     }
 }

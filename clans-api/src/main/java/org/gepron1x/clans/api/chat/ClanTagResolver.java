@@ -81,7 +81,7 @@ public record ClanTagResolver(@NotNull DraftClan clan) implements TagResolver {
                     .orElse(null);
         }
 
-        if(component != null) return Tag.inserting(component);
+        if(component != null) return Tag.selfClosingInserting(component);
 
         if(name.startsWith(STATISTIC)) {
             StatisticType type = new StatisticType(name.substring(STATISTIC.length()));

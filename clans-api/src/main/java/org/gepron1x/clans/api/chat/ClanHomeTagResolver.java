@@ -59,6 +59,6 @@ public record ClanHomeTagResolver(@NotNull ClanHome clanHome) implements TagReso
             case ICON -> clanHome.icon().displayName();
             default -> null;
         };
-        return component == null ? null : Tag.inserting(component);
+        return component == null ? null : Tag.selfClosingInserting(component);
     }
 }
