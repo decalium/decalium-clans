@@ -51,7 +51,7 @@ public final class TagClanReference implements ClanReference {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TagClanReference that = (TagClanReference) o;
-        return repository.equals(that.repository) && tag.equals(that.tag);
+        return tag.equals(that.tag);
     }
 
     @Override

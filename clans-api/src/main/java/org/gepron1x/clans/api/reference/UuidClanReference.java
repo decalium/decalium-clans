@@ -54,7 +54,7 @@ public final class UuidClanReference implements ClanReference {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UuidClanReference that = (UuidClanReference) o;
-        return repository.equals(that.repository) && uniqueId.equals(that.uniqueId);
+        return uniqueId.equals(that.uniqueId);
     }
 
     @Override

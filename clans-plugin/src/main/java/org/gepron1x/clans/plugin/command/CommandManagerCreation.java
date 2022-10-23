@@ -35,11 +35,9 @@ import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.api.exception.DescribingException;
+import org.gepron1x.clans.api.reference.ClanReference;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
-import org.gepron1x.clans.plugin.command.parser.ClanRoleParser;
-import org.gepron1x.clans.plugin.command.parser.HomeParser;
-import org.gepron1x.clans.plugin.command.parser.MemberParser;
-import org.gepron1x.clans.plugin.command.parser.MessagingParser;
+import org.gepron1x.clans.plugin.command.parser.*;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 
 import java.util.function.UnaryOperator;
@@ -85,6 +83,9 @@ public final class CommandManagerCreation {
         );
         parserRegistry.registerParserSupplier(TypeToken.get(ClanHome.class), params ->
                 new MessagingParser<>(new HomeParser(repository), messages.commands().home().homeNotFound())
+        );
+        parserRegistry.registerParserSupplier(TypeToken.get(ClanReference.class), params ->
+            new MessagingParser<>(new ClanReferenceParser(repository), messages.noOnlinePlayers())
         );
     }
 

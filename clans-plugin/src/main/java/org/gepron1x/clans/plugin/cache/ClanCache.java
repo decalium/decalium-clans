@@ -20,7 +20,6 @@ package org.gepron1x.clans.plugin.cache;
 
 import com.google.common.base.MoreObjects;
 import org.gepron1x.clans.api.clan.Clan;
-import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,7 +42,7 @@ public final class ClanCache {
 
     }
 
-    public @NotNull @UnmodifiableView Collection<DraftClan> getClans() {
+    public @NotNull @UnmodifiableView Collection<Clan> getClans() {
         return Collections.unmodifiableCollection(clanMap.values());
     }
 

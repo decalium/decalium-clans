@@ -21,7 +21,9 @@ package org.gepron1x.clans.api.repository;
 import org.bukkit.OfflinePlayer;
 import org.gepron1x.clans.api.clan.Clan;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,6 +37,9 @@ public interface CachingClanRepository extends ClanRepository {
     }
 
     Optional<Clan> clanIfCached(@NotNull String tag);
+
+    @UnmodifiableView
+    Collection<Clan> cachedClans();
 
 
 

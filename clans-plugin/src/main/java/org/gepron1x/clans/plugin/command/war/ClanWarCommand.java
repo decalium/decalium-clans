@@ -81,7 +81,7 @@ public final class ClanWarCommand extends AbstractClanCommand {
 
         manager.command(builder.literal("request").meta(CommandMeta.DESCRIPTION, descriptions.request())
                 .permission(Permission.of("clans.war.request"))
-                .argument(StringArgument.of("tag"))
+                .argument(manager.argumentBuilder(ClanReference.class, "clan"))
                 .handler(
                         clanExecutionHandler(
                                 permissionRequired(this::requestWar, ClanPermission.SEND_WAR_REQUEST)
@@ -113,14 +113,14 @@ public final class ClanWarCommand extends AbstractClanCommand {
         Player player = (Player) context.getSender();
         Clan clan = context.get(ClanExecutionHandler.CLAN);
         ClanReference enacted = new TagClanReference(this.clanRepository, clan.tag());
-        String tag = context.get("tag");
-        ClanReference victim = new TagClanReference(this.clanRepository, tag);
+
+        ClanReference victim = context.get("clan");
 
         if(victim.cached().isEmpty()) {
             player.sendMessage(this.messages.noOnlinePlayers());
             return;
         }
-        if(!victim.cached().map(Clan::tag).map(tag::equals).orElse(true)) {
+        if(victim.equals(enacted)) {
             player.sendMessage(this.messages.cannotDoActionOnYourSelf());
             return;
         }
@@ -140,7 +140,7 @@ public final class ClanWarCommand extends AbstractClanCommand {
         player.sendMessage(this.messages.commands().wars().requestSent());
 
         ClanWarRequest request = new ClanWarRequest(wars, enacted, victim);
-        this.requestMap.put(tag, clan.tag(), request);
+        this.requestMap.put(victim.cached().map(Clan::tag).orElseThrow(), clan.tag(), request);
 
     }
 

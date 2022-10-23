@@ -25,9 +25,11 @@ import org.gepron1x.clans.api.repository.ClanCreationResult;
 import org.gepron1x.clans.api.repository.ClanRepository;
 import org.gepron1x.clans.plugin.AdaptingClanRepository;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -89,6 +91,11 @@ public final class CachingClanRepositoryImpl extends AdaptingClanRepository impl
     @Override
     public Optional<Clan> clanIfCached(@NotNull String tag) {
         return Optional.ofNullable(cache.getClan(tag)).map(clan -> new CachingClan(clan, cache));
+    }
+
+    @Override
+    public @UnmodifiableView Collection<Clan> cachedClans() {
+        return cache.getClans();
     }
 
 
