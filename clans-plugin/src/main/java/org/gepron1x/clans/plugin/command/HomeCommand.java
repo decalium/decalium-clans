@@ -127,6 +127,7 @@ public class HomeCommand extends AbstractClanCommand {
         if(name == null) name = clansConfig.displayNameFormat().formatTag(displayName);
         if(name.length() < clansConfig.displayNameFormat().minTagSize()) {
             player.sendMessage(this.messages.commands().creation().invalidTag());
+            return;
         }
 
         ItemStack icon = player.getInventory().getItemInMainHand();

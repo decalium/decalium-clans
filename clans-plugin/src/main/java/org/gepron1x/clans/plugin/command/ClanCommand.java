@@ -29,12 +29,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.RoleRegistry;
+import org.gepron1x.clans.api.chat.ClanTagResolver;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
-import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.plugin.command.argument.ComponentArgument;
 import org.gepron1x.clans.plugin.config.ClansConfig;
@@ -45,9 +45,6 @@ import org.slf4j.Logger;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.util.UUID;
-
-import static net.kyori.adventure.text.Component.newline;
-import static net.kyori.adventure.text.Component.text;
 
 public class ClanCommand extends AbstractClanCommand {
 
@@ -104,8 +101,8 @@ public class ClanCommand extends AbstractClanCommand {
                 .permission(Permission.of("clans.member.list"))
                 .handler(clanExecutionHandler(this::listMembers)));
 
-        manager.command(builder.literal("myclan")
-                .permission(Permission.of("clans.myclan"))
+        manager.command(builder.literal("info", "myclan")
+                .permission(Permission.of("clans.info"))
                 .handler(clanExecutionHandler(this::myClan)));
 
         manager.command(builder.literal("leave")
@@ -163,12 +160,7 @@ public class ClanCommand extends AbstractClanCommand {
     private void myClan(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
         Clan clan = context.get(ClanExecutionHandler.CLAN);
-        player.sendMessage(text().append(text("You are member of "), clan, text("clan")));
-        player.sendMessage(text().append(
-                text().append(text("Kills: "), text(clan.statisticOr(StatisticType.KILLS, 0))),
-                newline(),
-                text().append(text("Deaths: "), text(clan.statisticOr(StatisticType.DEATHS, 0)))
-        ));
+        player.sendMessage(this.messages.commands().infoFormat().with("clan", ClanTagResolver.clan(clan)));
     }
 
     private void listMembers(CommandContext<CommandSender> context) {
