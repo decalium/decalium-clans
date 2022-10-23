@@ -25,7 +25,7 @@ import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.execution.CommandExecutionHandler;
 import cloud.commandframework.keys.CloudKey;
 import cloud.commandframework.keys.SimpleCloudKey;
-import cloud.commandframework.permission.CommandPermission;
+import cloud.commandframework.meta.CommandMeta;
 import cloud.commandframework.permission.Permission;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
@@ -47,6 +47,7 @@ import org.gepron1x.clans.plugin.command.AbstractClanCommand;
 import org.gepron1x.clans.plugin.command.ClanExecutionHandler;
 import org.gepron1x.clans.plugin.command.parser.ClanOfSender;
 import org.gepron1x.clans.plugin.config.ClansConfig;
+import org.gepron1x.clans.plugin.config.HelpCommandConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.slf4j.Logger;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
@@ -75,12 +76,11 @@ public final class ClanWarCommand extends AbstractClanCommand {
 
     @Override
     public void register(CommandManager<CommandSender> manager) {
+        HelpCommandConfig.Messages.Description.War descriptions = messages.help().messages().descriptions().war();
         Command.Builder<CommandSender> builder = manager.commandBuilder("clan").literal("war").senderType(Player.class);
 
-        CommandPermission permission = clanRequired();
-
-
-        manager.command(builder.literal("request").permission(Permission.of("clans.war.request").and(permission))
+        manager.command(builder.literal("request").meta(CommandMeta.DESCRIPTION, descriptions.request())
+                .permission(Permission.of("clans.war.request"))
                 .argument(StringArgument.of("tag"))
                 .handler(
                         clanExecutionHandler(
@@ -89,7 +89,8 @@ public final class ClanWarCommand extends AbstractClanCommand {
                 )
         );
 
-        manager.command(builder.literal("accept").permission(Permission.of("clans.war.accept").and(permission))
+        manager.command(builder.literal("accept").meta(CommandMeta.DESCRIPTION, descriptions.accept())
+                .permission(Permission.of("clans.war.accept"))
                 .argument(StringArgument.<CommandSender>newBuilder("tag").withSuggestionsProvider(this::requestsCompletion))
                 .handler(
                         clanExecutionHandler(
@@ -98,7 +99,8 @@ public final class ClanWarCommand extends AbstractClanCommand {
                 )
         );
 
-        manager.command(builder.literal("decline").permission(Permission.of("clans.war.decline").and(permission))
+        manager.command(builder.literal("decline").meta(CommandMeta.DESCRIPTION, descriptions.decline())
+                .permission(Permission.of("clans.war.decline"))
                 .argument(StringArgument.<CommandSender>newBuilder("tag").withSuggestionsProvider(this::requestsCompletion))
                 .handler(clanExecutionHandler(permissionRequired(requireRequest(this::declineWar), ClanPermission.ACCEPT_WAR)))
         );

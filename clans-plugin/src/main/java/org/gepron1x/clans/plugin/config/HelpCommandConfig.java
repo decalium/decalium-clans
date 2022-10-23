@@ -22,6 +22,7 @@ package org.gepron1x.clans.plugin.config;
 import cloud.commandframework.minecraft.extras.MinecraftHelp;
 import org.bukkit.command.CommandSender;
 import org.gepron1x.clans.plugin.util.message.Message;
+import space.arim.dazzleconf.annote.ConfComments;
 import space.arim.dazzleconf.annote.ConfKey;
 import space.arim.dazzleconf.annote.SubSection;
 
@@ -34,6 +35,7 @@ import static space.arim.dazzleconf.annote.ConfDefault.DefaultString;
 
 public interface HelpCommandConfig {
 
+    @ConfComments("Color options.")
     @ConfKey("colors")
     @DefaultObject("colorsDefault")
     MinecraftHelp.HelpColors colors();
@@ -41,6 +43,7 @@ public interface HelpCommandConfig {
     static MinecraftHelp.HelpColors colorsDefault() {
         return MinecraftHelp.DEFAULT_HELP_COLORS;
     }
+
     @ConfKey("messages")
     @SubSection Messages messages();
 
@@ -118,11 +121,99 @@ public interface HelpCommandConfig {
 
         }
 
+        @SubSection Description descriptions();
 
+
+        interface Description {
+
+            @DefaultString("Creates a new clan with given name.")
+            String create();
+
+            @DefaultString("Deletes the clan you own.")
+            String delete();
+
+            @DefaultString("Accept the clan invitation.")
+            String accept();
+
+            @DefaultString("Leave the clan")
+            String leave();
+
+            @DefaultString("Decline the clan invitation.")
+            String decline();
+
+            @DefaultString("Show the plugin help.")
+            String help();
+
+            @DefaultString("Display your clan information.")
+            String info();
+
+            @DefaultString("Invite a player to the clan.")
+            String invite();
+
+            @DefaultString("Renames the clan.")
+            String rename();
+
+            @DefaultString("Reloads the plugin.")
+            String reload();
+
+            @SubSection Home home();
+
+            interface Home {
+
+                @DefaultString("Creates a new home with given name.")
+                String create();
+
+                @DefaultString("Deletes a home with given name.")
+                String delete();
+
+                @DefaultString("Renames the home.")
+                String rename();
+
+                @DefaultString("Teleports to the home.")
+                String teleport();
+
+                @DefaultString("Upgrades the home protection region.")
+                String upgrade();
+
+            }
+
+            @SubSection Member member();
+
+            interface Member {
+
+                @DefaultString("Kick member from the clan.")
+                String kick();
+
+                @DefaultString("Show the list of all clan members.")
+                String list();
+
+                @DefaultString("Set the member's role.")
+                @ConfKey("set-role")
+                String setRole();
+
+                @DefaultString("Set the clan owner.")
+                @ConfKey("set-owner")
+                String setOwner();
+
+            }
+
+            @SubSection War war();
+
+            interface War {
+
+                @DefaultString("Send war request to the clan.")
+                String request();
+
+                @DefaultString("Accept clan war request from the clan.")
+                String accept();
+
+                @DefaultString("Decline clan war request from the clan.")
+                String decline();
+
+            }
+
+
+        }
 
     }
-
-
-
-
 }

@@ -24,6 +24,7 @@ import cloud.commandframework.arguments.flags.CommandFlag;
 import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.execution.CommandExecutionHandler;
+import cloud.commandframework.meta.CommandMeta;
 import cloud.commandframework.permission.Permission;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
@@ -42,6 +43,7 @@ import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.plugin.command.argument.ComponentArgument;
 import org.gepron1x.clans.plugin.config.ClansConfig;
+import org.gepron1x.clans.plugin.config.HelpCommandConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -64,13 +66,13 @@ public class HomeCommand extends AbstractClanCommand {
     @Override
     public void register(CommandManager<CommandSender> manager) {
 
-
+        HelpCommandConfig.Messages.Description.Home description = messages.help().messages().descriptions().home();
         Command.Builder<CommandSender> builder = manager.commandBuilder("clan")
                 .literal("home")
                 .senderType(Player.class);
 
 
-        manager.command(builder.literal("create")
+        manager.command(builder.literal("create").meta(CommandMeta.DESCRIPTION, description.create())
                 .permission(Permission.of("clans.home.create"))
                 .flag(CommandFlag.newBuilder("name").withAliases("n", "t").withArgument(StringArgument.of("name")))
                 .argument(ComponentArgument.<CommandSender>builder("display_name").mode(StringArgument.StringMode.GREEDY_FLAG_YIELDING).serializer(clansConfig.userComponentFormat()))
@@ -81,7 +83,7 @@ public class HomeCommand extends AbstractClanCommand {
                 )
         );
 
-        manager.command(builder.literal("delete")
+        manager.command(builder.literal("delete").meta(CommandMeta.DESCRIPTION, description.delete())
                 .permission(Permission.of("clans.home.delete"))
                 .argument(manager.argumentBuilder(ClanHome.class, "home"))
                 .handler(clanExecutionHandler(new PermissiveClanExecutionHandler(
@@ -92,7 +94,7 @@ public class HomeCommand extends AbstractClanCommand {
                 )))
         );
 
-        manager.command(builder.literal("teleport")
+        manager.command(builder.literal("teleport").meta(CommandMeta.DESCRIPTION, description.teleport())
                 .permission(Permission.of("clans.home.teleport"))
                 .argument(manager.argumentBuilder(ClanHome.class, "home"))
                 .handler(clanExecutionHandler(
@@ -101,7 +103,7 @@ public class HomeCommand extends AbstractClanCommand {
                 )
         );
 
-        manager.command(builder.literal("rename")
+        manager.command(builder.literal("rename").meta(CommandMeta.DESCRIPTION, description.rename())
                 .permission(Permission.of("clans.home.rename"))
                 .argument(manager.argumentBuilder(ClanHome.class, "home"))
                 .argument(ComponentArgument.greedy("display_name", clansConfig.userComponentFormat()))
@@ -111,7 +113,8 @@ public class HomeCommand extends AbstractClanCommand {
                 )
         );
 
-        manager.command(builder.literal("upgrade").permission("clans.home.upgrade")
+        manager.command(builder.literal("upgrade").meta(CommandMeta.DESCRIPTION, description.upgrade())
+                .permission("clans.home.upgrade")
                 .argument(manager.argumentBuilder(ClanHome.class, "home"))
                 .handler(clanExecutionHandler(this::upgradeHome)));
 

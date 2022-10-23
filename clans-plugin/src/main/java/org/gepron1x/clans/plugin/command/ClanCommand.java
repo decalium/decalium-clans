@@ -23,6 +23,7 @@ import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.flags.CommandFlag;
 import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.context.CommandContext;
+import cloud.commandframework.meta.CommandMeta;
 import cloud.commandframework.permission.Permission;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
@@ -38,6 +39,7 @@ import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.plugin.command.argument.ComponentArgument;
 import org.gepron1x.clans.plugin.config.ClansConfig;
+import org.gepron1x.clans.plugin.config.HelpCommandConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.gepron1x.clans.plugin.util.message.Message;
 import org.jetbrains.annotations.NotNull;
@@ -70,7 +72,9 @@ public class ClanCommand extends AbstractClanCommand {
 
         Command.Builder<CommandSender> builder = manager.commandBuilder("clan").senderType(Player.class);
 
-        manager.command(builder.literal("create")
+        HelpCommandConfig.Messages.Description descriptions = messages.help().messages().descriptions();
+
+        manager.command(builder.literal("create").meta(CommandMeta.DESCRIPTION, descriptions.create())
                 .permission("clans.create")
                 .flag(CommandFlag.newBuilder("tag")
                         .withArgument(StringArgument.of("tag")).withAliases("t"))
@@ -79,7 +83,7 @@ public class ClanCommand extends AbstractClanCommand {
                 .handler(this::createClan)
         );
 
-        manager.command(builder.literal("delete")
+        manager.command(builder.literal("delete").meta(CommandMeta.DESCRIPTION, descriptions.delete())
                 .permission(Permission.of("clans.delete"))
                 .handler(clanExecutionHandler(
                                 new PermissiveClanExecutionHandler(this::deleteClan, ClanPermission.DISBAND, this.messages)
@@ -87,7 +91,7 @@ public class ClanCommand extends AbstractClanCommand {
                 )
         );
 
-        manager.command(builder.literal("rename")
+        manager.command(builder.literal("rename").meta(CommandMeta.DESCRIPTION, descriptions.rename())
                 .permission(Permission.of("clans.rename"))
                 .argument(ComponentArgument.greedy("display_name", clansConfig.userComponentFormat()))
                 .handler(
@@ -97,15 +101,15 @@ public class ClanCommand extends AbstractClanCommand {
                 )
         );
 
-        manager.command(builder.literal("member").literal("list")
+        manager.command(builder.literal("member").literal("list").meta(CommandMeta.DESCRIPTION, descriptions.member().list())
                 .permission(Permission.of("clans.member.list"))
                 .handler(clanExecutionHandler(this::listMembers)));
 
-        manager.command(builder.literal("info", "myclan")
+        manager.command(builder.literal("info", "myclan").meta(CommandMeta.DESCRIPTION, descriptions.info())
                 .permission(Permission.of("clans.info"))
                 .handler(clanExecutionHandler(this::myClan)));
 
-        manager.command(builder.literal("leave")
+        manager.command(builder.literal("leave").meta(CommandMeta.DESCRIPTION, descriptions.leave())
                 .permission(Permission.of("clans.leave"))
                 .handler(clanExecutionHandler(this::leaveClan)));
     }

@@ -21,6 +21,7 @@ package org.gepron1x.clans.plugin.command;
 import cloud.commandframework.Command;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.context.CommandContext;
+import cloud.commandframework.meta.CommandMeta;
 import cloud.commandframework.permission.Permission;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -31,6 +32,7 @@ import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.plugin.config.ClansConfig;
+import org.gepron1x.clans.plugin.config.HelpCommandConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -48,10 +50,12 @@ public class MemberCommand extends AbstractClanCommand {
     @Override
     public void register(CommandManager<CommandSender> manager) {
 
+        HelpCommandConfig.Messages.Description.Member descriptions = messages.help().messages().descriptions().member();
+
         Command.Builder<CommandSender> builder = manager.commandBuilder("clan").literal("member").senderType(Player.class);
         manager.command(builder
                 .literal("set")
-                .literal("role")
+                .literal("role").meta(CommandMeta.DESCRIPTION, descriptions.setRole())
                 .permission(Permission.of("clans.member.set.role"))
                 .argument(manager.argumentBuilder(ClanMember.class, "member"))
                 .argument(manager.argumentBuilder(ClanRole.class, "role"))
@@ -62,7 +66,7 @@ public class MemberCommand extends AbstractClanCommand {
                 )
         );
 
-        manager.command(builder.literal("kick")
+        manager.command(builder.literal("kick").meta(CommandMeta.DESCRIPTION, descriptions.kick())
                 .permission(Permission.of("clans.member.kick"))
                 .argument(manager.argumentBuilder(ClanMember.class, "member"))
                 .handler(clanExecutionHandler(
@@ -70,7 +74,7 @@ public class MemberCommand extends AbstractClanCommand {
                 )
         );
 
-        manager.command(builder.literal("set").literal("owner")
+        manager.command(builder.literal("set").literal("owner").meta(CommandMeta.DESCRIPTION, descriptions.setOwner())
                 .argument(manager.argumentBuilder(ClanMember.class, "member"))
                 .handler(clanExecutionHandler(this::setOwner))
         );

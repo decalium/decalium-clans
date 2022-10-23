@@ -24,6 +24,7 @@ import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.bukkit.arguments.selector.SinglePlayerSelector;
 import cloud.commandframework.bukkit.parsers.selector.SinglePlayerSelectorArgument;
 import cloud.commandframework.context.CommandContext;
+import cloud.commandframework.meta.CommandMeta;
 import cloud.commandframework.permission.Permission;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
@@ -37,6 +38,7 @@ import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.plugin.config.ClansConfig;
+import org.gepron1x.clans.plugin.config.HelpCommandConfig;
 import org.gepron1x.clans.plugin.config.MessagesConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -73,8 +75,10 @@ public class InviteCommand extends AbstractClanCommand {
     public void register(CommandManager<CommandSender> manager) {
         Command.Builder<CommandSender> builder = manager.commandBuilder("clan").senderType(Player.class);
 
+        HelpCommandConfig.Messages.Description descriptions = messages.help().messages().descriptions();
 
-        manager.command(builder.literal("invite")
+
+        manager.command(builder.literal("invite").meta(CommandMeta.DESCRIPTION, descriptions.invite())
                 .permission(Permission.of("clans.invite"))
                 .argument(SinglePlayerSelectorArgument.of("receiver"))
                 .handler(
@@ -84,14 +88,14 @@ public class InviteCommand extends AbstractClanCommand {
                 )
         );
 
-        manager.command(builder.literal("accept")
+        manager.command(builder.literal("accept").meta(CommandMeta.DESCRIPTION, descriptions.accept())
                 .permission(Permission.of("clans.invite.accept"))
                 .argument(StringArgument.<CommandSender>newBuilder("sender_name")
                         .withSuggestionsProvider(this::invitationCompletion))
                 .handler(this::acceptInvite)
         );
 
-        manager.command(builder.literal("decline")
+        manager.command(builder.literal("decline").meta(CommandMeta.DESCRIPTION, descriptions.decline())
                 .permission(Permission.of("clans.invite.decline"))
                 .argument(StringArgument.<CommandSender>newBuilder("sender_name").withSuggestionsProvider(this::invitationCompletion))
                 .handler(this::declineInvite)
