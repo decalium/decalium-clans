@@ -132,6 +132,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
                 .addSerialiser(new ClanPermissionSerializer())
                 .addSerialiser(new PatternSerializer())
                 .addSerialiser(new TextColorSerializer())
+                .addSerialiser(new HelpColorsSerializer())
                 .setCreateSingleElementCollections(true)
                 .build();
         this.messagesConfiguration = Configuration.create(this, "messages.yml", MessagesConfig.class, options);
@@ -210,7 +211,9 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         clanWarCommand.register(commandManager);
 
         commandManager.command(
-                commandManager.commandBuilder("clan").literal("reload").permission("clans.admin.reload").meta(CommandMeta.DESCRIPTION, "Reloads").handler(ctx -> {
+                commandManager.commandBuilder("clan").literal("reload").permission("clans.admin.reload")
+                        .meta(CommandMeta.DESCRIPTION, messages.help().messages().descriptions().reload())
+                        .handler(ctx -> {
                     disable();
                     enable();
                     List<UUID> uuids = getServer().getOnlinePlayers().stream().map(Player::getUniqueId).toList();
@@ -220,8 +223,14 @@ public final class DecaliumClansPlugin extends JavaPlugin {
                 })
         );
         var help = new MinecraftHelp<>("/clan help", AudienceProvider.nativeAudience(), this.commandManager);
-        commandManager.command(commandManager.commandBuilder("clan").literal("help", "usage").permission("clans.help")
-                .argument(StringArgument.<CommandSender>newBuilder("query").greedy().asOptional()).handler(ctx -> help.queryCommands(Objects.requireNonNull(ctx.getOrDefault("query", "")), ctx.getSender())));
+        help.setHelpColors(messages.help().colors());
+        help.messageProvider(messages.help().messages().messageProvider());
+        help.descriptionDecorator(s -> miniMessage.deserialize(s));
+        commandManager.command(commandManager.commandBuilder("clan").literal("help", "usage")
+                .meta(CommandMeta.DESCRIPTION, messages.help().messages().descriptions().help())
+                .permission("clans.help")
+                .argument(StringArgument.<CommandSender>newBuilder("query").greedy().asOptional())
+                .handler(ctx -> help.queryCommands(Objects.requireNonNull(ctx.getOrDefault("query", "")), ctx.getSender())));
         StatisticListener statisticListener = new StatisticListener(clanRepository, this, futuresFactory, config);
         getServer().getPluginManager().registerEvents(statisticListener, this);
         statisticListener.start();
