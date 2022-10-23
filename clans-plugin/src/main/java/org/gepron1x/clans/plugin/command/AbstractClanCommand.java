@@ -27,6 +27,7 @@ import cloud.commandframework.permission.CommandPermission;
 import cloud.commandframework.permission.PredicatePermission;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
@@ -83,6 +84,7 @@ public abstract class AbstractClanCommand implements AbstractCommand {
                 sender.sendMessage(ex.description());
                 return null;
             }
+            sender.sendMessage(Component.text("Error happened while executing command; see console for more info.", NamedTextColor.RED));
             return exceptionHandler(t);
         };
     }
