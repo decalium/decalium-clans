@@ -41,6 +41,7 @@ dependencies {
     implementation("cloud.commandframework:cloud-paper:1.7.1") {
         exclude("org.checkerframework", "checker-qual")
     }
+    implementation("cloud.commandframework:cloud-minecraft-extras:1.7.1")
     implementation("space.arim.dazzleconf:dazzleconf-ext-snakeyaml:1.2.1") {
         exclude(group = "org.yaml", module = "snakeyaml")
     }

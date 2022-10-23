@@ -148,6 +148,23 @@ public interface MessagesConfig {
 
 
     interface Commands {
+        @ConfKey("invalid-syntax")
+        @DefaultString("<prefix> Invalid command syntax! Use /clan help to get information on how to use this command.")
+        Message invalidSyntax();
+
+        @ConfKey("invalid-argument")
+        @DefaultString("<prefix> Invalid argument! <message>")
+        Message invalidArgument();
+
+        @ConfKey("command-for-players-only")
+        @DefaultString("<prefix> Only players can execute this command!")
+        Message onlyPlayersCanDoThis();
+
+        @ConfKey("info-format")
+        @DefaultString("Clan <clan_display_name> (<clan_tag>)<br>Owner: <clan_owner><br>Members: <members>")
+        Message infoFormat();
+
+
 
         @ConfKey("display-name-set")
         @DefaultString("<prefix> Display name was set to <name>.")
@@ -282,6 +299,10 @@ public interface MessagesConfig {
                 @DefaultString("<prefix> Role <role> has higher weight than yours. You cannot set it.")
                 Message roleHasHigherWeight();
 
+                @ConfKey("role-not-found")
+                @DefaultString("Role <role> was not found.")
+                Message roleNotFound();
+
             }
 
             interface Kick {
@@ -382,10 +403,5 @@ public interface MessagesConfig {
 
 
     }
-
-
-
-
-
 
 }

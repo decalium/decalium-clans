@@ -52,6 +52,8 @@ import static net.kyori.adventure.text.Component.text;
 public class ClanCommand extends AbstractClanCommand {
 
 
+
+
     private final RoleRegistry roleRegistry;
     private final ClanBuilderFactory builderFactory;
 
@@ -70,7 +72,6 @@ public class ClanCommand extends AbstractClanCommand {
     public void register(CommandManager<CommandSender> manager) {
 
         Command.Builder<CommandSender> builder = manager.commandBuilder("clan").senderType(Player.class);
-
 
         manager.command(builder.literal("create")
                 .permission("clans.create")

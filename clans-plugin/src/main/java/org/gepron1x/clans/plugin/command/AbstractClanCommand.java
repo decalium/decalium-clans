@@ -22,9 +22,11 @@ import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.CommandExecutionHandler;
 import cloud.commandframework.keys.CloudKey;
 import cloud.commandframework.keys.SimpleCloudKey;
+import cloud.commandframework.meta.CommandMeta;
 import cloud.commandframework.permission.CommandPermission;
 import cloud.commandframework.permission.PredicatePermission;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
@@ -38,9 +40,9 @@ import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.util.concurrent.CompletionException;
 import java.util.function.Function;
+public abstract class AbstractClanCommand implements AbstractCommand {
 
-public abstract class AbstractClanCommand {
-
+    public static final CommandMeta.Key<Component> DESCRIPTION = CommandMeta.Key.of(Component.class, "cmd_description");
 
     public static final CloudKey<Void> CLAN_REQUIRED = SimpleCloudKey.of("clan_required");
 

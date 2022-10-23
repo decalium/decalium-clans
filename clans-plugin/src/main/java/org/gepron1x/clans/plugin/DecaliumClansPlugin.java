@@ -18,12 +18,11 @@
  */
 package org.gepron1x.clans.plugin;
 
-import cloud.commandframework.CommandManager;
-import cloud.commandframework.arguments.parser.ParserRegistry;
-import cloud.commandframework.exceptions.NoPermissionException;
-import cloud.commandframework.execution.CommandExecutionCoordinator;
+import cloud.commandframework.arguments.standard.StringArgument;
+import cloud.commandframework.meta.CommandMeta;
+import cloud.commandframework.minecraft.extras.AudienceProvider;
+import cloud.commandframework.minecraft.extras.MinecraftHelp;
 import cloud.commandframework.paper.PaperCommandManager;
-import io.leangen.geantyref.TypeToken;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -36,8 +35,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.DecaliumClansApi;
 import org.gepron1x.clans.api.RoleRegistry;
-import org.gepron1x.clans.api.clan.home.ClanHome;
-import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.repository.ClanRepository;
@@ -50,13 +47,7 @@ import org.gepron1x.clans.plugin.cache.CachingClanRepositoryImpl;
 import org.gepron1x.clans.plugin.cache.ClanCache;
 import org.gepron1x.clans.plugin.cache.UserCaching;
 import org.gepron1x.clans.plugin.chat.carbon.CarbonChatHook;
-import org.gepron1x.clans.plugin.command.ClanCommand;
-import org.gepron1x.clans.plugin.command.HomeCommand;
-import org.gepron1x.clans.plugin.command.InviteCommand;
-import org.gepron1x.clans.plugin.command.MemberCommand;
-import org.gepron1x.clans.plugin.command.parser.ClanRoleParser;
-import org.gepron1x.clans.plugin.command.parser.HomeParser;
-import org.gepron1x.clans.plugin.command.parser.MemberParser;
+import org.gepron1x.clans.plugin.command.*;
 import org.gepron1x.clans.plugin.command.war.ClanWarCommand;
 import org.gepron1x.clans.plugin.config.ClansConfig;
 import org.gepron1x.clans.plugin.config.Configuration;
@@ -78,8 +69,8 @@ import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
-import java.util.function.UnaryOperator;
 
 
 public final class DecaliumClansPlugin extends JavaPlugin {
@@ -140,6 +131,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
                 .addSerialiser(new ClanRoleSerializer(builderFactory))
                 .addSerialiser(new ClanPermissionSerializer())
                 .addSerialiser(new PatternSerializer())
+                .setCreateSingleElementCollections(true)
                 .build();
         this.messagesConfiguration = Configuration.create(this, "messages.yml", MessagesConfig.class, options);
         this.configuration = Configuration.create(this, "config.yml", ClansConfig.class, options);
@@ -204,30 +196,11 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         ClanWarCommand clanWarCommand = new ClanWarCommand(logger, clanRepository, users, config, messages, futuresFactory, wars);
 
         try {
-            this.commandManager = new PaperCommandManager<>(
-                    this,
-                    CommandExecutionCoordinator.simpleCoordinator(),
-                    UnaryOperator.identity(), UnaryOperator.identity());
+            commandManager = new CommandManagerCreation(this, clanRepository, roleRegistry, messages).create();
         } catch (Exception e) {
-            getLogger().severe("error caused initializing command manager!");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
+            getSLF4JLogger().error("Error initializing the command manager! Please contact the developer.", e);
         }
 
-        ParserRegistry<CommandSender> parserRegistry = commandManager.parserRegistry();
-        parserRegistry.registerParserSupplier(TypeToken.get(ClanRole.class), params -> new ClanRoleParser<>(roleRegistry));
-        parserRegistry.registerParserSupplier(TypeToken.get(ClanMember.class), params -> {
-            return new MemberParser(clanRepository, getServer());
-        });
-        parserRegistry.registerParserSupplier(TypeToken.get(ClanHome.class), params ->
-                new HomeParser(clanRepository)
-        );
-        commandManager.registerBrigadier();
-        commandManager.setSetting(CommandManager.ManagerSettings.OVERRIDE_EXISTING_COMMANDS, true);
-
-        commandManager.registerExceptionHandler(NoPermissionException.class, (sender, ex) -> {
-            sender.sendMessage(this.messages().noPermission());
-        });
 
         command.register(commandManager);
         inviteCommand.register(commandManager);
@@ -236,7 +209,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         clanWarCommand.register(commandManager);
 
         commandManager.command(
-                commandManager.commandBuilder("clan").literal("reload").permission("clans.admin.reload").handler(ctx -> {
+                commandManager.commandBuilder("clan").literal("reload").permission("clans.admin.reload").meta(CommandMeta.DESCRIPTION, "Reloads").handler(ctx -> {
                     disable();
                     enable();
                     List<UUID> uuids = getServer().getOnlinePlayers().stream().map(Player::getUniqueId).toList();
@@ -245,7 +218,9 @@ public final class DecaliumClansPlugin extends JavaPlugin {
                     });
                 })
         );
-
+        var help = new MinecraftHelp<>("/clan help", AudienceProvider.nativeAudience(), this.commandManager);
+        commandManager.command(commandManager.commandBuilder("clan").literal("help", "usage").permission("clans.help")
+                .argument(StringArgument.<CommandSender>newBuilder("query").greedy().asOptional()).handler(ctx -> help.queryCommands(Objects.requireNonNull(ctx.getOrDefault("query", "")), ctx.getSender())));
         StatisticListener statisticListener = new StatisticListener(clanRepository, this, futuresFactory, config);
         getServer().getPluginManager().registerEvents(statisticListener, this);
         statisticListener.start();

@@ -24,6 +24,7 @@ import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.exceptions.parsing.ParserException;
 import net.kyori.adventure.audience.Audience;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.gepron1x.clans.api.exception.DescribingException;
 import org.gepron1x.clans.plugin.util.message.Message;
 
 import java.util.Queue;
@@ -41,12 +42,13 @@ public final class MessagingParser<C extends Audience, T> implements ArgumentPar
     @Override
     public @NonNull ArgumentParseResult<@NonNull T> parse(@NonNull CommandContext<@NonNull C> commandContext, @NonNull Queue<@NonNull String> inputQueue) {
         ArgumentParseResult<T> result = this.argumentParser.parse(commandContext, inputQueue);
-        result.getFailure().filter(ParserException.class::isInstance)
-                .map(ParserException.class::cast)
-                .map(CaptionTagResolver::new)
-                .map(fail::with)
-                .ifPresent(commandContext.getSender()::sendMessage);
-        return result;
+        return result.mapFailure(throwable -> {
+            if(throwable instanceof ParserException ex) {
+                return new DescribingException(fail.with(new CaptionTagResolver(ex)).asComponent());
+            } else {
+                return throwable;
+            }
+        });
     }
 
 

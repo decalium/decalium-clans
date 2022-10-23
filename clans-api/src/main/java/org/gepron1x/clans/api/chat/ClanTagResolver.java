@@ -55,9 +55,10 @@ public record ClanTagResolver(@NotNull DraftClan clan) implements TagResolver {
 
     private static final String STATISTIC = "statistic_";
     private static final String MEMBER = "member";
+    private static final String MEMBERS = MEMBER + "s";
     private static final String OWNER = "owner_";
 
-    private static final Set<String> KEYS = Set.of(TAG, DISPLAY_NAME, MEMBERS_SIZE, HOMES_SIZE, STATISTIC, MEMBER, OWNER);
+    private static final Set<String> KEYS = Set.of(TAG, DISPLAY_NAME, MEMBERS_SIZE, HOMES_SIZE, STATISTIC, MEMBER, MEMBERS, OWNER);
 
 
     @Override
@@ -67,6 +68,7 @@ public record ClanTagResolver(@NotNull DraftClan clan) implements TagResolver {
             case DISPLAY_NAME -> clan.displayName();
             case MEMBERS_SIZE -> Component.text(clan.members().size());
             case HOMES_SIZE -> Component.text(clan.homes().size());
+            case MEMBERS -> clan.members().stream().map(member -> member.renderName(Bukkit.getServer())).collect(Component.toComponent(Component.newline()));
             default -> null;
         };
 

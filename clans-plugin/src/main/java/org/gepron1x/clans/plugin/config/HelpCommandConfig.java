@@ -16,23 +16,11 @@
  * along with decalium-clans-rewrite. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package org.gepron1x.clans.plugin.economy;
+package org.gepron1x.clans.plugin.config;
 
-import net.milkbowl.vault.economy.Economy;
-import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.ServicesManager;
-import org.gepron1x.clans.api.user.Users;
-import org.gepron1x.clans.plugin.config.PricesConfig;
-import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
-import java.util.Optional;
 
-public record VaultHook(Users users, ServicesManager services, PricesConfig prices, FactoryOfTheFuture futuresFactory) {
+public interface HelpCommandConfig {
 
-    public Users hook() {
-        return Optional.ofNullable(services.getRegistration(Economy.class))
-                .map(RegisteredServiceProvider::getProvider).<Users>map(economy -> {
-                    return new EconomyUsers(users, economy, prices, futuresFactory);
-                }).orElse(users);
-    }
+
 }

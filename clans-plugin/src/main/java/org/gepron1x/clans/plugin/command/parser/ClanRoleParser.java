@@ -21,6 +21,7 @@ package org.gepron1x.clans.plugin.command.parser;
 import cloud.commandframework.arguments.parser.ArgumentParseResult;
 import cloud.commandframework.arguments.parser.ArgumentParser;
 import cloud.commandframework.captions.Caption;
+import cloud.commandframework.captions.CaptionVariable;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.exceptions.parsing.NoInputProvidedException;
 import cloud.commandframework.exceptions.parsing.ParserException;
@@ -53,7 +54,7 @@ public final class ClanRoleParser<C> implements ArgumentParser<C, ClanRole> {
         if(name == null) return ArgumentParseResult.failure(new NoInputProvidedException(ClanRoleParser.class, commandContext));
         inputQueue.remove();
 
-        return roleRegistry.value(name).map(ArgumentParseResult::success).orElseGet(() -> ArgumentParseResult.failure(new UnknownRoleException(commandContext)));
+        return roleRegistry.value(name).map(ArgumentParseResult::success).orElseGet(() -> ArgumentParseResult.failure(new UnknownRoleException(commandContext, name)));
 
     }
 
@@ -68,8 +69,8 @@ public final class ClanRoleParser<C> implements ArgumentParser<C, ClanRole> {
 
     public static class UnknownRoleException extends ParserException {
 
-        protected UnknownRoleException(@NonNull CommandContext<?> context) {
-            super(ClanRoleParser.class, context, UNKNOWN_ROLE);
+        protected UnknownRoleException(@NonNull CommandContext<?> context, String input) {
+            super(ClanRoleParser.class, context, UNKNOWN_ROLE, CaptionVariable.of("role", input));
         }
     }
 }
