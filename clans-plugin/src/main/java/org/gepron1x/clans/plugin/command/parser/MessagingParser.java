@@ -27,6 +27,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gepron1x.clans.api.exception.DescribingException;
 import org.gepron1x.clans.plugin.util.message.Message;
 
+import java.util.List;
 import java.util.Queue;
 
 public final class MessagingParser<C extends Audience, T> implements ArgumentParser<C, T> {
@@ -51,5 +52,18 @@ public final class MessagingParser<C extends Audience, T> implements ArgumentPar
         });
     }
 
+    @Override
+    public @NonNull List<@NonNull String> suggestions(@NonNull CommandContext<C> commandContext, @NonNull String input) {
+        return this.argumentParser.suggestions(commandContext, input);
+    }
 
+    @Override
+    public boolean isContextFree() {
+        return this.argumentParser.isContextFree();
+    }
+
+    @Override
+    public int getRequestedArgumentCount() {
+        return this.argumentParser.getRequestedArgumentCount();
+    }
 }
