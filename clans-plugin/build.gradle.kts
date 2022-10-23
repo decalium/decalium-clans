@@ -33,11 +33,11 @@ dependencies {
     implementation(project(":clans-api"))
     compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
     // paperDevBundle("1.18.2-R0.1-SNAPSHOT")
-    implementation("org.jdbi:jdbi3-core:3.32.0") {
+    implementation("org.jdbi:jdbi3-core:3.34.0") {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
-    implementation("org.flywaydb:flyway-core:9.0.4")
-    implementation("org.flywaydb:flyway-mysql:9.0.4")
+    implementation("org.flywaydb:flyway-core:9.4.0")
+    implementation("org.flywaydb:flyway-mysql:9.4.0")
     implementation("cloud.commandframework:cloud-paper:1.7.1") {
         exclude("org.checkerframework", "checker-qual")
     }
