@@ -27,7 +27,7 @@ All clan members will be automatically added as region members.
 ## Teleporting to home
 
 Use the following command:
-> /clan home teleport \<name>
+> /clan home teleport <name\>
 
 ## Deleting a home
 To do that, you should be a home owner or have a permission to edit other's homes.
