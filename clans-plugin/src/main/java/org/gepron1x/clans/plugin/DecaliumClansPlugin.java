@@ -251,16 +251,10 @@ public final class DecaliumClansPlugin extends JavaPlugin {
     private boolean isEnabled(String pluginName) {
         return getServer().getPluginManager().isPluginEnabled(pluginName);
     }
-
-
-
-
-
     @Override
     public void onDisable() {
         disable();
         getSLF4JLogger().info("Goodbye!");
-
     }
 
     public ClansConfig config() {

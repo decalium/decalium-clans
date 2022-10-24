@@ -41,11 +41,13 @@ public final class VaultPlayerImpl implements VaultPlayer {
 
     @Override
     public boolean has(double amount) {
+        if(player.hasPermission("clans.economy.ignore")) return true;
         return economy.has(player, amount);
     }
 
     @Override
     public void withdraw(double amount) {
+        if(player.hasPermission("clans.economy.ignore")) return;
         economy.withdrawPlayer(player, amount);
     }
 
