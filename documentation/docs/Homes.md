@@ -13,9 +13,8 @@ Every home has:
 To create a home, hold some item in your hand. It is going to be used as home icon.
 Then simply type
 
-> /clan home create <display_name\>
+> /clan home create <name\> [display_name\]
 
-You can also explicitly set the home *name* with --name flag.
 
 **It is highly recommended to have WorldGuard installed**
 If you have one, a protection region and a fancy hologram is going to be created with home:
