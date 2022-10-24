@@ -26,7 +26,6 @@ import org.bukkit.inventory.ItemStack;
 import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.api.edition.home.HomeEdition;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -216,7 +215,7 @@ public final class ClanHomeImpl implements ClanHome {
         private final class HomeEditionImpl implements HomeEdition {
 
             @Override
-            public HomeEdition setIcon(@Nullable ItemStack icon) {
+            public HomeEdition setIcon(@NotNull ItemStack icon) {
                 BuilderImpl.this.icon(icon);
                 return this;
             }
