@@ -20,7 +20,6 @@ package org.gepron1x.clans.plugin.command;
 
 import cloud.commandframework.Command;
 import cloud.commandframework.CommandManager;
-import cloud.commandframework.arguments.flags.CommandFlag;
 import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.execution.CommandExecutionHandler;
@@ -34,6 +33,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.gepron1x.clans.api.ClanBuilderFactory;
+import org.gepron1x.clans.api.Validations;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
@@ -74,8 +74,8 @@ public class HomeCommand extends AbstractClanCommand {
 
         manager.command(builder.literal("create").meta(CommandMeta.DESCRIPTION, description.create())
                 .permission(Permission.of("clans.home.create"))
-                .flag(CommandFlag.newBuilder("name").withAliases("n", "t").withArgument(StringArgument.of("name")))
-                .argument(ComponentArgument.<CommandSender>builder("display_name").mode(StringArgument.StringMode.GREEDY_FLAG_YIELDING).serializer(clansConfig.userComponentFormat()))
+                .argument(StringArgument.of("name"))
+                .argument(ComponentArgument.<CommandSender>builder("display_name").mode(StringArgument.StringMode.GREEDY_FLAG_YIELDING).serializer(clansConfig.userComponentFormat()).asOptional())
                 .handler(
                        clanExecutionHandler(
                                 new PermissiveClanExecutionHandler(this::createHome, ClanPermission.ADD_HOME, this.messages)
@@ -126,10 +126,9 @@ public class HomeCommand extends AbstractClanCommand {
     private void createHome(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
         Component displayName = context.get("display_name");
-        String name = context.flags().get("name");
-        if(name == null) name = clansConfig.displayNameFormat().formatTag(displayName);
-        if(name.length() < clansConfig.displayNameFormat().minTagSize()) {
-            player.sendMessage(this.messages.commands().creation().invalidTag());
+        String name = context.get("name");
+        if(!Validations.checkHomeName(name)) {
+            player.sendMessage(this.messages.commands().home().invalidHomeName());
             return;
         }
 
