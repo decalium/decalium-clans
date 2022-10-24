@@ -229,8 +229,8 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         commandManager.command(commandManager.commandBuilder("clan").literal("help", "usage")
                 .meta(CommandMeta.DESCRIPTION, messages.help().messages().descriptions().help())
                 .permission("clans.help")
-                .argument(StringArgument.<CommandSender>newBuilder("query").greedy().asOptional())
-                .handler(ctx -> help.queryCommands(Objects.requireNonNull(ctx.getOrDefault("query", "")), ctx.getSender())));
+                .argument(StringArgument.<CommandSender>newBuilder("query").greedy().asOptionalWithDefault(""))
+                .handler(ctx -> help.queryCommands(Objects.requireNonNull(ctx.get("query")), ctx.getSender())));
         StatisticListener statisticListener = new StatisticListener(clanRepository, this, futuresFactory, config);
         getServer().getPluginManager().registerEvents(statisticListener, this);
         statisticListener.start();
