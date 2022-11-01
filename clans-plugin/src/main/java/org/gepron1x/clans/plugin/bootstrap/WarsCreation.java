@@ -28,7 +28,7 @@ import org.gepron1x.clans.plugin.war.announce.AnnouncingWars;
 import org.gepron1x.clans.plugin.war.impl.DefaultWars;
 import org.gepron1x.clans.plugin.war.listener.DeathListener;
 import org.gepron1x.clans.plugin.war.listener.NoTeamDamageListener;
-import org.gepron1x.clans.plugin.war.listener.navigation.Navigation;
+import org.gepron1x.clans.plugin.war.navigation.Navigation;
 
 public final class WarsCreation {
 

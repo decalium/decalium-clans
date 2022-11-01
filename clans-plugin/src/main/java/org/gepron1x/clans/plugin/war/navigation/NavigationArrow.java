@@ -16,7 +16,7 @@
  * along with decalium-clans. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package org.gepron1x.clans.plugin.war.listener.navigation;
+package org.gepron1x.clans.plugin.war.navigation;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableRangeMap;

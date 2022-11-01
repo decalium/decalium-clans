@@ -146,6 +146,10 @@ public interface MessagesConfig {
         @ConfKey("navigation-bar-format")
         @DefaultString("Distance to <target>: <distance> <arrow>")
         Message navigationBarFormat();
+
+        @ConfKey("navigation-bar-format-in-different-world")
+        @DefaultString("<target> is in <world> world")
+        Message navigationDifferentWorld();
     }
 
 

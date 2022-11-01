@@ -33,6 +33,7 @@ import space.arim.dazzleconf.annote.SubSection;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 
 import static space.arim.dazzleconf.annote.ConfDefault.*;
 @ConfHeader({"Welcome to the decalium clans config.", "Use /clan reload to reload the configuration."})
@@ -244,5 +245,22 @@ public interface ClansConfig {
         @DefaultBoolean(true)
         @ConfComments("Disables damage between team members.")
         boolean disableTeamDamage();
+
+        @ConfComments("Navigator options")
+        @SubSection Navigation navigation();
+
+
+        interface Navigation {
+
+            @ConfKey("arrows")
+            @ConfComments("Order is N NE E SE S SW W NW")
+            @DefaultString("⬆⬈➡⬊⬇⬋⬅⬉")
+            String arrows();
+
+            @ConfKey("world-display-names")
+            @ConfComments("How should we call worlds in the navigator?")
+            @DefaultMap({"world", "World", "world_nether", "<red>Nether", "world_the_end", "<yellow>The end"})
+            Map<String, Component> worldDisplayNames();
+        }
     }
 }
