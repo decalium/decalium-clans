@@ -30,7 +30,9 @@ public record StatisticType(@NotNull String name) {
     public static StatisticType CLAN_WAR_WINS = new StatisticType("clan_war_wins");
     public static StatisticType CLAN_WAR_LOSES = new StatisticType("clan_war_loses");
 
-    private static final Index<String, StatisticType> NAMES = Index.create(StatisticType::name, KILLS, DEATHS, CLAN_WAR_WINS, CLAN_WAR_LOSES);
+    public static StatisticType LEVEL = new StatisticType("level");
+
+    private static final Index<String, StatisticType> NAMES = Index.create(StatisticType::name, KILLS, DEATHS, CLAN_WAR_WINS, CLAN_WAR_LOSES, LEVEL);
 
     public static Index<String, StatisticType> registry() {
         return NAMES;
