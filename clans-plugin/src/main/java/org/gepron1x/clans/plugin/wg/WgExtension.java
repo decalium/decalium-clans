@@ -19,11 +19,17 @@
 package org.gepron1x.clans.plugin.wg;
 
 import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.flags.StringFlag;
 import org.bukkit.Server;
 import org.gepron1x.clans.api.repository.ClanRepository;
 import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 
+import java.util.List;
+
 public final class WgExtension {
+
+    public static final StringFlag CLAN = new StringFlag("clan");
+    public static final StringFlag HOME_NAME = new StringFlag("clan_home_name");
     private final Server server;
     private final ClansConfig clansConfig;
     private final ClanRepository repository;
@@ -36,6 +42,8 @@ public final class WgExtension {
 
 
     public ClanRepository make() {
-        return new WgRepositoryImpl(this.repository, this.clansConfig, WorldGuard.getInstance(), this.server);
+        WorldGuard wg = WorldGuard.getInstance();
+        wg.getFlagRegistry().registerAll(List.of(CLAN, HOME_NAME));
+        return new WgRepositoryImpl(this.repository, this.clansConfig, wg, this.server);
     }
 }

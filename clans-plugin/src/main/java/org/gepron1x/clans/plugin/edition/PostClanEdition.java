@@ -37,6 +37,7 @@ import org.gepron1x.clans.api.edition.member.MemberEdition;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.gepron1x.clans.plugin.wg.HologramOfHome;
+import org.gepron1x.clans.plugin.wg.WgExtension;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -135,7 +136,10 @@ public final class PostClanEdition implements ClanEdition {
         int z = location.getBlockZ();
         BlockVector3 first = BlockVector3.at(x - halfSize, y - halfSize, z - halfSize);
         BlockVector3 second = BlockVector3.at(x + halfSize, y + halfSize, z + halfSize);
-        return new ProtectedCuboidRegion(nameFor(clan, home), first, second);
+        ProtectedCuboidRegion region = new ProtectedCuboidRegion(nameFor(clan, home), first, second);
+        region.setFlag(WgExtension.CLAN, clan.tag());
+        region.setFlag(WgExtension.HOME_NAME, home.name());
+        return region;
 
     }
 
