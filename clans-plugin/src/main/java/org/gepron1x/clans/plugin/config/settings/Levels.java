@@ -54,7 +54,42 @@ public interface Levels {
         int shieldLevel();
     }
 
+    class AlgebraicPerLevel implements PerLevel {
+
+        private final PerLevel per;
+        private final int level;
+
+        public AlgebraicPerLevel(PerLevel per, int level) {
+
+            this.per = per;
+            this.level = level;
+        }
+
+        @Override
+        public int slots() {
+            return per.slots() * level;
+        }
+
+        @Override
+        public int homes() {
+            return per.slots() * level;
+        }
+
+        @Override
+        public int shieldLevel() {
+            return per.shieldLevel() * level;
+        }
+    }
+
     @DefaultMap({})
     Map<Integer, @SubSection PerLevel> individual();
+
+
+    default PerLevel forLevel(int level) {
+        PerLevel per = individual().get(level);
+        if(per != null) return per;
+        return new AlgebraicPerLevel(perLevel(), level);
+
+    }
 
 }
