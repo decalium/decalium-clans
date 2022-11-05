@@ -23,7 +23,7 @@ import org.bukkit.Server;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.repository.ClanRepository;
 import org.gepron1x.clans.plugin.AdaptingClanRepository;
-import org.gepron1x.clans.plugin.config.ClansConfig;
+import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.gepron1x.clans.plugin.edition.PostClanEdition;
 import org.jetbrains.annotations.NotNull;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;

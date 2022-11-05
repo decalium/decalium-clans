@@ -16,13 +16,14 @@
  * along with decalium-clans. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package org.gepron1x.clans.plugin.config;
+package org.gepron1x.clans.plugin.config.settings;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.plugin.clan.member.ClanRoleImpl;
+import org.gepron1x.clans.plugin.config.UserComponentSerializer;
 import org.gepron1x.clans.plugin.config.format.DisplayNameFormat;
 import org.gepron1x.clans.plugin.storage.StorageType;
 import org.gepron1x.clans.plugin.util.message.Message;

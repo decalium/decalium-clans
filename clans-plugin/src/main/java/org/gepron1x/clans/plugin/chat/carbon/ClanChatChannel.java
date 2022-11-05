@@ -33,8 +33,8 @@ import org.gepron1x.clans.api.clan.IdentifiedDraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.plugin.cache.ClanCache;
 import org.gepron1x.clans.plugin.chat.resolvers.PapiTagResolver;
-import org.gepron1x.clans.plugin.config.ClansConfig;
-import org.gepron1x.clans.plugin.config.MessagesConfig;
+import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
+import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;

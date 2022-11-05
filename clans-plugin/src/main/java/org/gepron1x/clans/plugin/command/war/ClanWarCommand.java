@@ -46,9 +46,9 @@ import org.gepron1x.clans.api.war.Wars;
 import org.gepron1x.clans.plugin.command.AbstractClanCommand;
 import org.gepron1x.clans.plugin.command.ClanExecutionHandler;
 import org.gepron1x.clans.plugin.command.parser.ClanOfSender;
-import org.gepron1x.clans.plugin.config.ClansConfig;
-import org.gepron1x.clans.plugin.config.HelpCommandConfig;
-import org.gepron1x.clans.plugin.config.MessagesConfig;
+import org.gepron1x.clans.plugin.config.messages.HelpCommandConfig;
+import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
+import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.slf4j.Logger;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 

@@ -27,7 +27,7 @@ import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.cache.ClanCache;
-import org.gepron1x.clans.plugin.config.ClansConfig;
+import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;

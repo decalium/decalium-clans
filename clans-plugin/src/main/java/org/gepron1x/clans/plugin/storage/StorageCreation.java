@@ -23,7 +23,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.plugin.Plugin;
 import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.RoleRegistry;
-import org.gepron1x.clans.plugin.config.ClansConfig;
+import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.gepron1x.clans.plugin.storage.implementation.sql.SqlClanStorage;
 import org.gepron1x.clans.plugin.storage.implementation.sql.argument.Arguments;
 import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.column.ColumnMappers;

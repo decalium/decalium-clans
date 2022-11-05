@@ -22,7 +22,7 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.user.ClanUser;
 import org.gepron1x.clans.api.user.Users;
-import org.gepron1x.clans.plugin.config.PricesConfig;
+import org.gepron1x.clans.plugin.config.settings.PricesConfig;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 public final class EconomyUsers implements Users {

@@ -12,7 +12,7 @@ import org.gepron1x.clans.api.reference.ClanReference;
 import org.gepron1x.clans.api.war.Team;
 import org.gepron1x.clans.api.war.War;
 import org.gepron1x.clans.api.war.Wars;
-import org.gepron1x.clans.plugin.config.MessagesConfig;
+import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
 import org.gepron1x.clans.plugin.war.TeamTitle;
 import org.gepron1x.clans.plugin.war.announce.bossbar.BossBars;
 

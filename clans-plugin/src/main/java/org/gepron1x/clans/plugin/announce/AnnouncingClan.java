@@ -25,7 +25,7 @@ import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.edition.ClanEdition;
 import org.gepron1x.clans.plugin.clan.DelegatingClan;
-import org.gepron1x.clans.plugin.config.MessagesConfig;
+import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
 import org.jetbrains.annotations.NotNull;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 

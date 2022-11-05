@@ -16,7 +16,7 @@
  * along with decalium-clans. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package org.gepron1x.clans.plugin.config;
+package org.gepron1x.clans.plugin.config.messages;
 
 import net.kyori.adventure.text.Component;
 import org.gepron1x.clans.plugin.util.message.Message;
@@ -193,6 +193,9 @@ public interface MessagesConfig {
         @ConfKey("deletion")
         @SubSection
         Deletion deletion();
+
+        @ConfKey("levels")
+        @SubSection LevelMessages levels();
 
         @ConfKey("invitation")
         @SubSection

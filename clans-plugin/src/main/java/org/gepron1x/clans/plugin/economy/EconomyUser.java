@@ -23,7 +23,7 @@ import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.exception.DescribingException;
 import org.gepron1x.clans.api.repository.ClanCreationResult;
 import org.gepron1x.clans.api.user.ClanUser;
-import org.gepron1x.clans.plugin.config.PricesConfig;
+import org.gepron1x.clans.plugin.config.settings.PricesConfig;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 

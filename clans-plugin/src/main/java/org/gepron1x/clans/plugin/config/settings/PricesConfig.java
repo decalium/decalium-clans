@@ -16,20 +16,31 @@
  * along with decalium-clans. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package org.gepron1x.clans.plugin.papi;
+package org.gepron1x.clans.plugin.config.settings;
 
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.Server;
-import org.gepron1x.clans.plugin.cache.ClanCache;
-import org.gepron1x.clans.plugin.config.settings.ClansConfig;
+import org.gepron1x.clans.plugin.util.message.Message;
+import space.arim.dazzleconf.annote.ConfKey;
 
-public record PlaceholderAPIHook(Server server, ClansConfig config,
-                                 ClanCache cache,
-                                 LegacyComponentSerializer legacy) {
+import static space.arim.dazzleconf.annote.ConfDefault.DefaultDouble;
+import static space.arim.dazzleconf.annote.ConfDefault.DefaultString;
 
+public interface PricesConfig {
 
-    public void register() {
-        new ClansExpansion(server, config, cache, legacy).register();
-    }
+    @DefaultDouble(50)
+    @ConfKey("home-creation")
+    double homeCreation();
+
+    @DefaultDouble(50)
+    @ConfKey("home-upgrade")
+    double homeUpgrade();
+
+    @DefaultDouble(100)
+    @ConfKey("clan-creation")
+    double clanCreation();
+
+    @DefaultString("<prefix><red> You need at least <price> to do that.")
+    @ConfKey("not-enough-money")
+    Message notEnoughMoney();
+
 
 }

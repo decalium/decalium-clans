@@ -21,7 +21,7 @@ package org.gepron1x.clans.plugin.wg;
 import com.sk89q.worldguard.WorldGuard;
 import org.bukkit.Server;
 import org.gepron1x.clans.api.repository.ClanRepository;
-import org.gepron1x.clans.plugin.config.ClansConfig;
+import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 
 public final class WgExtension {
     private final Server server;

@@ -23,8 +23,8 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import org.bukkit.Server;
 import org.gepron1x.clans.plugin.cache.ClanCache;
-import org.gepron1x.clans.plugin.config.ClansConfig;
-import org.gepron1x.clans.plugin.config.MessagesConfig;
+import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
+import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.jetbrains.annotations.NotNull;
 
 public record CarbonChatHook(@NotNull Server server, @NotNull ClanCache cache, @NotNull MessagesConfig messages, @NotNull ClansConfig clansConfig) {

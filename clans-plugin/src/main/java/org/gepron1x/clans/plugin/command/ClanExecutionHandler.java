@@ -29,7 +29,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.user.Users;
-import org.gepron1x.clans.plugin.config.MessagesConfig;
+import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
 import org.slf4j.Logger;
 
 public final class ClanExecutionHandler implements CommandExecutionHandler<CommandSender> {

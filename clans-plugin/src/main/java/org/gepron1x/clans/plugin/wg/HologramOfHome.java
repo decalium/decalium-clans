@@ -32,7 +32,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.plugin.DecaliumClansPlugin;
-import org.gepron1x.clans.plugin.config.ClansConfig;
+import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.gepron1x.clans.plugin.util.Optionals;
 
 import java.util.Collection;

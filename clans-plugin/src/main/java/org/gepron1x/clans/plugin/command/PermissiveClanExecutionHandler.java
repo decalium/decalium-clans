@@ -24,7 +24,7 @@ import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
-import org.gepron1x.clans.plugin.config.MessagesConfig;
+import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
 
 public class PermissiveClanExecutionHandler implements CommandExecutionHandler<CommandSender> {
 

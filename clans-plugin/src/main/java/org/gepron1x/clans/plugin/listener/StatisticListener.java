@@ -31,7 +31,7 @@ import org.bukkit.plugin.Plugin;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.statistic.StatisticType;
-import org.gepron1x.clans.plugin.config.ClansConfig;
+import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.gepron1x.clans.plugin.util.TicksOfDuration;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 

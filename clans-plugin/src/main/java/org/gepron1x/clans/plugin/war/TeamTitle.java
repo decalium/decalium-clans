@@ -23,7 +23,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import org.gepron1x.clans.api.chat.ClanTagResolver;
 import org.gepron1x.clans.api.war.Team;
-import org.gepron1x.clans.plugin.config.MessagesConfig;
+import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;

@@ -21,7 +21,7 @@ package org.gepron1x.clans.plugin.announce;
 import org.bukkit.Server;
 import org.gepron1x.clans.api.repository.ClanRepository;
 import org.gepron1x.clans.plugin.AdaptingClanRepository;
-import org.gepron1x.clans.plugin.config.MessagesConfig;
+import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
 
 
 public final class AnnouncingClanRepository extends AdaptingClanRepository {

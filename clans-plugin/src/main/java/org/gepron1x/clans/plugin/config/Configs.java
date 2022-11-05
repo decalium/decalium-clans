@@ -19,6 +19,9 @@
 package org.gepron1x.clans.plugin.config;
 
 
+import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
+import org.gepron1x.clans.plugin.config.settings.ClansConfig;
+
 public final class Configs {
 
 

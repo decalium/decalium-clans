@@ -16,23 +16,45 @@
  * along with decalium-clans-rewrite. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package org.gepron1x.clans.plugin.economy;
+package org.gepron1x.clans.plugin.config.settings;
 
-import net.milkbowl.vault.economy.Economy;
-import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.ServicesManager;
-import org.gepron1x.clans.api.user.Users;
-import org.gepron1x.clans.plugin.config.settings.PricesConfig;
-import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
+import space.arim.dazzleconf.annote.ConfKey;
+import space.arim.dazzleconf.annote.SubSection;
 
-import java.util.Optional;
+import java.util.Map;
 
-public record VaultHook(Users users, ServicesManager services, PricesConfig prices, FactoryOfTheFuture futuresFactory) {
+import static space.arim.dazzleconf.annote.ConfDefault.DefaultInteger;
+import static space.arim.dazzleconf.annote.ConfDefault.DefaultMap;
 
-    public Users hook() {
-        return Optional.ofNullable(services.getRegistration(Economy.class))
-                .map(RegisteredServiceProvider::getProvider).<Users>map(economy -> {
-                    return new EconomyUsers(users, economy, prices, futuresFactory);
-                }).orElse(users);
+public interface Levels {
+
+    @ConfKey("allow-at")
+    @SubSection AllowAt allowAt();
+
+     interface AllowAt {
+
+         @DefaultInteger(1)
+         int wars();
+
+         @DefaultInteger(3)
+         int shields();
+     }
+
+     @ConfKey("per-level")
+     @SubSection PerLevel perLevel();
+
+    interface PerLevel {
+
+        @DefaultInteger(5)
+        int slots();
+
+        @DefaultInteger(1)
+        int homes();
+
+        int shieldLevel();
     }
+
+    @DefaultMap({})
+    Map<Integer, @SubSection PerLevel> individual();
+
 }

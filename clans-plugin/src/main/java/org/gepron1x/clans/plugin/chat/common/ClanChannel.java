@@ -30,7 +30,7 @@ import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.util.ClanOnlinePlayers;
 import org.gepron1x.clans.plugin.chat.resolvers.PapiTagResolver;
-import org.gepron1x.clans.plugin.config.ClansConfig;
+import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 
 import java.util.Collections;
 import java.util.HashSet;

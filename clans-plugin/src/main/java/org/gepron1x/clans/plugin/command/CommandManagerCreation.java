@@ -38,7 +38,7 @@ import org.gepron1x.clans.api.exception.DescribingException;
 import org.gepron1x.clans.api.reference.ClanReference;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.plugin.command.parser.*;
-import org.gepron1x.clans.plugin.config.MessagesConfig;
+import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
 
 import java.util.function.UnaryOperator;
 

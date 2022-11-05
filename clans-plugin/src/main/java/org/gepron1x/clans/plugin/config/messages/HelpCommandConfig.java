@@ -16,7 +16,7 @@
  * along with decalium-clans-rewrite. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package org.gepron1x.clans.plugin.config;
+package org.gepron1x.clans.plugin.config.messages;
 
 
 import cloud.commandframework.minecraft.extras.MinecraftHelp;

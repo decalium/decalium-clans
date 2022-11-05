@@ -22,7 +22,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.gepron1x.clans.plugin.config.MessagesConfig;
+import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
 import org.jetbrains.annotations.NotNull;
 
 public final class NavigationBar implements ComponentLike {

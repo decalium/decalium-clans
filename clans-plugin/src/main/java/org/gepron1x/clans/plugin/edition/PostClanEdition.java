@@ -35,7 +35,7 @@ import org.gepron1x.clans.api.edition.ClanEdition;
 import org.gepron1x.clans.api.edition.home.HomeEdition;
 import org.gepron1x.clans.api.edition.member.MemberEdition;
 import org.gepron1x.clans.api.statistic.StatisticType;
-import org.gepron1x.clans.plugin.config.ClansConfig;
+import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.gepron1x.clans.plugin.wg.HologramOfHome;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
