@@ -119,6 +119,8 @@ public interface ClansConfig {
 
     }
 
+    @SubSection Levels levels();
+
     @SubSection Homes homes();
 
     interface Homes {

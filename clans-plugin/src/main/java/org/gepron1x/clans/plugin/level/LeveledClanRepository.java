@@ -16,25 +16,16 @@
  * along with decalium-clans-rewrite. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package org.gepron1x.clans.api.exception;
+package org.gepron1x.clans.plugin.level;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentLike;
+import org.gepron1x.clans.api.repository.ClanRepository;
+import org.gepron1x.clans.plugin.AdaptingClanRepository;
+import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
+import org.gepron1x.clans.plugin.config.settings.ClansConfig;
+import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
-public final class DescribingException extends RuntimeException {
-
-    private final Component description;
-
-    public DescribingException(Component description) {
-
-        this.description = description;
-    }
-
-    public DescribingException(ComponentLike description) {
-        this(description.asComponent());
-    }
-
-    public Component description() {
-        return this.description;
+public final class LeveledClanRepository extends AdaptingClanRepository {
+    public LeveledClanRepository(ClanRepository repository, FactoryOfTheFuture futuresFactory, ClansConfig config, MessagesConfig messages) {
+        super(repository, clan -> new LeveledClan(futuresFactory, config, messages, clan));
     }
 }

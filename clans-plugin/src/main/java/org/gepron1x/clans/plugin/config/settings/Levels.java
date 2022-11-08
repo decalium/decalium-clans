@@ -23,10 +23,12 @@ import space.arim.dazzleconf.annote.SubSection;
 
 import java.util.Map;
 
-import static space.arim.dazzleconf.annote.ConfDefault.DefaultInteger;
-import static space.arim.dazzleconf.annote.ConfDefault.DefaultMap;
+import static space.arim.dazzleconf.annote.ConfDefault.*;
 
 public interface Levels {
+
+    @DefaultBoolean(true)
+    boolean enabled();
 
     @ConfKey("allow-at")
     @SubSection AllowAt allowAt();
@@ -51,6 +53,7 @@ public interface Levels {
         @DefaultInteger(1)
         int homes();
 
+        @DefaultInteger(0)
         int shieldLevel();
     }
 

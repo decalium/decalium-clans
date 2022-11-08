@@ -75,6 +75,10 @@ public interface DraftClan extends StatisticHolder, ComponentLike, Buildable<Dra
 
     @NotNull @Unmodifiable Map<String, ? extends ClanHome> homeMap();
 
+    default int level() {
+        return statisticOr(StatisticType.LEVEL, 0) + 1;
+    }
+
     
     interface Builder extends Buildable.Builder<DraftClan>, EditionApplicable<DraftClan, ClanEdition> {
         

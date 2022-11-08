@@ -1,31 +1,32 @@
 /*
- * decalium-clans
+ * decalium-clans-rewrite
  * Copyright © 2022 George Pronyuk <https://vk.com/gpronyuk>
  *
- * decalium-clans is free software: you can redistribute it and/or modify
+ * decalium-clans-rewrite is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * decalium-clans is distributed in the hope that it will be useful,
+ * decalium-clans-rewrite is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with decalium-clans. If not, see <https://www.gnu.org/licenses/>
+ * along with decalium-clans-rewrite. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package org.gepron1x.clans.plugin.economy;
+package org.gepron1x.clans.plugin.level;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.util.concurrent.AtomicDouble;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.edition.ClanEdition;
 import org.gepron1x.clans.api.exception.DescribingException;
+import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.clan.DelegatingClan;
-import org.gepron1x.clans.plugin.config.settings.PricesConfig;
+import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
+import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.jetbrains.annotations.NotNull;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
@@ -33,28 +34,26 @@ import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public final class EconomyClan implements Clan, DelegatingClan {
+public final class LeveledClan implements Clan, DelegatingClan {
 
-    private final Clan clan;
-    private final PricesConfig prices;
-    private final VaultPlayer player;
     private final FactoryOfTheFuture futuresFactory;
+    private final ClansConfig config;
+    private final MessagesConfig messages;
+    private final Clan clan;
 
-    public EconomyClan(Clan clan, PricesConfig prices, VaultPlayer player, FactoryOfTheFuture futuresFactory) {
-
-        this.clan = clan;
-        this.prices = prices;
-        this.player = player;
+    public LeveledClan(FactoryOfTheFuture futuresFactory, ClansConfig config, MessagesConfig messages, Clan clan) {
         this.futuresFactory = futuresFactory;
+        this.config = config;
+        this.messages = messages;
+        this.clan = clan;
     }
     @Override
     public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
-        AtomicDouble cost = new AtomicDouble(0);
-        transaction.accept(new EconomyEdition(cost, prices));
-        if(!player.has(cost.get())) {
-            return futuresFactory.failedFuture(new DescribingException(prices.notEnoughMoney().with("price", cost.get())));
+        try {
+            transaction.accept(new LeveledEdition(clan, config.levels().forLevel(clan.statisticOr(StatisticType.LEVEL, 0) + 1), messages));
+        } catch (DescribingException ex) {
+            return futuresFactory.failedFuture(ex);
         }
-        player.withdraw(cost.get());
         return clan.edit(transaction);
     }
 
@@ -65,27 +64,26 @@ public final class EconomyClan implements Clan, DelegatingClan {
 
     @Override
     public DraftClan delegate() {
-        return this.clan;
+        return clan;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        EconomyClan that = (EconomyClan) o;
-        return clan.equals(that.clan) && player.equals(that.player);
+        LeveledClan that = (LeveledClan) o;
+        return Objects.equals(config, that.config) && Objects.equals(messages, that.messages) && Objects.equals(clan, that.clan);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(clan, player);
+        return Objects.hash(config, messages, clan);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("clan", clan)
-                .add("player", player)
                 .toString();
     }
 }

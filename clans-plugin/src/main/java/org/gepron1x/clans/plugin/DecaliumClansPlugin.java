@@ -55,6 +55,7 @@ import org.gepron1x.clans.plugin.config.serializer.*;
 import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.gepron1x.clans.plugin.config.settings.PricesConfig;
 import org.gepron1x.clans.plugin.economy.VaultHook;
+import org.gepron1x.clans.plugin.level.LeveledClanRepository;
 import org.gepron1x.clans.plugin.listener.CacheListener;
 import org.gepron1x.clans.plugin.listener.StatisticListener;
 import org.gepron1x.clans.plugin.papi.PlaceholderAPIHook;
@@ -162,6 +163,10 @@ public final class DecaliumClansPlugin extends JavaPlugin {
                         base).make() : base,
                 getServer(),
                 messages);
+
+        if(config.levels().enabled()) {
+            repository = new LeveledClanRepository(repository, futuresFactory, config, messages);
+        }
 
         userCaching = new UserCaching(repository, clanCache, getServer());
 

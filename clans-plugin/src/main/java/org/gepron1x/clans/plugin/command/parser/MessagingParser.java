@@ -45,7 +45,7 @@ public final class MessagingParser<C extends Audience, T> implements ArgumentPar
         ArgumentParseResult<T> result = this.argumentParser.parse(commandContext, inputQueue);
         return result.mapFailure(throwable -> {
             if(throwable instanceof ParserException ex) {
-                return new DescribingException(fail.with(new CaptionTagResolver(ex)).asComponent());
+                return new DescribingException(fail.with(new CaptionTagResolver(ex)));
             } else {
                 return throwable;
             }

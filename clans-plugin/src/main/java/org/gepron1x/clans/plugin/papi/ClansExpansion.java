@@ -95,7 +95,7 @@ public final class ClansExpansion extends PlaceholderExpansion {
             case OWNER -> legacy.serialize(clan.owner().renderName(server));
             case MEMBER_COUNT -> String.valueOf(clan.members().size());
             case MEMBER_ROLE -> member.map(ClanMember::role).map(ClanRole::displayName).map(this.legacy::serialize).orElse("");
-            case LEVEL -> String.valueOf(clan.statisticOr(StatisticType.LEVEL, 0) + 1);
+            case LEVEL -> String.valueOf(clan.level());
             default -> null;
         };
     }
