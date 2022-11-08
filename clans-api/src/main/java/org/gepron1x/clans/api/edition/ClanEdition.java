@@ -49,6 +49,10 @@ public interface ClanEdition extends Edition<DraftClan> {
         return this;
     }
 
+    default ClanEdition upgrade() {
+        return incrementStatistic(StatisticType.LEVEL);
+    }
+
 
     ClanEdition addStatistics(@NotNull Map<StatisticType, Integer> statistics);
 

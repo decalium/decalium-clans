@@ -30,7 +30,14 @@ public interface LevelMessages {
     Message tooManyMembers();
 
     @DefaultString("<prefix> Too many homes. Your clan can only have <homes> homes. Upgrade the clan to get more.")
+    @ConfKey("too-many-homes")
     Message tooManyHomes();
+
+
+    @DefaultString("<prefix> Successfully upgraded clan to level <level>.")
+    Message upgraded();
+
+
 
 
 }

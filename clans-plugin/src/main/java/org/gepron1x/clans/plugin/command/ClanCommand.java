@@ -35,6 +35,7 @@ import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
+import org.gepron1x.clans.api.edition.ClanEdition;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.plugin.command.argument.ComponentArgument;
@@ -112,6 +113,9 @@ public class ClanCommand extends AbstractClanCommand {
         manager.command(builder.literal("leave").meta(CommandMeta.DESCRIPTION, descriptions.leave())
                 .permission(Permission.of("clans.leave"))
                 .handler(clanExecutionHandler(this::leaveClan)));
+
+        manager.command(builder.literal("upgrade").meta(CommandMeta.DESCRIPTION, descriptions.upgrade()).permission("clans.upgrade")
+                .handler(clanExecutionHandler(this::upgradeClan)));
     }
 
 
@@ -197,5 +201,13 @@ public class ClanCommand extends AbstractClanCommand {
         clanRepository.removeClan(clan).thenAcceptSync(success -> {
             if(success) player.sendMessage(this.messages.commands().deletion().success());
         }).exceptionally(exceptionHandler(player));
+    }
+
+
+    private void upgradeClan(CommandContext<CommandSender> context) {
+        Player player = (Player) context.getSender();
+        Clan clan = context.get(ClanExecutionHandler.CLAN);
+        clan.edit(ClanEdition::upgrade).thenAccept(c -> player.sendMessage(this.messages.level().upgraded().with("level", c.level())))
+                .exceptionally(exceptionHandler(player));
     }
 }

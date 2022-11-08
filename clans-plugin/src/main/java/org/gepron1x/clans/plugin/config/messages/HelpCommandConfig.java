@@ -136,6 +136,9 @@ public interface HelpCommandConfig {
             @DefaultString("Creates a new clan with given name.")
             String create();
 
+            @DefaultString("Upgrades the clan.")
+            String upgrade();
+
             @DefaultString("Deletes the clan you own.")
             String delete();
 
