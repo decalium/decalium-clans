@@ -40,6 +40,7 @@ import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.plugin.config.messages.HelpCommandConfig;
 import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
 import org.gepron1x.clans.plugin.config.settings.ClansConfig;
+import org.gepron1x.clans.plugin.config.settings.Levels;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -113,6 +114,11 @@ public class InviteCommand extends AbstractClanCommand {
         }
 
         Clan clan = context.get(ClanExecutionHandler.CLAN);
+        Levels.PerLevel perLevel = clansConfig.levels().forLevel(clan.level());
+        if(clan.members().size() >= perLevel.slots()) {
+            player.sendMessage(this.messages.level().tooManyMembers().with("slots", perLevel.slots()));
+            return;
+        }
 
         this.clanRepository.requestUserClan(receiver.getUniqueId()).thenAcceptSync(opt -> {
             if (opt.isPresent()) {
