@@ -23,7 +23,6 @@ import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.edition.ClanEdition;
 import org.gepron1x.clans.api.exception.DescribingException;
-import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.clan.DelegatingClan;
 import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
 import org.gepron1x.clans.plugin.config.settings.ClansConfig;
@@ -50,11 +49,11 @@ public final class LeveledClan implements Clan, DelegatingClan {
     @Override
     public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
         try {
-            transaction.accept(new LeveledEdition(clan, config.levels().forLevel(clan.statisticOr(StatisticType.LEVEL, 0) + 1), messages));
+            transaction.accept(new LeveledEdition(clan, config.levels().forLevel(clan.level()), messages));
         } catch (DescribingException ex) {
             return futuresFactory.failedFuture(ex);
         }
-        return clan.edit(transaction);
+        return clan.edit(transaction).thenApply(c -> new LeveledClan(futuresFactory, config, messages, clan));
     }
 
     @Override

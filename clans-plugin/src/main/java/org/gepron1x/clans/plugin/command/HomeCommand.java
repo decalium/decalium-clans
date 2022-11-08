@@ -26,6 +26,7 @@ import cloud.commandframework.execution.CommandExecutionHandler;
 import cloud.commandframework.meta.CommandMeta;
 import cloud.commandframework.permission.Permission;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -125,12 +126,12 @@ public class HomeCommand extends AbstractClanCommand {
 
     private void createHome(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
-        Component displayName = context.get("display_name");
         String name = context.get("name");
         if(!Validations.checkHomeName(name)) {
             player.sendMessage(this.messages.commands().home().invalidHomeName());
             return;
         }
+        Component displayName = context.<Component>getOptional("display_name").orElseGet(() -> Component.text(name, NamedTextColor.GRAY));
 
         ItemStack icon = player.getInventory().getItemInMainHand();
         if(icon.getType().isAir()) {

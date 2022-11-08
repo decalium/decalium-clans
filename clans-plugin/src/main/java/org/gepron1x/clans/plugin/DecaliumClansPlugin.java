@@ -251,7 +251,10 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         getServer().getServicesManager().unregisterAll(this);
     }
 
-
+    @Override
+    public void onLoad() {
+        if(isEnabled("WorldGuard")) WgExtension.registerFlags();
+    }
 
     private boolean isEnabled(String pluginName) {
         return getServer().getPluginManager().isPluginEnabled(pluginName);

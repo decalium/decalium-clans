@@ -29,7 +29,7 @@ import java.util.List;
 public final class WgExtension {
 
     public static final StringFlag CLAN = new StringFlag("clan");
-    public static final StringFlag HOME_NAME = new StringFlag("clan_home_name");
+    public static final StringFlag HOME_NAME = new StringFlag("clan-home-name");
     private final Server server;
     private final ClansConfig clansConfig;
     private final ClanRepository repository;
@@ -43,7 +43,10 @@ public final class WgExtension {
 
     public ClanRepository make() {
         WorldGuard wg = WorldGuard.getInstance();
-        wg.getFlagRegistry().registerAll(List.of(CLAN, HOME_NAME));
         return new WgRepositoryImpl(this.repository, this.clansConfig, wg, this.server);
+    }
+
+    public static void registerFlags() {
+        WorldGuard.getInstance().getFlagRegistry().registerAll(List.of(CLAN, HOME_NAME));
     }
 }
