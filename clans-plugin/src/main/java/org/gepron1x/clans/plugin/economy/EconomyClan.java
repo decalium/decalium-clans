@@ -50,12 +50,12 @@ public final class EconomyClan implements Clan, DelegatingClan {
     @Override
     public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
         AtomicDouble cost = new AtomicDouble(0);
-        transaction.accept(new EconomyEdition(cost, prices));
+        transaction.accept(new EconomyEdition(cost, prices, clan));
         if(!player.has(cost.get())) {
             return futuresFactory.failedFuture(new DescribingException(prices.notEnoughMoney().with("price", cost.get())));
         }
         player.withdraw(cost.get());
-        return clan.edit(transaction);
+        return clan.edit(transaction).thenApply(c -> new EconomyClan(c, prices, player, futuresFactory));
     }
 
     @Override

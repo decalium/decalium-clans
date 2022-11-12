@@ -38,6 +38,10 @@ public interface PricesConfig {
     @ConfKey("clan-creation")
     double clanCreation();
 
+    @DefaultDouble(200)
+    @ConfKey("clan-upgrade")
+    double clanUpgrade();
+
     @DefaultString("<prefix><red> You need at least <price> to do that.")
     @ConfKey("not-enough-money")
     Message notEnoughMoney();

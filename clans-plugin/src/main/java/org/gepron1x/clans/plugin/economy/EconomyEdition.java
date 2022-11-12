@@ -22,6 +22,7 @@ import com.google.common.util.concurrent.AtomicDouble;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
+import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.edition.ClanEdition;
@@ -40,11 +41,13 @@ public final class EconomyEdition implements ClanEdition {
 
     private final AtomicDouble cost;
     private final PricesConfig prices;
+    private final Clan clan;
 
-    public EconomyEdition(AtomicDouble cost, PricesConfig prices) {
+    public EconomyEdition(AtomicDouble cost, PricesConfig prices, Clan clan) {
 
         this.cost = cost;
         this.prices = prices;
+        this.clan = clan;
     }
     @Override
     public ClanEdition rename(@NotNull Component displayName) {
@@ -69,6 +72,11 @@ public final class EconomyEdition implements ClanEdition {
     @Override
     public ClanEdition incrementStatistic(@NotNull StatisticType type) {
         return this;
+    }
+
+    @Override
+    public ClanEdition upgrade() {
+        return pay(prices.clanUpgrade() * clan.level());
     }
 
     @Override
