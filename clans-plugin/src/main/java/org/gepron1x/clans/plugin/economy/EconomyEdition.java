@@ -74,10 +74,6 @@ public final class EconomyEdition implements ClanEdition {
         return this;
     }
 
-    @Override
-    public ClanEdition upgrade() {
-        return pay(prices.clanUpgrade() * clan.level());
-    }
 
     @Override
     public ClanEdition removeStatistic(@NotNull StatisticType type) {

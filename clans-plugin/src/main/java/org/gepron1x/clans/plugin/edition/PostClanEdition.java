@@ -20,9 +20,14 @@ package org.gepron1x.clans.plugin.edition;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.domains.DefaultDomain;
+import com.sk89q.worldguard.protection.flags.Flag;
+import com.sk89q.worldguard.protection.flags.FlagContext;
+import com.sk89q.worldguard.protection.flags.InvalidFlagFormat;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
@@ -50,11 +55,13 @@ public final class PostClanEdition implements ClanEdition {
     private final Clan clan;
     private final ClansConfig clansConfig;
     private final RegionContainer regionContainer;
+    private final WorldGuard worldGuard;
 
-    public PostClanEdition(Clan clan, ClansConfig clansConfig, RegionContainer regionContainer) {
+    public PostClanEdition(Clan clan, ClansConfig clansConfig, WorldGuard worldGuard) {
         this.clan = clan;
         this.clansConfig = clansConfig;
-        this.regionContainer = regionContainer;
+        this.regionContainer = worldGuard.getPlatform().getRegionContainer();
+        this.worldGuard = worldGuard;
     }
     @Override
     public ClanEdition rename(@NotNull Component displayName) {
@@ -139,8 +146,22 @@ public final class PostClanEdition implements ClanEdition {
         ProtectedCuboidRegion region = new ProtectedCuboidRegion(nameFor(clan, home), first, second);
         region.setFlag(WgExtension.CLAN, clan.tag());
         region.setFlag(WgExtension.HOME_NAME, home.name());
+        clansConfig.homes().worldGuardFlags().forEach((name, value) -> {
+            Flag<?> flag = worldGuard.getFlagRegistry().get(name);
+            if(flag == null) return;
+            setFlag(region, flag, FlagContext.create().setInput(value).build());
+
+        });
         return region;
 
+    }
+
+    private <T> void setFlag(ProtectedRegion region, Flag<T> flag, FlagContext context) {
+        try {
+            region.setFlag(flag, flag.parseInput(context));
+        } catch (InvalidFlagFormat e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

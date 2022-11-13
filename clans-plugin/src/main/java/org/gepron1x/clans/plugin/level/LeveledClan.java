@@ -53,7 +53,7 @@ public final class LeveledClan implements Clan, DelegatingClan {
         } catch (DescribingException ex) {
             return futuresFactory.failedFuture(ex);
         }
-        return clan.edit(transaction).thenApply(c -> new LeveledClan(futuresFactory, config, messages, clan));
+        return clan.edit(transaction).thenApply(c -> new LeveledClan(futuresFactory, config, messages, c));
     }
 
     @Override

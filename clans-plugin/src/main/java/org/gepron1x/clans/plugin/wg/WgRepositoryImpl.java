@@ -45,7 +45,7 @@ public class WgRepositoryImpl extends AdaptingClanRepository {
     public @NotNull CentralisedFuture<Boolean> removeClan(@NotNull Clan clan) {
         return super.removeClan(clan).thenApplySync(bool -> {
             if(!bool) return false;
-            PostClanEdition postClanEdition = new PostClanEdition(clan, this.clansConfig, this.worldGuard.getPlatform().getRegionContainer());
+            PostClanEdition postClanEdition = new PostClanEdition(clan, this.clansConfig, this.worldGuard);
             clan.homes().forEach(postClanEdition::removeHome);
             return true;
         });

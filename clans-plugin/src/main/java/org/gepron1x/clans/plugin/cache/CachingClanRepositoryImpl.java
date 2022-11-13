@@ -52,7 +52,7 @@ public final class CachingClanRepositoryImpl extends AdaptingClanRepository impl
     @Override
     public @NotNull CentralisedFuture<ClanCreationResult> createClan(@NotNull DraftClan draftClan) {
         if(cache.isCached(draftClan.tag())) return futuresFactory.completedFuture(ClanCreationResult.alreadyExists());
-        return super.createClan(draftClan).thenApply(result -> {
+        return repository.createClan(draftClan).thenApply(result -> {
             result.ifSuccess(this.cache::cacheClan);
             return result;
         });

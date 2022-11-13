@@ -145,6 +145,9 @@ public interface ClansConfig {
         @ConfComments("How much should we scale the region size on home upgrades?")
         double levelRegionScale();
 
+        @ConfKey("worldguard-flags")
+        @DefaultMap({"pvp", "DENY"})
+        Map<String, String> worldGuardFlags();
         @ConfKey("hologram-format")
         @DefaultString("Home <home_name>")
         @ConfComments("Hologram format.")

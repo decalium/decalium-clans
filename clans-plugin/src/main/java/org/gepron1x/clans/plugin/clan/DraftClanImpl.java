@@ -274,8 +274,10 @@ public final class DraftClanImpl implements DraftClan {
 
             @Override
             public ClanEdition addStatistics(@NotNull Map<StatisticType, Integer> statistics) {
-                statistics.forEach((key, value) -> BuilderImpl.this.statistics.merge(key, value, Integer::sum));
-                return this;
+                statistics.forEach((key, value) -> {
+                    BuilderImpl.this.statistics.merge(key, value, Integer::sum);
+                });
+                 return this;
             }
 
             @Override

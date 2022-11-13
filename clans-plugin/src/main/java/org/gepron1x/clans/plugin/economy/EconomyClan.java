@@ -55,7 +55,7 @@ public final class EconomyClan implements Clan, DelegatingClan {
             return futuresFactory.failedFuture(new DescribingException(prices.notEnoughMoney().with("price", cost.get())));
         }
         player.withdraw(cost.get());
-        return clan.edit(transaction).thenApply(c -> new EconomyClan(c, prices, player, futuresFactory));
+        return clan.edit(transaction).thenApply(c -> new EconomyClan(clan, prices, player, futuresFactory));
     }
 
     @Override

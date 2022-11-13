@@ -53,8 +53,9 @@ public final class ClanImpl implements Clan, DelegatingClan {
     public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
         DraftClan.Builder builder = draftClan.toBuilder();
         builder.applyEdition(transaction);
+        DraftClan clan = builder.build();
         return futuresFactory.runAsync(() -> this.storage.applyEdition(this.id, transaction))
-                .thenApply(ignored -> new ClanImpl(this.id, builder.build(), this.storage, this.futuresFactory));
+                .thenApply(ignored -> new ClanImpl(this.id, clan, this.storage, this.futuresFactory));
     }
 
 
