@@ -22,6 +22,7 @@ import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.DecaliumClansApi;
 import org.gepron1x.clans.api.RoleRegistry;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
+import org.gepron1x.clans.api.shield.CachingShields;
 import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.api.war.Wars;
 import org.jetbrains.annotations.NotNull;
@@ -35,13 +36,16 @@ public final class DecaliumClansApiImpl implements DecaliumClansApi {
     private final ClanBuilderFactory builderFactory;
     private final FactoryOfTheFuture futuresFactory;
     private final Wars wars;
+    private final CachingShields shields;
 
     public DecaliumClansApiImpl(@NotNull CachingClanRepository clanRepository,
                                 @NotNull Users users,
                                 @NotNull RoleRegistry roleRegistry,
                                 @NotNull ClanBuilderFactory builderFactory,
                                 @NotNull FactoryOfTheFuture futuresFactory,
-                                @NotNull Wars wars) {
+                                @NotNull Wars wars,
+                                @NotNull CachingShields shields
+                                ) {
 
         this.clanRepository = clanRepository;
         this.users = users;
@@ -49,6 +53,7 @@ public final class DecaliumClansApiImpl implements DecaliumClansApi {
         this.builderFactory = builderFactory;
         this.futuresFactory = futuresFactory;
         this.wars = wars;
+        this.shields = shields;
     }
 
     @Override
@@ -59,6 +64,11 @@ public final class DecaliumClansApiImpl implements DecaliumClansApi {
     @Override
     public @NotNull CachingClanRepository repository() {
         return clanRepository;
+    }
+
+    @Override
+    public @NotNull CachingShields shields() {
+        return shields;
     }
 
     @Override

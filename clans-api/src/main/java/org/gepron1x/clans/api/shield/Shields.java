@@ -18,54 +18,17 @@
  */
 package org.gepron1x.clans.api.shield;
 
+import org.gepron1x.clans.api.clan.Clan;
+import space.arim.omnibus.util.concurrent.CentralisedFuture;
 
 import java.time.Duration;
-import java.time.Instant;
 
-public interface Shield {
+public interface Shields {
 
-    Instant started();
+    CentralisedFuture<Shield> add(Clan clan, Duration duration);
 
-    Instant end();
+    CentralisedFuture<?> delete(String tag);
 
-    default Duration length() {
-        return Duration.between(started(), end());
-    }
+    CentralisedFuture<Shield> currentShield(String tag);
 
-    default Duration left() {
-        return Duration.between(end(), Instant.now());
-    }
-
-    default boolean expired() {
-        return Instant.now().isAfter(end());
-    }
-
-
-    Shield NONE = new Shield() {
-
-        @Override
-        public Instant started() {
-            return Instant.MIN;
-        }
-
-        @Override
-        public Instant end() {
-            return Instant.MIN;
-        }
-
-        @Override
-        public Duration length() {
-            return Duration.ZERO;
-        }
-
-        @Override
-        public Duration left() {
-            return Duration.ZERO;
-        }
-
-        @Override
-        public boolean expired() {
-            return true;
-        }
-    };
 }

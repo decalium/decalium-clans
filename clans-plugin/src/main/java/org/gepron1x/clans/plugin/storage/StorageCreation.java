@@ -108,7 +108,8 @@ public final class StorageCreation {
         jdbi.registerColumnMapper(ColumnMappers.STATISTIC_TYPE)
                 .registerColumnMapper(ColumnMappers.COMPONENT)
                 .registerColumnMapper(ColumnMappers.UUID)
-                .registerColumnMapper(ColumnMappers.ITEM_STACK);
+                .registerColumnMapper(ColumnMappers.ITEM_STACK)
+                .registerColumnMapper(ColumnMappers.INSTANT);
     }
 
     private void registerArguments(Jdbi jdbi) {
@@ -116,6 +117,7 @@ public final class StorageCreation {
                 .registerArgument(Arguments.STATISTIC_TYPE)
                 .registerArgument(Arguments.CLAN_ROLE)
                 .registerArgument(Arguments.UUID)
-                .registerArgument(Arguments.ITEM_STACK);
+                .registerArgument(Arguments.ITEM_STACK)
+                .registerArgument(Arguments.INSTANT);
     }
 }

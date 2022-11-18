@@ -23,4 +23,5 @@ public final class ColumnMappers {
     public static final UuidMapper UUID = new UuidMapper();
     public static final ItemStackMapper ITEM_STACK = new ItemStackMapper();
     public static final StatisticTypeMapper STATISTIC_TYPE = new StatisticTypeMapper();
+    public static final InstantMapper INSTANT = new InstantMapper();
 }

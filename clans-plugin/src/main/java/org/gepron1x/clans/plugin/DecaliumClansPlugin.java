@@ -23,6 +23,7 @@ import cloud.commandframework.meta.CommandMeta;
 import cloud.commandframework.minecraft.extras.AudienceProvider;
 import cloud.commandframework.minecraft.extras.MinecraftHelp;
 import cloud.commandframework.paper.PaperCommandManager;
+import com.zaxxer.hikari.HikariDataSource;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -38,6 +39,7 @@ import org.gepron1x.clans.api.RoleRegistry;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.repository.ClanRepository;
+import org.gepron1x.clans.api.shield.CachingShields;
 import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.api.war.Wars;
 import org.gepron1x.clans.plugin.announce.AnnouncingClanRepository;
@@ -59,11 +61,17 @@ import org.gepron1x.clans.plugin.level.LeveledClanRepository;
 import org.gepron1x.clans.plugin.listener.CacheListener;
 import org.gepron1x.clans.plugin.listener.StatisticListener;
 import org.gepron1x.clans.plugin.papi.PlaceholderAPIHook;
+import org.gepron1x.clans.plugin.shield.CachingShieldsImpl;
+import org.gepron1x.clans.plugin.shield.ShieldsImpl;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
-import org.gepron1x.clans.plugin.storage.StorageCreation;
+import org.gepron1x.clans.plugin.storage.HikariDataSourceCreation;
+import org.gepron1x.clans.plugin.storage.implementation.sql.JdbiCreation;
+import org.gepron1x.clans.plugin.storage.implementation.sql.SqlClanStorage;
+import org.gepron1x.clans.plugin.storage.implementation.sql.SqlShieldStorage;
 import org.gepron1x.clans.plugin.users.DefaultUsers;
 import org.gepron1x.clans.plugin.util.AsciiArt;
 import org.gepron1x.clans.plugin.wg.WgExtension;
+import org.jdbi.v3.core.Jdbi;
 import org.slf4j.Logger;
 import space.arim.dazzleconf.ConfigurationOptions;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
@@ -149,9 +157,14 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         MessagesConfig messages = messages();
 
 
+        HikariDataSource ds = new HikariDataSourceCreation(this, config).create();
+        Jdbi jdbi = new JdbiCreation(ds).create();
 
-        this.storage = new StorageCreation(this, config(), builderFactory, roleRegistry).create();
+        this.storage = new SqlClanStorage(this, jdbi, ds, config.storage().type(), builderFactory, roleRegistry);
         this.storage.initialize();
+
+        CachingShields shields = new CachingShieldsImpl(new ShieldsImpl(new SqlShieldStorage(jdbi), futuresFactory), futuresFactory);
+
         ClanCache clanCache = new ClanCache();
 
         ClanRepository base = new ClanRepositoryImpl(this.storage, futuresFactory);
@@ -175,6 +188,8 @@ public final class DecaliumClansPlugin extends JavaPlugin {
                 futuresFactory,
                 clanCache
         );
+
+
 
         Users users = new DefaultUsers(clanRepository);
         if(isEnabled("Vault")) {
@@ -240,7 +255,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(statisticListener, this);
         statisticListener.start();
 
-        DecaliumClansApi clansApi = new DecaliumClansApiImpl(clanRepository, users, this.roleRegistry, builderFactory, futuresFactory, wars);
+        DecaliumClansApi clansApi = new DecaliumClansApiImpl(clanRepository, users, this.roleRegistry, builderFactory, futuresFactory, wars, shields);
         getServer().getServicesManager().register(DecaliumClansApi.class, clansApi, this, ServicePriority.Normal);
     }
 

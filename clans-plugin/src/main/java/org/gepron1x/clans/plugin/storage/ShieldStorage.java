@@ -13,19 +13,18 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with decalium-clans. If not, see <https://www.gnu.org/licenses/>
+ * along with decalium-clans-rewrite. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package org.gepron1x.clans.plugin.storage.implementation.sql.argument;
+package org.gepron1x.clans.plugin.storage;
 
+import org.gepron1x.clans.api.shield.Shield;
 
-public final class Arguments {
-    private Arguments() {}
-    public static final ComponentArgumentFactory COMPONENT = new ComponentArgumentFactory();
-    public static final ItemStackArgumentFactory ITEM_STACK = new ItemStackArgumentFactory();
-    public static final UuidArgumentFactory UUID = new UuidArgumentFactory();
-    public static final ClanRoleArgumentFactory CLAN_ROLE = new ClanRoleArgumentFactory();
-    public static final StatisticTypeArgumentFactory STATISTIC_TYPE = new StatisticTypeArgumentFactory();
+public interface ShieldStorage {
 
-    public static final InstantArgumentFactory INSTANT = new InstantArgumentFactory();
+    void add(int clanId, Shield shield);
+
+    void remove(String tag);
+
+    Shield get(String tag);
 }

@@ -16,56 +16,28 @@
  * along with decalium-clans-rewrite. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package org.gepron1x.clans.api.shield;
+package org.gepron1x.clans.plugin.storage.implementation.sql.argument;
 
+import org.jdbi.v3.core.argument.AbstractArgumentFactory;
+import org.jdbi.v3.core.argument.Argument;
+import org.jdbi.v3.core.config.ConfigRegistry;
 
-import java.time.Duration;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.Instant;
 
-public interface Shield {
-
-    Instant started();
-
-    Instant end();
-
-    default Duration length() {
-        return Duration.between(started(), end());
+public final class InstantArgumentFactory extends AbstractArgumentFactory<Instant> {
+    /**
+     * Constructs an {@link ArgumentFactory} for type {@code T}.
+     *
+     * @param sqlType the {@link Types} constant to use when the argument value is {@code null}.
+     */
+    public InstantArgumentFactory() {
+        super(Types.TIMESTAMP);
     }
 
-    default Duration left() {
-        return Duration.between(end(), Instant.now());
+    @Override
+    protected Argument build(Instant value, ConfigRegistry config) {
+        return (pos, statement, ctx) -> statement.setTimestamp(pos, Timestamp.from(value));
     }
-
-    default boolean expired() {
-        return Instant.now().isAfter(end());
-    }
-
-
-    Shield NONE = new Shield() {
-
-        @Override
-        public Instant started() {
-            return Instant.MIN;
-        }
-
-        @Override
-        public Instant end() {
-            return Instant.MIN;
-        }
-
-        @Override
-        public Duration length() {
-            return Duration.ZERO;
-        }
-
-        @Override
-        public Duration left() {
-            return Duration.ZERO;
-        }
-
-        @Override
-        public boolean expired() {
-            return true;
-        }
-    };
 }
