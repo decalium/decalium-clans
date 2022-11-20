@@ -82,6 +82,7 @@ tasks {
         relocateDependency("space.arim")
         relocateDependency("org.jdbi")
         relocateDependency("org.h2")
+        relocateDependency("com.fasterxml")
         relocateDependency("cloud.commandframework")
         relocateDependency("com.github.benmanes.caffeine")
         relocateDependency("io.leangen.geantyref")

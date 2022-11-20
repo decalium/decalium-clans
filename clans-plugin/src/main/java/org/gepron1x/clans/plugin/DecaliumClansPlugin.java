@@ -59,6 +59,7 @@ import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.gepron1x.clans.plugin.config.settings.PricesConfig;
 import org.gepron1x.clans.plugin.economy.VaultHook;
 import org.gepron1x.clans.plugin.level.LeveledClanRepository;
+import org.gepron1x.clans.plugin.level.LeveledShields;
 import org.gepron1x.clans.plugin.listener.CacheListener;
 import org.gepron1x.clans.plugin.listener.StatisticListener;
 import org.gepron1x.clans.plugin.papi.PlaceholderAPIHook;
@@ -180,7 +181,12 @@ public final class DecaliumClansPlugin extends JavaPlugin {
                 getServer(),
                 messages);
 
-        CachingShields shields = new CachingShieldsImpl(new WgShields(new ShieldsImpl(new SqlShieldStorage(jdbi), futuresFactory), WorldGuard.getInstance(), config), futuresFactory);
+        CachingShields shields = new CachingShieldsImpl(
+                new LeveledShields(new WgShields(
+                        new ShieldsImpl(new SqlShieldStorage(jdbi), futuresFactory), WorldGuard.getInstance(), config
+                ), config, messages, futuresFactory),
+                futuresFactory
+        );
 
         if(config.levels().enabled()) {
             repository = new LeveledClanRepository(repository, futuresFactory, config, messages);
