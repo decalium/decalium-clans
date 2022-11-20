@@ -20,6 +20,8 @@ package org.gepron1x.clans.plugin.storage;
 
 import org.gepron1x.clans.api.shield.Shield;
 
+import java.util.Map;
+
 public interface ShieldStorage {
 
     void add(int clanId, Shield shield);
@@ -27,4 +29,8 @@ public interface ShieldStorage {
     void remove(String tag);
 
     Shield get(String tag);
+
+    void cleanExpired();
+
+    Map<String, Shield> activeShields();
 }

@@ -36,8 +36,8 @@ dependencies {
     implementation("org.jdbi:jdbi3-core:3.34.0") {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
-    implementation("org.flywaydb:flyway-core:9.4.0")
-    implementation("org.flywaydb:flyway-mysql:9.4.0")
+    implementation("org.flywaydb:flyway-core:9.8.1")
+    implementation("org.flywaydb:flyway-mysql:9.8.1")
     implementation("cloud.commandframework:cloud-paper:1.7.1") {
         exclude("org.checkerframework", "checker-qual")
     }

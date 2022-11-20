@@ -19,6 +19,7 @@
 package org.gepron1x.clans.plugin.wg;
 
 import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.flags.BooleanFlag;
 import com.sk89q.worldguard.protection.flags.StringFlag;
 import org.bukkit.Server;
 import org.gepron1x.clans.api.repository.ClanRepository;
@@ -30,6 +31,8 @@ public final class WgExtension {
 
     public static final StringFlag CLAN = new StringFlag("clan");
     public static final StringFlag HOME_NAME = new StringFlag("clan-home-name");
+
+    public static final BooleanFlag SHIELD_ACTIVE = new BooleanFlag("clan-shield-active");
     private final Server server;
     private final ClansConfig clansConfig;
     private final ClanRepository repository;
@@ -47,6 +50,8 @@ public final class WgExtension {
     }
 
     public static void registerFlags() {
-        WorldGuard.getInstance().getFlagRegistry().registerAll(List.of(CLAN, HOME_NAME));
+        WorldGuard.getInstance().getFlagRegistry().registerAll(List.of(CLAN, HOME_NAME, SHIELD_ACTIVE));
     }
+
+
 }

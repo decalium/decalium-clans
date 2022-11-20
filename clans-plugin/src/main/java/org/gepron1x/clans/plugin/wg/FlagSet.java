@@ -16,22 +16,17 @@
  * along with decalium-clans. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package org.gepron1x.clans.plugin.papi;
+package org.gepron1x.clans.plugin.wg;
 
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.Server;
-import org.gepron1x.clans.api.shield.CachingShields;
-import org.gepron1x.clans.plugin.cache.ClanCache;
-import org.gepron1x.clans.plugin.config.settings.ClansConfig;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
-public record PlaceholderAPIHook(Server server, ClansConfig config,
-                                 ClanCache cache,
-                                 CachingShields shields,
-                                 LegacyComponentSerializer legacy) {
+import java.util.Map;
 
+public interface FlagSet {
 
-    public void register() {
-        new ClansExpansion(server, config, cache, shields, legacy).register();
-    }
+    void apply(ProtectedRegion region);
 
+    void clear(ProtectedRegion region);
+
+    Map<String, ?> serialize();
 }

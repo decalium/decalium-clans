@@ -25,6 +25,7 @@ import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.clan.IdentifiedDraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
+import org.gepron1x.clans.api.shield.CachingShields;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.cache.ClanCache;
 import org.gepron1x.clans.plugin.config.settings.ClansConfig;
@@ -40,7 +41,8 @@ public final class ClansExpansion extends PlaceholderExpansion {
             OWNER = "owner", MEMBER_COUNT = "member_count",
             MEMBERS_ONLINE_COUNT = "member_online_count",
             MEMBER_ROLE = "member_role",
-            LEVEL = "level";
+            LEVEL = "level",
+            SHIELD_LEFT = "shield_left";
 
     private static final String STATISTIC = "statistic_";
 
@@ -48,12 +50,14 @@ public final class ClansExpansion extends PlaceholderExpansion {
     private final Server server;
     private final ClansConfig clansConfig;
     private final ClanCache cache;
+    private final CachingShields shields;
     private final LegacyComponentSerializer legacy;
 
-    public ClansExpansion(@NotNull Server server, @NotNull ClansConfig clansConfig, @NotNull ClanCache cache, @NotNull LegacyComponentSerializer legacy) {
+    public ClansExpansion(@NotNull Server server, @NotNull ClansConfig clansConfig, @NotNull ClanCache cache, @NotNull CachingShields shields, @NotNull LegacyComponentSerializer legacy) {
         this.server = server;
         this.clansConfig = clansConfig;
         this.cache = cache;
+        this.shields = shields;
         this.legacy = legacy;
     }
 
@@ -96,6 +100,7 @@ public final class ClansExpansion extends PlaceholderExpansion {
             case MEMBER_COUNT -> String.valueOf(clan.members().size());
             case MEMBER_ROLE -> member.map(ClanMember::role).map(ClanRole::displayName).map(this.legacy::serialize).orElse("");
             case LEVEL -> String.valueOf(clan.level());
+            case SHIELD_LEFT -> shields.shield(clan.tag()).left().toString();
             default -> null;
         };
     }

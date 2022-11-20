@@ -26,6 +26,7 @@ import space.arim.omnibus.util.concurrent.CentralisedFuture;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.time.Duration;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class CachingShieldsImpl implements CachingShields {
@@ -65,6 +66,18 @@ public final class CachingShieldsImpl implements CachingShields {
             cache.put(tag, s);
             return s;
         });
+    }
+
+    @Override
+    public CentralisedFuture<?> cleanExpired() {
+        return shields.cleanExpired().thenAccept(ignored -> {
+            cache.entrySet().removeIf(entry -> entry.getValue().expired());
+        });
+    }
+
+    @Override
+    public CentralisedFuture<Map<String, Shield>> shields() {
+        return shields.shields();
     }
 
     @Override

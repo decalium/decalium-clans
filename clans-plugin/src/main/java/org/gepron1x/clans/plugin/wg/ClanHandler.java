@@ -18,22 +18,25 @@
  */
 package org.gepron1x.clans.plugin.wg;
 
-import com.sk89q.worldguard.LocalPlayer;
-import com.sk89q.worldguard.session.Session;
-import com.sk89q.worldguard.session.SessionManager;
 
-public final class ClanSession extends Session {
+import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldguard.LocalPlayer;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.session.Session;
+import com.sk89q.worldguard.session.handler.Handler;
+
+public final class ClanHandler extends Handler {
     /**
-     * Create a new session.
+     * Create a new handler.
      *
-     * @param manager The session manager
+     * @param session The session
      */
-    public ClanSession(SessionManager manager) {
-        super(manager);
+    protected ClanHandler(Session session) {
+        super(session);
     }
 
     @Override
-    public void initialize(LocalPlayer player) {
-        super.initialize(player);
+    public void initialize(LocalPlayer player, Location current, ApplicableRegionSet set) {
+        super.initialize(player, current, set);
     }
 }

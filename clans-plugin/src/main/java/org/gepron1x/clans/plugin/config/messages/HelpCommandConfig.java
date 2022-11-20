@@ -222,6 +222,14 @@ public interface HelpCommandConfig {
 
             }
 
+            @SubSection Shield shield();
+
+            interface Shield {
+
+                @DefaultString("Apply the clan shield.")
+                String apply();
+            }
+
 
         }
 

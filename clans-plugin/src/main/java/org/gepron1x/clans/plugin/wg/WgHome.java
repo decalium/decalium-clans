@@ -16,24 +16,29 @@
  * along with decalium-clans-rewrite. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package org.gepron1x.clans.api.shield;
+package org.gepron1x.clans.plugin.wg;
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import org.bukkit.Location;
 import org.gepron1x.clans.api.clan.Clan;
-import space.arim.omnibus.util.concurrent.CentralisedFuture;
+import org.gepron1x.clans.api.clan.home.ClanHome;
 
-import java.time.Duration;
-import java.util.Map;
+import java.util.Optional;
 
-public interface Shields {
+public record WgHome(WorldGuard worldGuard, Clan clan, ClanHome home) {
 
-    CentralisedFuture<Shield> add(Clan clan, Duration duration);
 
-    CentralisedFuture<?> delete(String tag);
+    public Optional<ProtectedRegion> region() {
+        Location location = home.location();
+        return Optional.ofNullable(location.getWorld()).map(BukkitAdapter::adapt)
+                .map(worldGuard.getPlatform().getRegionContainer()::get)
+                .map(mgr -> mgr.getRegion(new NameForRegion(clan, home).value()));
+    }
 
-    CentralisedFuture<Shield> currentShield(String tag);
-
-    CentralisedFuture<?> cleanExpired();
-
-    CentralisedFuture<Map<String, Shield>> shields();
+    public boolean shieldActive() {
+        return region().map(r -> r.getFlag(WgExtension.SHIELD_ACTIVE)).orElse(false);
+    }
 
 }

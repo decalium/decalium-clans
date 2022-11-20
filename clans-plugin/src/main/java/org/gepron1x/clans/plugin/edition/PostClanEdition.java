@@ -22,12 +22,8 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.domains.DefaultDomain;
-import com.sk89q.worldguard.protection.flags.Flag;
-import com.sk89q.worldguard.protection.flags.FlagContext;
-import com.sk89q.worldguard.protection.flags.InvalidFlagFormat;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
@@ -43,6 +39,7 @@ import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.gepron1x.clans.plugin.wg.HologramOfHome;
 import org.gepron1x.clans.plugin.wg.WgExtension;
+import org.gepron1x.clans.plugin.wg.WgHome;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -96,7 +93,7 @@ public final class PostClanEdition implements ClanEdition {
     @Override
     public ClanEdition addMember(@NotNull ClanMember member) {
         for(ClanHome home : clan.homes()) {
-            getRegionManager(home.location()).map(regionManager -> regionManager.getRegion(nameFor(clan, home))).ifPresent(region -> {
+            new WgHome(worldGuard, clan, home).region().ifPresent(region -> {
                 region.getMembers().addPlayer(member.uniqueId());
             });
         }
@@ -106,7 +103,7 @@ public final class PostClanEdition implements ClanEdition {
     @Override
     public ClanEdition removeMember(@NotNull ClanMember member) {
         for(ClanHome home : clan.homes()) {
-            getRegionManager(home.location()).map(regionManager -> regionManager.getRegion(nameFor(clan, home))).ifPresent(region -> {
+            new WgHome(worldGuard, clan, home).region().ifPresent(region -> {
                 region.getMembers().removePlayer(member.uniqueId());
             });
         }
@@ -146,23 +143,11 @@ public final class PostClanEdition implements ClanEdition {
         ProtectedCuboidRegion region = new ProtectedCuboidRegion(nameFor(clan, home), first, second);
         region.setFlag(WgExtension.CLAN, clan.tag());
         region.setFlag(WgExtension.HOME_NAME, home.name());
-        clansConfig.homes().worldGuardFlags().forEach((name, value) -> {
-            Flag<?> flag = worldGuard.getFlagRegistry().get(name);
-            if(flag == null) return;
-            setFlag(region, flag, FlagContext.create().setInput(value).build());
-
-        });
+        clansConfig.homes().worldGuardFlags().apply(region);
         return region;
 
     }
 
-    private <T> void setFlag(ProtectedRegion region, Flag<T> flag, FlagContext context) {
-        try {
-            region.setFlag(flag, flag.parseInput(context));
-        } catch (InvalidFlagFormat e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     @Override
     public ClanEdition removeHome(@NotNull ClanHome home) {

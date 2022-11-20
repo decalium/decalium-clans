@@ -27,6 +27,7 @@ import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Map;
 
 public final class ShieldsImpl implements Shields {
 
@@ -56,5 +57,15 @@ public final class ShieldsImpl implements Shields {
     @Override
     public CentralisedFuture<Shield> currentShield(String tag) {
         return futuresFactory.supplyAsync(() -> storage.get(tag));
+    }
+
+    @Override
+    public CentralisedFuture<?> cleanExpired() {
+        return futuresFactory.runAsync(storage::cleanExpired);
+    }
+
+    @Override
+    public CentralisedFuture<Map<String, Shield>> shields() {
+        return futuresFactory.supplyAsync(storage::activeShields);
     }
 }

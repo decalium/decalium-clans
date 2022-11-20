@@ -24,6 +24,10 @@ import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.ShieldRo
 import org.intellij.lang.annotations.Language;
 import org.jdbi.v3.core.Jdbi;
 
+import java.time.Instant;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public final class SqlShieldStorage implements ShieldStorage {
 
     private static final ShieldRowMapper MAPPER = new ShieldRowMapper();
@@ -32,10 +36,16 @@ public final class SqlShieldStorage implements ShieldStorage {
             "ON DUPLICATE KEY UPDATE `start`=VALUES(`start`), `end`=VALUES(`end`)";
 
     @Language("SQL")
-    private static final String DELETE_SHIELD = "DELETE FROM `shields` WHERE `clan_id`=(SELECT id FROM clans WHERE tag=?)";
+    private static final String DELETE_SHIELD = "DELETE FROM `shields` WHERE `clan_id`=(SELECT `id` FROM clans WHERE tag=?)";
 
     @Language("SQL")
-    private static final String GET_SHIELD = "SELECT * FROM `shields` WHERE `clan_id`=(SELECT id FROM clans WHERE tag=?)";
+    private static final String GET_SHIELD = "SELECT * FROM `shields` WHERE `clan_id`=(SELECT `id` FROM clans WHERE tag=?)";
+
+    @Language("SQL")
+    private static final String GET_SHIELDS = "SELECT `clans`.`tag` `tag`, `shields`.`start` `start`, `shields`.`end` `end` FROM `shields` LEFT JOIN `clans` ON `clans`.`id`=`shields`.`clan_id`";
+
+    @Language("SQL")
+    private static final String CLEAN_EXPIRED = "DELETE FROM `shields` WHERE `end`<?";
 
 
     private final Jdbi jdbi;
@@ -50,7 +60,7 @@ public final class SqlShieldStorage implements ShieldStorage {
         jdbi.useHandle(handle -> handle.createUpdate(INSERT_OR_UPDATE_SHIELD)
                 .bind(0, clanId)
                 .bind(1, shield.started())
-                .bind(2, shield.end())
+                .bind(2, shield.end()).execute()
         );
 
     }
@@ -63,5 +73,19 @@ public final class SqlShieldStorage implements ShieldStorage {
     @Override
     public Shield get(String tag) {
         return jdbi.withHandle(handle -> handle.createQuery(GET_SHIELD).map(MAPPER).findOne()).orElse(Shield.NONE);
+    }
+
+    @Override
+    public void cleanExpired() {
+        jdbi.useHandle(handle -> handle.execute(CLEAN_EXPIRED, Instant.now()));
+    }
+
+    @Override
+    public Map<String, Shield> activeShields() {
+        return jdbi.withHandle(handle -> handle.createQuery(GET_SHIELDS)
+                .registerRowMapper(MAPPER).reduceRows(new LinkedHashMap<>(), (map, view) -> {
+            map.put(view.getColumn("tag", String.class), view.getRow(Shield.class));
+            return map;
+        }));
     }
 }

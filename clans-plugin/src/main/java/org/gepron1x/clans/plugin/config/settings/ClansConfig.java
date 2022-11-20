@@ -27,6 +27,7 @@ import org.gepron1x.clans.plugin.config.UserComponentSerializer;
 import org.gepron1x.clans.plugin.config.format.DisplayNameFormat;
 import org.gepron1x.clans.plugin.storage.StorageType;
 import org.gepron1x.clans.plugin.util.message.Message;
+import org.gepron1x.clans.plugin.wg.FlagSet;
 import space.arim.dazzleconf.annote.ConfComments;
 import space.arim.dazzleconf.annote.ConfHeader;
 import space.arim.dazzleconf.annote.ConfKey;
@@ -123,6 +124,7 @@ public interface ClansConfig {
 
     @SubSection Homes homes();
 
+
     interface Homes {
 
         @ConfKey("max-homes-per-clan")
@@ -147,7 +149,7 @@ public interface ClansConfig {
 
         @ConfKey("worldguard-flags")
         @DefaultMap({"pvp", "DENY"})
-        Map<String, String> worldGuardFlags();
+        FlagSet worldGuardFlags();
         @ConfKey("hologram-format")
         @DefaultString("Home <home_name>")
         @ConfComments("Hologram format.")
@@ -268,5 +270,15 @@ public interface ClansConfig {
             @DefaultMap({"world", "World", "world_nether", "<red>Nether", "world_the_end", "<yellow>The end"})
             Map<String, Component> worldDisplayNames();
         }
+    }
+
+    @SubSection Shields shields();
+
+    interface Shields {
+
+        @DefaultMap({})
+        @ConfKey("shield-flags")
+        FlagSet shieldFlags();
+
     }
 }
