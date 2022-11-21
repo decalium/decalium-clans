@@ -41,7 +41,6 @@ import java.util.stream.Collectors;
 
 public final class ShieldRefreshTask extends BukkitRunnable {
 
-    private final ClanRepository repository;
     private final Shields shields;
     private final WorldGuard worldGuard;
     private final ClansConfig config;
@@ -51,8 +50,6 @@ public final class ShieldRefreshTask extends BukkitRunnable {
     private final AsyncLoadingCache<String, Optional<Clan>> cache;
 
     public ShieldRefreshTask(ClanRepository repository, Shields shields, WorldGuard worldGuard, ClansConfig config, FactoryOfTheFuture futuresFactory, Logger logger) {
-
-        this.repository = repository;
         this.shields = shields;
         this.worldGuard = worldGuard;
         this.config = config;
@@ -63,7 +60,6 @@ public final class ShieldRefreshTask extends BukkitRunnable {
     @Override
     public void run() {
         shields.shields().thenCompose(map -> {
-            System.out.println(map);
             List<CentralisedFuture<Optional<Clan>>> futures = map.keySet().stream().map(cache::get).map(c -> (CentralisedFuture<Optional<Clan>>) c).toList();
             return futuresFactory.allOf(futures).thenApply(ignored -> {
                 return futures.stream().map(CompletableFuture::join).filter(Optional::isPresent)

@@ -215,6 +215,9 @@ public interface MessagesConfig {
         @SubSection
         WarRequest wars();
 
+        @ConfKey("shields")
+        @SubSection Shield shields();
+
         interface Creation {
 
             @ConfKey("clan-with-tag-already-exists")
@@ -278,6 +281,13 @@ public interface MessagesConfig {
             @DefaultString("<prefix> Clan you joined got deleted!")
             Message clanGotDeleted();
 
+        }
+
+        interface Shield {
+
+            @ConfKey("shield-added")
+            @DefaultString("<prefix> Successfully protected your clan homes")
+            Message added();
         }
 
         interface Member {
