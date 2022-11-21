@@ -19,8 +19,6 @@
 package org.gepron1x.clans.plugin.wg;
 
 import com.google.common.base.MoreObjects;
-import com.sk89q.worldguard.WorldGuard;
-import org.bukkit.Server;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.edition.ClanEdition;
@@ -36,14 +34,12 @@ import java.util.function.Consumer;
 public class WgClan implements DelegatingClan, Clan {
     private final Clan delegate;
     private final ClansConfig clansConfig;
-    private final WorldGuard worldGuard;
-    private final Server server;
+    private final RegionFactory regionFactory;
 
-    public WgClan(Clan delegate, ClansConfig clansConfig, WorldGuard worldGuard, Server server) {
+    public WgClan(Clan delegate, ClansConfig clansConfig, RegionFactory regionFactory) {
         this.delegate = delegate;
         this.clansConfig = clansConfig;
-        this.worldGuard = worldGuard;
-        this.server = server;
+        this.regionFactory = regionFactory;
     }
 
 
@@ -56,8 +52,8 @@ public class WgClan implements DelegatingClan, Clan {
     @Override
     public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
         return this.delegate.edit(transaction).thenApplySync(clan -> {
-            transaction.accept(new PostClanEdition(clan, this.clansConfig, worldGuard));
-            return new WgClan(clan, this.clansConfig, this.worldGuard, this.server);
+            transaction.accept(new PostClanEdition(clan, this.clansConfig, regionFactory));
+            return new WgClan(clan, this.clansConfig, this.regionFactory);
         });
     }
 
@@ -66,13 +62,12 @@ public class WgClan implements DelegatingClan, Clan {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         WgClan wgClan = (WgClan) o;
-        return delegate.equals(wgClan.delegate) && clansConfig.equals(wgClan.clansConfig) &&
-                worldGuard.equals(wgClan.worldGuard) && server.equals(wgClan.server);
+        return delegate.equals(wgClan.delegate) && clansConfig.equals(wgClan.clansConfig) && regionFactory.equals(wgClan.regionFactory);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(delegate, clansConfig, worldGuard, server);
+        return Objects.hash(delegate, clansConfig, regionFactory);
     }
 
     @Override
@@ -80,12 +75,12 @@ public class WgClan implements DelegatingClan, Clan {
         return this.delegate.id();
     }
 
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("delegate", delegate)
-                .add("worldGuard", worldGuard)
-                .add("server", server)
+                .add("regionFactory", regionFactory)
                 .toString();
     }
 }

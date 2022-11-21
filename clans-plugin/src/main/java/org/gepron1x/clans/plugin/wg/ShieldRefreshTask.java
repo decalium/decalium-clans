@@ -20,10 +20,7 @@ package org.gepron1x.clans.plugin.wg;
 
 import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.protection.managers.RegionManager;
-import org.bukkit.World;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.home.ClanHome;
@@ -97,9 +94,5 @@ public final class ShieldRefreshTask extends BukkitRunnable {
                 });
             }
         });
-    }
-
-    private Optional<RegionManager> regionManager(World world) {
-        return Optional.ofNullable(worldGuard.getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world)));
     }
 }

@@ -18,13 +18,7 @@
  */
 package org.gepron1x.clans.plugin.edition;
 
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.domains.DefaultDomain;
-import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
-import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
@@ -33,67 +27,33 @@ import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.api.edition.ClanEdition;
+import org.gepron1x.clans.api.edition.EmptyClanEdition;
 import org.gepron1x.clans.api.edition.home.HomeEdition;
 import org.gepron1x.clans.api.edition.member.MemberEdition;
-import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.gepron1x.clans.plugin.wg.HologramOfHome;
-import org.gepron1x.clans.plugin.wg.WgExtension;
-import org.gepron1x.clans.plugin.wg.WgHome;
+import org.gepron1x.clans.plugin.wg.RegionFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public final class PostClanEdition implements ClanEdition {
+public final class PostClanEdition implements EmptyClanEdition {
     private final Clan clan;
     private final ClansConfig clansConfig;
-    private final RegionContainer regionContainer;
-    private final WorldGuard worldGuard;
+    private final RegionFactory regionFactory;
 
-    public PostClanEdition(Clan clan, ClansConfig clansConfig, WorldGuard worldGuard) {
+    public PostClanEdition(Clan clan, ClansConfig clansConfig, RegionFactory regionFactory) {
         this.clan = clan;
         this.clansConfig = clansConfig;
-        this.regionContainer = worldGuard.getPlatform().getRegionContainer();
-        this.worldGuard = worldGuard;
-    }
-    @Override
-    public ClanEdition rename(@NotNull Component displayName) {
-        return this;
-    }
-
-    @Override
-    public ClanEdition setStatistic(@NotNull StatisticType type, int value) {
-        return this;
-    }
-
-    @Override
-    public ClanEdition owner(@NotNull ClanMember owner) {
-        return this;
-    }
-
-    @Override
-    public ClanEdition addStatistics(@NotNull Map<StatisticType, Integer> statistics) {
-        return this;
-    }
-
-    @Override
-    public ClanEdition incrementStatistic(@NotNull StatisticType type) {
-        return this;
-    }
-
-    @Override
-    public ClanEdition removeStatistic(@NotNull StatisticType type) {
-        return this;
+        this.regionFactory = regionFactory;
     }
 
     @Override
     public ClanEdition addMember(@NotNull ClanMember member) {
         for(ClanHome home : clan.homes()) {
-            new WgHome(worldGuard, clan, home).region().ifPresent(region -> {
+            regionFactory.home(clan, home).region().ifPresent(region -> {
                 region.getMembers().addPlayer(member.uniqueId());
             });
         }
@@ -103,7 +63,7 @@ public final class PostClanEdition implements ClanEdition {
     @Override
     public ClanEdition removeMember(@NotNull ClanMember member) {
         for(ClanHome home : clan.homes()) {
-            new WgHome(worldGuard, clan, home).region().ifPresent(region -> {
+            regionFactory.home(clan, home).region().ifPresent(region -> {
                 region.getMembers().removePlayer(member.uniqueId());
             });
         }
@@ -118,63 +78,29 @@ public final class PostClanEdition implements ClanEdition {
 
     @Override
     public ClanEdition addHome(@NotNull ClanHome home) {
-        getRegionManager(home.location()).ifPresent(regionManager -> {
-            ProtectedCuboidRegion region = createForHome(home);
-            DefaultDomain members = region.getMembers();
-            clan.memberMap().keySet().forEach(members::addPlayer);
-            new HologramOfHome(this.clansConfig, this.clan, home).spawnIfNotPresent();
-            regionManager.addRegion(region);
-        });
 
+        ProtectedRegion region = createForHome(home);
+        new HologramOfHome(this.clansConfig, this.clan, home).spawnIfNotPresent();
         return this;
     }
 
 
-    private ProtectedCuboidRegion createForHome(ClanHome home) {
-        Location location = home.location();
-        double s = this.clansConfig.homes().homeRegionRadius();
-        double lvl = home.level() + 1;
-        double halfSize = Math.pow(1 + this.clansConfig.homes().levelRegionScale(), lvl) * s;
-        int x = location.getBlockX();
-        int y = location.getBlockY();
-        int z = location.getBlockZ();
-        BlockVector3 first = BlockVector3.at(x - halfSize, y - halfSize, z - halfSize);
-        BlockVector3 second = BlockVector3.at(x + halfSize, y + halfSize, z + halfSize);
-        ProtectedCuboidRegion region = new ProtectedCuboidRegion(nameFor(clan, home), first, second);
-        region.setFlag(WgExtension.CLAN, clan.tag());
-        region.setFlag(WgExtension.HOME_NAME, home.name());
-        clansConfig.homes().worldGuardFlags().apply(region);
-        return region;
-
+    private ProtectedRegion createForHome(ClanHome home) {
+        return regionFactory.create(clan, home);
     }
 
 
     @Override
     public ClanEdition removeHome(@NotNull ClanHome home) {
-        getRegionManager(home.location()).ifPresent(mgr -> {
-            mgr.removeRegion(nameFor(clan, home));
-            new HologramOfHome(this.clansConfig, this.clan, home).destroy();
-        });
-
+        regionFactory.remove(clan, home);
         return this;
     }
 
     @Override
     public ClanEdition editHome(@NotNull String name, @NotNull Consumer<HomeEdition> consumer) {
         ClanHome home = clan.home(name).orElseThrow();
-        getRegionManager(home.location()).ifPresent(mgr -> {
-            consumer.accept(new PostHomeEdition(home, mgr));
-        });
+        consumer.accept(new PostHomeEdition(home));
         return this;
-    }
-
-    private Optional<RegionManager> getRegionManager(Location location) {
-        return Optional.ofNullable(location.getWorld()).map(BukkitAdapter::adapt).map(regionContainer::get);
-
-    }
-
-    private static String nameFor(Clan clan, ClanHome home) {
-        return "decaliumclans_"+clan.tag()+"_"+home.name();
     }
 
     private static class PostMemberEdition implements MemberEdition {
@@ -189,10 +115,8 @@ public final class PostClanEdition implements ClanEdition {
     private class PostHomeEdition implements HomeEdition {
 
         private final ClanHome home;
-        private final RegionManager regionManager;
-        private PostHomeEdition(ClanHome home, RegionManager regionManager) {
+        private PostHomeEdition(ClanHome home) {
             this.home = home;
-            this.regionManager = regionManager;
         }
 
 
@@ -215,8 +139,8 @@ public final class PostClanEdition implements ClanEdition {
 
         @Override
         public HomeEdition upgrade() {
-            regionManager.removeRegion(nameFor(clan, home));
-            regionManager.addRegion(PostClanEdition.this.createForHome(home));
+            PostClanEdition.this.regionFactory.remove(clan, home);
+            PostClanEdition.this.regionFactory.create(clan, home);
             new HologramOfHome(clansConfig, clan, home).rename(home.displayName());
             return this;
         }

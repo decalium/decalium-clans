@@ -25,4 +25,8 @@ import org.gepron1x.clans.api.clan.home.ClanHome;
 public interface RegionFactory {
 
     ProtectedRegion create(Clan clan, ClanHome home);
+
+    void remove(Clan clan, ClanHome home);
+
+    WgHome home(Clan clan, ClanHome home);
 }

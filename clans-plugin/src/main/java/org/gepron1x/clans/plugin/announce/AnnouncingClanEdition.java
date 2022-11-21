@@ -20,28 +20,24 @@ package org.gepron1x.clans.plugin.announce;
 
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Location;
 import org.bukkit.Server;
-import org.bukkit.inventory.ItemStack;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.api.edition.ClanEdition;
+import org.gepron1x.clans.api.edition.EmptyClanEdition;
 import org.gepron1x.clans.api.edition.home.HomeEdition;
 import org.gepron1x.clans.api.edition.member.MemberEdition;
-import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 import static java.util.Objects.requireNonNull;
 
-public final class AnnouncingClanEdition implements ClanEdition {
+public final class AnnouncingClanEdition implements EmptyClanEdition {
     private final Clan clan;
     private final Audience audience;
     private final Server server;
@@ -59,29 +55,10 @@ public final class AnnouncingClanEdition implements ClanEdition {
         return this;
     }
 
-    @Override
-    public ClanEdition setStatistic(@NotNull StatisticType type, int value) {
-        return this;
-    }
 
     @Override
     public ClanEdition owner(@NotNull ClanMember owner) {
         this.audience.sendMessage(messages.announcements().clanOwnerChanged().with("member", owner.renderName(server)));
-        return this;
-    }
-
-    @Override
-    public ClanEdition addStatistics(@NotNull Map<StatisticType, Integer> statistics) {
-        return this;
-    }
-
-    @Override
-    public ClanEdition incrementStatistic(@NotNull StatisticType type) {
-        return this;
-    }
-
-    @Override
-    public ClanEdition removeStatistic(@NotNull StatisticType type) {
         return this;
     }
 
@@ -134,7 +111,6 @@ public final class AnnouncingClanEdition implements ClanEdition {
             this.member = member;
 
         }
-
         @Override
         public MemberEdition appoint(@NotNull ClanRole role) {
             AnnouncingClanEdition.this.audience.sendMessage(messages.announcements().memberPromoted()
@@ -145,28 +121,12 @@ public final class AnnouncingClanEdition implements ClanEdition {
         }
     }
 
-    private class AnnouncingHomeEdition implements HomeEdition {
+    private class AnnouncingHomeEdition implements EmptyClanEdition.EmptyHomeEdition {
 
         private final ClanHome home;
 
         private AnnouncingHomeEdition(ClanHome home) {
             this.home = home;
-        }
-
-
-        @Override
-        public HomeEdition setIcon(@Nullable ItemStack icon) {
-            return this;
-        }
-
-        @Override
-        public HomeEdition move(@NotNull Location location) {
-            return this;
-        }
-
-        @Override
-        public HomeEdition rename(@NotNull Component displayName) {
-            return this;
         }
 
         @Override

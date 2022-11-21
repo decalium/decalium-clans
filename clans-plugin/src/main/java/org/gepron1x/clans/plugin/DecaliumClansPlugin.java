@@ -64,6 +64,7 @@ import org.gepron1x.clans.plugin.listener.CacheListener;
 import org.gepron1x.clans.plugin.listener.StatisticListener;
 import org.gepron1x.clans.plugin.papi.PlaceholderAPIHook;
 import org.gepron1x.clans.plugin.shield.CachingShieldsImpl;
+import org.gepron1x.clans.plugin.shield.ShieldRegionFactory;
 import org.gepron1x.clans.plugin.shield.ShieldsImpl;
 import org.gepron1x.clans.plugin.shield.WgShields;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
@@ -73,6 +74,7 @@ import org.gepron1x.clans.plugin.storage.implementation.sql.SqlClanStorage;
 import org.gepron1x.clans.plugin.storage.implementation.sql.SqlShieldStorage;
 import org.gepron1x.clans.plugin.users.DefaultUsers;
 import org.gepron1x.clans.plugin.util.AsciiArt;
+import org.gepron1x.clans.plugin.wg.RegionFactoryImpl;
 import org.gepron1x.clans.plugin.wg.ShieldRefreshTask;
 import org.gepron1x.clans.plugin.wg.WgExtension;
 import org.jdbi.v3.core.Jdbi;
@@ -173,20 +175,20 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
         ClanRepository base = new ClanRepositoryImpl(this.storage, futuresFactory);
 
-        ClanRepository repository = new AnnouncingClanRepository(
-                isEnabled("WorldGuard") ? new WgExtension(
-                        getServer(),
-                        config(),
-                        base).make() : base,
-                getServer(),
-                messages);
-
         CachingShields shields = new CachingShieldsImpl(
                 new LeveledShields(new WgShields(
                         new ShieldsImpl(new SqlShieldStorage(jdbi), futuresFactory), WorldGuard.getInstance(), config
                 ), config, messages, futuresFactory),
                 futuresFactory
         );
+
+        ClanRepository repository = new AnnouncingClanRepository(
+                isEnabled("WorldGuard") ? new WgExtension(
+                        config(),
+                        base, new ShieldRegionFactory(new RegionFactoryImpl(WorldGuard.getInstance(), config), shields, config)).make() : base,
+                getServer(),
+                messages);
+
 
         if(config.levels().enabled()) {
             repository = new LeveledClanRepository(repository, futuresFactory, config, messages);
