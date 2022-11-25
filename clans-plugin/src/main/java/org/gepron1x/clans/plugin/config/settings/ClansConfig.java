@@ -25,6 +25,7 @@ import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.plugin.clan.member.ClanRoleImpl;
 import org.gepron1x.clans.plugin.config.UserComponentSerializer;
 import org.gepron1x.clans.plugin.config.format.DisplayNameFormat;
+import org.gepron1x.clans.plugin.config.format.TimeFormat;
 import org.gepron1x.clans.plugin.storage.StorageType;
 import org.gepron1x.clans.plugin.util.message.Message;
 import org.gepron1x.clans.plugin.wg.FlagSet;
@@ -66,6 +67,9 @@ public interface ClansConfig {
     @ConfComments("Display name format.")
     @SubSection DisplayNameFormat displayNameFormat();
 
+    @ConfKey("time-format")
+    @DefaultMap({"DAYS", "д", "HOURS", "ч", "MINUTES", "м", "SECONDS", "с"})
+    TimeFormat timeFormat();
 
     @ConfKey("roles")
     @SubSection
@@ -280,5 +284,8 @@ public interface ClansConfig {
         @ConfKey("shield-flags")
         FlagSet shieldFlags();
 
+        @ConfKey("no-shield")
+        @DefaultString("No shield")
+        Component noShield();
     }
 }

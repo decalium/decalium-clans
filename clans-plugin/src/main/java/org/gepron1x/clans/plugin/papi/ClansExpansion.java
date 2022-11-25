@@ -26,11 +26,13 @@ import org.gepron1x.clans.api.clan.IdentifiedDraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.api.shield.CachingShields;
+import org.gepron1x.clans.api.shield.Shield;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.cache.ClanCache;
 import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Duration;
 import java.util.Optional;
 
 
@@ -100,9 +102,16 @@ public final class ClansExpansion extends PlaceholderExpansion {
             case MEMBER_COUNT -> String.valueOf(clan.members().size());
             case MEMBER_ROLE -> member.map(ClanMember::role).map(ClanRole::displayName).map(this.legacy::serialize).orElse("");
             case LEVEL -> String.valueOf(clan.level());
-            case SHIELD_LEFT -> shields.shield(clan.tag()).left().toString();
+            case SHIELD_LEFT -> formatShield(shields.shield(clan.tag()));
             default -> null;
         };
+    }
+
+    private String formatShield(Shield shield) {
+        Duration left = shield.left();
+        if(left.isZero()) return legacy.serialize(clansConfig.shields().noShield());
+        return clansConfig.timeFormat().format(left);
+
     }
 
 

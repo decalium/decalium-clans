@@ -33,7 +33,9 @@ public interface Shield {
     }
 
     default Duration left() {
-        return Duration.between(end(), Instant.now());
+        Duration left = Duration.between(Instant.now(), end());
+        if(left.isNegative()) return Duration.ZERO;
+        return left;
     }
 
     default boolean expired() {

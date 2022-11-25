@@ -83,7 +83,7 @@ public final class ShieldRefreshTask extends BukkitRunnable {
                        config.shields().shieldFlags().clear(region);
                        config.homes().worldGuardFlags().apply(region);
                        region.setFlag(WgExtension.SHIELD_ACTIVE, false);
-                   } else if(!active) {
+                   } else if(!active && !value.expired()) {
                        config.shields().shieldFlags().apply(region);
                        region.setFlag(WgExtension.SHIELD_ACTIVE, true);
                    }

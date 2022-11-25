@@ -149,6 +149,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
                 .addSerialiser(new TextColorSerializer())
                 .addSerialiser(new HelpColorsSerializer())
                 .addSerialiser(new FlagSetSerializer())
+                .addSerialiser(new TimeFormatSerializer())
                 .setCreateSingleElementCollections(true)
                 .build();
         this.messagesConfiguration = Configuration.create(this, "messages.yml", MessagesConfig.class, options);
