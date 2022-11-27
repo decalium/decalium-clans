@@ -13,7 +13,7 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with decalium-clans-rewrite. If not, see <https://www.gnu.org/licenses/>
+ * along with decalium-clans. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
 package org.gepron1x.clans.plugin.storage;
