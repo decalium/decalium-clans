@@ -18,15 +18,29 @@
  */
 package org.gepron1x.clans.plugin.listener;
 
+import org.bukkit.NamespacedKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.plugin.Plugin;
 
 public final class HologramProtection implements Listener {
 
+    private final Plugin plugin;
+
+    public HologramProtection(Plugin plugin) {
+
+        this.plugin = plugin;
+    }
+
     @EventHandler
     public void on(EntityDeathEvent event) {
-
-
+        for(NamespacedKey key : event.getEntity().getPersistentDataContainer().getKeys()) {
+            if(key.getNamespace().equals(plugin.getName())) {
+                event.setCancelled(true);
+                plugin.getLogger().warning("Detected a death of protected entity! Denied.");
+                return;
+            }
+        }
     }
 }

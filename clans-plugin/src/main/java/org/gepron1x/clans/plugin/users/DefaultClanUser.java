@@ -22,6 +22,7 @@ import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.repository.ClanCreationResult;
+import org.gepron1x.clans.api.shield.Shields;
 import org.gepron1x.clans.api.user.ClanUser;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 
@@ -31,12 +32,20 @@ import java.util.UUID;
 public final class DefaultClanUser implements ClanUser {
 
     private final CachingClanRepository repository;
+    private final Shields shields;
     private final UUID uuid;
 
-    public DefaultClanUser(CachingClanRepository repository, UUID uuid) {
+    public DefaultClanUser(CachingClanRepository repository, Shields shields, UUID uuid) {
         this.repository = repository;
+        this.shields = shields;
         this.uuid = uuid;
     }
+
+    @Override
+    public Shields shields() {
+        return shields;
+    }
+
     @Override
     public Optional<Clan> clan() {
         return repository.userClanIfCached(uuid);

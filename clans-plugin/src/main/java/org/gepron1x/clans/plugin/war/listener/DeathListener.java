@@ -18,11 +18,17 @@
  */
 package org.gepron1x.clans.plugin.war.listener;
 
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.gepron1x.clans.api.war.Wars;
+import org.gepron1x.clans.plugin.util.DamagerOf;
+
+import java.util.Optional;
 
 public final class DeathListener implements Listener {
 
@@ -39,6 +45,12 @@ public final class DeathListener implements Listener {
 
     @EventHandler
     public void on(PlayerQuitEvent event) {
-        wars.onDeath(event.getPlayer());
+        Player player = event.getPlayer();
+        if(wars.currentWar(player).isPresent()) {
+            Entity damager = Optional.ofNullable(player.getLastDamageCause()).filter(EntityDamageByEntityEvent.class::isInstance)
+                    .map(EntityDamageByEntityEvent.class::cast).flatMap(e -> new DamagerOf(e.getDamager()).damager()).orElse(null);
+            player.damage(Double.MAX_VALUE, damager);
+        }
+        wars.onDeath(player);
     }
 }

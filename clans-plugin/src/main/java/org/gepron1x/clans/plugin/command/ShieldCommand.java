@@ -34,8 +34,6 @@ import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.slf4j.Logger;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
-import java.time.Duration;
-
 public final class ShieldCommand extends AbstractClanCommand {
     private final Shields shields;
 
@@ -53,7 +51,7 @@ public final class ShieldCommand extends AbstractClanCommand {
 
     private void addShield(CommandContext<CommandSender> context) {
         Clan clan = context.get(ClanExecutionHandler.CLAN);
-        shields.add(clan, Duration.ofSeconds((int) context.get("duration"))).thenAccept(shield -> {
+        users.userFor((Player) context.getSender()).shields().add(clan, clansConfig.levels().forLevel(clan.level()).shieldDuration()).thenAccept(shield -> {
             context.getSender().sendMessage(this.messages.commands().shields().added());
         }).exceptionally(this.exceptionHandler(context.getSender()));
     }

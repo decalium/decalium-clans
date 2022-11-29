@@ -20,13 +20,11 @@ package org.gepron1x.clans.plugin.war.listener;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.gepron1x.clans.api.war.Wars;
-import org.gepron1x.clans.plugin.util.pdc.OwnedEntity;
+import org.gepron1x.clans.plugin.util.DamagerOf;
 
 import java.util.Optional;
 
@@ -54,16 +52,7 @@ public final class NoTeamDamageListener implements Listener {
     }
 
     public Optional<Player> getDamager(Entity entity) {
-        if(entity instanceof Player player) {
-            return Optional.of(player);
-        } else if(entity instanceof Projectile projectile) {
-            return Optional.ofNullable(projectile.getShooter())
-                    .filter(Player.class::isInstance).map(Player.class::cast);
-        } else if(entity instanceof TNTPrimed tnt) {
-            return Optional.ofNullable(tnt.getSource())
-                    .filter(Player.class::isInstance).map(Player.class::cast);
-        }
-        return new OwnedEntity(entity).owner().map(entity.getServer()::getPlayer);
+        return new DamagerOf(entity).damager();
     }
 
 

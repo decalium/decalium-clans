@@ -18,9 +18,11 @@
  */
 package org.gepron1x.clans.plugin.config.settings;
 
+import org.gepron1x.clans.api.clan.DraftClan;
 import space.arim.dazzleconf.annote.ConfKey;
 import space.arim.dazzleconf.annote.SubSection;
 
+import java.time.Duration;
 import java.util.Map;
 
 import static space.arim.dazzleconf.annote.ConfDefault.*;
@@ -53,8 +55,9 @@ public interface Levels {
         @DefaultInteger(1)
         int homes();
 
-        @DefaultInteger(0)
-        int shieldLevel();
+        @ConfKey("shield-duration")
+        @DefaultString("2h")
+        Duration shieldDuration();
     }
 
     class AlgebraicPerLevel implements PerLevel {
@@ -79,9 +82,10 @@ public interface Levels {
         }
 
         @Override
-        public int shieldLevel() {
-            return per.shieldLevel() * level;
+        public Duration shieldDuration() {
+            return per.shieldDuration().multipliedBy(level);
         }
+
     }
 
     @DefaultMap({})
@@ -93,6 +97,10 @@ public interface Levels {
         if(per != null) return per;
         return new AlgebraicPerLevel(perLevel(), level);
 
+    }
+
+    default PerLevel forLevel(DraftClan clan) {
+        return forLevel(clan.level());
     }
 
 }

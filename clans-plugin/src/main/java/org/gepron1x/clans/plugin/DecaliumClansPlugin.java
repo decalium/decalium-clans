@@ -205,7 +205,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
 
 
-        Users users = new DefaultUsers(clanRepository);
+        Users users = new DefaultUsers(clanRepository, shields);
         if(isEnabled("Vault")) {
             users = new VaultHook(users, getServer().getServicesManager(), prices.data(), futuresFactory).hook();
         }

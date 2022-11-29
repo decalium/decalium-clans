@@ -18,8 +18,9 @@
  */
 package org.gepron1x.clans.plugin.util.pdc;
 
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.plugin.DecaliumClansPlugin;
 
@@ -28,7 +29,8 @@ import java.util.UUID;
 
 public final class OwnedEntity {
 
-    private static final NamespacedKey OWNER = new NamespacedKey(JavaPlugin.getPlugin(DecaliumClansPlugin.class), "owner");
+    private static final JavaPlugin plugin = JavaPlugin.getPlugin(DecaliumClansPlugin.class);
+    private static final String key = plugin.getName() + "_owner_entity";
 
     private final Entity entity;
 
@@ -37,10 +39,16 @@ public final class OwnedEntity {
     }
 
     public Optional<UUID> owner() {
-        return Optional.ofNullable(this.entity.getPersistentDataContainer().get(OWNER, UuidDataType.UUID));
+        for(MetadataValue value : this.entity.getMetadata(key)) {
+            if(!plugin.equals(value.getOwningPlugin())) continue;
+            UUID uuid = (UUID) value.value();
+            if(uuid == null) continue;
+            return Optional.of(uuid);
+        }
+        return Optional.empty();
     }
 
     public void owner(UUID owner) {
-        this.entity.getPersistentDataContainer().set(OWNER, UuidDataType.UUID, owner);
+        this.entity.setMetadata(key, new FixedMetadataValue(plugin, owner));
     }
 }

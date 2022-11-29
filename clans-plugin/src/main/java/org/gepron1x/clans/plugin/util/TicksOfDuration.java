@@ -32,6 +32,6 @@ public final class TicksOfDuration implements LongSupplier {
     }
     @Override
     public long getAsLong() {
-        return duration.toMillis() / 50;
+        return duration.toMillis() / MILLIS_PER_TICK;
     }
 }
