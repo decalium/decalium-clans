@@ -29,7 +29,7 @@ import java.util.UUID;
 
 public final class OwnedEntity {
 
-    private static final JavaPlugin plugin = JavaPlugin.getPlugin(DecaliumClansPlugin.class);
+    private static final JavaPlugin plugin = JavaPlugin.getPlugin(DecaliumClansPlugin.class); // what a shame
     private static final String key = plugin.getName() + "_owner_entity";
 
     private final Entity entity;
