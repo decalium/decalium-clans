@@ -25,6 +25,10 @@ import static space.arim.dazzleconf.annote.ConfDefault.DefaultString;
 
 public interface LevelMessages {
 
+    @DefaultString("<prefix> You already have a maximum level")
+    @ConfKey("max-level")
+    Message maxLevel();
+
     @DefaultString("<prefix> Too many members. Your clan has only <slots> slots. Upgrade the clan to get more")
     @ConfKey("too-many-members")
     Message tooManyMembers();

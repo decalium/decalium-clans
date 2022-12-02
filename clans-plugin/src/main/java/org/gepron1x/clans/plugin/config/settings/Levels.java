@@ -32,6 +32,10 @@ public interface Levels {
     @DefaultBoolean(true)
     boolean enabled();
 
+    @DefaultInteger(10)
+    @ConfKey("max-level")
+    int maxLevel();
+
     @ConfKey("allow-at")
     @SubSection AllowAt allowAt();
 
@@ -90,8 +94,6 @@ public interface Levels {
 
     @DefaultMap({})
     Map<Integer, @SubSection PerLevel> individual();
-
-
     default PerLevel forLevel(int level) {
         PerLevel per = individual().get(level);
         if(per != null) return per;

@@ -25,6 +25,7 @@ import org.gepron1x.clans.api.edition.ClanEdition;
 import org.gepron1x.clans.api.edition.EmptyClanEdition;
 import org.gepron1x.clans.api.exception.DescribingException;
 import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
+import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.gepron1x.clans.plugin.config.settings.Levels;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,11 +33,13 @@ public final class LeveledEdition implements EmptyClanEdition {
 
     private final Clan clan;
     private final Levels.PerLevel perLevel;
+    private final ClansConfig config;
     private final MessagesConfig messages;
 
-    public LeveledEdition(Clan clan, Levels.PerLevel perLevel, MessagesConfig messages) {
+    public LeveledEdition(Clan clan, Levels.PerLevel perLevel, ClansConfig config, MessagesConfig messages) {
         this.clan = clan;
         this.perLevel = perLevel;
+        this.config = config;
         this.messages = messages;
     }
 
@@ -53,6 +56,12 @@ public final class LeveledEdition implements EmptyClanEdition {
         if(clan.homes().size() >= perLevel.homes()) {
             throw new DescribingException(messages.level().tooManyHomes().with("homes", perLevel.homes()));
         }
+        return this;
+    }
+
+    @Override
+    public ClanEdition upgrade() {
+        if(clan.level() >= config.levels().maxLevel()) throw new DescribingException(messages.level().maxLevel());
         return this;
     }
 }

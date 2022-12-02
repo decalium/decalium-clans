@@ -49,7 +49,7 @@ public final class LeveledClan implements Clan, DelegatingClan {
     @Override
     public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
         try {
-            transaction.accept(new LeveledEdition(clan, config.levels().forLevel(clan.level()), messages));
+            transaction.accept(new LeveledEdition(clan, config.levels().forLevel(clan.level()), config, messages));
         } catch (DescribingException ex) {
             return futuresFactory.failedFuture(ex);
         }
