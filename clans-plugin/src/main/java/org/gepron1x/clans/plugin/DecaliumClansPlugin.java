@@ -29,6 +29,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -52,6 +53,7 @@ import org.gepron1x.clans.plugin.cache.UserCaching;
 import org.gepron1x.clans.plugin.chat.carbon.CarbonChatHook;
 import org.gepron1x.clans.plugin.command.*;
 import org.gepron1x.clans.plugin.command.war.ClanWarCommand;
+import org.gepron1x.clans.plugin.config.Configs;
 import org.gepron1x.clans.plugin.config.Configuration;
 import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
 import org.gepron1x.clans.plugin.config.serializer.*;
@@ -91,6 +93,7 @@ import java.util.UUID;
 public final class DecaliumClansPlugin extends JavaPlugin {
 
     public static final String VERSION = "0.1";
+    public static final int BSTATS_ID = 17010;
 
     private RoleRegistry roleRegistry;
 
@@ -164,6 +167,8 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         ClansConfig config = config();
         MessagesConfig messages = messages();
 
+        Configs configs = new Configs(this.configuration, this.messagesConfiguration);
+
 
         HikariDataSource ds = new HikariDataSourceCreation(this, config).create();
         Jdbi jdbi = new JdbiCreation(ds).create();
@@ -179,7 +184,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         CachingShields shields = new CachingShieldsImpl(
                 new LeveledShields(new WgShields(
                         new ShieldsImpl(new SqlShieldStorage(jdbi), futuresFactory), WorldGuard.getInstance(), config
-                ), config, messages, futuresFactory),
+                ), configs, futuresFactory),
                 futuresFactory
         );
 
@@ -192,7 +197,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
 
         if(config.levels().enabled()) {
-            repository = new LeveledClanRepository(repository, futuresFactory, config, messages);
+            repository = new LeveledClanRepository(repository, futuresFactory, configs);
         }
 
         userCaching = new UserCaching(repository, clanCache, getServer());
@@ -219,18 +224,18 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         }
 
         if(isEnabled("CarbonChat")) {
-            new CarbonChatHook(getServer(), clanCache, messages, config).register();
+            new CarbonChatHook(getServer(), clanCache, configs).register();
         }
 
         Logger logger = getSLF4JLogger();
 
-        ClanCommand command = new ClanCommand(logger, clanRepository, users, config, messages, futuresFactory, builderFactory, roleRegistry);
-        InviteCommand inviteCommand = new InviteCommand(logger, clanRepository, users, config, messages, futuresFactory, builderFactory, roleRegistry);
-        MemberCommand memberCommand = new MemberCommand(logger, clanRepository, users, config, messages, futuresFactory);
-        HomeCommand homeCommand = new HomeCommand(logger, clanRepository, users, config, messages, futuresFactory, builderFactory);
-        Wars wars = new WarsCreation(this, config, messages).create();
-        ClanWarCommand clanWarCommand = new ClanWarCommand(logger, clanRepository, users, config, messages, futuresFactory, wars);
-        ShieldCommand shieldCommand = new ShieldCommand(logger, clanRepository, users, config, messages, futuresFactory, shields);
+        ClanCommand command = new ClanCommand(logger, clanRepository, users, configs, futuresFactory, builderFactory, roleRegistry);
+        InviteCommand inviteCommand = new InviteCommand(logger, clanRepository, users, configs, futuresFactory, builderFactory, roleRegistry);
+        MemberCommand memberCommand = new MemberCommand(logger, clanRepository, users, configs, futuresFactory);
+        HomeCommand homeCommand = new HomeCommand(logger, clanRepository, users, configs, futuresFactory, builderFactory);
+        Wars wars = new WarsCreation(this, configs).create();
+        ClanWarCommand clanWarCommand = new ClanWarCommand(logger, clanRepository, users, configs, futuresFactory, wars);
+        ShieldCommand shieldCommand = new ShieldCommand(logger, clanRepository, users, configs, futuresFactory, shields);
 
         try {
             commandManager = new CommandManagerCreation(this, clanRepository, roleRegistry, messages).create();
@@ -275,6 +280,9 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
         DecaliumClansApi clansApi = new DecaliumClansApiImpl(clanRepository, users, this.roleRegistry, builderFactory, futuresFactory, wars, shields);
         getServer().getServicesManager().register(DecaliumClansApi.class, clansApi, this, ServicePriority.Normal);
+
+        new Metrics(this, BSTATS_ID);
+
     }
 
     private void disable() {

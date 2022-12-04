@@ -39,9 +39,8 @@ import org.gepron1x.clans.api.edition.ClanEdition;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.plugin.command.argument.ComponentArgument;
+import org.gepron1x.clans.plugin.config.Configs;
 import org.gepron1x.clans.plugin.config.messages.HelpCommandConfig;
-import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
-import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.gepron1x.clans.plugin.util.message.Message;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -58,13 +57,12 @@ public class ClanCommand extends AbstractClanCommand {
     private final ClanBuilderFactory builderFactory;
 
     public ClanCommand(@NotNull Logger logger, CachingClanRepository repository, @NotNull Users users,
-                       @NotNull ClansConfig config,
-                       @NotNull MessagesConfig messages,
+                       @NotNull Configs configs,
                        @NotNull FactoryOfTheFuture futuresFactory,
                        @NotNull ClanBuilderFactory builderFactory,
                        @NotNull RoleRegistry roleRegistry) {
 
-        super(logger, repository, users, config, messages, futuresFactory);
+        super(logger, repository, users, configs, futuresFactory);
         this.builderFactory = builderFactory;
         this.roleRegistry = roleRegistry;
     }

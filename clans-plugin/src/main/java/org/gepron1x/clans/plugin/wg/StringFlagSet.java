@@ -18,6 +18,7 @@
  */
 package org.gepron1x.clans.plugin.wg;
 
+import com.destroystokyo.paper.util.SneakyThrow;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.FlagContext;
@@ -66,7 +67,7 @@ public final class StringFlagSet implements FlagSet {
         try {
             region.setFlag(flag, flag.parseInput(FlagContext.create().setInput(value).build()));
         } catch (InvalidFlagFormat e) {
-            throw new RuntimeException(e);
+            SneakyThrow.sneaky(e);
         }
     }
 }

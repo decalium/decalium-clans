@@ -19,8 +19,11 @@
 package org.gepron1x.clans.plugin.config;
 
 
+import com.google.common.base.MoreObjects;
 import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
 import org.gepron1x.clans.plugin.config.settings.ClansConfig;
+
+import java.util.Objects;
 
 public final class Configs {
 
@@ -48,5 +51,24 @@ public final class Configs {
     }
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Configs configs = (Configs) o;
+        return Objects.equals(clansConfig, configs.clansConfig) && Objects.equals(messagesConfig, configs.messagesConfig);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(clansConfig, messagesConfig);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("clansConfig", clansConfig)
+                .add("messagesConfig", messagesConfig)
+                .toString();
+    }
 }

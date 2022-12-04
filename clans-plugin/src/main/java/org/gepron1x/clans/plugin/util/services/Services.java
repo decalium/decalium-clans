@@ -16,22 +16,15 @@
  * along with decalium-clans. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package org.gepron1x.clans.plugin.economy;
+package org.gepron1x.clans.plugin.util.services;
 
-public final class PrivilegedVaultPlayer implements VaultPlayer {
+import java.util.Optional;
 
-    @Override
-    public double balance() {
-        return 0;
-    }
+public interface Services {
 
-    @Override
-    public boolean has(double amount) {
-        return false;
-    }
+    <T> void register(Class<T> clazz, T service);
 
-    @Override
-    public void withdraw(double amount) {
+    void unregister(Object o);
 
-    }
+    <T> Optional<T> get(Class<T> clazz);
 }

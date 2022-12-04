@@ -24,8 +24,7 @@ import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.edition.ClanEdition;
 import org.gepron1x.clans.api.exception.DescribingException;
 import org.gepron1x.clans.plugin.clan.DelegatingClan;
-import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
-import org.gepron1x.clans.plugin.config.settings.ClansConfig;
+import org.gepron1x.clans.plugin.config.Configs;
 import org.jetbrains.annotations.NotNull;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
@@ -36,24 +35,22 @@ import java.util.function.Consumer;
 public final class LeveledClan implements Clan, DelegatingClan {
 
     private final FactoryOfTheFuture futuresFactory;
-    private final ClansConfig config;
-    private final MessagesConfig messages;
+    private final Configs configs;
     private final Clan clan;
 
-    public LeveledClan(FactoryOfTheFuture futuresFactory, ClansConfig config, MessagesConfig messages, Clan clan) {
+    public LeveledClan(FactoryOfTheFuture futuresFactory, Configs configs, Clan clan) {
         this.futuresFactory = futuresFactory;
-        this.config = config;
-        this.messages = messages;
+        this.configs = configs;
         this.clan = clan;
     }
     @Override
     public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
         try {
-            transaction.accept(new LeveledEdition(clan, config.levels().forLevel(clan.level()), config, messages));
+            transaction.accept(new LeveledEdition(clan, configs.config().levels().forLevel(clan.level()), configs));
         } catch (DescribingException ex) {
             return futuresFactory.failedFuture(ex);
         }
-        return clan.edit(transaction).thenApply(c -> new LeveledClan(futuresFactory, config, messages, c));
+        return clan.edit(transaction).thenApply(c -> new LeveledClan(futuresFactory, configs, c));
     }
 
     @Override
@@ -71,12 +68,12 @@ public final class LeveledClan implements Clan, DelegatingClan {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         LeveledClan that = (LeveledClan) o;
-        return Objects.equals(config, that.config) && Objects.equals(messages, that.messages) && Objects.equals(clan, that.clan);
+        return Objects.equals(clan, that.clan);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(config, messages, clan);
+        return Objects.hash(configs, clan);
     }
 
     @Override

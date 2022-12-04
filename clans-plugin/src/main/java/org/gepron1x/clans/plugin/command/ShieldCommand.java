@@ -29,16 +29,15 @@ import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.shield.Shields;
 import org.gepron1x.clans.api.user.Users;
-import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
-import org.gepron1x.clans.plugin.config.settings.ClansConfig;
+import org.gepron1x.clans.plugin.config.Configs;
 import org.slf4j.Logger;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 public final class ShieldCommand extends AbstractClanCommand {
     private final Shields shields;
 
-    public ShieldCommand(Logger logger, CachingClanRepository clanRepository, Users users, ClansConfig clansConfig, MessagesConfig messages, FactoryOfTheFuture futuresFactory, Shields shields) {
-        super(logger, clanRepository, users, clansConfig, messages, futuresFactory);
+    public ShieldCommand(Logger logger, CachingClanRepository clanRepository, Users users, Configs configs, FactoryOfTheFuture futuresFactory, Shields shields) {
+        super(logger, clanRepository, users, configs, futuresFactory);
         this.shields = shields;
     }
 

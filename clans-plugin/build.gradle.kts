@@ -31,13 +31,14 @@ repositories {
 
 dependencies {
     implementation(project(":clans-api"))
+    implementation("org.bstats:bstats-bukkit:3.0.0")
     compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
     // paperDevBundle("1.18.2-R0.1-SNAPSHOT")
     implementation("org.jdbi:jdbi3-core:3.34.0") {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
-    implementation("org.flywaydb:flyway-core:9.8.1")
-    implementation("org.flywaydb:flyway-mysql:9.8.1")
+    implementation("org.flywaydb:flyway-core:9.8.3")
+    implementation("org.flywaydb:flyway-mysql:9.8.3")
     implementation("cloud.commandframework:cloud-paper:1.7.1") {
         exclude("org.checkerframework", "checker-qual")
     }
@@ -87,6 +88,7 @@ tasks {
         relocateDependency("com.github.benmanes.caffeine")
         relocateDependency("io.leangen.geantyref")
         relocateDependency("com.zaxxer.hikari")
+        relocateDependency("org.bstats")
 
     }
 

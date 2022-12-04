@@ -37,9 +37,8 @@ import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.user.Users;
+import org.gepron1x.clans.plugin.config.Configs;
 import org.gepron1x.clans.plugin.config.messages.HelpCommandConfig;
-import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
-import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.gepron1x.clans.plugin.config.settings.Levels;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -61,13 +60,12 @@ public class InviteCommand extends AbstractClanCommand {
 
 
     public InviteCommand(@NotNull Logger logger, @NotNull CachingClanRepository clanRepository, Users users,
-                         @NotNull ClansConfig config,
-                         @NotNull MessagesConfig messages,
+                         @NotNull Configs configs,
                          @NotNull FactoryOfTheFuture futuresFactory,
                          @NotNull ClanBuilderFactory builderFactory,
                          @NotNull RoleRegistry roleRegistry)
     {
-        super(logger, clanRepository, users, config, messages, futuresFactory);
+        super(logger, clanRepository, users, configs, futuresFactory);
         this.builderFactory = builderFactory;
         this.roleRegistry = roleRegistry;
     }

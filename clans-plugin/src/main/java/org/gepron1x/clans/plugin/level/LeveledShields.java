@@ -22,8 +22,7 @@ import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.exception.DescribingException;
 import org.gepron1x.clans.api.shield.Shield;
 import org.gepron1x.clans.api.shield.Shields;
-import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
-import org.gepron1x.clans.plugin.config.settings.ClansConfig;
+import org.gepron1x.clans.plugin.config.Configs;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
@@ -33,21 +32,19 @@ import java.util.Map;
 public final class LeveledShields implements Shields {
 
     private final Shields shields;
-    private final ClansConfig config;
-    private final MessagesConfig messages;
+    private final Configs configs;
     private final FactoryOfTheFuture futuresFactory;
 
-    public LeveledShields(Shields shields, ClansConfig config, MessagesConfig messages, FactoryOfTheFuture futuresFactory) {
+    public LeveledShields(Shields shields, Configs configs, FactoryOfTheFuture futuresFactory) {
         this.shields = shields;
-        this.config = config;
-        this.messages = messages;
+        this.configs = configs;
         this.futuresFactory = futuresFactory;
     }
 
     @Override
     public CentralisedFuture<Shield> add(Clan clan, Duration duration) {
-        if(clan.level() < config.levels().allowAt().shields()) {
-            return futuresFactory.failedFuture(new DescribingException(messages.level().cannotCreateShield().with("level", config.levels().allowAt().shields())));
+        if(clan.level() < configs.config().levels().allowAt().shields()) {
+            return futuresFactory.failedFuture(new DescribingException(configs.messages().level().cannotCreateShield().with("level", configs.config().levels().allowAt().shields())));
         }
         return shields.add(clan, duration);
     }

@@ -34,6 +34,7 @@ import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.exception.DescribingException;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.user.Users;
+import org.gepron1x.clans.plugin.config.Configs;
 import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
 import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.slf4j.Logger;
@@ -56,14 +57,13 @@ public abstract class AbstractClanCommand implements AbstractCommand {
     protected final FactoryOfTheFuture futuresFactory;
 
     public AbstractClanCommand(Logger logger, CachingClanRepository clanRepository, Users users,
-                               ClansConfig clansConfig,
-                               MessagesConfig messages,
+                               Configs configs,
                                FactoryOfTheFuture futuresFactory) {
         this.logger = logger;
         this.clanRepository = clanRepository;
         this.users = users;
-        this.clansConfig = clansConfig;
-        this.messages = messages;
+        this.clansConfig = configs.config();
+        this.messages = configs.messages();
         this.futuresFactory = futuresFactory;
     }
 

@@ -21,8 +21,7 @@ package org.gepron1x.clans.plugin.bootstrap;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.gepron1x.clans.api.war.Wars;
-import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
-import org.gepron1x.clans.plugin.config.settings.ClansConfig;
+import org.gepron1x.clans.plugin.config.Configs;
 import org.gepron1x.clans.plugin.listener.CrystalExplosionListener;
 import org.gepron1x.clans.plugin.war.announce.AnnouncingWars;
 import org.gepron1x.clans.plugin.war.impl.DefaultWars;
@@ -33,25 +32,23 @@ import org.gepron1x.clans.plugin.war.navigation.Navigation;
 public final class WarsCreation {
 
     private final Plugin plugin;
-    private final ClansConfig config;
-    private final MessagesConfig messages;
+    private final Configs configs;
 
-    public WarsCreation(Plugin plugin, ClansConfig config, MessagesConfig messages) {
+    public WarsCreation(Plugin plugin, Configs configs) {
 
         this.plugin = plugin;
-        this.config = config;
-        this.messages = messages;
+        this.configs = configs;
     }
 
     public Wars create() {
 
         PluginManager pm = plugin.getServer().getPluginManager();
         Wars base = new DefaultWars(plugin.getServer());
-        Wars wars = new AnnouncingWars(base, messages);
+        Wars wars = new AnnouncingWars(base, configs.messages());
         pm.registerEvents(new DeathListener(wars), plugin);
-        if(config.wars().disableTeamDamage()) pm.registerEvents(new NoTeamDamageListener(base), plugin);
+        if(configs.config().wars().disableTeamDamage()) pm.registerEvents(new NoTeamDamageListener(base), plugin);
         pm.registerEvents(new CrystalExplosionListener(), plugin);
-        plugin.getServer().getScheduler().runTaskTimer(plugin, new Navigation(base, messages), 5, 5);
+        plugin.getServer().getScheduler().runTaskTimer(plugin, new Navigation(base, configs.messages()), 5, 5);
         return wars;
 
     }

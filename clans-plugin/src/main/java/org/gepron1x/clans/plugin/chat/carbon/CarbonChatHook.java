@@ -23,15 +23,14 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import org.bukkit.Server;
 import org.gepron1x.clans.plugin.cache.ClanCache;
-import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
-import org.gepron1x.clans.plugin.config.settings.ClansConfig;
+import org.gepron1x.clans.plugin.config.Configs;
 import org.jetbrains.annotations.NotNull;
 
-public record CarbonChatHook(@NotNull Server server, @NotNull ClanCache cache, @NotNull MessagesConfig messages, @NotNull ClansConfig clansConfig) {
+public record CarbonChatHook(@NotNull Server server, @NotNull ClanCache cache, @NotNull Configs configs) {
 
     public void register() {
         CarbonChat carbon = CarbonChatProvider.carbonChat();
-        ClanChatChannel chatChannel = new ClanChatChannel(server, cache, messages, clansConfig);
+        ClanChatChannel chatChannel = new ClanChatChannel(server, cache, configs);
         ChannelRegistry registry = carbon.channelRegistry();
         boolean exists = registry.get(chatChannel.key()) != null;
         carbon.channelRegistry().register(chatChannel.key(), chatChannel);

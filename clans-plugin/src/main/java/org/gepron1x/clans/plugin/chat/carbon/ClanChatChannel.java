@@ -33,8 +33,7 @@ import org.gepron1x.clans.api.clan.IdentifiedDraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.plugin.cache.ClanCache;
 import org.gepron1x.clans.plugin.chat.resolvers.PapiTagResolver;
-import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
-import org.gepron1x.clans.plugin.config.settings.ClansConfig;
+import org.gepron1x.clans.plugin.config.Configs;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -44,14 +43,12 @@ public final class ClanChatChannel implements ChatChannel {
     private static final Key KEY = Key.key("decaliumclans", "clanchat");
     private final Server server;
     private final ClanCache cache;
-    private final MessagesConfig messages;
-    private final ClansConfig clansConfig;
+    private final Configs configs;
 
-    public ClanChatChannel(@NotNull Server server, @NotNull ClanCache cache, @NotNull MessagesConfig messages, @NotNull ClansConfig clansConfig) {
+    public ClanChatChannel(@NotNull Server server, @NotNull ClanCache cache, @NotNull Configs configs) {
         this.server = server;
         this.cache = cache;
-        this.messages = messages;
-        this.clansConfig = clansConfig;
+        this.configs = configs;
     }
     @Override
     public ChannelPermissionResult speechPermitted(CarbonPlayer carbonPlayer) {
@@ -65,7 +62,7 @@ public final class ClanChatChannel implements ChatChannel {
 
     private ChannelPermissionResult ifInTheClan(CarbonPlayer player) {
         return ChannelPermissionResult.allowedIf(
-                messages.notInTheClan().asComponent(),
+                configs.messages().notInTheClan().asComponent(),
                 () -> cache.getUserClan(player.uuid()) != null
         );
     }
@@ -123,7 +120,7 @@ public final class ClanChatChannel implements ChatChannel {
 
         DraftClan clan = Objects.requireNonNull(cache.getUserClan(sender.uuid()));
         ClanMember member = clan.member(sender.uuid()).orElseThrow();
-        return new RenderedMessage(clansConfig.chat().format()
+        return new RenderedMessage(configs.config().chat().format()
                 .with(new PapiTagResolver(this.server.getPlayer(sender.uuid())))
                 .with(ClanTagResolver.prefixed(clan))
                 .with("role", member.role())

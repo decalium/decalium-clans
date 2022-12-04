@@ -32,7 +32,7 @@ import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.config.settings.ClansConfig;
-import org.gepron1x.clans.plugin.util.TicksOfDuration;
+import org.gepron1x.clans.plugin.util.DurationTicks;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.util.Map;
@@ -79,7 +79,7 @@ public final class StatisticListener implements Listener {
 
 
     public void start() {
-        long ticks = new TicksOfDuration(config.statisticUpdatePeriod()).getAsLong();
+        long ticks = new DurationTicks(config.statisticUpdatePeriod()).getAsLong();
         plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
             if(statisticsTable.isEmpty()) return;
             plugin.getSLF4JLogger().info("Started updating statistics.");

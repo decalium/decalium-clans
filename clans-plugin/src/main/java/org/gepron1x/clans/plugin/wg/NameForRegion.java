@@ -18,6 +18,8 @@
  */
 package org.gepron1x.clans.plugin.wg;
 
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import org.bukkit.Location;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.home.ClanHome;
 
@@ -25,7 +27,20 @@ public record NameForRegion(Clan clan, ClanHome home) {
 
 
     public String value() {
-        return "decaliumclans_"+clan.tag()+"_"+home.name();
+        String fst = clan.tag();
+        if(!ProtectedRegion.isValidId(fst)) fst = Integer.toHexString(clan.id());
+
+        String snd = home.name();
+        if(ProtectedRegion.isValidId(snd)) {
+            Location loc = home.location();
+            snd = "X" + hex(loc.getX()) + "Y" + hex(loc.getY()) + "Z" + hex(loc.getZ());
+        }
+
+        return "decaliumclans_"+fst+"_"+snd;
+    }
+
+    private String hex(double d) {
+        return Long.toHexString(Double.doubleToLongBits(d));
     }
 
 }

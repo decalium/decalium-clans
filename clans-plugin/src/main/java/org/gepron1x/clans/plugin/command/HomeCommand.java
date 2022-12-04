@@ -43,9 +43,8 @@ import org.gepron1x.clans.api.edition.home.HomeEdition;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.plugin.command.argument.ComponentArgument;
+import org.gepron1x.clans.plugin.config.Configs;
 import org.gepron1x.clans.plugin.config.messages.HelpCommandConfig;
-import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
-import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
@@ -56,11 +55,10 @@ public class HomeCommand extends AbstractClanCommand {
     public HomeCommand(@NotNull Logger logger,
                        @NotNull CachingClanRepository clanRepository,
                        Users users,
-                       @NotNull ClansConfig clansConfig,
-                       @NotNull MessagesConfig messages,
+                       @NotNull Configs configs,
                        @NotNull FactoryOfTheFuture futuresFactory,
                        @NotNull ClanBuilderFactory builderFactory) {
-        super(logger, clanRepository, users, clansConfig, messages, futuresFactory);
+        super(logger, clanRepository, users, configs, futuresFactory);
         this.builderFactory = builderFactory;
     }
 

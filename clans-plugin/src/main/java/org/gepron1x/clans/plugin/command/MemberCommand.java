@@ -31,9 +31,8 @@ import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.user.Users;
+import org.gepron1x.clans.plugin.config.Configs;
 import org.gepron1x.clans.plugin.config.messages.HelpCommandConfig;
-import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
-import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
@@ -42,9 +41,8 @@ public class MemberCommand extends AbstractClanCommand {
 
 
     public MemberCommand(@NotNull Logger logger, CachingClanRepository clanRepository, Users users,
-                         @NotNull ClansConfig config,
-                         @NotNull MessagesConfig messages, @NotNull FactoryOfTheFuture futuresFactory) {
-        super(logger, clanRepository, users, config, messages, futuresFactory);
+                         @NotNull Configs configs, @NotNull FactoryOfTheFuture futuresFactory) {
+        super(logger, clanRepository, users, configs, futuresFactory);
     }
 
     @Override

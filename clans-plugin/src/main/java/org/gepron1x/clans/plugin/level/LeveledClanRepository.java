@@ -20,12 +20,11 @@ package org.gepron1x.clans.plugin.level;
 
 import org.gepron1x.clans.api.repository.ClanRepository;
 import org.gepron1x.clans.plugin.AdaptingClanRepository;
-import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
-import org.gepron1x.clans.plugin.config.settings.ClansConfig;
+import org.gepron1x.clans.plugin.config.Configs;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 public final class LeveledClanRepository extends AdaptingClanRepository {
-    public LeveledClanRepository(ClanRepository repository, FactoryOfTheFuture futuresFactory, ClansConfig config, MessagesConfig messages) {
-        super(repository, clan -> new LeveledClan(futuresFactory, config, messages, clan));
+    public LeveledClanRepository(ClanRepository repository, FactoryOfTheFuture futuresFactory, Configs configs) {
+        super(repository, clan -> new LeveledClan(futuresFactory, configs, clan));
     }
 }

@@ -21,13 +21,13 @@ package org.gepron1x.clans.plugin.util;
 import java.time.Duration;
 import java.util.function.LongSupplier;
 
-public final class TicksOfDuration implements LongSupplier {
+public final class DurationTicks implements LongSupplier {
 
     private static final byte MILLIS_PER_TICK = 50;
 
     private final Duration duration;
 
-    public TicksOfDuration(Duration duration) {
+    public DurationTicks(Duration duration) {
         this.duration = duration;
     }
     @Override

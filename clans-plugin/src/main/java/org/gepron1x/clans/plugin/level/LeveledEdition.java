@@ -24,8 +24,7 @@ import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.edition.ClanEdition;
 import org.gepron1x.clans.api.edition.EmptyClanEdition;
 import org.gepron1x.clans.api.exception.DescribingException;
-import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
-import org.gepron1x.clans.plugin.config.settings.ClansConfig;
+import org.gepron1x.clans.plugin.config.Configs;
 import org.gepron1x.clans.plugin.config.settings.Levels;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,20 +32,18 @@ public final class LeveledEdition implements EmptyClanEdition {
 
     private final Clan clan;
     private final Levels.PerLevel perLevel;
-    private final ClansConfig config;
-    private final MessagesConfig messages;
+    private final Configs configs;
 
-    public LeveledEdition(Clan clan, Levels.PerLevel perLevel, ClansConfig config, MessagesConfig messages) {
+    public LeveledEdition(Clan clan, Levels.PerLevel perLevel, Configs configs) {
         this.clan = clan;
         this.perLevel = perLevel;
-        this.config = config;
-        this.messages = messages;
+        this.configs = configs;
     }
 
     @Override
     public ClanEdition addMember(@NotNull ClanMember member) {
         if(clan.members().size() >= perLevel.slots()) {
-            throw new DescribingException(messages.level().tooManyHomes().with("slots", perLevel.slots()));
+            throw new DescribingException(configs.messages().level().tooManyHomes().with("slots", perLevel.slots()));
         }
         return this;
     }
@@ -54,14 +51,14 @@ public final class LeveledEdition implements EmptyClanEdition {
     @Override
     public ClanEdition addHome(@NotNull ClanHome home) {
         if(clan.homes().size() >= perLevel.homes()) {
-            throw new DescribingException(messages.level().tooManyHomes().with("homes", perLevel.homes()));
+            throw new DescribingException(configs.messages().level().tooManyHomes().with("homes", perLevel.homes()));
         }
         return this;
     }
 
     @Override
     public ClanEdition upgrade() {
-        if(clan.level() >= config.levels().maxLevel()) throw new DescribingException(messages.level().maxLevel());
+        if(clan.level() >= configs.config().levels().maxLevel()) throw new DescribingException(configs.messages().level().maxLevel());
         return this;
     }
 }
