@@ -64,7 +64,7 @@ public final class TitleSerializer implements ValueSerialiser<Title> {
     private String serialiseTimes(Title.Times times) {
         StringJoiner joiner = new StringJoiner(", ");
         for(Duration duration : Arrays.asList(times.fadeIn(), times.stay(), times.fadeOut())) {
-            joiner.add(String.valueOf(duration.toMillis() / MILLIS_PER_TICK));
+            joiner.add(String.valueOf((int) duration.toMillis() / MILLIS_PER_TICK));
         }
         return joiner.toString();
     }
