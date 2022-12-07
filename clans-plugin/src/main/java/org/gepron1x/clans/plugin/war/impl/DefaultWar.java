@@ -21,6 +21,7 @@ package org.gepron1x.clans.plugin.war.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import org.bukkit.entity.Player;
+import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.api.war.Team;
 import org.gepron1x.clans.api.war.War;
 
@@ -57,7 +58,11 @@ public final class DefaultWar implements War {
     public boolean onPlayerDeath(Player player) {
         boolean ok = false;
         for(Team team : teams) {
-            if(team.onDeath(player)) ok = true;
+            if(!team.onDeath(player)) continue;
+            ok = true;
+            if(team.isAlive()) return true;
+            team.clan().edit(edition -> edition.incrementStatistic(StatisticType.CLAN_WAR_WINS));
+            enemy(team).clan().edit(edition -> edition.incrementStatistic(StatisticType.CLAN_WAR_LOSES));
         }
         return ok;
     }
