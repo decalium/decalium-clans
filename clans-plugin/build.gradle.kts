@@ -56,6 +56,7 @@ dependencies {
     }
     compileOnly("net.draycia:carbonchat-api:2.1.0-SNAPSHOT") {
         exclude("net.kyori", "adventure-text-minimessage")
+        exclude("ninja.egg82", "messenger-api")
     }
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.0") {
         exclude("org.bukkit", "bukkit")
