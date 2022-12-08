@@ -39,7 +39,9 @@ public interface War {
 
     boolean onPlayerDeath(Player player);
 
-    boolean isEnded();
+    boolean teamWon();
+
+    void finish();
 
 
 }

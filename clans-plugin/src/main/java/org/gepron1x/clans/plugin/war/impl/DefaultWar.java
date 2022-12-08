@@ -58,21 +58,25 @@ public final class DefaultWar implements War {
     public boolean onPlayerDeath(Player player) {
         boolean ok = false;
         for(Team team : teams) {
-            if(!team.onDeath(player)) continue;
-            ok = true;
-            if(team.isAlive()) return true;
-            team.clan().edit(edition -> edition.incrementStatistic(StatisticType.CLAN_WAR_WINS));
-            enemy(team).clan().edit(edition -> edition.incrementStatistic(StatisticType.CLAN_WAR_LOSES));
+            ok |= team.onDeath(player);
         }
         return ok;
     }
 
     @Override
-    public boolean isEnded() {
+    public boolean teamWon() {
         for(Team team : teams) {
             if(!team.isAlive()) return true;
         }
         return false;
+    }
+
+    @Override
+    public void finish() {
+        for(Team team : teams) {
+            final StatisticType type = team.isAlive() ? StatisticType.CLAN_WAR_WINS : StatisticType.CLAN_WAR_LOSES;
+            team.clan().edit(edition -> edition.incrementStatistic(type));
+        }
     }
 
     @Override

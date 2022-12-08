@@ -38,22 +38,26 @@ public final class AnnouncingWar implements War {
     @Override
     public boolean onPlayerDeath(Player player) {
         if(!this.war.onPlayerDeath(player)) return false;
-        Audience audience = new WarAudience(this.war);
         player.getWorld().strikeLightningEffect(player.getLocation());
+        Audience audience = new WarAudience(this.war);
         audience.sendMessage(this.messages.war().playerDied().with("member", player.displayName()));
-        if(this.war.isEnded()) {
-            bars.hide(audience);
-            this.war.teams().stream().filter(Team::isAlive).findFirst()
-                    .flatMap(team -> team.clan().cached()).ifPresent(clan -> {
-                        audience.sendMessage(this.messages.war().win().with(ClanTagResolver.prefixed(clan)));
-                    });
-        }
         return true;
     }
 
     @Override
-    public boolean isEnded() {
-        return this.war.isEnded();
+    public boolean teamWon() {
+        return this.war.teamWon();
+    }
+
+    @Override
+    public void finish() {
+        this.war.finish();
+        Audience audience = new WarAudience(this.war);
+        bars.hide(audience);
+        this.war.teams().stream().filter(Team::isAlive).findFirst()
+                .flatMap(team -> team.clan().cached()).ifPresent(clan -> {
+                    audience.sendMessage(this.messages.war().win().with(ClanTagResolver.prefixed(clan)));
+                });
     }
 
     @Override

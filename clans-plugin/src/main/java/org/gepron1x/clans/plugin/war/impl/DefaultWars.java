@@ -94,7 +94,10 @@ public final class DefaultWars implements Wars {
         while(iterator.hasNext()) {
             War war = iterator.next();
             if(!war.onPlayerDeath(player)) continue;
-            if(war.isEnded()) iterator.remove();
+            if(war.teamWon()) {
+                iterator.remove();
+                war.finish();
+            }
         }
 
     }
@@ -102,7 +105,6 @@ public final class DefaultWars implements Wars {
     @Override
     public void end(War war) {
         this.currentWars.remove(war);
-
     }
 
     @Override
@@ -127,7 +129,7 @@ public final class DefaultWars implements Wars {
 
     @Override
     public void cleanEnded() {
-        this.currentWars.removeIf(War::isEnded);
+        this.currentWars.removeIf(War::teamWon);
     }
 
 }
