@@ -23,6 +23,8 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
 public interface Action {
 
+    Action EMPTY = (audience, resolver) -> {};
+
     void send(Audience audience, TagResolver resolver);
 
     default void send(Audience audience, TagResolver... resolvers) {

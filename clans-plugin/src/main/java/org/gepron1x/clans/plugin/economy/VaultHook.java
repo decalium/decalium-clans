@@ -19,19 +19,15 @@
 package org.gepron1x.clans.plugin.economy;
 
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.ServicesManager;
 import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.plugin.config.settings.PricesConfig;
+import org.gepron1x.clans.plugin.util.services.Services;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
-import java.util.Optional;
-
-public record VaultHook(Users users, ServicesManager services, PricesConfig prices, FactoryOfTheFuture futuresFactory) {
+public record VaultHook(Users users, Services services, PricesConfig prices, FactoryOfTheFuture futuresFactory) {
 
     public Users hook() {
-        return Optional.ofNullable(services.getRegistration(Economy.class))
-                .map(RegisteredServiceProvider::getProvider).<Users>map(economy -> {
+        return services.get(Economy.class).<Users>map(economy -> {
                     return new EconomyUsers(users, economy, prices, futuresFactory);
                 }).orElse(users);
     }

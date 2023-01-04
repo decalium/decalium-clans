@@ -1,6 +1,6 @@
 /*
  * decalium-clans
- * Copyright © 2022 George Pronyuk <https://vk.com/gpronyuk>
+ * Copyright © 2023 George Pronyuk <https://vk.com/gpronyuk>
  *
  * decalium-clans is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by

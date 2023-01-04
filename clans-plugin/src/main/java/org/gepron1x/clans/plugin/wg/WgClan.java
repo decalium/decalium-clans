@@ -1,6 +1,6 @@
 /*
  * decalium-clans
- * Copyright © 2022 George Pronyuk <https://vk.com/gpronyuk>
+ * Copyright © 2023 George Pronyuk <https://vk.com/gpronyuk>
  *
  * decalium-clans is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -19,11 +19,12 @@
 package org.gepron1x.clans.plugin.wg;
 
 import com.google.common.base.MoreObjects;
+import com.sk89q.worldguard.WorldGuard;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.edition.ClanEdition;
 import org.gepron1x.clans.plugin.clan.DelegatingClan;
-import org.gepron1x.clans.plugin.config.settings.ClansConfig;
+import org.gepron1x.clans.plugin.config.Configs;
 import org.gepron1x.clans.plugin.edition.PostClanEdition;
 import org.jetbrains.annotations.NotNull;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
@@ -33,13 +34,15 @@ import java.util.function.Consumer;
 
 public class WgClan implements DelegatingClan, Clan {
     private final Clan delegate;
-    private final ClansConfig clansConfig;
+    private final Configs configs;
     private final RegionFactory regionFactory;
+    private final WorldGuard worldGuard;
 
-    public WgClan(Clan delegate, ClansConfig clansConfig, RegionFactory regionFactory) {
+    public WgClan(Clan delegate, Configs configs, RegionFactory regionFactory, WorldGuard worldGuard) {
         this.delegate = delegate;
-        this.clansConfig = clansConfig;
+        this.configs = configs;
         this.regionFactory = regionFactory;
+        this.worldGuard = worldGuard;
     }
 
 
@@ -52,8 +55,8 @@ public class WgClan implements DelegatingClan, Clan {
     @Override
     public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
         return this.delegate.edit(transaction).thenApplySync(clan -> {
-            transaction.accept(new PostClanEdition(clan, this.clansConfig, regionFactory));
-            return new WgClan(clan, this.clansConfig, this.regionFactory);
+            transaction.accept(new PostClanEdition(clan, this.configs.config(), regionFactory));
+            return new WgClan(clan, this.configs, this.regionFactory, this.worldGuard);
         });
     }
 
@@ -62,12 +65,12 @@ public class WgClan implements DelegatingClan, Clan {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         WgClan wgClan = (WgClan) o;
-        return delegate.equals(wgClan.delegate) && clansConfig.equals(wgClan.clansConfig) && regionFactory.equals(wgClan.regionFactory);
+        return delegate.equals(wgClan.delegate) && configs.equals(wgClan.configs) && regionFactory.equals(wgClan.regionFactory);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(delegate, clansConfig, regionFactory);
+        return Objects.hash(delegate, configs, regionFactory);
     }
 
     @Override

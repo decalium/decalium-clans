@@ -18,10 +18,15 @@
  */
 package org.gepron1x.clans.plugin.util.action;
 
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.title.Title;
 import org.gepron1x.clans.plugin.util.message.Message;
 
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,10 +47,34 @@ public final class ActionParser {
         Matcher matcher = ACTION_PATTERN.matcher(value);
         if(!matcher.matches()) throw new IllegalArgumentException("Invalid action format");
         String type = matcher.group(0);
-        List<String> args = splitQuoted(matcher.group(1));
+        ActionArgs args = new ActionArgs(splitQuoted(matcher.group(1)));
         return switch(type) {
-            case "message" -> new MessageAction(Message.message(args.get(0), miniMessage));
+            case "message" -> new MessageAction(args.requireArg(0).asMessage(miniMessage));
+            case "actionbar" -> new ActionBarAction(args.requireArg(0).asMessage(miniMessage));
+            case "sound" -> {
+                Key key = args.requireArg(0).asKey();
+                float volume = args.arg(1).map(ActionArgs.Arg::asFloat).orElse(1f);
+                float pitch = args.arg(2).map(ActionArgs.Arg::asFloat).orElse(1f);
+                yield new SoundAction(Sound.sound(key, Sound.Source.PLAYER, volume, pitch));
+            }
+            case "title" -> {
+                Message title = args.requireArg(0).asMessage(miniMessage);
+                Message subTitle = args.arg(1).map(arg -> arg.asMessage(miniMessage)).orElse(Message.EMPTY);
+                Duration fadeIn = args.arg(2).map(ActionArgs.Arg::asDuration).orElse(Title.DEFAULT_TIMES.fadeIn());
+                Duration stay = args.arg(3).map(ActionArgs.Arg::asDuration).orElse(Title.DEFAULT_TIMES.stay());
+                Duration fadeOut = args.arg(4).map(ActionArgs.Arg::asDuration).orElse(Title.DEFAULT_TIMES.fadeOut());
+                yield new TitleAction(title, subTitle, Title.Times.times(fadeIn, stay, fadeOut));
+            }
+            default -> Action.EMPTY;
         };
+    }
+
+    public Action parse(Collection<String> values) {
+        if(values.size() == 0) return Action.EMPTY;
+        List<Action> actions = new ArrayList<>(values.size());
+        for(String s : values) actions.add(parseSingle(s));
+        if(actions.size() == 1) return actions.get(0);
+        return new CombinedAction(actions);
     }
 
     private List<String> splitQuoted(String input) {

@@ -1,6 +1,6 @@
 /*
  * decalium-clans
- * Copyright © 2022 George Pronyuk <https://vk.com/gpronyuk>
+ * Copyright © 2023 George Pronyuk <https://vk.com/gpronyuk>
  *
  * decalium-clans is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -55,7 +55,7 @@ public final class ShieldRefreshTask extends BukkitRunnable {
         this.config = config;
         this.futuresFactory = futuresFactory;
         this.logger = logger;
-        this.cache = Caffeine.newBuilder().expireAfterWrite(Duration.ofMinutes(60)).executor(futuresFactory::runAsync).buildAsync((s, executor) -> repository.requestClan(s));
+        this.cache = Caffeine.newBuilder().expireAfterWrite(Duration.ofMinutes(20)).executor(futuresFactory::runAsync).buildAsync((s, executor) -> repository.requestClan(s));
     }
     @Override
     public void run() {

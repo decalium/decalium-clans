@@ -1,6 +1,6 @@
 /*
  * decalium-clans
- * Copyright © 2022 George Pronyuk <https://vk.com/gpronyuk>
+ * Copyright © 2023 George Pronyuk <https://vk.com/gpronyuk>
  *
  * decalium-clans is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -33,7 +33,6 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.DecaliumClansApi;
@@ -63,6 +62,7 @@ import org.gepron1x.clans.plugin.economy.VaultHook;
 import org.gepron1x.clans.plugin.level.LeveledClanRepository;
 import org.gepron1x.clans.plugin.level.LeveledShields;
 import org.gepron1x.clans.plugin.listener.CacheListener;
+import org.gepron1x.clans.plugin.listener.HologramProtection;
 import org.gepron1x.clans.plugin.listener.StatisticListener;
 import org.gepron1x.clans.plugin.papi.PlaceholderAPIHook;
 import org.gepron1x.clans.plugin.shield.CachingShieldsImpl;
@@ -76,6 +76,8 @@ import org.gepron1x.clans.plugin.storage.implementation.sql.SqlClanStorage;
 import org.gepron1x.clans.plugin.storage.implementation.sql.SqlShieldStorage;
 import org.gepron1x.clans.plugin.users.DefaultUsers;
 import org.gepron1x.clans.plugin.util.AsciiArt;
+import org.gepron1x.clans.plugin.util.services.PluginServices;
+import org.gepron1x.clans.plugin.util.services.Services;
 import org.gepron1x.clans.plugin.wg.RegionFactoryImpl;
 import org.gepron1x.clans.plugin.wg.ShieldRefreshTask;
 import org.gepron1x.clans.plugin.wg.WgExtension;
@@ -190,8 +192,8 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
         ClanRepository repository = new AnnouncingClanRepository(
                 isEnabled("WorldGuard") ? new WgExtension(
-                        config(),
-                        base, new ShieldRegionFactory(new RegionFactoryImpl(WorldGuard.getInstance(), config), shields, config)).make() : base,
+                        configs,
+                        base, new ShieldRegionFactory(new RegionFactoryImpl(WorldGuard.getInstance(), configs), shields, config)).make() : base,
                 getServer(),
                 messages);
 
@@ -208,11 +210,10 @@ public final class DecaliumClansPlugin extends JavaPlugin {
                 clanCache
         );
 
-
-
+        Services services = new PluginServices(this);
         Users users = new DefaultUsers(clanRepository, shields);
         if(isEnabled("Vault")) {
-            users = new VaultHook(users, getServer().getServicesManager(), prices.data(), futuresFactory).hook();
+            users = new VaultHook(users, services, prices.data(), futuresFactory).hook();
         }
 
         getServer().getPluginManager().registerEvents(new CacheListener(userCaching), this);
@@ -279,9 +280,11 @@ public final class DecaliumClansPlugin extends JavaPlugin {
                 .runTaskTimerAsynchronously(this, 20, 20 * 20);
 
         DecaliumClansApi clansApi = new DecaliumClansApiImpl(clanRepository, users, this.roleRegistry, builderFactory, futuresFactory, wars, shields);
-        getServer().getServicesManager().register(DecaliumClansApi.class, clansApi, this, ServicePriority.Normal);
+        services.register(DecaliumClansApi.class, clansApi);
 
         new Metrics(this, BSTATS_ID);
+
+        new HologramProtection(this).register();
 
     }
 

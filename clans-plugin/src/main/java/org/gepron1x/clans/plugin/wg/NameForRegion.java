@@ -1,6 +1,6 @@
 /*
  * decalium-clans
- * Copyright © 2022 George Pronyuk <https://vk.com/gpronyuk>
+ * Copyright © 2023 George Pronyuk <https://vk.com/gpronyuk>
  *
  * decalium-clans is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -33,14 +33,14 @@ public record NameForRegion(Clan clan, ClanHome home) {
         String snd = home.name();
         if(ProtectedRegion.isValidId(snd)) {
             Location loc = home.location();
-            snd = "X" + hex(loc.getX()) + "Y" + hex(loc.getY()) + "Z" + hex(loc.getZ());
+            snd = "X" + hex(loc.getBlockX()) + "Y" + hex(loc.getBlockY()) + "Z" + hex(loc.getBlockZ());
         }
 
         return "decaliumclans_"+fst+"_"+snd;
     }
 
-    private String hex(double d) {
-        return Long.toHexString(Double.doubleToLongBits(d));
+    private String hex(int v) {
+        return Integer.toHexString(v);
     }
 
 }

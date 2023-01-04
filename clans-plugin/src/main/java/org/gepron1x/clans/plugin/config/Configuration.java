@@ -32,6 +32,7 @@ import space.arim.dazzleconf.helper.ConfigurationHelper;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Objects;
 
 public final class Configuration<C> {
 
@@ -96,6 +97,18 @@ public final class Configuration<C> {
         return this.configData;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Configuration<?> that = (Configuration<?>) o;
+        return Objects.equals(configData, that.configData);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(configData);
+    }
 }
 
 

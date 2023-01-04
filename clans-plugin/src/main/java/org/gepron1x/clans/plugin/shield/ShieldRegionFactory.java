@@ -39,6 +39,8 @@ public final class ShieldRegionFactory implements RegionFactory {
         this.shields = shields;
         this.config = config;
     }
+
+
     @Override
     public ProtectedRegion create(Clan clan, ClanHome home) {
         ProtectedRegion region = this.regionFactory.create(clan, home);

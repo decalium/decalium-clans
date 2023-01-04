@@ -1,6 +1,6 @@
 /*
  * decalium-clans
- * Copyright © 2022 George Pronyuk <https://vk.com/gpronyuk>
+ * Copyright © 2023 George Pronyuk <https://vk.com/gpronyuk>
  *
  * decalium-clans is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,11 @@
  */
 package org.gepron1x.clans.plugin.wg;
 
+import com.sk89q.worldguard.WorldGuard;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.repository.ClanRepository;
 import org.gepron1x.clans.plugin.AdaptingClanRepository;
+import org.gepron1x.clans.plugin.config.Configs;
 import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.gepron1x.clans.plugin.edition.PostClanEdition;
 import org.jetbrains.annotations.NotNull;
@@ -31,10 +33,10 @@ public class WgRepositoryImpl extends AdaptingClanRepository {
     private final ClansConfig clansConfig;
     private final RegionFactory regionFactory;
 
-    public WgRepositoryImpl(ClanRepository repository, ClansConfig clansConfig, RegionFactory regionFactory) {
-        super(repository, clan -> new WgClan(clan, clansConfig, regionFactory));
-        this.clansConfig = clansConfig;
-        this.regionFactory = regionFactory;
+    public WgRepositoryImpl(ClanRepository repository, Configs configs, RegionFactory regionFactory, WorldGuard worldGuard) {
+        super(repository, clan -> new WgClan(clan, configs, regionFactory, worldGuard));
+        this.clansConfig = configs.config();
+        this.regionFactory = regionFactory;;
     }
 
     @Override

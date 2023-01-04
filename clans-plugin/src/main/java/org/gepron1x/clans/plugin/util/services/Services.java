@@ -18,11 +18,17 @@
  */
 package org.gepron1x.clans.plugin.util.services;
 
+import org.bukkit.plugin.ServicePriority;
+
 import java.util.Optional;
 
 public interface Services {
 
-    <T> void register(Class<T> clazz, T service);
+    <T> void register(Class<T> clazz, T service, ServicePriority priority);
+
+    default <T> void register(Class<T> clazz, T service) {
+        register(clazz, service, ServicePriority.Normal);
+    }
 
     void unregister(Object o);
 

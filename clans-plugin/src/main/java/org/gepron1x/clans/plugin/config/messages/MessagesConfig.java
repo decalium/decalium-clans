@@ -386,6 +386,10 @@ public interface MessagesConfig {
             @DefaultString("<prefix> Successfully upgraded home to level <level>.")
             Message upgraded();
 
+            @ConfKey("region-conflict")
+            @DefaultString("<prefix> Cannot create home. Region collides with enemy's clan home.")
+            Message regionConflict();
+
 
         }
 

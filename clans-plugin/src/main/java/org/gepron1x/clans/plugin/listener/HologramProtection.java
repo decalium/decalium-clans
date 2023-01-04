@@ -28,19 +28,23 @@ public final class HologramProtection implements Listener {
 
     private final Plugin plugin;
 
+    private final NamespacedKey key;
+
     public HologramProtection(Plugin plugin) {
 
         this.plugin = plugin;
+        key = new NamespacedKey(plugin, "protect_from_death");
+    }
+
+    public void register() {
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @EventHandler
     public void on(EntityDeathEvent event) {
-        for(NamespacedKey key : event.getEntity().getPersistentDataContainer().getKeys()) {
-            if(key.getNamespace().equals(plugin.getName())) {
-                event.setCancelled(true);
-                plugin.getLogger().warning("Detected a death of protected entity! Denied.");
-                return;
-            }
+        if(event.getEntity().getPersistentDataContainer().has(key)) {
+            event.setCancelled(true);
+            plugin.getLogger().info("Protected entity death detected! Denying!");
         }
     }
 }

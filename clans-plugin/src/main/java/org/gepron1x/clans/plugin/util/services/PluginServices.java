@@ -36,8 +36,8 @@ public final class PluginServices implements Services {
         services = plugin.getServer().getServicesManager();
     }
     @Override
-    public <T> void register(Class<T> clazz, T service) {
-        services.register(clazz, service, this.plugin, ServicePriority.Normal);
+    public <T> void register(Class<T> clazz, T service, ServicePriority priority) {
+        services.register(clazz, service, this.plugin, priority);
     }
 
     @Override

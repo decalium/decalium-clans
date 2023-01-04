@@ -78,7 +78,6 @@ public final class PostClanEdition implements EmptyClanEdition {
 
     @Override
     public ClanEdition addHome(@NotNull ClanHome home) {
-
         createForHome(home);
         new HologramOfHome(this.clansConfig, this.clan, home).spawnIfNotPresent();
         return this;

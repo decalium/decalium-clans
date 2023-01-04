@@ -34,15 +34,19 @@ dependencies {
     implementation("org.bstats:bstats-bukkit:3.0.0")
     compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
     // paperDevBundle("1.18.2-R0.1-SNAPSHOT")
-    implementation("org.jdbi:jdbi3-core:3.34.0") {
+    implementation("org.jdbi:jdbi3-core:3.35.0") {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
-    implementation("org.flywaydb:flyway-core:9.8.3")
-    implementation("org.flywaydb:flyway-mysql:9.8.3")
-    implementation("cloud.commandframework:cloud-paper:1.7.1") {
+    implementation("org.flywaydb:flyway-core:9.10.2") {
+        exclude("com.fasterxml.jackson.dataformat", "jackson-dataformat-toml")
+    }
+    implementation("org.flywaydb:flyway-mysql:9.10.2") {
+        exclude("com.fasterxml.jackson.dataformat", "jackson-dataformat-toml")
+    }
+    implementation("cloud.commandframework:cloud-paper:1.8.0") {
         exclude("org.checkerframework", "checker-qual")
     }
-    implementation("cloud.commandframework:cloud-minecraft-extras:1.7.1") {
+    implementation("cloud.commandframework:cloud-minecraft-extras:1.8.0") {
         exclude("net.kyori", "adventure-api")
         exclude("net.kyori", "adventure-text-serializer-plain")
     }
@@ -84,7 +88,7 @@ tasks {
         relocateDependency("space.arim")
         relocateDependency("org.jdbi")
         relocateDependency("org.h2")
-        relocateDependency("com.fasterxml")
+       // relocateDependency("com.fasterxml")
         relocateDependency("cloud.commandframework")
         relocateDependency("com.github.benmanes.caffeine")
         relocateDependency("io.leangen.geantyref")

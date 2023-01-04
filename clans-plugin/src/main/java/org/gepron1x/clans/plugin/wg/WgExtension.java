@@ -1,6 +1,6 @@
 /*
  * decalium-clans
- * Copyright © 2022 George Pronyuk <https://vk.com/gpronyuk>
+ * Copyright © 2023 George Pronyuk <https://vk.com/gpronyuk>
  *
  * decalium-clans is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,7 +22,7 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.flags.BooleanFlag;
 import com.sk89q.worldguard.protection.flags.StringFlag;
 import org.gepron1x.clans.api.repository.ClanRepository;
-import org.gepron1x.clans.plugin.config.settings.ClansConfig;
+import org.gepron1x.clans.plugin.config.Configs;
 
 import java.util.List;
 
@@ -32,19 +32,19 @@ public final class WgExtension {
     public static final StringFlag HOME_NAME = new StringFlag("clan-home-name");
 
     public static final BooleanFlag SHIELD_ACTIVE = new BooleanFlag("clan-shield-active");
-    private final ClansConfig clansConfig;
+    private final Configs configs;
     private final ClanRepository repository;
     private final RegionFactory regionFactory;
 
-    public WgExtension(ClansConfig clansConfig, ClanRepository repository, RegionFactory regionFactory) {
-        this.clansConfig = clansConfig;
+    public WgExtension(Configs configs, ClanRepository repository, RegionFactory regionFactory) {
+        this.configs = configs;
         this.repository = repository;
         this.regionFactory = regionFactory;
     }
 
 
     public ClanRepository make() {
-        return new WgRepositoryImpl(this.repository, this.clansConfig,regionFactory);
+        return new WgRepositoryImpl(this.repository, configs, regionFactory, WorldGuard.getInstance());
     }
 
     public static void registerFlags() {

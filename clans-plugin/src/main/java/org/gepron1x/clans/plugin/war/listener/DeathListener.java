@@ -1,6 +1,6 @@
 /*
  * decalium-clans
- * Copyright © 2022 George Pronyuk <https://vk.com/gpronyuk>
+ * Copyright © 2023 George Pronyuk <https://vk.com/gpronyuk>
  *
  * decalium-clans is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +18,6 @@
  */
 package org.gepron1x.clans.plugin.war.listener;
 
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -47,9 +46,9 @@ public final class DeathListener implements Listener {
     public void on(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         if(wars.currentWar(player).isPresent()) {
-            Entity damager = Optional.ofNullable(player.getLastDamageCause()).filter(EntityDamageByEntityEvent.class::isInstance)
-                    .map(EntityDamageByEntityEvent.class::cast).flatMap(e -> new DamagerOf(e.getDamager()).damager()).orElse(null);
-            player.damage(Double.MAX_VALUE, damager);
+            player.setHealth(0);
+            Optional.ofNullable(player.getLastDamageCause()).filter(EntityDamageByEntityEvent.class::isInstance)
+                    .map(EntityDamageByEntityEvent.class::cast).flatMap(e -> new DamagerOf(e.getDamager()).damager()).ifPresent(player::setKiller);
         }
         wars.onDeath(player);
     }

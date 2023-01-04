@@ -16,10 +16,22 @@
  * along with decalium-clans. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package org.gepron1x.clans.plugin.util.uuid;
+package org.gepron1x.clans.plugin.util.action;
 
-import java.util.UUID;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import org.gepron1x.clans.plugin.util.message.Message;
 
-public interface UuidLike {
-    UUID uuid();
+public final class ActionBarAction implements Action {
+
+    private final Message actionBar;
+
+    public ActionBarAction(Message actionBar) {
+
+        this.actionBar = actionBar;
+    }
+    @Override
+    public void send(Audience audience, TagResolver resolver) {
+        audience.sendActionBar(actionBar.with(resolver));
+    }
 }
