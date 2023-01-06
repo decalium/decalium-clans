@@ -16,8 +16,8 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
     compileOnly(project(":clans-plugin", "shadow"))
-    compileOnly("cloud.commandframework:cloud-paper:1.7.0-SNAPSHOT")
-    implementation("com.github.stefvanschie.inventoryframework:IF:0.10.6")
+    compileOnly("cloud.commandframework:cloud-paper:1.8.0")
+    implementation("com.github.stefvanschie.inventoryframework:IF:0.10.8")
 }
 
 tasks {

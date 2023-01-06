@@ -28,14 +28,18 @@ import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.gepron1x.clans.api.chat.ClanMemberTagResolver;
+import org.gepron1x.clans.api.chat.ClanTagResolver;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
-import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.api.util.player.UuidPlayerReference;
+import org.gepron1x.clans.plugin.util.message.Message;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
+import java.util.stream.Stream;
+
+import static org.gepron1x.clans.gui.DecaliumClansGui.message;
 
 public final class ClanGui implements GuiLike {
 
@@ -53,29 +57,38 @@ public final class ClanGui implements GuiLike {
         StaticPane pane = new StaticPane(9, 5);
 
         ItemStack clanInfo = new ItemStack(Material.RED_BANNER);
+		ClanTagResolver resolver = ClanTagResolver.clan(clan);
         clanInfo.editMeta(meta -> {
-            meta.displayName(Component.text().append(clan.displayName()).append(Component.text(" ("+clan.tag()+")")).build());
-            meta.lore(List.of(
-                    Component.text("Kills: " + clan.statisticOr(StatisticType.KILLS, 0)),
-                    Component.text("Deaths: " + clan.statisticOr(StatisticType.DEATHS, 0))
-            ));
+            meta.displayName(message("Клан <clan_display_name> (<clan_tag>)").with("clan", clan).asComponent());
+            meta.lore(Stream.of(
+                    message("<yellow>Уровень: <white><clan_level> "),
+					message("<yellow>Убийств: <white><clan_statistic_kills>"),
+					message("<yellow>Смертей: <white><clan_statistic_deaths>"),
+					Message.EMPTY,
+					message("<yellow> Побед в битвах: <white><clan_statistic_clan_war_wins>"),
+					message("<yellow> Поражений в битвах: <white><clan_statistic_clan_war_loses>")
+            ).map(m -> m.with("clan", resolver).asComponent()).toList());
         });
 
         ItemStack owner = new SkullOf(new UuidPlayerReference(server, clan.owner().uniqueId())).itemStack();
         owner.editMeta(SkullMeta.class, meta -> {
-            meta.displayName(Component.text().append(Component.text("Owner: ")).append(clan.owner()).build());
+            meta.displayName(message("<yellow>Владелец: <owner>").with(resolver).asComponent());
         });
 
         ItemStack memberList = new ItemStack(Material.SKULL_BANNER_PATTERN);
         memberList.editMeta(meta -> {
-            meta.displayName(Component.text("Members"));
+            meta.displayName(message("<yellow>Участники: ").asComponent());
             ArrayList<Component> lore = new ArrayList<>();
             lore.add(Component.empty());
             Iterator<? extends ClanMember> iterator = clan.members().iterator();
+			int size = 0;
             for(int i = 0; i < 5; i++) {
                 if(!iterator.hasNext()) break;
-                lore.add(iterator.next().renderName(server));
+                lore.add(message("<member_role> <member_name>").with("member", ClanMemberTagResolver.clanMember(iterator.next())).asComponent());
+				size++;
             }
+			lore.add(message("<yellow>...И еще <size>").with("size", clan.members().size() - size).asComponent());
+			meta.lore(lore);
 
         });
 

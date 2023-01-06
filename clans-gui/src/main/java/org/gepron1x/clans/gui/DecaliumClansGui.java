@@ -20,16 +20,24 @@ package org.gepron1x.clans.gui;
 
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.DecaliumClansApi;
+import org.gepron1x.clans.plugin.util.message.Message;
+import org.gepron1x.clans.plugin.util.services.PluginServices;
 
-import java.util.Optional;
 import java.util.function.UnaryOperator;
 
 public final class DecaliumClansGui extends JavaPlugin {
+
+	private static final MiniMessage MINI_MESSAGE = MiniMessage.builder().postProcessor(c -> c.decoration(TextDecoration.ITALIC, false)).build();
+
+	public static Message message(String value) {
+		return Message.message(value, MINI_MESSAGE);
+	}
 
     @Override
     public void onDisable() {
@@ -38,9 +46,8 @@ public final class DecaliumClansGui extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        DecaliumClansApi api = Optional.ofNullable(this.getServer().getServicesManager()
-                        .getRegistration(DecaliumClansApi.class))
-                .map(RegisteredServiceProvider::getProvider).orElseThrow();
+        DecaliumClansApi api = new PluginServices(this).get(DecaliumClansApi.class).orElseThrow();
+		MiniMessage miniMessage = MiniMessage.builder().postProcessor(c -> c.decoration(TextDecoration.ITALIC, false)).build();
         PaperCommandManager<CommandSender> commandManager;
         try {
             commandManager = new PaperCommandManager<>(this,
@@ -51,6 +58,7 @@ public final class DecaliumClansGui extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+
         commandManager.registerBrigadier();
         commandManager.command(commandManager.commandBuilder("clangui").senderType(Player.class)
                 .permission("clans.gui")

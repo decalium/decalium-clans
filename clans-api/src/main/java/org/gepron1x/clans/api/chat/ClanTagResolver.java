@@ -54,11 +54,13 @@ public record ClanTagResolver(@NotNull DraftClan clan) implements TagResolver {
     private static final String HOMES_SIZE = "homes_size";
 
     private static final String STATISTIC = "statistic_";
+
+	private static final String LEVEL = "level";
     private static final String MEMBER = "member";
     private static final String MEMBERS = MEMBER + "s";
     private static final String OWNER = "owner_";
 
-    private static final Set<String> KEYS = Set.of(TAG, DISPLAY_NAME, MEMBERS_SIZE, HOMES_SIZE, STATISTIC, MEMBER, MEMBERS, OWNER);
+    private static final Set<String> KEYS = Set.of(TAG, DISPLAY_NAME, MEMBERS_SIZE, HOMES_SIZE, STATISTIC, LEVEL, MEMBER, MEMBERS, OWNER);
 
 
     @Override
@@ -69,6 +71,7 @@ public record ClanTagResolver(@NotNull DraftClan clan) implements TagResolver {
             case MEMBERS_SIZE -> Component.text(clan.members().size());
             case HOMES_SIZE -> Component.text(clan.homes().size());
             case MEMBERS -> clan.members().stream().map(member -> member.renderName(Bukkit.getServer())).collect(Component.toComponent(Component.newline()));
+			case LEVEL -> Component.text(clan.level());
             default -> null;
         };
 
@@ -86,7 +89,7 @@ public record ClanTagResolver(@NotNull DraftClan clan) implements TagResolver {
         if(name.startsWith(STATISTIC)) {
             StatisticType type = new StatisticType(name.substring(STATISTIC.length()));
             int value = clan.statisticOr(type, 0);
-            return Tag.inserting(Component.text(value));
+            return Tag.selfClosingInserting(Component.text(value));
         }
 
         if(name.startsWith(OWNER)) {

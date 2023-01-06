@@ -21,9 +21,10 @@ package org.gepron1x.clans.gui;
 import com.github.stefvanschie.inventoryframework.adventuresupport.ComponentHolder;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Server;
 import org.bukkit.inventory.ItemStack;
+import org.gepron1x.clans.api.chat.ClanMemberTagResolver;
+import org.gepron1x.clans.api.chat.ClanTagResolver;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.util.player.UuidPlayerReference;
 
@@ -41,11 +42,11 @@ public final class ClanMemberListGui implements GuiLike {
         ChestGui gui = new PaginatedGui<>(clan.members(), clanMember -> {
             ItemStack item = new SkullOf(new UuidPlayerReference(server, clanMember.uniqueId())).itemStack();
             item.editMeta(meta -> {
-                meta.displayName(clanMember.renderName(server));
+                meta.displayName(DecaliumClansGui.message("<member_role> <member_name>").with(ClanMemberTagResolver.clanMember(clanMember)).asComponent());
             });
             return item;
         }).asGui();
-        gui.setTitle(ComponentHolder.of(Component.textOfChildren(clan.displayName(), Component.text(" members"))));
+        gui.setTitle(ComponentHolder.of(DecaliumClansGui.message("Участники клана <display_name>").with(ClanTagResolver.clan(clan)).asComponent()));
         return gui;
     }
 }

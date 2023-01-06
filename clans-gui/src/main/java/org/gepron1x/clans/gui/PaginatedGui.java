@@ -54,7 +54,7 @@ public final class PaginatedGui<E> implements GuiLike {
         navigation.addItem(new GuiItem(new ItemStack(Material.RED_WOOL), event -> {
             if (pages.getPage() > 0) {
                 pages.setPage(pages.getPage() - 1);
-
+				event.setCancelled(true);
                 gui.update();
             }
         }), 0, 0);
@@ -62,7 +62,7 @@ public final class PaginatedGui<E> implements GuiLike {
         navigation.addItem(new GuiItem(new ItemStack(Material.GREEN_WOOL), event -> {
             if (pages.getPage() < pages.getPages() - 1) {
                 pages.setPage(pages.getPage() + 1);
-
+				event.setCancelled(true);
                 gui.update();
             }
         }), 8, 0);
