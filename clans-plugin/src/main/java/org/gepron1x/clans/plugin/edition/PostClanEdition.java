@@ -92,6 +92,7 @@ public final class PostClanEdition implements EmptyClanEdition {
     @Override
     public ClanEdition removeHome(@NotNull ClanHome home) {
         regionFactory.remove(clan, home);
+		new HologramOfHome(this.clansConfig, clan, home).destroy();
         return this;
     }
 
