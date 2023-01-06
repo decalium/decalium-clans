@@ -1,5 +1,10 @@
 ![logo](documentation/docs/hat.png)
 
+<a href="/#"><img src="https://raw.githubusercontent.com/intergrav/devins-badges/v2/assets/cozy/unsupported/spigot_64h.png" height="50"></a>
+<a href="/#"><img src="https://raw.githubusercontent.com/intergrav/devins-badges/v2/assets/cozy/supported/paper_64h.png" height="50"></a>
+<a href="/#"><img src="https://raw.githubusercontent.com/intergrav/devins-badges/v2/assets/cozy/supported/purpur_64h.png" height="50"></a>
+
+
 A free, open-source, powerful and performant clans plugin. Like in dreams.
 
 

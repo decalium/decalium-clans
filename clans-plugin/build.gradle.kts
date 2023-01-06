@@ -34,7 +34,7 @@ dependencies {
     implementation("org.bstats:bstats-bukkit:3.0.0")
     compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
     // paperDevBundle("1.18.2-R0.1-SNAPSHOT")
-    implementation("org.jdbi:jdbi3-core:3.35.0") {
+    implementation("org.jdbi:jdbi3-core:3.36.0") {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
     implementation("org.flywaydb:flyway-core:9.10.2") {
