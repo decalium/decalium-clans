@@ -59,7 +59,7 @@ public final class ClanGui implements GuiLike {
         ItemStack clanInfo = new ItemStack(Material.RED_BANNER);
 		ClanTagResolver resolver = ClanTagResolver.clan(clan);
         clanInfo.editMeta(meta -> {
-            meta.displayName(message("Клан <clan_display_name> (<clan_tag>)").with("clan", clan).asComponent());
+            meta.displayName(message("Клан <clan_display_name> (<clan_tag>)").with("clan", resolver).asComponent());
             meta.lore(Stream.of(
                     message("<yellow>Уровень: <white><clan_level> "),
 					message("<yellow>Убийств: <white><clan_statistic_kills>"),
@@ -72,7 +72,7 @@ public final class ClanGui implements GuiLike {
 
         ItemStack owner = new SkullOf(new UuidPlayerReference(server, clan.owner().uniqueId())).itemStack();
         owner.editMeta(SkullMeta.class, meta -> {
-            meta.displayName(message("<yellow>Владелец: <owner>").with(resolver).asComponent());
+            meta.displayName(message("<yellow>Владелец: <owner_name>").with(resolver).asComponent());
         });
 
         ItemStack memberList = new ItemStack(Material.SKULL_BANNER_PATTERN);
@@ -87,7 +87,7 @@ public final class ClanGui implements GuiLike {
                 lore.add(message("<member_role> <member_name>").with("member", ClanMemberTagResolver.clanMember(iterator.next())).asComponent());
 				size++;
             }
-			lore.add(message("<yellow>...И еще <size>").with("size", clan.members().size() - size).asComponent());
+			if(size != clan.members().size()) lore.add(message("<yellow>...И еще <size>").with("size", clan.members().size() - size).asComponent());
 			meta.lore(lore);
 
         });

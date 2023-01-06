@@ -42,7 +42,7 @@ public final class ClanMemberListGui implements GuiLike {
         ChestGui gui = new PaginatedGui<>(clan.members(), clanMember -> {
             ItemStack item = new SkullOf(new UuidPlayerReference(server, clanMember.uniqueId())).itemStack();
             item.editMeta(meta -> {
-                meta.displayName(DecaliumClansGui.message("<member_role> <member_name>").with(ClanMemberTagResolver.clanMember(clanMember)).asComponent());
+                meta.displayName(DecaliumClansGui.message("<member_role> <member_name>").with("member", ClanMemberTagResolver.clanMember(clanMember)).asComponent());
             });
             return item;
         }).asGui();
