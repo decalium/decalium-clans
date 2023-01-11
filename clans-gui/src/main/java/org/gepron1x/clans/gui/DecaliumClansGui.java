@@ -18,6 +18,7 @@
  */
 package org.gepron1x.clans.gui;
 
+import cloud.commandframework.bukkit.parsers.PlayerArgument;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -61,9 +62,9 @@ public final class DecaliumClansGui extends JavaPlugin {
 
         commandManager.registerBrigadier();
         commandManager.command(commandManager.commandBuilder("clangui").senderType(Player.class)
-                .permission("clans.gui")
+                .permission("clans.gui").argument(PlayerArgument.optional("player"))
                 .handler(ctx -> {
-                    Player player = (Player) ctx.getSender();
+                    Player player = (Player) ctx.getOrSupplyDefault("player", ctx::getSender);
                     api.repository().userClanIfCached(player).ifPresent(clan -> {
                         new ClanGui(getServer(), clan).asGui().show(player);
                     });

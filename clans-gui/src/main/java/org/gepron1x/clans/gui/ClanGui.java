@@ -65,8 +65,8 @@ public final class ClanGui implements GuiLike {
 					message("<yellow>Убийств: <white><clan_statistic_kills>"),
 					message("<yellow>Смертей: <white><clan_statistic_deaths>"),
 					Message.EMPTY,
-					message("<yellow> Побед в битвах: <white><clan_statistic_clan_war_wins>"),
-					message("<yellow> Поражений в битвах: <white><clan_statistic_clan_war_loses>")
+					message("<yellow>Побед в битвах: <white><clan_statistic_clan_war_wins>"),
+					message("<yellow>Поражений в битвах: <white><clan_statistic_clan_war_loses>")
             ).map(m -> m.with("clan", resolver).asComponent()).toList());
         });
 
@@ -76,6 +76,7 @@ public final class ClanGui implements GuiLike {
         });
 
         ItemStack memberList = new ItemStack(Material.SKULL_BANNER_PATTERN);
+		memberList.setAmount(Math.min(64, clan.members().size()));
         memberList.editMeta(meta -> {
             meta.displayName(message("<yellow>Участники: ").asComponent());
             ArrayList<Component> lore = new ArrayList<>();
@@ -92,8 +93,18 @@ public final class ClanGui implements GuiLike {
 
         });
 
-        pane.addItem(new GuiItem(clanInfo), 3, 2);
-        pane.addItem(new GuiItem(owner), 4, 2);
+		ItemStack homeList = new ItemStack(Material.CAMPFIRE);
+		homeList.setAmount(Math.min(64, clan.homes().size()));
+		homeList.editMeta(meta -> {
+			meta.displayName(message("<yellow>Клановые базы").asComponent());
+		});
+
+        pane.addItem(new GuiItem(clanInfo, event -> event.setCancelled(true)), 3, 2);
+        pane.addItem(new GuiItem(owner, event -> event.setCancelled(true)), 4, 2);
+		pane.addItem(new GuiItem(homeList, event -> {
+			event.getWhoClicked().closeInventory();
+			new HomeListGui(clan, server).asGui().show(event.getWhoClicked());
+		}), 4, 3);
         pane.addItem(new GuiItem(memberList, event -> {
             event.getWhoClicked().closeInventory();
             new ClanMemberListGui(clan, server).asGui().show(event.getWhoClicked());

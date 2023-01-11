@@ -40,6 +40,8 @@ public record ClanHomeTagResolver(@NotNull ClanHome clanHome) implements TagReso
 
     private static final String ICON = "icon";
 
+	private static final String LEVEL = "level";
+
     public static ClanHomeTagResolver home(@NotNull ClanHome home) {
         return new ClanHomeTagResolver(home);
     }
@@ -57,6 +59,7 @@ public record ClanHomeTagResolver(@NotNull ClanHome clanHome) implements TagReso
             case LOCATION_Z -> Component.text(clanHome.location().getBlockZ());
             case LOCATION_WORLD -> Component.text(clanHome.location().getWorld().getName());
             case ICON -> clanHome.icon().displayName();
+			case LEVEL -> Component.text(clanHome.level() + 1);
             default -> null;
         };
         return component == null ? null : Tag.selfClosingInserting(component);

@@ -23,21 +23,31 @@ import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import org.bukkit.Material;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public final class PaginatedGui<E> implements GuiLike {
     private final Collection<? extends E> elements;
     private final Function<? super E, ItemStack> mapper;
+	private final Consumer<InventoryClickEvent> onClick;
 
-    public PaginatedGui(Collection<? extends E> elements, Function<? super E, ItemStack> mapper) {
+	public PaginatedGui(Collection<? extends E> elements, Function<? super E, ItemStack> mapper, Consumer<InventoryClickEvent> onClick) {
 
         this.elements = elements;
         this.mapper = mapper;
-    }
+		this.onClick = onClick;
+	}
+
+	public PaginatedGui(Collection<? extends E> elements, Function<? super E, ItemStack> mapper) {
+		this(elements, mapper, e -> e.setCancelled(true));
+	}
+
+
     @Override
     public ChestGui asGui() {
         ChestGui gui = new ChestGui(6, "Paginated Gui");

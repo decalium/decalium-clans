@@ -107,6 +107,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
     private Configuration<MessagesConfig> messagesConfiguration;
 
     private Configuration<PricesConfig> prices;
+
     private UserCaching userCaching;
 
 
@@ -279,7 +280,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         new ShieldRefreshTask(repository, shields, WorldGuard.getInstance(), config, futuresFactory, logger)
                 .runTaskTimerAsynchronously(this, 20, 20 * 20);
 
-        DecaliumClansApi clansApi = new DecaliumClansApiImpl(clanRepository, users, this.roleRegistry, builderFactory, futuresFactory, wars, shields);
+        DecaliumClansApi clansApi = new DecaliumClansApiImpl(clanRepository, users, this.roleRegistry, builderFactory, futuresFactory, wars, shields, prices.data());
         services.register(DecaliumClansApi.class, clansApi);
 
         new Metrics(this, BSTATS_ID);

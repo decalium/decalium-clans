@@ -18,31 +18,37 @@
  */
 package org.gepron1x.clans.plugin.config.settings;
 
+import org.gepron1x.clans.api.economy.Prices;
 import org.gepron1x.clans.plugin.util.message.Message;
 import space.arim.dazzleconf.annote.ConfKey;
 
 import static space.arim.dazzleconf.annote.ConfDefault.DefaultDouble;
 import static space.arim.dazzleconf.annote.ConfDefault.DefaultString;
 
-public interface PricesConfig {
+public interface PricesConfig extends Prices {
 
     @DefaultDouble(50)
     @ConfKey("home-creation")
+	@Override
     double homeCreation();
 
     @DefaultDouble(50)
     @ConfKey("home-upgrade")
+	@Override
     double homeUpgrade();
 
     @DefaultDouble(100)
     @ConfKey("clan-creation")
+	@Override
     double clanCreation();
 
     @DefaultDouble(200)
     @ConfKey("clan-upgrade")
+	@Override
     double clanUpgrade();
 
     @DefaultDouble(1000)
+	@Override
     double shield();
 
     @DefaultString("<prefix><red> You need at least <price> to do that.")

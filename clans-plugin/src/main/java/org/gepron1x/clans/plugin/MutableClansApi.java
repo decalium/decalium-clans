@@ -29,10 +29,54 @@ import org.gepron1x.clans.api.war.Wars;
 import org.jetbrains.annotations.NotNull;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
-public record DecaliumClansApiImpl(@NotNull CachingClanRepository repository,
-                                   @NotNull Users users,
-                                   @NotNull RoleRegistry roleRegistry,
-                                   @NotNull ClanBuilderFactory builderFactory,
-                                   @NotNull FactoryOfTheFuture futuresFactory,
-                                   @NotNull Wars wars,
-                                   @NotNull CachingShields shields, @NotNull Prices prices) implements DecaliumClansApi { }
+public final class MutableClansApi implements DecaliumClansApi {
+
+	private DecaliumClansApi api;
+
+	public MutableClansApi(DecaliumClansApi api) {
+		this.api = api;
+	}
+	@Override
+	public @NotNull Users users() {
+		return this.api.users();
+	}
+
+	@Override
+	public @NotNull CachingClanRepository repository() {
+		return this.api.repository();
+	}
+
+	@Override
+	public @NotNull CachingShields shields() {
+		return this.api.shields();
+	}
+
+	@Override
+	public @NotNull FactoryOfTheFuture futuresFactory() {
+		return this.api.futuresFactory();
+	}
+
+	@Override
+	public @NotNull ClanBuilderFactory builderFactory() {
+		return this.api.builderFactory();
+	}
+
+	@Override
+	public @NotNull RoleRegistry roleRegistry() {
+		return this.api.roleRegistry();
+	}
+
+	@Override
+	public @NotNull Wars wars() {
+		return this.api.wars();
+	}
+
+	@Override
+	public @NotNull Prices prices() {
+		return this.api.prices();
+	}
+
+	public void setApi(DecaliumClansApi api) {
+		this.api = api;
+	}
+}
