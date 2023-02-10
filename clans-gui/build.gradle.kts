@@ -22,6 +22,7 @@ dependencies {
 
 tasks {
     shadowJar {
+        relocate("cloud.commandframework", "org.gepron1x.clans.libraries.cloud.commandframework")
         relocate("com.github.stefvanschie.inventoryframework", "org.gepron1x.clans.gui.libraries.if")
     }
 }

@@ -27,6 +27,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.DecaliumClansApi;
+import org.gepron1x.clans.plugin.DecaliumClansPlugin;
 import org.gepron1x.clans.plugin.util.message.Message;
 import org.gepron1x.clans.plugin.util.services.PluginServices;
 
@@ -48,7 +49,7 @@ public final class DecaliumClansGui extends JavaPlugin {
     @Override
     public void onEnable() {
         DecaliumClansApi api = new PluginServices(this).get(DecaliumClansApi.class).orElseThrow();
-		MiniMessage miniMessage = MiniMessage.builder().postProcessor(c -> c.decoration(TextDecoration.ITALIC, false)).build();
+		DecaliumClansPlugin clansPlugin = JavaPlugin.getPlugin(DecaliumClansPlugin.class);
         PaperCommandManager<CommandSender> commandManager;
         try {
             commandManager = new PaperCommandManager<>(this,
@@ -65,9 +66,11 @@ public final class DecaliumClansGui extends JavaPlugin {
                 .permission("clans.gui").argument(PlayerArgument.optional("player"))
                 .handler(ctx -> {
                     Player player = (Player) ctx.getOrSupplyDefault("player", ctx::getSender);
-                    api.repository().userClanIfCached(player).ifPresent(clan -> {
-                        new ClanGui(getServer(), clan).asGui().show(player);
-                    });
+                    api.repository().userClanIfCached(player).ifPresentOrElse(clan -> {
+                        new ClanGui(getServer(), clan, api).asGui().show((Player) ctx.getSender());
+                    }, () -> {
+						ctx.getSender().sendMessage(clansPlugin.messages().notInTheClan());
+					});
                 })
         );
 

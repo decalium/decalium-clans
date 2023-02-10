@@ -19,6 +19,7 @@
 package org.gepron1x.clans.gui;
 
 import com.github.stefvanschie.inventoryframework.adventuresupport.ComponentHolder;
+import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import org.bukkit.NamespacedKey;
@@ -29,7 +30,6 @@ import org.gepron1x.clans.api.chat.ClanHomeTagResolver;
 import org.gepron1x.clans.api.chat.ClanTagResolver;
 import org.gepron1x.clans.api.clan.Clan;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.gepron1x.clans.gui.DecaliumClansGui.message;
@@ -60,13 +60,12 @@ public final class HomeListGui implements GuiLike {
 						message("<green><bold>Нажмите, чтобы телепортироваться")
 				).map(m -> m.with("home", resolver).asComponent()).toList());
 			});
-			return item;
-		}, event -> {
-			Optional.ofNullable(event.getCurrentItem())
-					.map(ItemStack::getItemMeta)
-					.map(m -> m.getPersistentDataContainer().get(HOME_NAME, PersistentDataType.STRING)).flatMap(clan::home).ifPresent(home -> {
-						event.getWhoClicked().teleportAsync(home.location());
-					});
+			return new GuiItem(item, event -> {
+				if(event.isLeftClick()) event.getWhoClicked().teleportAsync(clanHome.location()).exceptionally(t -> {
+					t.printStackTrace();
+					 return null;
+				});
+			});
 		}).asGui();
 		gui.setTitle(ComponentHolder.of(DecaliumClansGui.message("Базы клана <display_name>").with(ClanTagResolver.clan(clan)).asComponent()));
 		return gui;

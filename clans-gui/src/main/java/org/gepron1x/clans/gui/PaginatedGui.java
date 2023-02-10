@@ -26,24 +26,23 @@ import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 public final class PaginatedGui<E> implements GuiLike {
     private final Collection<? extends E> elements;
-    private final Function<? super E, ItemStack> mapper;
+    private final Function<? super E, GuiItem> mapper;
 	private final Consumer<InventoryClickEvent> onClick;
 
-	public PaginatedGui(Collection<? extends E> elements, Function<? super E, ItemStack> mapper, Consumer<InventoryClickEvent> onClick) {
+	public PaginatedGui(Collection<? extends E> elements, Function<? super E, GuiItem> mapper, Consumer<InventoryClickEvent> onClick) {
 
         this.elements = elements;
         this.mapper = mapper;
 		this.onClick = onClick;
 	}
 
-	public PaginatedGui(Collection<? extends E> elements, Function<? super E, ItemStack> mapper) {
+	public PaginatedGui(Collection<? extends E> elements, Function<? super E, GuiItem> mapper) {
 		this(elements, mapper, e -> e.setCancelled(true));
 	}
 
@@ -52,12 +51,8 @@ public final class PaginatedGui<E> implements GuiLike {
     public ChestGui asGui() {
         ChestGui gui = new ChestGui(6, "Paginated Gui");
         PaginatedPane pages = new PaginatedPane(9, 5);
-        ArrayList<ItemStack> items = new ArrayList<>(elements.size());
-        for(E e : elements) {
-            items.add(mapper.apply(e));
-        }
-        pages.populateWithItemStacks(items);
-        pages.setOnClick(event -> event.setCancelled(true));
+        pages.populateWithGuiItems(elements.stream().map(mapper).toList());
+        pages.setOnClick(onClick);
         gui.addPane(pages);
         StaticPane navigation = new StaticPane(0, 5, 9, 1);
         navigation.setOnClick(event -> event.setCancelled(true));

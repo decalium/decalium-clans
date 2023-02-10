@@ -24,19 +24,27 @@ import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.Server;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.gepron1x.clans.api.DecaliumClansApi;
 import org.gepron1x.clans.api.chat.ClanMemberTagResolver;
 import org.gepron1x.clans.api.chat.ClanTagResolver;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
+import org.gepron1x.clans.api.shield.Shield;
 import org.gepron1x.clans.api.util.player.UuidPlayerReference;
+import org.gepron1x.clans.plugin.DecaliumClansPlugin;
+import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.gepron1x.clans.plugin.util.message.Message;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.gepron1x.clans.gui.DecaliumClansGui.message;
@@ -44,17 +52,19 @@ import static org.gepron1x.clans.gui.DecaliumClansGui.message;
 public final class ClanGui implements GuiLike {
 
     private final Server server;
-    private final Clan clan;
+	private final Clan clan;
+	private final DecaliumClansApi api;
 
-    public ClanGui(Server server, Clan clan) {
+	public ClanGui(Server server, Clan clan, DecaliumClansApi api) {
         this.server = server;
-        this.clan = clan;
-    }
+		this.clan = clan;
+		this.api = api;
+	}
 
     @Override
     public Gui asGui() {
-        ChestGui gui = new ChestGui(5, ComponentHolder.of(clan.displayName()));
-        StaticPane pane = new StaticPane(9, 5);
+        ChestGui gui = new ChestGui(4, ComponentHolder.of(message("Клан <clan>").with("clan", clan.displayName()).asComponent()));
+        StaticPane pane = new StaticPane(9, 4);
 
         ItemStack clanInfo = new ItemStack(Material.RED_BANNER);
 		ClanTagResolver resolver = ClanTagResolver.clan(clan);
@@ -99,17 +109,70 @@ public final class ClanGui implements GuiLike {
 			meta.displayName(message("<yellow>Клановые базы").asComponent());
 		});
 
-        pane.addItem(new GuiItem(clanInfo, event -> event.setCancelled(true)), 3, 2);
-        pane.addItem(new GuiItem(owner, event -> event.setCancelled(true)), 4, 2);
+		StaticPane border = new StaticPane(0, 0, 1, 4);
+		border.fillWith(new ItemStack(Material.CYAN_STAINED_GLASS_PANE));
+
+        pane.addItem(new GuiItem(clanInfo, event -> event.setCancelled(true)), 4, 1);
+        pane.addItem(new GuiItem(owner, event -> event.setCancelled(true)), 5, 1);
 		pane.addItem(new GuiItem(homeList, event -> {
 			event.getWhoClicked().closeInventory();
 			new HomeListGui(clan, server).asGui().show(event.getWhoClicked());
-		}), 4, 3);
+		}), 6, 1);
         pane.addItem(new GuiItem(memberList, event -> {
             event.getWhoClicked().closeInventory();
             new ClanMemberListGui(clan, server).asGui().show(event.getWhoClicked());
-        }), 5, 2);
+        }), 2, 1);
+
+		ItemStack shieldItem = shieldItem(api.shields().shield(clan.tag()));
+		pane.addItem(new GuiItem(shieldItem, event -> {
+			event.setCancelled(true);
+			if(!api.shields().shield(clan.tag()).expired()) return;
+			api.users().userFor((Player) event.getWhoClicked()).shields()
+					.add(clan, JavaPlugin.getPlugin(DecaliumClansPlugin.class).config().levels().forLevel(clan).shieldDuration()).thenAcceptSync(s -> {
+						pane.removeItem(3, 1);
+						pane.addItem(new GuiItem(shieldItem(s), e -> e.setCancelled(true)), 3, 1);
+						gui.update();
+					});
+		}), 3, 1);
         gui.addPane(pane);
+		gui.addPane(border(0));
+		gui.addPane(border(8));
         return gui;
     }
+
+
+	private ItemStack shieldItem(Shield shield) {
+		ClansConfig config = JavaPlugin.getPlugin(DecaliumClansPlugin.class).config();
+		ItemStack item = new ItemStack(shield.expired() ? Material.ITEM_FRAME : Material.GLOW_ITEM_FRAME);
+		Component active = shield.expired() ? Component.text("Неактивен", NamedTextColor.RED) :
+				Component.text("Активен", NamedTextColor.GREEN);
+		item.editMeta(meta -> {
+			meta.displayName(message("<yellow>Клановый щит: <active>").with("active", active).asComponent());
+			List<Component> lore;
+			if(shield.expired()) {
+				lore = List.of(message("<green>Нажмите, чтобы приобрести за <amount>").with("amount", api.prices().shield()).asComponent());
+			} else {
+				lore = List.of(message("<yellow>Осталось: <gray><time>")
+						.with("time", config.timeFormat().format(shield.left())).asComponent());
+			}
+			meta.lore(lore);
+		});
+
+		return item;
+	}
+
+	private StaticPane border(int x) {
+		StaticPane pane = new StaticPane(x, 0, 1, 4);
+		pane.setOnClick(e -> e.setCancelled(true));
+		ItemStack itemStack = new ItemStack(Material.CYAN_STAINED_GLASS_PANE);
+		itemStack.editMeta(meta -> meta.displayName(Component.space()));
+		ItemStack gray = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+		gray.editMeta(meta -> meta.displayName(Component.space()));
+
+		pane.addItem(new GuiItem(gray), 0, 0);
+		pane.addItem(new GuiItem(itemStack), 0, 1);
+		pane.addItem(new GuiItem(itemStack), 0, 2);
+		pane.addItem(new GuiItem(gray), 0, 3);
+		return pane;
+	}
 }

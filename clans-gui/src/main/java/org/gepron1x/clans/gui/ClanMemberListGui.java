@@ -19,6 +19,7 @@
 package org.gepron1x.clans.gui;
 
 import com.github.stefvanschie.inventoryframework.adventuresupport.ComponentHolder;
+import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import org.bukkit.Server;
@@ -44,7 +45,7 @@ public final class ClanMemberListGui implements GuiLike {
             item.editMeta(meta -> {
                 meta.displayName(DecaliumClansGui.message("<member_role> <member_name>").with("member", ClanMemberTagResolver.clanMember(clanMember)).asComponent());
             });
-            return item;
+            return new GuiItem(item);
         }).asGui();
         gui.setTitle(ComponentHolder.of(DecaliumClansGui.message("Участники клана <display_name>").with(ClanTagResolver.clan(clan)).asComponent()));
         return gui;
