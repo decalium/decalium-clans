@@ -39,7 +39,7 @@ public final class DeathListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void on(PlayerDeathEvent event) {
-        wars.onDeath(event.getPlayer());
+        wars.onDeath(event.getEntity());
     }
 
     @EventHandler

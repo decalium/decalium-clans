@@ -22,6 +22,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 
 public final class HologramProtection implements Listener {
@@ -42,7 +43,7 @@ public final class HologramProtection implements Listener {
 
     @EventHandler
     public void on(EntityDeathEvent event) {
-        if(event.getEntity().getPersistentDataContainer().has(key)) {
+        if(event.getEntity().getPersistentDataContainer().has(key, PersistentDataType.BYTE)) {
             event.setCancelled(true);
             plugin.getLogger().info("Protected entity death detected! Denying!");
         }

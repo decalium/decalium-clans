@@ -32,7 +32,7 @@ repositories {
 dependencies {
     implementation(project(":clans-api"))
     implementation("org.bstats:bstats-bukkit:3.0.0")
-    compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
+    compileOnly("net.pl3x.purpur:purpur-api:1.16.5-R0.1-SNAPSHOT")
     // paperDevBundle("1.18.2-R0.1-SNAPSHOT")
     implementation("org.jdbi:jdbi3-core:3.36.0") {
         exclude(group = "org.slf4j", module = "slf4j-api")

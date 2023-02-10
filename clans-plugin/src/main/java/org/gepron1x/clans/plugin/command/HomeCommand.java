@@ -134,7 +134,7 @@ public class HomeCommand extends AbstractClanCommand {
         ItemStack icon = player.getInventory().getItemInMainHand();
         if(icon.getType().isAir()) {
             icon = new ItemStack(Material.PLAYER_HEAD);
-            icon.editMeta(SkullMeta.class, meta -> meta.setPlayerProfile(player.getPlayerProfile()));
+            icon.editMeta(meta -> ((SkullMeta) meta).setPlayerProfile(player.getPlayerProfile()));
         }
         Location location = player.getLocation();
 
