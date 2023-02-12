@@ -9,12 +9,13 @@ version = "0.1"
 
 repositories {
     mavenCentral()
+    mavenLocal()
     maven { url = uri("https://mvn-repo.arim.space/lesser-gpl3/") }
     maven { url = uri("https://papermc.io/repo/repository/maven-public/") }
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
+    compileOnly("net.pl3x.purpur:purpur-api:1.16.5-R0.1-SNAPSHOT")
     compileOnly(project(":clans-plugin", "shadow"))
     compileOnly("cloud.commandframework:cloud-paper:1.8.0")
     implementation("com.github.stefvanschie.inventoryframework:IF:0.10.8")
@@ -32,6 +33,6 @@ bukkit {
     description = "A gui addon for Decalium Clans"
     depend = listOf("DecaliumClans")
     author = "gepron1x"
-    apiVersion = "1.18"
+    apiVersion = "1.16"
     main = "org.gepron1x.clans.gui.DecaliumClansGui"
 }

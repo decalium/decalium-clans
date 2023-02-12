@@ -27,7 +27,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.Server;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -143,7 +145,7 @@ public final class ClanGui implements GuiLike {
 
 	private ItemStack shieldItem(Shield shield) {
 		ClansConfig config = JavaPlugin.getPlugin(DecaliumClansPlugin.class).config();
-		ItemStack item = new ItemStack(shield.expired() ? Material.ITEM_FRAME : Material.GLOW_ITEM_FRAME);
+		ItemStack item = new ItemStack(Material.ITEM_FRAME);
 		Component active = shield.expired() ? Component.text("Неактивен", NamedTextColor.RED) :
 				Component.text("Активен", NamedTextColor.GREEN);
 		item.editMeta(meta -> {
@@ -152,6 +154,8 @@ public final class ClanGui implements GuiLike {
 			if(shield.expired()) {
 				lore = List.of(message("<green>Нажмите, чтобы приобрести за <amount>").with("amount", api.prices().shield()).asComponent());
 			} else {
+				meta.addEnchant(Enchantment.MENDING, 1, true);
+				meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 				lore = List.of(message("<yellow>Осталось: <gray><time>")
 						.with("time", config.timeFormat().format(shield.left())).asComponent());
 			}
