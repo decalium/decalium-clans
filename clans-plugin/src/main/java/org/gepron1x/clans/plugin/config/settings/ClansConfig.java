@@ -20,6 +20,7 @@ package org.gepron1x.clans.plugin.config.settings;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.World;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.plugin.clan.member.ClanRoleImpl;
@@ -273,6 +274,17 @@ public interface ClansConfig {
             @ConfComments("How should we call worlds in the navigator?")
             @DefaultMap({"world", "World", "world_nether", "<red>Nether", "world_the_end", "<yellow>The end"})
             Map<String, Component> worldDisplayNames();
+
+			@ConfKey("announce-teleports")
+			@ConfComments("Announce teleports if player changed a world")
+			@DefaultBoolean(true)
+			boolean announceTeleports();
+
+			default Component worldName(World world) {
+				Component name = worldDisplayNames().get(world.getName());
+				if(name == null) return Component.text(world.getName());
+				return name;
+			}
         }
     }
 

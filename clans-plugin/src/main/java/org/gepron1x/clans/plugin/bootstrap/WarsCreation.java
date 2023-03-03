@@ -28,6 +28,7 @@ import org.gepron1x.clans.plugin.war.impl.DefaultWars;
 import org.gepron1x.clans.plugin.war.listener.DeathListener;
 import org.gepron1x.clans.plugin.war.listener.NoTeamDamageListener;
 import org.gepron1x.clans.plugin.war.navigation.Navigation;
+import org.gepron1x.clans.plugin.war.navigation.TeleportListener;
 
 public final class WarsCreation {
 
@@ -47,6 +48,7 @@ public final class WarsCreation {
         Wars wars = new AnnouncingWars(base, configs.messages());
         pm.registerEvents(new DeathListener(wars), plugin);
         if(configs.config().wars().disableTeamDamage()) pm.registerEvents(new NoTeamDamageListener(base), plugin);
+		if(configs.config().wars().navigation().announceTeleports()) pm.registerEvents(new TeleportListener(wars, configs), plugin);
         pm.registerEvents(new CrystalExplosionListener(), plugin);
         plugin.getServer().getScheduler().runTaskTimer(plugin, new Navigation(base, configs.messages()), 5, 5);
         return wars;
