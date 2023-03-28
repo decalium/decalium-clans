@@ -34,19 +34,20 @@ dependencies {
     implementation("org.bstats:bstats-bukkit:3.0.0")
     compileOnly("net.pl3x.purpur:purpur-api:1.16.5-R0.1-SNAPSHOT")
     // paperDevBundle("1.18.2-R0.1-SNAPSHOT")
-    implementation("org.jdbi:jdbi3-core:3.36.0") {
+    implementation("org.jdbi:jdbi3-core:3.37.1") {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
-    implementation("org.flywaydb:flyway-core:9.10.2") {
+    implementation("org.flywaydb:flyway-core:9.16.0") {
         exclude("com.fasterxml.jackson.dataformat", "jackson-dataformat-toml")
     }
-    implementation("org.flywaydb:flyway-mysql:9.10.2") {
+    implementation("org.flywaydb:flyway-mysql:9.16.0") {
         exclude("com.fasterxml.jackson.dataformat", "jackson-dataformat-toml")
     }
-    implementation("cloud.commandframework:cloud-paper:1.8.0") {
+    implementation("com.github.ben-manes.caffeine:caffeine:3.1.5")
+    implementation("cloud.commandframework:cloud-paper:1.8.3") {
         exclude("org.checkerframework", "checker-qual")
     }
-    implementation("cloud.commandframework:cloud-minecraft-extras:1.8.0") {
+    implementation("cloud.commandframework:cloud-minecraft-extras:1.8.3") {
         exclude("net.kyori", "adventure-api")
         exclude("net.kyori", "adventure-text-serializer-plain")
     }

@@ -17,7 +17,8 @@ repositories {
 dependencies {
     compileOnly("net.pl3x.purpur:purpur-api:1.16.5-R0.1-SNAPSHOT")
     compileOnly(project(":clans-plugin", "shadow"))
-    compileOnly("cloud.commandframework:cloud-paper:1.8.0")
+    compileOnly("me.gepron1x:DecaliumCustomItems:1.1.1")
+    compileOnly("cloud.commandframework:cloud-paper:1.8.3")
     implementation("com.github.stefvanschie.inventoryframework:IF:0.10.8")
 }
 
@@ -31,7 +32,7 @@ tasks {
 bukkit {
     name = "DecaliumClansGUI"
     description = "A gui addon for Decalium Clans"
-    depend = listOf("DecaliumClans")
+    depend = listOf("DecaliumClans", "DecaliumCustomItems")
     author = "gepron1x"
     apiVersion = "1.16"
     main = "org.gepron1x.clans.gui.DecaliumClansGui"
