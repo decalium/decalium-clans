@@ -21,12 +21,14 @@ package org.gepron1x.clans.gui;
 import cloud.commandframework.bukkit.parsers.PlayerArgument;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
+import me.gepronix.decaliumcustomitems.DecaliumCustomItems;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.DecaliumClansApi;
+import org.gepron1x.clans.gui.item.ClanHomeItem;
 import org.gepron1x.clans.plugin.DecaliumClansPlugin;
 import org.gepron1x.clans.plugin.util.message.Message;
 import org.gepron1x.clans.plugin.util.services.PluginServices;
@@ -61,6 +63,7 @@ public final class DecaliumClansGui extends JavaPlugin {
             return;
         }
 
+		DecaliumCustomItems.get().getItemRegistry().registerItem(new ClanHomeItem(api).build());
         commandManager.registerBrigadier();
         commandManager.command(commandManager.commandBuilder("clangui").senderType(Player.class)
                 .permission("clans.gui").argument(PlayerArgument.optional("player"))
