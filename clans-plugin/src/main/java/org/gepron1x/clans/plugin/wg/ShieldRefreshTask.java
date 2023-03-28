@@ -73,7 +73,6 @@ public final class ShieldRefreshTask extends BukkitRunnable {
 
 
     private void refreshShields(Map<Clan, Shield> shields) {
-
         shields.forEach((key, value) -> {
             for(ClanHome home : key.homes()) {
                 WgHome wgHome = new WgHome(worldGuard, key, home);
