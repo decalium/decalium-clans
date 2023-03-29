@@ -140,7 +140,7 @@ public class InviteCommand extends AbstractClanCommand {
         String name = context.get("sender_name");
         Invitation invitation = checkInvitation(player, name);
         if (invitation == null) return;
-        invitations.remove(player.getUniqueId(), name);
+        invitations.row(player.getUniqueId()).clear();
         ClanMember member = builderFactory.memberBuilder().uuid(invitation.receiver()).role(roleRegistry.defaultRole()).build();
         Player senderPlayer = player.getServer().getPlayer(invitation.sender());
         this.clanRepository.requestUserClan(invitation.sender())

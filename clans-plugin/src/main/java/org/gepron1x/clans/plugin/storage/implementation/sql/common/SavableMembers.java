@@ -28,7 +28,7 @@ import java.util.Collections;
 
 public final class SavableMembers implements Savable {
 
-    private static final String INSERT_MEMBERS = "INSERT INTO members (clan_id, uuid, role) VALUES (?, ?, ?)";
+    private static final String INSERT_MEMBERS = "INSERT IGNORE INTO members (clan_id, uuid, role) VALUES (?, ?, ?)";
 
     private final int clanId;
     private final Collection<? extends ClanMember> members;

@@ -125,6 +125,7 @@ public class ClanCommand extends AbstractClanCommand {
         if(tag == null) tag = clansConfig.displayNameFormat().formatTag(displayName);
         if(tag.length() < clansConfig.displayNameFormat().minTagSize()) {
             player.sendMessage(this.messages.commands().creation().invalidTag());
+			return;
         }
         UUID uuid = player.getUniqueId();
 

@@ -24,6 +24,7 @@ import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.edition.ClanEdition;
 import org.gepron1x.clans.api.edition.home.HomeEdition;
 import org.gepron1x.clans.api.edition.member.MemberEdition;
+import org.gepron1x.clans.api.exception.MemberAlreadyInClanException;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.storage.implementation.sql.common.SavableHomes;
 import org.gepron1x.clans.plugin.storage.implementation.sql.common.SavableMembers;
@@ -110,7 +111,7 @@ public final class SqlClanEdition implements ClanEdition {
 
     @Override
     public ClanEdition addMembers(@NotNull Collection<ClanMember> members) {
-        new SavableMembers(clanId, members).execute(handle);
+        if(new SavableMembers(clanId, members).execute(handle) < members.size()) throw new MemberAlreadyInClanException();
         return this;
     }
 
