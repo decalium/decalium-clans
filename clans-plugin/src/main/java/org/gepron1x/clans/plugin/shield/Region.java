@@ -16,25 +16,18 @@
  * along with decalium-clans. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package org.gepron1x.clans.api.shield;
+package org.gepron1x.clans.plugin.shield;
 
 import org.bukkit.Location;
-import space.arim.omnibus.util.concurrent.CentralisedFuture;
+import org.gepron1x.clans.api.shield.Shield;
 
-import java.time.Duration;
+public record Region(int level, Location location, Shield shield) {
 
-public interface ClanRegion {
+	public Region upgrade() {
+		return new Region(this.level + 1, this.location, this.shield);
+	}
 
-	int id();
-
-	int level();
-
-	Location location();
-
-	Shield shield();
-
-	CentralisedFuture<ClanRegion> upgrade();
-
-
-	CentralisedFuture<ClanRegion> addShield(Duration duration);
+	public Region withShield(Shield shield) {
+		return new Region(this.level, this.location, shield);
+	}
 }
