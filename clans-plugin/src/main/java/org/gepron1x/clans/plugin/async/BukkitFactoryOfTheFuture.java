@@ -18,6 +18,7 @@
  */
 package org.gepron1x.clans.plugin.async;
 
+import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.jetbrains.annotations.NotNull;
@@ -30,6 +31,7 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 public final class BukkitFactoryOfTheFuture implements FactoryOfTheFuture {
@@ -37,14 +39,27 @@ public final class BukkitFactoryOfTheFuture implements FactoryOfTheFuture {
     private final Executor mainThreadExecutor;
     private final Executor asyncThreadExecutor;
 
-    public BukkitFactoryOfTheFuture(@NotNull Plugin plugin) {
-        BukkitScheduler scheduler = plugin.getServer().getScheduler();
-        this.mainThreadExecutor = r -> {
-            if(plugin.getServer().isPrimaryThread()) r.run();
-            scheduler.runTask(plugin, r);
-        };
-        this.asyncThreadExecutor = r -> scheduler.runTaskAsynchronously(plugin, r);
-    }
+   	public static BukkitFactoryOfTheFuture plugin(@NotNull Plugin plugin, Executor asyncThreadExecutor) {
+		   Server server = plugin.getServer();
+		   BukkitScheduler scheduler = server.getScheduler();
+		   return new BukkitFactoryOfTheFuture(r -> {
+			   if(server.isPrimaryThread()) r.run();
+			   scheduler.runTask(plugin, r);
+		   }, asyncThreadExecutor);
+	}
+
+	public static BukkitFactoryOfTheFuture plugin(@NotNull Plugin plugin) {
+		return plugin(plugin, r -> plugin.getServer().getScheduler().runTaskAsynchronously(plugin, r));
+	}
+
+	public static BukkitFactoryOfTheFuture fixedThreadPool(@NotNull Plugin plugin, int threadCount) {
+		   return plugin(plugin, Executors.newFixedThreadPool(threadCount));
+	}
+
+	public BukkitFactoryOfTheFuture(Executor mainThreadExecutor, Executor asyncThreadExecutor) {
+		this.mainThreadExecutor = mainThreadExecutor;
+		this.asyncThreadExecutor = asyncThreadExecutor;
+	}
 
     @Override
     public void execute(Runnable command) {
@@ -70,7 +85,6 @@ public final class BukkitFactoryOfTheFuture implements FactoryOfTheFuture {
     public CentralisedFuture<?> runAsync(Runnable command, Executor executor) {
         return supplyAsync(() -> {
             command.run();
-
             return null;
         }, executor);
     }

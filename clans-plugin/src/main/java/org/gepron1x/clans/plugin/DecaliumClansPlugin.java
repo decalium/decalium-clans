@@ -133,7 +133,6 @@ public final class DecaliumClansPlugin extends JavaPlugin {
     }
 
     private void enable() {
-        FactoryOfTheFuture futuresFactory = new BukkitFactoryOfTheFuture(this);
         ClanBuilderFactory builderFactory = new ClanBuilderFactoryImpl();
 
         TagResolver resolver = TagResolver.resolver(
@@ -164,6 +163,8 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         this.messagesConfiguration.reloadConfig();
         this.configuration.reloadConfig();
         this.prices.reloadConfig();
+
+		FactoryOfTheFuture futuresFactory = BukkitFactoryOfTheFuture.fixedThreadPool(this, config().storage().hikariPool().maxPoolSize());
 
         buildRoleRegistry();
         ClansConfig config = config();
