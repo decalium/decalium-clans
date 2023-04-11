@@ -28,18 +28,15 @@ import space.arim.omnibus.util.concurrent.ReactionStage;
 import space.arim.omnibus.util.concurrent.impl.BaseCentralisedFuture;
 
 import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.function.Supplier;
 
 public final class BukkitFactoryOfTheFuture implements FactoryOfTheFuture {
 
     private final Executor mainThreadExecutor;
-    private final Executor asyncThreadExecutor;
+    private final ExecutorService asyncThreadExecutor;
 
-   	public static BukkitFactoryOfTheFuture plugin(@NotNull Plugin plugin, Executor asyncThreadExecutor) {
+   	public static BukkitFactoryOfTheFuture plugin(@NotNull Plugin plugin, ExecutorService asyncThreadExecutor) {
 		   Server server = plugin.getServer();
 		   BukkitScheduler scheduler = server.getScheduler();
 		   return new BukkitFactoryOfTheFuture(r -> {
@@ -48,15 +45,11 @@ public final class BukkitFactoryOfTheFuture implements FactoryOfTheFuture {
 		   }, asyncThreadExecutor);
 	}
 
-	public static BukkitFactoryOfTheFuture plugin(@NotNull Plugin plugin) {
-		return plugin(plugin, r -> plugin.getServer().getScheduler().runTaskAsynchronously(plugin, r));
-	}
-
 	public static BukkitFactoryOfTheFuture fixedThreadPool(@NotNull Plugin plugin, int threadCount) {
 		   return plugin(plugin, Executors.newFixedThreadPool(threadCount));
 	}
 
-	public BukkitFactoryOfTheFuture(Executor mainThreadExecutor, Executor asyncThreadExecutor) {
+	public BukkitFactoryOfTheFuture(Executor mainThreadExecutor, ExecutorService asyncThreadExecutor) {
 		this.mainThreadExecutor = mainThreadExecutor;
 		this.asyncThreadExecutor = asyncThreadExecutor;
 	}
@@ -176,4 +169,12 @@ public final class BukkitFactoryOfTheFuture implements FactoryOfTheFuture {
     public <T> CentralisedFuture<?> allOf(Collection<? extends CentralisedFuture<T>> centralisedFutures) {
         return allOf(centralisedFutures.toArray(CentralisedFuture[]::new));
     }
+
+	public void shutdownAndTerminate() throws InterruptedException {
+		   asyncThreadExecutor.shutdown();
+		   asyncThreadExecutor.awaitTermination(5L, TimeUnit.SECONDS);
+	}
+
+
+
 }
