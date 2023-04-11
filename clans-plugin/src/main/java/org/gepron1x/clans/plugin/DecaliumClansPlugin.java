@@ -84,7 +84,6 @@ import org.gepron1x.clans.plugin.wg.WgExtension;
 import org.jdbi.v3.core.Jdbi;
 import org.slf4j.Logger;
 import space.arim.dazzleconf.ConfigurationOptions;
-import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,6 +96,8 @@ public final class DecaliumClansPlugin extends JavaPlugin {
     public static final int BSTATS_ID = 17010;
 
     private RoleRegistry roleRegistry;
+
+	private BukkitFactoryOfTheFuture futuresFactory;
 
     private ClanStorage storage;
 
@@ -129,11 +130,9 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         roles.addAll(otherRoles);
         this.roleRegistry = new RoleRegistryImpl(defaultRole, ownerRole, roles);
 
-
     }
 
     private void enable() {
-        FactoryOfTheFuture futuresFactory = new BukkitFactoryOfTheFuture(this);
         ClanBuilderFactory builderFactory = new ClanBuilderFactoryImpl();
 
         TagResolver resolver = TagResolver.resolver(
@@ -164,6 +163,8 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         this.messagesConfiguration.reloadConfig();
         this.configuration.reloadConfig();
         this.prices.reloadConfig();
+
+		futuresFactory = BukkitFactoryOfTheFuture.fixedThreadPool(this, config().storage().hikariPool().maxPoolSize());
 
         buildRoleRegistry();
         ClansConfig config = config();
@@ -218,10 +219,10 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new CacheListener(userCaching), this);
 
-
+		LegacyComponentSerializer legacy = LegacyComponentSerializer.builder().character(LegacyComponentSerializer.SECTION_CHAR).useUnusualXRepeatedCharacterHexFormat().build();
 
         if(isEnabled("PlaceholderAPI")) {
-            new PlaceholderAPIHook(getServer(), config, clanCache, shields, LegacyComponentSerializer.legacySection()).register();
+            new PlaceholderAPIHook(getServer(), config, clanCache, shields, legacy).register();
         }
 
         if(isEnabled("CarbonChat")) {
@@ -291,7 +292,12 @@ public final class DecaliumClansPlugin extends JavaPlugin {
     private void disable() {
         if(this.storage != null) this.storage.shutdown();
         HandlerList.unregisterAll(this);
-        this.getServer().getScheduler().cancelTasks(this);
+		try {
+			futuresFactory.shutdownAndTerminate();
+		} catch (InterruptedException e) {
+			getSLF4JLogger().error("Failed to shutdown with following error:", e);
+		}
+		this.getServer().getScheduler().cancelTasks(this);
         getServer().getServicesManager().unregisterAll(this);
     }
 
