@@ -21,9 +21,8 @@ package org.gepron1x.clans.plugin.shield;
 import org.bukkit.Location;
 import org.gepron1x.clans.api.shield.ClanRegion;
 import org.gepron1x.clans.api.shield.Shield;
-import org.jdbi.v3.core.Jdbi;
+import org.gepron1x.clans.plugin.storage.implementation.sql.AsyncJdbi;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
-import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -34,14 +33,12 @@ public final class SqlClanRegion implements ClanRegion {
 
 
 	private final Region region;
-	private transient final FactoryOfTheFuture futures;
-	private transient final Jdbi jdbi;
+	private transient final AsyncJdbi jdbi;
 
-	public SqlClanRegion(int id, Region region, FactoryOfTheFuture futures, Jdbi jdbi) {
+	public SqlClanRegion(int id, Region region, AsyncJdbi jdbi) {
 
 		this.id = id;
 		this.region = region;
-		this.futures = futures;
 		this.jdbi = jdbi;
 	}
 	@Override
@@ -61,10 +58,11 @@ public final class SqlClanRegion implements ClanRegion {
 
 	@Override
 	public CentralisedFuture<ClanRegion> upgrade() {
-		return futures.supplyAsync(() -> {
-			jdbi.useHandle(handle -> handle.execute("UPDATE `regions` SET `level`=`level`+1 WHERE `id`=?", id));
-			return new SqlClanRegion(id, region.upgrade(), futures, jdbi);
+		return jdbi.useHandle(handle -> handle.execute("UPDATE `regions` SET `level`=`level`+1 WHERE `id`=?", id))
+				.thenApply(ignored -> {
+			return new SqlClanRegion(id, region.upgrade(), jdbi);
 		});
+
 	}
 
 	@Override
@@ -74,16 +72,14 @@ public final class SqlClanRegion implements ClanRegion {
 
 	@Override
 	public CentralisedFuture<ClanRegion> addShield(Duration duration) {
-		return futures.supplyAsync(() -> {
-			Instant now = Instant.now();
-			Instant end = now.plus(duration);
-			jdbi.useHandle(handle -> {	
-				handle.createUpdate("INSERT INTO shields (`region_id`, `start`, `end`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `start`=VALUES(`start`), `end`=VALUES(`end`)")
-						.bind(0, id)
-						.bind(1, now)
-						.bind(2, end).execute();
-			});
-			return new SqlClanRegion(id, region.withShield(new ShieldImpl(now, end)), futures, jdbi);
+		Instant now = Instant.now();
+		Instant end = now.plus(duration);
+		return jdbi.withHandle(handle -> {
+			handle.createUpdate("INSERT INTO shields (`region_id`, `start`, `end`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `start`=VALUES(`start`), `end`=VALUES(`end`)")
+					.bind(0, id)
+					.bind(1, now)
+					.bind(2, end).execute();
+			return new SqlClanRegion(id, region.withShield(new ShieldImpl(now, end)), jdbi);
 		});
 	}
 }

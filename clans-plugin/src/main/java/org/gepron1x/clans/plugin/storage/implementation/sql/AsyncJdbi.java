@@ -16,15 +16,26 @@
  * along with decalium-clans. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package org.gepron1x.clans.api.shield;
+package org.gepron1x.clans.plugin.storage.implementation.sql;
 
-import org.bukkit.Location;
+import org.jdbi.v3.core.HandleCallback;
+import org.jdbi.v3.core.HandleConsumer;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 
-import java.util.Set;
+public interface AsyncJdbi {
 
-public interface ClanRegions {
-	CentralisedFuture<Set<ClanRegion>> regions();
+	<R, X extends Exception> CentralisedFuture<R> withHandle(HandleCallback<R, X> callback);
 
-	CentralisedFuture<ClanRegion> create(Location location);
+	default <X extends Exception> CentralisedFuture<?> useHandle(HandleConsumer<X> consumer) {
+		return withHandle(consumer.asCallback());
+	}
+
+
+	<X extends Exception> CentralisedFuture<?> useTransaction(HandleConsumer<X> consumer);
+
+
+	<T> CentralisedFuture<T> failedFuture(Exception exception);
+
+	<T> CentralisedFuture<T> completed(T t);
+
 }

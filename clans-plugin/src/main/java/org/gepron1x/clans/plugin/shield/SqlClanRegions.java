@@ -23,40 +23,38 @@ import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.shield.ClanRegion;
 import org.gepron1x.clans.api.shield.ClanRegions;
 import org.gepron1x.clans.api.shield.Shield;
-import org.jdbi.v3.core.Jdbi;
+import org.gepron1x.clans.plugin.storage.implementation.sql.AsyncJdbi;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
-import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.util.Set;
 
 public final class SqlClanRegions implements ClanRegions {
 
 	private final Clan clan;
-	private final FactoryOfTheFuture futures;
-	private final Jdbi jdbi;
+	private final AsyncJdbi jdbi;
 
-	public SqlClanRegions(Clan clan, FactoryOfTheFuture futures, Jdbi jdbi) {
+	public SqlClanRegions(Clan clan, AsyncJdbi jdbi) {
 		this.clan = clan;
-		this.futures = futures;
 		this.jdbi = jdbi;
 	}
 
 	@Override
-	public Set<ClanRegion> regions() {
+	public CentralisedFuture<Set<ClanRegion>> regions() {
 		return null;
 	}
 
 	@Override
 	public CentralisedFuture<ClanRegion> create(Location location) {
-		return futures.supplyAsync(() -> jdbi.withHandle(handle -> {
+		return jdbi.withHandle(handle -> {
 			int id = handle.createUpdate("INSERT INTO `regions` (clan_id, x, y, z, world) VALUES (?, ?, ?, ?)")
 					.bind(0, clan.id())
 					.bind(1, location.getBlockX())
 					.bind(2, location.getBlockY())
 					.bind(3, location.getBlockZ())
+					.bind(4, location.getWorld().getName())
 					.executeAndReturnGeneratedKeys("id")
 					.mapTo(Integer.class).first();
-			return new SqlClanRegion(id, new Region(0, location, Shield.NONE), futures, jdbi);
-		}));
+			return new SqlClanRegion(id, new Region(0, location, Shield.NONE), jdbi);
+		});
 	}
 }
