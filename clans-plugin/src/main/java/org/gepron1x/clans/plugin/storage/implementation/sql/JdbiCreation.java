@@ -44,6 +44,7 @@ public final class JdbiCreation {
                 .registerColumnMapper(ColumnMappers.COMPONENT)
                 .registerColumnMapper(ColumnMappers.UUID)
                 .registerColumnMapper(ColumnMappers.ITEM_STACK)
+				.registerColumnMapper(ColumnMappers.WORLD)
                 .registerColumnMapper(ColumnMappers.INSTANT);
     }
 

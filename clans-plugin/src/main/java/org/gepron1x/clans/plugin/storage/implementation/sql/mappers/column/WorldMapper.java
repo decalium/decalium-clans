@@ -1,6 +1,6 @@
 /*
  * decalium-clans
- * Copyright © 2022 George Pronyuk <https://vk.com/gpronyuk>
+ * Copyright © 2023 George Pronyuk <https://vk.com/gpronyuk>
  *
  * decalium-clans is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,11 +18,17 @@
  */
 package org.gepron1x.clans.plugin.storage.implementation.sql.mappers.column;
 
-public final class ColumnMappers {
-    public static final ComponentMapper COMPONENT = new ComponentMapper();
-    public static final UuidMapper UUID = new UuidMapper();
-	public static final WorldMapper WORLD = new WorldMapper();
-    public static final ItemStackMapper ITEM_STACK = new ItemStackMapper();
-    public static final StatisticTypeMapper STATISTIC_TYPE = new StatisticTypeMapper();
-    public static final InstantMapper INSTANT = new InstantMapper();
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.jdbi.v3.core.mapper.ColumnMapper;
+import org.jdbi.v3.core.statement.StatementContext;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public final class WorldMapper implements ColumnMapper<World> {
+	@Override
+	public World map(ResultSet r, int columnNumber, StatementContext ctx) throws SQLException {
+		return Bukkit.getWorld(r.getString(columnNumber));
+	}
 }

@@ -19,3 +19,5 @@ CREATE TABLE IF NOT EXISTS `region_shields`
     UNIQUE(`region_id`),
     FOREIGN KEY (`region_id`) REFERENCES `regions` (`id`) ON DELETE CASCADE
 );
+
+CREATE VIEW `regions_simple` AS SELECT * FROM `regions` LEFT JOIN `region_shields` ON regions.id = region_shields.region_id

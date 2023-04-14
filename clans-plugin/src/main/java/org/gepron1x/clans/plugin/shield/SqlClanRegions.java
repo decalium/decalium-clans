@@ -24,9 +24,12 @@ import org.gepron1x.clans.api.shield.ClanRegion;
 import org.gepron1x.clans.api.shield.ClanRegions;
 import org.gepron1x.clans.api.shield.Shield;
 import org.gepron1x.clans.plugin.storage.implementation.sql.AsyncJdbi;
+import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.ClanRegionMapper;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class SqlClanRegions implements ClanRegions {
 
@@ -40,7 +43,14 @@ public final class SqlClanRegions implements ClanRegions {
 
 	@Override
 	public CentralisedFuture<Set<ClanRegion>> regions() {
-		return null;
+		return jdbi.withHandle(handle -> handle.createQuery("SELECT * FROM `regions_simple` WHERE regions.clan_id=?").bind(0, clan.id())
+				.map(new ClanRegionMapper(jdbi)).collect(Collectors.toSet()));
+	}
+
+	@Override
+	public CentralisedFuture<Optional<ClanRegion>> region(int id) {
+		return jdbi.withHandle(handle -> handle.createQuery("SELECT * FROM `regions_simple` WHERE regions.id=?").bind(0, id)
+				.map(new ClanRegionMapper(jdbi)).findFirst());
 	}
 
 	@Override
