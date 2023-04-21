@@ -116,5 +116,10 @@
       <option name="name" value="maven7" />
       <option name="url" value="https://jitpack.io" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven3" />
+      <option name="name" value="maven3" />
+      <option name="url" value="https://mvn-repo.arim.space/gpl3/" />
+    </remote-repository>
   </component>
 </project>

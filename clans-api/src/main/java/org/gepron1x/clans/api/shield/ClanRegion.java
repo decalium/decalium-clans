@@ -37,4 +37,6 @@ public interface ClanRegion {
 
 
 	CentralisedFuture<ClanRegion> addShield(Duration duration);
+
+	CentralisedFuture<ClanRegion> removeShield();
 }
