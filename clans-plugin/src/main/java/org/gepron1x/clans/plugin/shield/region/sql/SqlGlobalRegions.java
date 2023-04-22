@@ -1,4 +1,4 @@
-package org.gepron1x.clans.plugin.shield.region;
+package org.gepron1x.clans.plugin.shield.region.sql;
 
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.shield.ClanRegion;
