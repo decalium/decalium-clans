@@ -30,4 +30,4 @@ https://clans.decalium.ru
 
 
 ~~<b>Currently, there's no stable releases.~~
-Check our discord for test builds: https://discord.decalium.ru
+Check our discord for test builds: https://development.decalium.ru
