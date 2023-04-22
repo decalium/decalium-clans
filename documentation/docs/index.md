@@ -20,4 +20,4 @@ A free, open-source, powerful and performant clans plugin. Like in dreams.
 ## Todo
 - Multiple server setups support
 
-Check our [Discord](https://discord.decalium.ru) for test builds.
+Check our [Discord](https://development.decalium.ru) for test builds.
