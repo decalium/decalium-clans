@@ -133,6 +133,10 @@ public interface MessagesConfig {
         @DefaultString("<prefix> ClanWar -> <member> died!")
         Message playerDied();
 
+		@ConfKey("player-died-subtitle")
+		@DefaultString("<gray><killer> \uD83D\uDDE1<red>\uD83C\uDF27</red> <victim></gray>")
+		Message playerDiedSubTitle();
+
         @ConfKey("win")
         @DefaultString("<prefix> ClanWar -> <clan_display_name> wins! Congratulations!")
         Message win();
