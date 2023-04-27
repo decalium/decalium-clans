@@ -25,14 +25,12 @@ import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.clan.IdentifiedDraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
-import org.gepron1x.clans.api.shield.CachingShields;
-import org.gepron1x.clans.api.shield.Shield;
 import org.gepron1x.clans.api.statistic.StatisticType;
+import org.gepron1x.clans.api.util.ClanOnlinePlayers;
 import org.gepron1x.clans.plugin.cache.ClanCache;
 import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.jetbrains.annotations.NotNull;
 
-import java.time.Duration;
 import java.util.Optional;
 
 
@@ -43,8 +41,7 @@ public final class ClansExpansion extends PlaceholderExpansion {
             OWNER = "owner", MEMBER_COUNT = "member_count",
             MEMBERS_ONLINE_COUNT = "member_online_count",
             MEMBER_ROLE = "member_role",
-            LEVEL = "level",
-            SHIELD_LEFT = "shield_left";
+            LEVEL = "level";
 
     private static final String STATISTIC = "statistic_";
 
@@ -52,14 +49,12 @@ public final class ClansExpansion extends PlaceholderExpansion {
     private final Server server;
     private final ClansConfig clansConfig;
     private final ClanCache cache;
-    private final CachingShields shields;
     private final LegacyComponentSerializer legacy;
 
-    public ClansExpansion(@NotNull Server server, @NotNull ClansConfig clansConfig, @NotNull ClanCache cache, @NotNull CachingShields shields, @NotNull LegacyComponentSerializer legacy) {
+    public ClansExpansion(@NotNull Server server, @NotNull ClansConfig clansConfig, @NotNull ClanCache cache, @NotNull LegacyComponentSerializer legacy) {
         this.server = server;
         this.clansConfig = clansConfig;
         this.cache = cache;
-        this.shields = shields;
         this.legacy = legacy;
     }
 
@@ -100,20 +95,10 @@ public final class ClansExpansion extends PlaceholderExpansion {
             case DISPLAY_NAME -> legacy.serialize(clan.displayName());
             case OWNER -> legacy.serialize(clan.owner().renderName(server));
             case MEMBER_COUNT -> String.valueOf(clan.members().size());
+			case MEMBERS_ONLINE_COUNT -> String.valueOf(new ClanOnlinePlayers(clan, server).players().size());
             case MEMBER_ROLE -> member.map(ClanMember::role).map(ClanRole::displayName).map(this.legacy::serialize).orElse("");
             case LEVEL -> String.valueOf(clan.level());
-            case SHIELD_LEFT -> formatShield(shields.shield(clan.tag()));
             default -> null;
         };
     }
-
-    private String formatShield(Shield shield) {
-        Duration left = shield.left();
-        if(left.isZero()) return legacy.serialize(clansConfig.shields().noShield());
-        return clansConfig.timeFormat().format(left);
-
-    }
-
-
-
 }

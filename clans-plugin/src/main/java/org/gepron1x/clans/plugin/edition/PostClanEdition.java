@@ -18,7 +18,6 @@
  */
 package org.gepron1x.clans.plugin.edition;
 
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
@@ -32,7 +31,7 @@ import org.gepron1x.clans.api.edition.home.HomeEdition;
 import org.gepron1x.clans.api.edition.member.MemberEdition;
 import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.gepron1x.clans.plugin.wg.HologramOfHome;
-import org.gepron1x.clans.plugin.wg.RegionFactory;
+import org.gepron1x.clans.plugin.wg.WgRegionSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,31 +41,23 @@ import java.util.function.Consumer;
 public final class PostClanEdition implements EmptyClanEdition {
     private final Clan clan;
     private final ClansConfig clansConfig;
-    private final RegionFactory regionFactory;
+	private final WgRegionSet regionSet;
 
-    public PostClanEdition(Clan clan, ClansConfig clansConfig, RegionFactory regionFactory) {
+	public PostClanEdition(Clan clan, ClansConfig clansConfig, WgRegionSet regionSet) {
         this.clan = clan;
         this.clansConfig = clansConfig;
-        this.regionFactory = regionFactory;
-    }
+		this.regionSet = regionSet;
+	}
 
     @Override
     public ClanEdition addMember(@NotNull ClanMember member) {
-        for(ClanHome home : clan.homes()) {
-            regionFactory.home(clan, home).region().ifPresent(region -> {
-                region.getMembers().addPlayer(member.uniqueId());
-            });
-        }
+		regionSet.addMember(member.uniqueId());
         return this;
     }
 
     @Override
     public ClanEdition removeMember(@NotNull ClanMember member) {
-        for(ClanHome home : clan.homes()) {
-            regionFactory.home(clan, home).region().ifPresent(region -> {
-                region.getMembers().removePlayer(member.uniqueId());
-            });
-        }
+        regionSet.removeMember(member.uniqueId());
         return this;
     }
 
@@ -78,20 +69,15 @@ public final class PostClanEdition implements EmptyClanEdition {
 
     @Override
     public ClanEdition addHome(@NotNull ClanHome home) {
-        createForHome(home);
         new HologramOfHome(this.clansConfig, this.clan, home).spawnIfNotPresent();
         return this;
     }
 
 
-    private ProtectedRegion createForHome(ClanHome home) {
-        return regionFactory.create(clan, home);
-    }
 
 
     @Override
     public ClanEdition removeHome(@NotNull ClanHome home) {
-        regionFactory.remove(clan, home);
 		new HologramOfHome(this.clansConfig, clan, home).destroy();
         return this;
     }
@@ -139,8 +125,6 @@ public final class PostClanEdition implements EmptyClanEdition {
 
         @Override
         public HomeEdition upgrade() {
-            PostClanEdition.this.regionFactory.remove(clan, home);
-            PostClanEdition.this.regionFactory.create(clan, home);
             new HologramOfHome(clansConfig, clan, home).rename(home.displayName());
             return this;
         }

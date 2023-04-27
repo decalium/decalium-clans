@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.gepron1x.clans.api.shield.ClanRegion;
 import org.gepron1x.clans.api.shield.Shield;
 import org.gepron1x.clans.plugin.config.Configs;
+import org.gepron1x.clans.plugin.wg.ProtectedRegionOf;
 import org.gepron1x.clans.plugin.wg.WgExtension;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 
@@ -81,6 +82,6 @@ public final class WgClanRegion implements ClanRegion {
 	}
 
 	public Optional<ProtectedRegion> region() {
-		return regionManager().map(m -> m.getRegion("clans_region_"+region.id()));
+		return new ProtectedRegionOf(container, region).region();
 	}
 }

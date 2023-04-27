@@ -20,21 +20,21 @@ package org.gepron1x.clans.plugin.users;
 
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
-import org.gepron1x.clans.api.shield.Shields;
+import org.gepron1x.clans.api.shield.GlobalRegions;
 import org.gepron1x.clans.api.user.ClanUser;
 import org.gepron1x.clans.api.user.Users;
 
 public final class DefaultUsers implements Users {
 
     private final CachingClanRepository repository;
-    private final Shields shields;
+	private final GlobalRegions regions;
 
-    public DefaultUsers(CachingClanRepository repository, Shields shields) {
+	public DefaultUsers(CachingClanRepository repository, GlobalRegions regions) {
         this.repository = repository;
-        this.shields = shields;
-    }
+		this.regions = regions;
+	}
     @Override
     public ClanUser userFor(Player player) {
-        return new DefaultClanUser(repository, shields, player.getUniqueId());
+        return new DefaultClanUser(repository, regions, player.getUniqueId());
     }
 }

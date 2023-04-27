@@ -20,18 +20,16 @@ package org.gepron1x.clans.plugin.papi;
 
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Server;
-import org.gepron1x.clans.api.shield.CachingShields;
 import org.gepron1x.clans.plugin.cache.ClanCache;
 import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 
 public record PlaceholderAPIHook(Server server, ClansConfig config,
                                  ClanCache cache,
-                                 CachingShields shields,
                                  LegacyComponentSerializer legacy) {
 
 
     public void register() {
-        new ClansExpansion(server, config, cache, shields, legacy).register();
+        new ClansExpansion(server, config, cache, legacy).register();
     }
 
 }

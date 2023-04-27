@@ -23,7 +23,7 @@ import org.gepron1x.clans.api.DecaliumClansApi;
 import org.gepron1x.clans.api.RoleRegistry;
 import org.gepron1x.clans.api.economy.Prices;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
-import org.gepron1x.clans.api.shield.CachingShields;
+import org.gepron1x.clans.api.shield.GlobalRegions;
 import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.api.war.Wars;
 import org.jetbrains.annotations.NotNull;
@@ -47,8 +47,8 @@ public final class MutableClansApi implements DecaliumClansApi {
 	}
 
 	@Override
-	public @NotNull CachingShields shields() {
-		return this.api.shields();
+	public @NotNull GlobalRegions regions() {
+		return this.api.regions();
 	}
 
 	@Override

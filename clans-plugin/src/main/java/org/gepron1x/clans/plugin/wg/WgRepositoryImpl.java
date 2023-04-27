@@ -21,31 +21,36 @@ package org.gepron1x.clans.plugin.wg;
 import com.sk89q.worldguard.WorldGuard;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.repository.ClanRepository;
+import org.gepron1x.clans.api.shield.GlobalRegions;
 import org.gepron1x.clans.plugin.AdaptingClanRepository;
 import org.gepron1x.clans.plugin.config.Configs;
 import org.gepron1x.clans.plugin.config.settings.ClansConfig;
-import org.gepron1x.clans.plugin.edition.PostClanEdition;
 import org.jetbrains.annotations.NotNull;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
+import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 public class WgRepositoryImpl extends AdaptingClanRepository {
 
     private final ClansConfig clansConfig;
-    private final RegionFactory regionFactory;
+	private final WorldGuard worldGuard;
+	private final GlobalRegions regions;
+	private final FactoryOfTheFuture futuresFactory;
 
-    public WgRepositoryImpl(ClanRepository repository, Configs configs, RegionFactory regionFactory, WorldGuard worldGuard) {
-        super(repository, clan -> new WgClan(clan, configs, regionFactory, worldGuard));
+	public WgRepositoryImpl(ClanRepository repository, Configs configs, WorldGuard worldGuard, GlobalRegions regions, FactoryOfTheFuture futuresFactory) {
+        super(repository, clan -> new WgClan(clan, configs,  worldGuard.getPlatform().getRegionContainer(), regions.clanRegions(clan), futuresFactory));
         this.clansConfig = configs.config();
-        this.regionFactory = regionFactory;;
-    }
+		this.worldGuard = worldGuard;
+		this.regions = regions;
+		this.futuresFactory = futuresFactory;
+	}
 
     @Override
     public @NotNull CentralisedFuture<Boolean> removeClan(@NotNull Clan clan) {
-        return super.removeClan(clan).thenApplySync(bool -> {
-            if(!bool) return false;
-            PostClanEdition postClanEdition = new PostClanEdition(clan, this.clansConfig, this.regionFactory);
-            clan.homes().forEach(postClanEdition::removeHome);
-            return true;
-        });
+		var regionSet = regions.clanRegions(clan).regions().thenApply(set -> new WgRegionSet(worldGuard.getPlatform().getRegionContainer(), set));
+		var removal = super.removeClan(clan);
+		return futuresFactory.allOf(regionSet, removal).thenApply($ -> {
+			regionSet.join().clear();
+			return removal.join();
+		});
     }
 }

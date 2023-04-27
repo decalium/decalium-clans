@@ -24,7 +24,7 @@ import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.api.economy.Prices;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
-import org.gepron1x.clans.api.shield.CachingShields;
+import org.gepron1x.clans.api.shield.GlobalRegions;
 import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.api.war.Wars;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +36,7 @@ public interface DecaliumClansApi extends ClanBuilderFactory {
 
     @NotNull CachingClanRepository repository();
 
-    @NotNull CachingShields shields();
+    @NotNull GlobalRegions regions();
 
     @NotNull FactoryOfTheFuture futuresFactory();
 

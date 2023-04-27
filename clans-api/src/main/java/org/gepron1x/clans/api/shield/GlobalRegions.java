@@ -7,7 +7,7 @@ import java.util.Collection;
 
 public interface GlobalRegions {
 
-	CentralisedFuture<Collection<ClanRegion>> listRegions();
+	CentralisedFuture<? extends Collection<ClanRegion>> listRegions();
 
 	ClanRegions clanRegions(Clan clan);
 

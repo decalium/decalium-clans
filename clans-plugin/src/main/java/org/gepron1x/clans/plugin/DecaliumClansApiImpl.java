@@ -23,16 +23,16 @@ import org.gepron1x.clans.api.DecaliumClansApi;
 import org.gepron1x.clans.api.RoleRegistry;
 import org.gepron1x.clans.api.economy.Prices;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
-import org.gepron1x.clans.api.shield.CachingShields;
+import org.gepron1x.clans.api.shield.GlobalRegions;
 import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.api.war.Wars;
 import org.jetbrains.annotations.NotNull;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 public record DecaliumClansApiImpl(@NotNull CachingClanRepository repository,
-                                   @NotNull Users users,
-                                   @NotNull RoleRegistry roleRegistry,
-                                   @NotNull ClanBuilderFactory builderFactory,
-                                   @NotNull FactoryOfTheFuture futuresFactory,
-                                   @NotNull Wars wars,
-                                   @NotNull CachingShields shields, @NotNull Prices prices) implements DecaliumClansApi { }
+								   @NotNull Users users,
+								   @NotNull RoleRegistry roleRegistry,
+								   @NotNull ClanBuilderFactory builderFactory,
+								   @NotNull FactoryOfTheFuture futuresFactory,
+								   @NotNull Wars wars,
+								   @NotNull GlobalRegions regions, @NotNull Prices prices) implements DecaliumClansApi { }

@@ -19,31 +19,37 @@
 package org.gepron1x.clans.plugin.wg;
 
 import com.google.common.base.MoreObjects;
-import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.edition.ClanEdition;
+import org.gepron1x.clans.api.shield.ClanRegion;
+import org.gepron1x.clans.api.shield.ClanRegions;
 import org.gepron1x.clans.plugin.clan.DelegatingClan;
 import org.gepron1x.clans.plugin.config.Configs;
 import org.gepron1x.clans.plugin.edition.PostClanEdition;
 import org.jetbrains.annotations.NotNull;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
+import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class WgClan implements DelegatingClan, Clan {
     private final Clan delegate;
     private final Configs configs;
-    private final RegionFactory regionFactory;
-    private final WorldGuard worldGuard;
+	private final RegionContainer container;
+	private final ClanRegions regions;
+	private final FactoryOfTheFuture futuresFactory;
 
-    public WgClan(Clan delegate, Configs configs, RegionFactory regionFactory, WorldGuard worldGuard) {
+	public WgClan(Clan delegate, Configs configs, RegionContainer container, ClanRegions regions, FactoryOfTheFuture futuresFactory) {
         this.delegate = delegate;
         this.configs = configs;
-        this.regionFactory = regionFactory;
-        this.worldGuard = worldGuard;
-    }
+		this.container = container;
+		this.regions = regions;
+		this.futuresFactory = futuresFactory;
+	}
 
 
     @Override
@@ -54,10 +60,13 @@ public class WgClan implements DelegatingClan, Clan {
 
     @Override
     public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
-        return this.delegate.edit(transaction).thenApplySync(clan -> {
-            transaction.accept(new PostClanEdition(clan, this.configs.config(), regionFactory));
-            return new WgClan(clan, this.configs, this.regionFactory, this.worldGuard);
-        });
+		CentralisedFuture<Clan> edition = this.delegate.edit(transaction);
+		CentralisedFuture<Set<ClanRegion>> regionSet = this.regions.regions();
+		return futuresFactory.allOf(edition, regionSet).thenApply($ -> {
+			Clan newClan = edition.join();
+			transaction.accept(new PostClanEdition(newClan, configs.config(), new WgRegionSet(container, regionSet.join())));
+			return new WgClan(newClan, configs, container, regions, futuresFactory);
+		});
     }
 
     @Override
@@ -65,12 +74,12 @@ public class WgClan implements DelegatingClan, Clan {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         WgClan wgClan = (WgClan) o;
-        return delegate.equals(wgClan.delegate) && configs.equals(wgClan.configs) && regionFactory.equals(wgClan.regionFactory);
+        return delegate.equals(wgClan.delegate) && configs.equals(wgClan.configs);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(delegate, configs, regionFactory);
+        return Objects.hash(delegate, configs);
     }
 
     @Override
@@ -83,7 +92,6 @@ public class WgClan implements DelegatingClan, Clan {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("delegate", delegate)
-                .add("regionFactory", regionFactory)
                 .toString();
     }
 }

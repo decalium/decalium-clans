@@ -36,6 +36,7 @@ public final class SqlClanRegions implements ClanRegions {
 	private final Clan clan;
 	private final AsyncJdbi jdbi;
 
+
 	public SqlClanRegions(Clan clan, AsyncJdbi jdbi) {
 		this.clan = clan;
 		this.jdbi = jdbi;
@@ -56,7 +57,7 @@ public final class SqlClanRegions implements ClanRegions {
 	@Override
 	public CentralisedFuture<ClanRegion> create(Location location) {
 		return jdbi.withHandle(handle -> {
-			int id = handle.createUpdate("INSERT INTO `regions` (clan_id, x, y, z, world) VALUES (?, ?, ?, ?)")
+			int id = handle.createUpdate("INSERT INTO `regions` (clan_id, x, y, z, world) VALUES (?, ?, ?, ?, ?)")
 					.bind(0, clan.id())
 					.bind(1, location.getBlockX())
 					.bind(2, location.getBlockY())

@@ -21,14 +21,14 @@ package org.gepron1x.clans.api.user;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.repository.ClanCreationResult;
-import org.gepron1x.clans.api.shield.Shields;
+import org.gepron1x.clans.api.shield.ClanRegions;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 
 import java.util.Optional;
 
 public interface ClanUser {
 
-    Shields shields();
+    Optional<ClanRegions> regions();
 
     Optional<Clan> clan();
     

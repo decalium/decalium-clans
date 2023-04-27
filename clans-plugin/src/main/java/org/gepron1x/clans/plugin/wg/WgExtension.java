@@ -23,7 +23,9 @@ import com.sk89q.worldguard.protection.flags.BooleanFlag;
 import com.sk89q.worldguard.protection.flags.IntegerFlag;
 import com.sk89q.worldguard.protection.flags.StringFlag;
 import org.gepron1x.clans.api.repository.ClanRepository;
+import org.gepron1x.clans.api.shield.GlobalRegions;
 import org.gepron1x.clans.plugin.config.Configs;
+import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.util.List;
 
@@ -37,17 +39,19 @@ public final class WgExtension {
     public static final BooleanFlag SHIELD_ACTIVE = new BooleanFlag("clan-shield-active");
     private final Configs configs;
     private final ClanRepository repository;
-    private final RegionFactory regionFactory;
+	private final GlobalRegions regions;
+	private final FactoryOfTheFuture futuresFactory;
 
-    public WgExtension(Configs configs, ClanRepository repository, RegionFactory regionFactory) {
+	public WgExtension(ClanRepository repository, Configs configs, GlobalRegions regions, FactoryOfTheFuture futuresFactory) {
         this.configs = configs;
         this.repository = repository;
-        this.regionFactory = regionFactory;
-    }
+		this.regions = regions;
+		this.futuresFactory = futuresFactory;
+	}
 
 
     public ClanRepository make() {
-        return new WgRepositoryImpl(this.repository, configs, regionFactory, WorldGuard.getInstance());
+        return new WgRepositoryImpl(this.repository, configs, WorldGuard.getInstance(), regions, futuresFactory);
     }
 
     public static void registerFlags() {

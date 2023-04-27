@@ -24,6 +24,8 @@ import space.arim.omnibus.util.concurrent.CentralisedFuture;
 import java.time.Duration;
 import java.util.Map;
 
+@Deprecated
+
 public interface Shields {
 
     CentralisedFuture<Shield> add(Clan clan, Duration duration);
