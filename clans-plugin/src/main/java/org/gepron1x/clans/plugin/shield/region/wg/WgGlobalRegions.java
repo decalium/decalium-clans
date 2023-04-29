@@ -30,6 +30,6 @@ public final class WgGlobalRegions implements GlobalRegions {
 
 	@Override
 	public ClanRegions clanRegions(Clan clan) {
-		return new WgClanRegions(regions.clanRegions(clan), container, configs);
+		return new WgClanRegions(regions.clanRegions(clan), clan, container, configs);
 	}
 }

@@ -4,6 +4,7 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.bukkit.Location;
+import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.shield.ClanRegion;
 import org.gepron1x.clans.api.shield.ClanRegions;
 import org.gepron1x.clans.plugin.config.Configs;
@@ -19,12 +20,14 @@ import static java.util.Objects.requireNonNull;
 public final class WgClanRegions implements ClanRegions {
 
 	private final ClanRegions regions;
+	private final Clan clan;
 	private final RegionContainer container;
 	private final Configs configs;
 
-	public WgClanRegions(ClanRegions regions, RegionContainer container, Configs configs) {
+	public WgClanRegions(ClanRegions regions, Clan clan, RegionContainer container, Configs configs) {
 
 		this.regions = regions;
+		this.clan = clan;
 		this.container = container;
 		this.configs = configs;
 	}
@@ -43,6 +46,7 @@ public final class WgClanRegions implements ClanRegions {
 		return regions.create(location).thenApplySync(r -> {
 			new ProtectedRegionOf(container, r).region().orElseGet(() -> {
 				ProtectedRegion region = new RegionCreation(configs, r).create();
+				clan.memberMap().keySet().forEach(region.getMembers()::addPlayer);
 				requireNonNull(container.get(BukkitAdapter.adapt(location.getWorld()))).addRegion(region);
 				return region;
 			});
