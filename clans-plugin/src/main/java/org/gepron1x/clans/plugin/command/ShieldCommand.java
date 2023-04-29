@@ -50,8 +50,8 @@ public final class ShieldCommand extends AbstractClanCommand {
 
     private void addShield(CommandContext<CommandSender> context) {
         Clan clan = context.get(ClanExecutionHandler.CLAN);
-        users.userFor((Player) context.getSender()).shields().add(clan, clansConfig.levels().forLevel(clan.level()).shieldDuration()).thenAccept(shield -> {
+        /* users.userFor((Player) context.getSender()).shields().add(clan, clansConfig.levels().forLevel(clan.level()).shieldDuration()).thenAccept(shield -> {
             context.getSender().sendMessage(this.messages.commands().shields().added());
-        }).exceptionally(this.exceptionHandler(context.getSender()));
+        }).exceptionally(this.exceptionHandler(context.getSender())); */
     }
 }
