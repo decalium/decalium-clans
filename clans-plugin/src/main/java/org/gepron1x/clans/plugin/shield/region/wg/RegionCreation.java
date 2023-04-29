@@ -20,7 +20,7 @@ public record RegionCreation(Configs configs, ClanRegion region) {
 		int z = location.getBlockZ();
 		BlockVector3 first = BlockVector3.at(x - halfSize, y - halfSize, z - halfSize);
 		BlockVector3 second = BlockVector3.at(x + halfSize, y + halfSize, z + halfSize);
-		ProtectedRegion protectedRegion = new ProtectedCuboidRegion("clans_region_"+region.id(), first, second);
+		ProtectedRegion protectedRegion = new ProtectedCuboidRegion(WgExtension.regionName(region), first, second);
 		configs.config().homes().worldGuardFlags().apply(protectedRegion);
 		if(!region.shield().expired()) {
 			configs.config().shields().shieldFlags().apply(protectedRegion);

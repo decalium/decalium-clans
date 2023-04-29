@@ -1,15 +1,20 @@
 package org.gepron1x.clans.plugin.shield.region.wg;
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.bukkit.Location;
 import org.gepron1x.clans.api.shield.ClanRegion;
 import org.gepron1x.clans.api.shield.ClanRegions;
 import org.gepron1x.clans.plugin.config.Configs;
+import org.gepron1x.clans.plugin.wg.ProtectedRegionOf;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.requireNonNull;
 
 public final class WgClanRegions implements ClanRegions {
 
@@ -35,6 +40,13 @@ public final class WgClanRegions implements ClanRegions {
 
 	@Override
 	public CentralisedFuture<ClanRegion> create(Location location) {
-		return regions.create(location).thenApply(r -> new WgClanRegion(r, container, configs));
+		return regions.create(location).thenApplySync(r -> {
+			new ProtectedRegionOf(container, r).region().orElseGet(() -> {
+				ProtectedRegion region = new RegionCreation(configs, r).create();
+				requireNonNull(container.get(BukkitAdapter.adapt(location.getWorld()))).addRegion(region);
+				return region;
+			});
+			return new WgClanRegion(r, container, configs);
+		});
 	}
 }

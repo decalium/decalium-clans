@@ -49,15 +49,19 @@ public final class WgClanRegion implements ClanRegion {
 
 	@Override
 	public CentralisedFuture<ClanRegion> upgrade() {
-		return region.upgrade().thenApply(r -> {
-			regionManager().ifPresent(manager -> manager.addRegion(new RegionCreation(configs, r).create()));
+		return region.upgrade().thenApplySync(r -> {
+			regionManager().ifPresent(manager -> {
+				manager.removeRegion(WgExtension.regionName(r));
+				manager.addRegion(new RegionCreation(configs, r).create());
+			});
 			return new WgClanRegion(region, container, configs);
 		});
 	}
 
 	@Override
 	public CentralisedFuture<ClanRegion> addShield(Duration duration) {
-		return region.addShield(duration).thenApply(r -> {
+
+		return region.addShield(duration).thenApplySync(r -> {
 			region().ifPresent(region -> {
 				region.setFlag(WgExtension.SHIELD_ACTIVE, true);
 				configs.config().shields().shieldFlags().apply(region);
@@ -68,7 +72,7 @@ public final class WgClanRegion implements ClanRegion {
 
 	@Override
 	public CentralisedFuture<ClanRegion> removeShield() {
-		return region.removeShield().thenApply(r -> {
+		return region.removeShield().thenApplySync(r -> {
 			region().ifPresent(region -> {
 				configs.config().shields().shieldFlags().clear(region);
 				configs.config().homes().worldGuardFlags().apply(region);

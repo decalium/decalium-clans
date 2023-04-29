@@ -23,6 +23,7 @@ import com.sk89q.worldguard.protection.flags.BooleanFlag;
 import com.sk89q.worldguard.protection.flags.IntegerFlag;
 import com.sk89q.worldguard.protection.flags.StringFlag;
 import org.gepron1x.clans.api.repository.ClanRepository;
+import org.gepron1x.clans.api.shield.ClanRegion;
 import org.gepron1x.clans.api.shield.GlobalRegions;
 import org.gepron1x.clans.plugin.config.Configs;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
@@ -57,5 +58,9 @@ public final class WgExtension {
     public static void registerFlags() {
         WorldGuard.getInstance().getFlagRegistry().registerAll(List.of(CLAN, HOME_NAME, SHIELD_ACTIVE, REGION_ID));
     }
+
+	public static String regionName(ClanRegion region) {
+		return "clans_region_"+region.id();
+	}
 
 }
