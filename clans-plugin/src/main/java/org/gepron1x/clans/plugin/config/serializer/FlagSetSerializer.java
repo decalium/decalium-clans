@@ -18,8 +18,12 @@
  */
 package org.gepron1x.clans.plugin.config.serializer;
 
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.flags.Flag;
+import com.sk89q.worldguard.protection.flags.FlagContext;
+import com.sk89q.worldguard.protection.flags.InvalidFlagFormat;
 import org.gepron1x.clans.plugin.wg.FlagSet;
-import org.gepron1x.clans.plugin.wg.StringFlagSet;
+import org.gepron1x.clans.plugin.wg.FlagSetImpl;
 import space.arim.dazzleconf.error.BadValueException;
 import space.arim.dazzleconf.serialiser.Decomposer;
 import space.arim.dazzleconf.serialiser.FlexibleType;
@@ -35,7 +39,16 @@ public final class FlagSetSerializer implements ValueSerialiser<FlagSet> {
 
     @Override
     public FlagSet deserialise(FlexibleType flexibleType) throws BadValueException {
-        return new StringFlagSet(flexibleType.getMap((key, value) -> Map.entry(key.getString(), value.getString())));
+		return new FlagSetImpl(flexibleType.getMap((key, value) -> {
+			Flag<?> flag = WorldGuard.getInstance().getFlagRegistry().get(key.getString());
+			if(flag == null) throw flexibleType.badValueExceptionBuilder().message("Unknown flag" + key.getString()).build();
+			try {
+				Object o = flag.parseInput(FlagContext.create().setInput(value.getString()).build());
+				return Map.entry(flag, o);
+			} catch (InvalidFlagFormat e) {
+				throw flexibleType.badValueExceptionBuilder().cause(e).message("Failed to parse flag input for "+key.getString()).build();
+			}
+		}));
     }
 
     @Override
