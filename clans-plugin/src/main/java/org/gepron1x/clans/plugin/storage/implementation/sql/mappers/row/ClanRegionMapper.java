@@ -43,14 +43,14 @@ public final class ClanRegionMapper implements RowMapper<ClanRegion> {
 	@Override
 	public ClanRegion map(ResultSet rs, StatementContext ctx) throws SQLException {
 		Location location = new Location(
-				ctx.findColumnMapperFor(World.class).orElseThrow().map(rs, "regions.world", ctx),
-				rs.getInt("regions.x"),
-				rs.getInt("regions.y"),
-				rs.getInt("regions.z")
+				ctx.findColumnMapperFor(World.class).orElseThrow().map(rs, "world", ctx),
+				rs.getInt("x"),
+				rs.getInt("y"),
+				rs.getInt("z")
 		);
-		Timestamp start = rs.getTimestamp("region_shields.start");
-		Timestamp end = rs.getTimestamp("region_shields.end");
+		Timestamp start = rs.getTimestamp("start");
+		Timestamp end = rs.getTimestamp("end");
 		Shield shield = start == null ? Shield.NONE : new ShieldImpl(start.toInstant(), end.toInstant());
-		return new SqlClanRegion(rs.getInt("regions.id"), new Region(rs.getInt("regions.level"), location, shield), jdbi);
+		return new SqlClanRegion(rs.getInt("id"), new Region(rs.getInt("level"), location, shield), jdbi);
 	}
 }
