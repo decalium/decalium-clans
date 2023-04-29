@@ -22,7 +22,7 @@ import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.exception.DescribingException;
 import org.gepron1x.clans.api.repository.ClanCreationResult;
-import org.gepron1x.clans.api.shield.Shields;
+import org.gepron1x.clans.api.shield.ClanRegions;
 import org.gepron1x.clans.api.user.ClanUser;
 import org.gepron1x.clans.plugin.config.settings.PricesConfig;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
@@ -43,12 +43,13 @@ public final class EconomyUser implements ClanUser {
         this.futuresFactory = futuresFactory;
     }
 
-    @Override
-    public Shields shields() {
-        return new EconomyShields(user.shields(), player, futuresFactory, prices);
-    }
 
-    @Override
+	@Override
+	public Optional<ClanRegions> regions() {
+		return user.regions();
+	}
+
+	@Override
     public Optional<Clan> clan() {
         return user.clan().map(clan -> new EconomyClan(clan, prices, player, futuresFactory));
     }
