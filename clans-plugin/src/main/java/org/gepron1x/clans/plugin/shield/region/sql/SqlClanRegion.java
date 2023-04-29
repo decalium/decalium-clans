@@ -78,7 +78,7 @@ public final class SqlClanRegion implements ClanRegion {
 		Instant now = Instant.now();
 		Instant end = now.plus(duration);
 		return jdbi.withHandle(handle -> {
-			handle.createUpdate("INSERT INTO shields (`region_id`, `start`, `end`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `start`=VALUES(`start`), `end`=VALUES(`end`)")
+			handle.createUpdate("INSERT INTO region_shields (`region_id`, `start`, `end`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `start`=VALUES(`start`), `end`=VALUES(`end`)")
 					.bind(0, id)
 					.bind(1, now)
 					.bind(2, end).execute();
@@ -89,7 +89,7 @@ public final class SqlClanRegion implements ClanRegion {
 	@Override
 	public CentralisedFuture<ClanRegion> removeShield() {
 		return jdbi.withHandle(handle -> {
-			handle.execute("DELETE FROM shields WHERE `region_id`=?", id);
+			handle.execute("DELETE FROM region_shields WHERE `region_id`=?", id);
 			return new SqlClanRegion(id, region.withShield(Shield.NONE), jdbi);
 		});
 	}
