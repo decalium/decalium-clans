@@ -35,8 +35,7 @@ public interface MessagesConfig {
     @SubSection HelpCommandConfig help();
 
     @SubSection LevelMessages level();
-
-
+		
     @ConfKey("prefix")
     @DefaultString("<aqua>DecaliumClans |")
     Component prefix();
