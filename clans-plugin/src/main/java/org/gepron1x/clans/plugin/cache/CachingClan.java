@@ -46,7 +46,8 @@ public final class CachingClan implements Clan, DelegatingClan {
 
     @Override
     public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
-		if(currentEdition.isCompletedExceptionally()) currentEdition = futuresFactory.completedFuture(delegate)this.currentEdition = currentEdition.thenCompose(clan -> clan.edit(transaction));
+		if(currentEdition.isCompletedExceptionally()) currentEdition = futuresFactory.completedFuture(delegate);
+		this.currentEdition = currentEdition.thenCompose(clan -> clan.edit(transaction));
         return currentEdition.thenApply(clan -> {
 			if(cache.isCached(clan.tag())) {
 				cache.removeClan(clan.tag());
