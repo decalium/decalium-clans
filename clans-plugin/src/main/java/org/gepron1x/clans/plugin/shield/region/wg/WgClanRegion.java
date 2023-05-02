@@ -1,7 +1,6 @@
 package org.gepron1x.clans.plugin.shield.region.wg;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
@@ -54,13 +53,10 @@ public final class WgClanRegion implements ClanRegion {
 			regionManager().ifPresent(manager -> {
 				String name = WgExtension.regionName(r);
 				ProtectedRegion pr = manager.getRegion(name);
-				DefaultDomain domain = new DefaultDomain();
-				if(pr != null) {
-					domain.addAll(pr.getMembers());
-					manager.removeRegion(name);
-				}
 				ProtectedRegion newRegion = new RegionCreation(configs, r).create();
-				newRegion.setMembers(domain);
+				if(pr != null) {
+					newRegion.copyFrom(pr);
+				}
 				manager.addRegion(newRegion);
 			});
 			return new WgClanRegion(region, container, configs);

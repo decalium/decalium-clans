@@ -22,6 +22,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import org.gepron1x.clans.api.chat.BooleanStateResolver;
 import org.gepron1x.clans.api.chat.PrefixedTagResolver;
 
 import java.util.Arrays;
@@ -94,5 +95,9 @@ public interface Formatted<T extends Formatted<T>> { // i have no clue how to ca
     default T with(String key, char value) {
         return with(key, Component.text(value));
     }
+
+	default T booleanState(String key, boolean value) {
+		return with(new BooleanStateResolver(key, value));
+	}
 
 }

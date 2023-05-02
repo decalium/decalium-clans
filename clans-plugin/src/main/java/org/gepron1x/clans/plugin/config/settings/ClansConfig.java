@@ -300,4 +300,13 @@ public interface ClansConfig {
         @DefaultString("No shield")
         Component noShield();
     }
+
+	@SubSection Region region();
+
+	interface Region {
+
+		@ConfKey("hologram-format")
+		@DefaultStrings({"Клановый регион", "", "Название: <clan_display_name>", "Щит: <active:'Активен':'Не активен'>"})
+		List<Message> hologramFormat();
+	}
 }

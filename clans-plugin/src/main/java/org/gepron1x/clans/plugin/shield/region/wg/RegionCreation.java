@@ -24,8 +24,10 @@ public record RegionCreation(Configs configs, ClanRegion region) {
 		configs.config().homes().worldGuardFlags().apply(protectedRegion);
 		if(!region.shield().expired()) {
 			configs.config().shields().shieldFlags().apply(protectedRegion);
+			protectedRegion.setFlag(WgExtension.SHIELD_ACTIVE, true);
 		}
 		protectedRegion.setFlag(WgExtension.REGION_ID, region.id());
+		System.out.println(protectedRegion.getFlags());
 		return protectedRegion;
 	}
 }

@@ -1,0 +1,31 @@
+package org.gepron1x.clans.api.chat;
+
+import net.kyori.adventure.text.minimessage.Context;
+import net.kyori.adventure.text.minimessage.ParsingException;
+import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.ArgumentQueue;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+public final class BooleanStateResolver implements TagResolver {
+	private final String name;
+	private final boolean is;
+
+	public BooleanStateResolver(String name, boolean is) {
+
+		this.name = name;
+		this.is = is;
+	}
+	@Override
+	public @Nullable Tag resolve(@NotNull String name, @NotNull ArgumentQueue arguments, @NotNull Context ctx) throws ParsingException {
+		Tag trueValue = Tag.preProcessParsed(arguments.popOr("True value not present").value());
+		if(is) return trueValue;
+		return Tag.preProcessParsed(arguments.popOr("False value not present").value());
+	}
+
+	@Override
+	public boolean has(@NotNull String name) {
+		return this.name.equals(name);
+	}
+}

@@ -69,6 +69,7 @@ dependencies {
     compileOnly("com.github.MilkBowl:VaultAPI:1.7") {
         exclude("org.bukkit", "bukkit")
     }
+    compileOnly("com.github.decentsoftware-eu:decentholograms:2.8.1")
 
 
 }
@@ -88,7 +89,7 @@ tasks {
         relocateDependency("org.apiguardian")
         relocateDependency("space.arim")
         relocateDependency("org.jdbi")
-        relocateDependency("org.h2")
+        // relocateDependency("org.h2")
        // relocateDependency("com.fasterxml")
         relocateDependency("cloud.commandframework")
         relocateDependency("com.github.benmanes.caffeine")
@@ -135,6 +136,6 @@ bukkit {
     apiVersion = "1.16"
     authors = listOf("gepron1x", "manya")
     website = "https://clans.decalium.ru"
-    softDepend = listOf("PlaceholderAPI", "CarbonChat", "WorldGuard", "Vault")
+    softDepend = listOf("PlaceholderAPI", "CarbonChat", "WorldGuard", "Vault", "DecentHolograms")
 }
 

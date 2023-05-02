@@ -55,6 +55,12 @@ public final class SqlClanRegions implements ClanRegions {
 	}
 
 	@Override
+	public CentralisedFuture<?> remove(ClanRegion region) {
+		return jdbi.useHandle(handle -> handle.execute("DELETE FROM `regions` WHERE `id`=?", region.id()));
+	}
+
+
+	@Override
 	public CentralisedFuture<ClanRegion> create(Location location) {
 		return jdbi.withHandle(handle -> {
 			int id = handle.createUpdate("INSERT INTO `regions` (clan_id, x, y, z, world) VALUES (?, ?, ?, ?, ?)")

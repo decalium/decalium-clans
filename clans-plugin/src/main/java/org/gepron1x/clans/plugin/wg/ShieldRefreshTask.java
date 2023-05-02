@@ -18,23 +18,49 @@
  */
 package org.gepron1x.clans.plugin.wg;
 
+import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.gepron1x.clans.api.clan.Clan;
+import org.gepron1x.clans.api.repository.ClanRepository;
 import org.gepron1x.clans.api.shield.ClanRegion;
 import org.gepron1x.clans.api.shield.GlobalRegions;
+import org.gepron1x.clans.plugin.config.Configs;
+import org.gepron1x.clans.plugin.shield.region.wg.RegionHologram;
+
+import java.time.Duration;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public final class ShieldRefreshTask extends BukkitRunnable {
 
 	private final GlobalRegions regions;
+	private final RegionContainer container;
+	private final ClanRepository repository;
+	private final Configs configs;
+
+	private final AsyncLoadingCache<String, Optional<Clan>> clanCache;
 
 
-    public ShieldRefreshTask(GlobalRegions regions) {
+
+	public ShieldRefreshTask(GlobalRegions regions, RegionContainer container, ClanRepository repository, Configs configs) {
 		this.regions = regions;
-    }
+		this.container = container;
+		this.repository = repository;
+		this.configs = configs;
+		this.clanCache = Caffeine.newBuilder().expireAfterWrite(Duration.ofMinutes(2)).buildAsync((s, e) -> repository.requestClan(s));
+	}
     @Override
     public void run() {
        regions.listRegions().thenAccept(list -> {
 		   for(ClanRegion region : list) {
 			   if(region.shield().expired()) region.removeShield();
+			   new ProtectedRegionOf(container, region).clanTag().map(clanCache::get)
+					   .orElseGet(() -> CompletableFuture.completedFuture(Optional.empty()))
+					   .thenAccept(o -> o.ifPresent(clan -> {
+						   new RegionHologram(region, clan, configs).update();
+					   }));
 		   }
 	   }).join();
     }

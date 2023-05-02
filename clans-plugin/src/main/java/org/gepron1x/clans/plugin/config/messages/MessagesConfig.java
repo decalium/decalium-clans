@@ -218,6 +218,8 @@ public interface MessagesConfig {
         @SubSection
         WarRequest wars();
 
+
+
         @ConfKey("shields")
         @SubSection Shield shields();
 

@@ -1,6 +1,7 @@
 package org.gepron1x.clans.plugin.wg;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.gepron1x.clans.api.shield.ClanRegion;
@@ -11,7 +12,18 @@ public record ProtectedRegionOf(RegionContainer container, ClanRegion clanRegion
 
 
 	public Optional<ProtectedRegion> region() {
-		return Optional.ofNullable(container.get(BukkitAdapter.adapt(clanRegion.location().getWorld())))
-				.map(manager -> manager.getRegion("clans_region_"+clanRegion.id()));
+		return regionManager().map(manager -> manager.getRegion(WgExtension.regionName(clanRegion)));
+	}
+
+	public void remove() {
+		regionManager().ifPresent(manager -> manager.removeRegion(WgExtension.regionName(clanRegion)));
+	}
+
+	public Optional<RegionManager> regionManager() {
+		return Optional.ofNullable(container.get(BukkitAdapter.adapt(clanRegion.location().getWorld())));
+	}
+
+	public Optional<String> clanTag() {
+		return region().map(r -> r.getFlag(WgExtension.CLAN));
 	}
 }

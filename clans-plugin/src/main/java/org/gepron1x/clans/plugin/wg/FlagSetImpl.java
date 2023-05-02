@@ -17,7 +17,7 @@ public final class FlagSetImpl implements FlagSet {
 
 	@Override
 	public void apply(ProtectedRegion region) {
-		region.setFlags(map);
+		map.forEach((key, value) -> setFlag(region, key, value));
 	}
 
 	@Override
@@ -36,5 +36,8 @@ public final class FlagSetImpl implements FlagSet {
 
 	private static <T> Object marshal(Flag<T> flag, Object object) {
 		return flag.marshal((T) object);
+	}
+	private static <T> void setFlag(ProtectedRegion region, Flag<T> flag, Object object) {
+		region.setFlag(flag, (T) object);
 	}
 }

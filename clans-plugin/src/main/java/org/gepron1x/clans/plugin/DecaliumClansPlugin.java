@@ -37,6 +37,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.DecaliumClansApi;
 import org.gepron1x.clans.api.RoleRegistry;
+import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.repository.ClanRepository;
@@ -254,6 +255,13 @@ public final class DecaliumClansPlugin extends JavaPlugin {
                     });
                 })
         );
+		commandManager.command(commandManager.commandBuilder("clan").literal("region").permission("clans.region").handler(new ClanExecutionHandler(ctx -> {
+			Clan clan = ctx.get(ClanExecutionHandler.CLAN);
+			regions.clanRegions(clan).create(((Player) ctx.getSender()).getLocation()).exceptionally(t -> {
+				t.printStackTrace();
+				return null;
+			});
+		}, users, messages, logger)));
         var help = new MinecraftHelp<>("/clan help", AudienceProvider.nativeAudience(), this.commandManager);
         help.setHelpColors(messages.help().colors());
         help.messageProvider(messages.help().messages().messageProvider());
@@ -266,7 +274,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         StatisticListener statisticListener = new StatisticListener(clanRepository, this, futuresFactory, config);
         getServer().getPluginManager().registerEvents(statisticListener, this);
         statisticListener.start();
-        new ShieldRefreshTask(regions)
+        new ShieldRefreshTask(regions, WorldGuard.getInstance().getPlatform().getRegionContainer(), clanRepository, configs)
                 .runTaskTimerAsynchronously(this, 20, 20 * 20);
 
         DecaliumClansApi clansApi = new DecaliumClansApiImpl(clanRepository, users, this.roleRegistry, builderFactory, futuresFactory, wars, regions, prices.data());
@@ -292,7 +300,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        if(isEnabled("WorldGuard")) WgExtension.registerFlags();
+        /*if(isEnabled("WorldGuard"))*/ WgExtension.registerFlags();
     }
 
     private boolean isEnabled(String pluginName) {
