@@ -29,6 +29,8 @@ public interface ClanRegions {
 
 	CentralisedFuture<Optional<ClanRegion>> region(int id);
 
+	CentralisedFuture<Optional<ClanRegion>> region(Location location);
+
 
 	CentralisedFuture<?> remove(ClanRegion region);
 

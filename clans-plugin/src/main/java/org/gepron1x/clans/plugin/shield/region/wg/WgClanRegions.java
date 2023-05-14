@@ -13,6 +13,7 @@ import org.gepron1x.clans.plugin.wg.ProtectedRegionOf;
 import org.gepron1x.clans.plugin.wg.WgExtension;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -41,6 +42,13 @@ public final class WgClanRegions implements ClanRegions {
 	@Override
 	public CentralisedFuture<Optional<ClanRegion>> region(int id) {
 		return regions.region(id).thenApply(o -> o.map(r -> new WgClanRegion(r, container, configs)));
+	}
+
+	@Override
+	public CentralisedFuture<Optional<ClanRegion>> region(Location location) {
+		return container.createQuery().getApplicableRegions(BukkitAdapter.adapt(location)).getRegions().stream().filter(r -> {
+			return clan.tag().equals(r.getFlag(WgExtension.CLAN));
+		}).map(r -> r.getFlag(WgExtension.REGION_ID)).filter(Objects::nonNull).findAny().map(this::region).orElseGet(() -> regions.region(location));
 	}
 
 	@Override

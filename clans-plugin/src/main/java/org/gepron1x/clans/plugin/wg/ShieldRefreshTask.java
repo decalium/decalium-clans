@@ -55,7 +55,11 @@ public final class ShieldRefreshTask extends BukkitRunnable {
     public void run() {
        regions.listRegions().thenAccept(list -> {
 		   for(ClanRegion region : list) {
-			   if(region.shield().expired()) region.removeShield();
+			   var protectedRegion = new ProtectedRegionOf(container, region);
+			   if(region.shield().expired() &&
+					   protectedRegion.region().map(r -> r.getFlag(WgExtension.SHIELD_ACTIVE)).orElse(false)) {
+				   region.removeShield();
+			   }
 			   new ProtectedRegionOf(container, region).clanTag().map(clanCache::get)
 					   .orElseGet(() -> CompletableFuture.completedFuture(Optional.empty()))
 					   .thenAccept(o -> o.ifPresent(clan -> {

@@ -28,8 +28,18 @@ public final class WgGlobalRegions implements GlobalRegions {
 				<ClanRegion>map(r -> new WgClanRegion(r, container, configs)).toList());
 	}
 
+
+
 	@Override
 	public ClanRegions clanRegions(Clan clan) {
 		return new WgClanRegions(regions.clanRegions(clan), clan, container, configs);
+	}
+
+	@Override
+	public CentralisedFuture<?> remove(int id) {
+		return regions.remove(id).thenAccept($ -> {
+			/* new ProtectedRegionOf(container, region).remove();
+			DHAPI.removeHologram(WgExtension.regionName(region)); */
+		});
 	}
 }

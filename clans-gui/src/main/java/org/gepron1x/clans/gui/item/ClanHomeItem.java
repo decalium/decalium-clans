@@ -18,51 +18,84 @@
  */
 package org.gepron1x.clans.gui.item;
 
+import com.jeff_media.customblockdata.CustomBlockData;
 import me.gepronix.decaliumcustomitems.BuildableItem;
 import me.gepronix.decaliumcustomitems.event.ItemEventTrigger;
 import me.gepronix.decaliumcustomitems.event.ItemTriggerContext;
 import me.gepronix.decaliumcustomitems.item.Item;
 import me.gepronix.decaliumcustomitems.item.SimpleItem;
 import me.gepronix.decaliumcustomitems.item.modifier.ItemModifierImpl;
-import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.DecaliumClansApi;
 import org.gepron1x.clans.api.clan.Clan;
-import org.gepron1x.clans.api.clan.home.ClanHome;
+import org.gepron1x.clans.api.user.ClanUser;
 import org.gepron1x.clans.gui.DecaliumClansGui;
-import org.gepron1x.clans.gui.ItemBuilder;
+import org.gepron1x.clans.gui.RegionGui;
 import org.gepron1x.clans.plugin.DecaliumClansPlugin;
 
-public final class ClanHomeItem implements BuildableItem {
+import java.util.Optional;
 
-	public static final NamespacedKey HOME_ITEM = new NamespacedKey(JavaPlugin.getPlugin(DecaliumClansPlugin.class), "home_item");
+public final class ClanHomeItem implements BuildableItem.NoConfig, Listener {
 
+	public static final NamespacedKey HOME_ITEM = new NamespacedKey(JavaPlugin.getPlugin(DecaliumClansPlugin.class), "clan_region");
+
+	public static final NamespacedKey REGION_ID = new NamespacedKey(JavaPlugin.getPlugin(DecaliumClansPlugin.class), "region_id");
+
+	private final Plugin plugin;
 	private final DecaliumClansApi clans;
 
-	public ClanHomeItem(DecaliumClansApi clans) {
+	public ClanHomeItem(Plugin plugin, DecaliumClansApi clans) {
+		this.plugin = plugin;
 		this.clans = clans;
 	}
 
 	@Override
 	public Item build() {
-		return SimpleItem.builder(Material.DIAMOND_BLOCK)
+		Bukkit.getPluginManager().registerEvents(this, plugin);
+		return SimpleItem.builder(Material.LODESTONE)
 				.key(HOME_ITEM).modifier(ItemModifierImpl.builder().name(DecaliumClansGui.message("Клановый приват").asComponent()).build())
 				.listener(ItemEventTrigger.BLOCK_PLACE, this::onPlace).build();
 	}
 
 	private void onPlace(BlockPlaceEvent event, ItemTriggerContext ctx) {
 		Player player = event.getPlayer();
-		clans.users().userFor(player).clan().ifPresent(clan -> {
-			String name = name(player, clan);
-			ClanHome home = clans.homeBuilder().name(name).displayName(Component.text(name))
-					.location(event.getBlockPlaced().getLocation())
-					.icon(ItemBuilder.skull(player.getPlayerProfile()).stack())
-					.creator(player.getUniqueId()).build();
-			clan.edit(e -> e.addHome(home));
+		ClanUser user = clans.users().userFor(player);
+		user.regions().ifPresent(regions -> {
+			regions.create(event.getBlockPlaced().getLocation()).thenAcceptSync(region -> {
+				new CustomBlockData(event.getBlock(), plugin).set(REGION_ID, PersistentDataType.INTEGER, region.id());
+			});
+		});
+	}
+
+	@EventHandler
+	public void on(BlockBreakEvent event) {
+		ClanUser user = clans.users().userFor(event.getPlayer());
+		if(new CustomBlockData(event.getBlock(), plugin).has(REGION_ID, PersistentDataType.INTEGER)) {
+			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler
+	public void on(PlayerInteractEvent event) {
+		ClanUser user = clans.users().userFor(event.getPlayer());
+		Optional.ofNullable(event.getClickedBlock()).map(b -> new CustomBlockData(b, plugin).get(REGION_ID, PersistentDataType.INTEGER)).flatMap(id -> {
+			return user.regions().map(regions -> regions.region(id));
+		}).orElseGet(() -> clans.futuresFactory().completedFuture(Optional.empty())).thenAcceptSync(opt -> {
+			opt.ifPresent(region -> new RegionGui(clans, user, region).asGui().show(event.getPlayer()));
+		}).exceptionally(t -> {
+			t.printStackTrace();
+			return null;
 		});
 	}
 

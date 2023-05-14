@@ -19,12 +19,15 @@
 package org.gepron1x.clans.gui;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
+import com.github.stefvanschie.inventoryframework.gui.GuiItem;
+import com.google.common.collect.Lists;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Material;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -96,6 +99,11 @@ public final class ItemBuilder implements Formatted<ItemBuilder> {
 		return this;
 	}
 
+	public ItemBuilder lore(String... lore) {
+		this.lore = Lists.newArrayList(lore);
+		return this;
+	}
+
 	public ItemBuilder amount(int amount) {
 		this.item.setAmount(amount);
 		return this;
@@ -122,5 +130,13 @@ public final class ItemBuilder implements Formatted<ItemBuilder> {
 			Optional.ofNullable(this.lore).map(list -> list.stream().map(s -> parse(s, r)).toList()).ifPresent(meta::lore);
 		});
 		return this.item;
+	}
+
+	public GuiItem guiItem(Consumer<InventoryClickEvent> event) {
+		return new GuiItem(stack(), event);
+	}
+
+	public GuiItem guiItem() {
+		return guiItem(e -> {});
 	}
 }

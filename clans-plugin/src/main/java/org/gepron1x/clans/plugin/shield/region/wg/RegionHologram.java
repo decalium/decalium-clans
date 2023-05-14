@@ -23,7 +23,7 @@ public final class RegionHologram {
 
 
 	public ClanHologram hologram() {
-		return DecentClanHologram.createIfAbsent(WgExtension.regionName(region), region.location().clone().add(0, 2, 0));
+		return DecentClanHologram.createIfAbsent(WgExtension.regionName(region), region.location().clone().add(0.5, 3, 0.5));
 	}
 
 	public void update() {

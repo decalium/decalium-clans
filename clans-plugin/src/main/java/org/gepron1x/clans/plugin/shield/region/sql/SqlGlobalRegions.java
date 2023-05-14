@@ -27,4 +27,9 @@ public final class SqlGlobalRegions implements GlobalRegions {
 	public ClanRegions clanRegions(Clan clan) {
 		return new SqlClanRegions(clan, jdbi);
 	}
+
+	@Override
+	public CentralisedFuture<?> remove(int id) {
+		return jdbi.useHandle(handle -> handle.execute("DELETE FROM `regions` WHERE `id`=?", id));
+	}
 }

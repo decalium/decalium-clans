@@ -11,5 +11,7 @@ public interface GlobalRegions {
 
 	ClanRegions clanRegions(Clan clan);
 
+	CentralisedFuture<?> remove(int id);
+
 
 }

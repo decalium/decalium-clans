@@ -27,7 +27,6 @@ public record RegionCreation(Configs configs, ClanRegion region) {
 			protectedRegion.setFlag(WgExtension.SHIELD_ACTIVE, true);
 		}
 		protectedRegion.setFlag(WgExtension.REGION_ID, region.id());
-		System.out.println(protectedRegion.getFlags());
 		return protectedRegion;
 	}
 }

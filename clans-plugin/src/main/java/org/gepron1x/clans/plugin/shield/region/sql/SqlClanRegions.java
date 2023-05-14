@@ -44,14 +44,19 @@ public final class SqlClanRegions implements ClanRegions {
 
 	@Override
 	public CentralisedFuture<Set<ClanRegion>> regions() {
-		return jdbi.withHandle(handle -> handle.createQuery("SELECT * FROM `regions_simple` WHERE regions.clan_id=?").bind(0, clan.id())
+		return jdbi.withHandle(handle -> handle.createQuery("SELECT * FROM `regions_simple` WHERE clan_id=?").bind(0, clan.id())
 				.map(new ClanRegionMapper(jdbi)).collect(Collectors.toSet()));
 	}
 
 	@Override
 	public CentralisedFuture<Optional<ClanRegion>> region(int id) {
-		return jdbi.withHandle(handle -> handle.createQuery("SELECT * FROM `regions_simple` WHERE regions.id=?").bind(0, id)
+		return jdbi.withHandle(handle -> handle.createQuery("SELECT * FROM `regions_simple` WHERE id=?").bind(0, id)
 				.map(new ClanRegionMapper(jdbi)).findFirst());
+	}
+
+	@Override
+	public CentralisedFuture<Optional<ClanRegion>> region(Location location) {
+		return jdbi.completed(Optional.empty());
 	}
 
 	@Override

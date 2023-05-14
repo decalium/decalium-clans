@@ -63,7 +63,7 @@ public final class DecaliumClansGui extends JavaPlugin {
             return;
         }
 
-		DecaliumCustomItems.get().getItemRegistry().registerItem(new ClanHomeItem(api).build());
+		DecaliumCustomItems.get().getItemRegistry().registerItem(new ClanHomeItem(this, api).build());
         commandManager.registerBrigadier();
         commandManager.command(commandManager.commandBuilder("clangui").senderType(Player.class)
                 .permission("clans.gui").argument(PlayerArgument.optional("player"))
