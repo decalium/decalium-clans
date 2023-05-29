@@ -19,20 +19,19 @@
 package org.gepron1x.clans.api.shield;
 
 import org.bukkit.Location;
-import space.arim.omnibus.util.concurrent.CentralisedFuture;
 
 import java.util.Optional;
 import java.util.Set;
 
 public interface ClanRegions {
-	CentralisedFuture<Set<ClanRegion>> regions();
+	Set<ClanRegion> regions();
 
-	CentralisedFuture<Optional<ClanRegion>> region(int id);
+	Optional<ClanRegion> region(int id);
 
-	CentralisedFuture<Optional<ClanRegion>> region(Location location);
+	Optional<ClanRegion> region(Location location);
 
 
-	CentralisedFuture<?> remove(ClanRegion region);
+	void remove(ClanRegion region);
 
-	CentralisedFuture<ClanRegion> create(Location location);
+	ClanRegion create(Location location);
 }

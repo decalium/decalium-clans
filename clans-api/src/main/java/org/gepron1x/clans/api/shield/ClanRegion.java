@@ -19,7 +19,6 @@
 package org.gepron1x.clans.api.shield;
 
 import org.bukkit.Location;
-import space.arim.omnibus.util.concurrent.CentralisedFuture;
 
 import java.time.Duration;
 
@@ -33,10 +32,10 @@ public interface ClanRegion {
 
 	Shield shield();
 
-	CentralisedFuture<ClanRegion> upgrade();
+	void upgrade();
 
 
-	CentralisedFuture<ClanRegion> addShield(Duration duration);
+	void addShield(Duration duration);
 
-	CentralisedFuture<ClanRegion> removeShield();
+	void removeShield();
 }
