@@ -28,6 +28,7 @@ import org.gepron1x.clans.plugin.config.UserComponentSerializer;
 import org.gepron1x.clans.plugin.config.format.DisplayNameFormat;
 import org.gepron1x.clans.plugin.config.format.TimeFormat;
 import org.gepron1x.clans.plugin.storage.StorageType;
+import org.gepron1x.clans.plugin.util.hologram.Line;
 import org.gepron1x.clans.plugin.util.message.Message;
 import org.gepron1x.clans.plugin.wg.FlagSet;
 import space.arim.dazzleconf.annote.ConfComments;
@@ -305,8 +306,33 @@ public interface ClansConfig {
 
 	interface Region {
 
-		@ConfKey("hologram-format")
-		@DefaultStrings({"Клановый регион", "", "Название: <clan_display_name>", "Щит: <active:'Активен':'Не активен'>"})
-		List<Message> hologramFormat();
+		@SubSection Hologram hologram();
+
+		interface Hologram {
+
+			@ConfKey("offset-x")
+			@DefaultDouble(0.0)
+			double offsetX();
+
+			@ConfKey("offset-y")
+			@DefaultDouble(0.0)
+			double offsetY();
+
+			@ConfKey("offset-z")
+			@DefaultDouble(0.0)
+			double offsetZ();
+
+			@ConfKey("hologram-format")
+			@DefaultObject("format$default")
+			List<Line> format();
+
+
+			static List<Line> format$default() {
+				return List.of("Клановый регион", "", "Название: <clan_display_name>", "Щит: <active:'Активен':'Не активен'>")
+						.stream().map(s -> new Line(Message.message(s))).toList();
+			}
+
+
+		}
 	}
 }

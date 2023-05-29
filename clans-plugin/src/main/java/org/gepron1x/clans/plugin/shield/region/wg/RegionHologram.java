@@ -1,5 +1,8 @@
 package org.gepron1x.clans.plugin.shield.region.wg;
 
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import org.bukkit.Location;
+import org.gepron1x.clans.api.chat.BooleanStateResolver;
 import org.gepron1x.clans.api.chat.ClanTagResolver;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.shield.ClanRegion;
@@ -23,13 +26,14 @@ public final class RegionHologram {
 
 
 	public ClanHologram hologram() {
-		return DecentClanHologram.createIfAbsent(WgExtension.regionName(region), region.location().clone().add(0.5, 3, 0.5));
+		var config = configs.config().region().hologram();
+		Location location = region.location().clone().add(0.5, 0, 0.5).add(config.offsetX(), config.offsetY(), config.offsetZ());
+		return DecentClanHologram.createIfAbsent(WgExtension.regionName(region), location);
 	}
 
 	public void update() {
-		hologram().lines(configs.config().region().hologramFormat().stream()
-				.map(m -> m.with("clan", ClanTagResolver.clan(clan)).booleanState("shield_active", !region.shield().expired()).asComponent()).toList()
-		);
+		hologram().lines(configs.config().region().hologram().format(), TagResolver.builder().resolver(ClanTagResolver.clan(clan))
+				.resolver(new BooleanStateResolver("shield_active", !region.shield().expired())).build());
 	}
 
 }

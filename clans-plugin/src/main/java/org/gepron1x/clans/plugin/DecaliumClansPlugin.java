@@ -74,6 +74,7 @@ import org.gepron1x.clans.plugin.storage.implementation.sql.JdbiCreation;
 import org.gepron1x.clans.plugin.storage.implementation.sql.SqlClanStorage;
 import org.gepron1x.clans.plugin.users.DefaultUsers;
 import org.gepron1x.clans.plugin.util.AsciiArt;
+import org.gepron1x.clans.plugin.util.hologram.Line;
 import org.gepron1x.clans.plugin.util.services.PluginServices;
 import org.gepron1x.clans.plugin.util.services.Services;
 import org.gepron1x.clans.plugin.wg.ShieldRefreshTask;
@@ -104,6 +105,8 @@ public final class DecaliumClansPlugin extends JavaPlugin {
     private Configuration<MessagesConfig> messagesConfiguration;
 
     private Configuration<PricesConfig> prices;
+
+	private MutableClansApi api;
 
     private UserCaching userCaching;
 
@@ -151,6 +154,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
                 .addSerialiser(new HelpColorsSerializer())
                 .addSerialiser(new FlagSetSerializer())
                 .addSerialiser(new TimeFormatSerializer())
+				.addSerialiser(new Line.Serializer())
                 .setCreateSingleElementCollections(true)
                 .build();
         this.messagesConfiguration = Configuration.create(this, "messages.yml", MessagesConfig.class, options);
@@ -278,8 +282,9 @@ public final class DecaliumClansPlugin extends JavaPlugin {
                 .runTaskTimerAsynchronously(this, 20, 20 * 20);
 
         DecaliumClansApi clansApi = new DecaliumClansApiImpl(clanRepository, users, this.roleRegistry, builderFactory, futuresFactory, wars, regions, prices.data());
-        services.register(DecaliumClansApi.class, clansApi);
-
+		this.api = this.api == null ? new MutableClansApi(clansApi) : this.api;
+		this.api.setApi(clansApi);
+        services.register(DecaliumClansApi.class, this.api);
         new Metrics(this, BSTATS_ID);
 
         new HologramProtection(this).register();

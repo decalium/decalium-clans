@@ -50,7 +50,7 @@ public final class SqlClanRegions implements ClanRegions {
 
 	@Override
 	public CentralisedFuture<Optional<ClanRegion>> region(int id) {
-		return jdbi.withHandle(handle -> handle.createQuery("SELECT * FROM `regions_simple` WHERE id=?").bind(0, id)
+		return jdbi.withHandle(handle -> handle.createQuery("SELECT * FROM `regions_simple` WHERE id=? AND clan_id=?").bind(0, id).bind(1, clan.id())
 				.map(new ClanRegionMapper(jdbi)).findFirst());
 	}
 

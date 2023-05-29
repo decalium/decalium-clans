@@ -92,7 +92,7 @@ public final class ClanHomeItem implements BuildableItem.NoConfig, Listener {
 		Optional.ofNullable(event.getClickedBlock()).map(b -> new CustomBlockData(b, plugin).get(REGION_ID, PersistentDataType.INTEGER)).flatMap(id -> {
 			return user.regions().map(regions -> regions.region(id));
 		}).orElseGet(() -> clans.futuresFactory().completedFuture(Optional.empty())).thenAcceptSync(opt -> {
-			opt.ifPresent(region -> new RegionGui(clans, user, region).asGui().show(event.getPlayer()));
+			opt.ifPresent(region -> new RegionGui(clans, user, region, plugin).asGui().show(event.getPlayer()));
 		}).exceptionally(t -> {
 			t.printStackTrace();
 			return null;
