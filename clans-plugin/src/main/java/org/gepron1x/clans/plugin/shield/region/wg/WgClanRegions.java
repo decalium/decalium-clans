@@ -65,7 +65,10 @@ public final class WgClanRegions implements ClanRegions {
 			new ProtectedRegionOf(container, r).region().orElseGet(() -> {
 				ProtectedRegion region = new RegionCreation(configs, r).create();
 				clan.memberMap().keySet().forEach(region.getMembers()::addPlayer);
-				new RegionHologram(r, clan, configs).update();
+				var holo = new RegionHologram(r, clan, configs);
+				holo.update();
+				holo.update();
+
 				requireNonNull(container.get(BukkitAdapter.adapt(location.getWorld()))).addRegion(region);
 				region.setFlag(WgExtension.CLAN, clan.tag());
 				return region;

@@ -76,6 +76,7 @@ public class DecentClanHologram implements ClanHologram {
 			DHAPI.moveHologram(hologram, location);
 		} else {
 			hologram = DHAPI.createHologram(name, location);
+			hologram.realignLines();
 		}
 		return new DecentClanHologram(hologram);
 	}
