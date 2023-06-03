@@ -213,7 +213,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new CacheListener(userCaching), this);
 
-		LegacyComponentSerializer legacy = LegacyComponentSerializer.builder().character(LegacyComponentSerializer.SECTION_CHAR).useUnusualXRepeatedCharacterHexFormat().build();
+		LegacyComponentSerializer legacy = LegacyComponentSerializer.builder().character(LegacyComponentSerializer.SECTION_CHAR).hexColors().useUnusualXRepeatedCharacterHexFormat().build();
 
         if(isEnabled("PlaceholderAPI")) {
             new PlaceholderAPIHook(getServer(), config, clanCache, legacy).register();
