@@ -18,5 +18,22 @@
  */
 package org.gepron1x.test;
 
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.gepron1x.clans.plugin.util.action.ActionParser;
+
+import java.util.List;
+
 public class ActionParserTest {
+
+	public static void main(String[] args) {
+		ActionParser parser = new ActionParser(MiniMessage.miniMessage());
+		var values = List.of("<red>Regular message",
+				"[!!]]2][[]Regular message",
+				"[title] \"[Pull; up]\"; Nigga; 1; 2; 3",
+				"[actionbar] I OWN SWAG;;;",
+				"[sound] minecraft:ambient.cave",
+				"[sound] minecraft:ambient.cave; 1; 2"
+		);
+		System.out.println(parser.parse(values));
+	}
 }

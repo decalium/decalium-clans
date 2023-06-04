@@ -18,12 +18,15 @@
  */
 package org.gepron1x.clans.plugin.util.action;
 
+import com.google.common.base.MoreObjects;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
+import java.util.Objects;
+
 public final class CombinedAction implements Action {
 
-    private final Iterable<? extends Action> actions;
+	private final Iterable<? extends Action> actions;
 
     public CombinedAction(Iterable<? extends Action> actions) {
 
@@ -33,4 +36,28 @@ public final class CombinedAction implements Action {
     public void send(Audience audience, TagResolver resolver) {
         for(Action action : actions) action.send(audience, resolver);
     }
+
+	public Iterable<? extends Action> actions() {
+		return actions;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		CombinedAction that = (CombinedAction) o;
+		return Objects.equals(actions, that.actions);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(actions);
+	}
+
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("actions", actions)
+				.toString();
+	}
 }

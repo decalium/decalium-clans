@@ -18,8 +18,11 @@
  */
 package org.gepron1x.clans.plugin.util.action;
 
+import com.google.common.base.MoreObjects;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.sound.Sound;
+
+import java.util.Objects;
 
 public final class SoundAction implements Action.NoResolver {
 
@@ -34,4 +37,24 @@ public final class SoundAction implements Action.NoResolver {
     public void send(Audience audience) {
         audience.playSound(sound);
     }
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		SoundAction that = (SoundAction) o;
+		return Objects.equals(sound, that.sound);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(sound);
+	}
+
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("sound", sound)
+				.toString();
+	}
 }

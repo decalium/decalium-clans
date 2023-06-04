@@ -18,10 +18,13 @@
  */
 package org.gepron1x.clans.plugin.util.action;
 
+import com.google.common.base.MoreObjects;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.title.Title;
 import org.gepron1x.clans.plugin.util.message.Message;
+
+import java.util.Objects;
 
 public final class TitleAction implements Action {
 
@@ -39,4 +42,26 @@ public final class TitleAction implements Action {
     public void send(Audience audience, TagResolver resolver) {
         audience.showTitle(Title.title(title.with(resolver).asComponent(), subTitle.with(resolver).asComponent(), times));
     }
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		TitleAction that = (TitleAction) o;
+		return Objects.equals(title, that.title) && Objects.equals(subTitle, that.subTitle) && Objects.equals(times, that.times);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(title, subTitle, times);
+	}
+
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("title", title)
+				.add("subTitle", subTitle)
+				.add("times", times)
+				.toString();
+	}
 }

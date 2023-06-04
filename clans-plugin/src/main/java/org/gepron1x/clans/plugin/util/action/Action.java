@@ -27,6 +27,8 @@ public interface Action {
 
     void send(Audience audience, TagResolver resolver);
 
+
+
     default void send(Audience audience, TagResolver... resolvers) {
         send(audience, TagResolver.resolver(resolvers));
     }

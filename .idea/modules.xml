@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/clans-api/decalium-clans.clans-api.main.iml" filepath="$PROJECT_DIR$/.idea/modules/clans-api/decalium-clans.clans-api.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/clans-gui/decalium-clans.clans-gui.main.iml" filepath="$PROJECT_DIR$/.idea/modules/clans-gui/decalium-clans.clans-gui.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/clans-plugin/decalium-clans.clans-plugin.main.iml" filepath="$PROJECT_DIR$/.idea/modules/clans-plugin/decalium-clans.clans-plugin.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/clans-plugin/decalium-clans.clans-plugin.test.iml" filepath="$PROJECT_DIR$/.idea/modules/clans-plugin/decalium-clans.clans-plugin.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/clans-api/org.gepron1x.decalium-clans.clans-api.main.iml" filepath="$PROJECT_DIR$/.idea/modules/clans-api/org.gepron1x.decalium-clans.clans-api.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/clans-gui/org.gepron1x.decalium-clans.clans-gui.main.iml" filepath="$PROJECT_DIR$/.idea/modules/clans-gui/org.gepron1x.decalium-clans.clans-gui.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/clans-plugin/org.gepron1x.decalium-clans.clans-plugin.main.iml" filepath="$PROJECT_DIR$/.idea/modules/clans-plugin/org.gepron1x.decalium-clans.clans-plugin.main.iml" />
+    </modules>
+  </component>
+</project>

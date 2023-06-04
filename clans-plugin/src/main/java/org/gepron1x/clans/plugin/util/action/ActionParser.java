@@ -45,12 +45,14 @@ public final class ActionParser {
 
     public Action parseSingle(String value) {
         Matcher matcher = ACTION_PATTERN.matcher(value);
-        if(!matcher.matches()) throw new IllegalArgumentException("Invalid action format");
-        String type = matcher.group(0);
-        ActionArgs args = new ActionArgs(splitQuoted(matcher.group(1)));
-        return switch(type) {
-            case "message" -> new MessageAction(args.requireArg(0).asMessage(miniMessage));
-            case "actionbar" -> new ActionBarAction(args.requireArg(0).asMessage(miniMessage));
+        if(!matcher.matches()) {
+			return new MessageAction(Message.message(value, miniMessage));
+		}
+        String type = matcher.group(1);
+		String text = matcher.group(2);
+        ActionArgs args = new ActionArgs(splitQuoted(text));
+        return new ParsedAction(switch(type) {
+			case "actionbar" -> new ActionBarAction(Message.message(text, miniMessage));
             case "sound" -> {
                 Key key = args.requireArg(0).asKey();
                 float volume = args.arg(1).map(ActionArgs.Arg::asFloat).orElse(1f);
@@ -65,8 +67,8 @@ public final class ActionParser {
                 Duration fadeOut = args.arg(4).map(ActionArgs.Arg::asDuration).orElse(Title.DEFAULT_TIMES.fadeOut());
                 yield new TitleAction(title, subTitle, Title.Times.times(fadeIn, stay, fadeOut));
             }
-            default -> Action.EMPTY;
-        };
+            default -> new MessageAction(Message.message(text, miniMessage));
+        }, text);
     }
 
     public Action parse(Collection<String> values) {
@@ -82,20 +84,20 @@ public final class ActionParser {
         int startPosition = 0;
         boolean isInQuotes = false;
         for (int currentPosition = 0; currentPosition < input.length(); currentPosition++) {
-            if (input.charAt(currentPosition) == '\"') {
+            if (input.charAt(currentPosition) == '\"' || input.charAt(currentPosition) == '\'') {
                 isInQuotes = !isInQuotes;
             }
-            else if (input.charAt(currentPosition) == ',' && !isInQuotes) {
-                tokens.add(input.substring(startPosition, currentPosition));
+            else if (input.charAt(currentPosition) == ';' && !isInQuotes) {
+                tokens.add(input.substring(startPosition, currentPosition).strip());
                 startPosition = currentPosition + 1;
             }
         }
 
         String lastToken = input.substring(startPosition);
-        if (lastToken.equals(",")) {
+        if (lastToken.equals(";")) {
             tokens.add("");
         } else {
-            tokens.add(lastToken);
+            tokens.add(lastToken.strip());
         }
         return tokens;
     }

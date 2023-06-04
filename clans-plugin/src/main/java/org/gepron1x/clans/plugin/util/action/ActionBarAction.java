@@ -18,9 +18,12 @@
  */
 package org.gepron1x.clans.plugin.util.action;
 
+import com.google.common.base.MoreObjects;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.gepron1x.clans.plugin.util.message.Message;
+
+import java.util.Objects;
 
 public final class ActionBarAction implements Action {
 
@@ -34,4 +37,24 @@ public final class ActionBarAction implements Action {
     public void send(Audience audience, TagResolver resolver) {
         audience.sendActionBar(actionBar.with(resolver));
     }
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		ActionBarAction that = (ActionBarAction) o;
+		return Objects.equals(actionBar, that.actionBar);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(actionBar);
+	}
+
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("actionBar", actionBar)
+				.toString();
+	}
 }
