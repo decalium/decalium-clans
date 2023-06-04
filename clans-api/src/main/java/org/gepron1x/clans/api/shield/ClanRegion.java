@@ -19,6 +19,7 @@
 package org.gepron1x.clans.api.shield;
 
 import org.bukkit.Location;
+import org.gepron1x.clans.api.reference.ClanReference;
 
 import java.time.Duration;
 
@@ -26,16 +27,15 @@ public interface ClanRegion {
 
 	int id();
 
-	int level();
+	ClanReference clan();
 
 	Location location();
 
 	Shield shield();
 
-	void upgrade();
 
 
-	void addShield(Duration duration);
+	Shield addShield(Duration duration);
 
 	void removeShield();
 }

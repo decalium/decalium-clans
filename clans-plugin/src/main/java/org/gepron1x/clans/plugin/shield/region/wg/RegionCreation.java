@@ -13,8 +13,7 @@ public record RegionCreation(Configs configs, ClanRegion region) {
 	public ProtectedRegion create() {
 		Location location = region.location();
 		double s = this.configs.config().homes().homeRegionRadius();
-		double lvl = region.level() + 1;
-		double halfSize = Math.pow(1 + this.configs.config().homes().levelRegionScale(), lvl) * s;
+		double halfSize = s / 2;
 		int x = location.getBlockX();
 		int y = location.getBlockY();
 		int z = location.getBlockZ();

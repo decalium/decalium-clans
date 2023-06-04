@@ -43,7 +43,10 @@ dependencies {
     implementation("org.flywaydb:flyway-mysql:9.16.0") {
         exclude("com.fasterxml.jackson.dataformat", "jackson-dataformat-toml")
     }
-    implementation("com.github.ben-manes.caffeine:caffeine:3.1.5")
+    implementation("com.github.ben-manes.caffeine:caffeine:3.1.5") {
+        exclude("org.checkerframework", "checker-qual")
+        exclude("com.google.errorprone", "error_prone_annotations")
+    }
     implementation("cloud.commandframework:cloud-paper:1.8.3") {
         exclude("org.checkerframework", "checker-qual")
     }

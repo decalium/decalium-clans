@@ -20,37 +20,54 @@ package org.gepron1x.clans.plugin.wg;
 
 import com.sk89q.worldguard.WorldGuard;
 import org.gepron1x.clans.api.clan.Clan;
-import org.gepron1x.clans.api.repository.ClanRepository;
+import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.shield.GlobalRegions;
 import org.gepron1x.clans.plugin.AdaptingClanRepository;
 import org.gepron1x.clans.plugin.config.Configs;
-import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
-import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
-public class WgRepositoryImpl extends AdaptingClanRepository {
+import java.util.Collection;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
-    private final ClansConfig clansConfig;
+public class WgRepositoryImpl extends AdaptingClanRepository implements CachingClanRepository {
+
+
+	private final CachingClanRepository clanRepository;
 	private final WorldGuard worldGuard;
 	private final GlobalRegions regions;
-	private final FactoryOfTheFuture futuresFactory;
 
-	public WgRepositoryImpl(ClanRepository repository, Configs configs, WorldGuard worldGuard, GlobalRegions regions, FactoryOfTheFuture futuresFactory) {
-        super(repository, clan -> new WgClan(clan, configs,  worldGuard.getPlatform().getRegionContainer(), regions.clanRegions(clan), futuresFactory));
-        this.clansConfig = configs.config();
+	public WgRepositoryImpl(CachingClanRepository repository, Configs configs, WorldGuard worldGuard, GlobalRegions regions) {
+        super(repository, clan -> new WgClan(clan, configs,  worldGuard.getPlatform().getRegionContainer(), regions.clanRegions(clan)));
+		this.clanRepository = repository;
 		this.worldGuard = worldGuard;
 		this.regions = regions;
-		this.futuresFactory = futuresFactory;
 	}
 
     @Override
     public @NotNull CentralisedFuture<Boolean> removeClan(@NotNull Clan clan) {
-		var regionSet = regions.clanRegions(clan).regions().thenApply(set -> new WgRegionSet(worldGuard.getPlatform().getRegionContainer(), set));
-		var removal = super.removeClan(clan);
-		return futuresFactory.allOf(regionSet, removal).thenApply($ -> {
-			regionSet.join().clear();
-			return removal.join();
+		return super.removeClan(clan).thenApply(bool -> {
+			if(!bool) return false;
+			new WgRegionSet(worldGuard.getPlatform().getRegionContainer(), regions.clanRegions(clan)).clear();
+			return true;
 		});
     }
+
+	@Override
+	public Optional<Clan> userClanIfCached(@NotNull UUID uuid) {
+		return clanRepository.userClanIfCached(uuid).map(this::adapt);
+	}
+
+	@Override
+	public Optional<Clan> clanIfCached(@NotNull String tag) {
+		return clanRepository.clanIfCached(tag).map(this::adapt);
+	}
+
+	@Override
+	public @UnmodifiableView Collection<Clan> cachedClans() {
+		return clanRepository.cachedClans().stream().map(this::adapt).collect(Collectors.toUnmodifiableSet());
+	}
 }

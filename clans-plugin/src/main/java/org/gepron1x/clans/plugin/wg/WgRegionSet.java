@@ -6,11 +6,12 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.gepron1x.clans.api.shield.ClanRegion;
 
-import java.util.Set;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public record WgRegionSet(RegionContainer container, Set<ClanRegion> regions) {
+public record WgRegionSet(RegionContainer container, Iterable<ClanRegion> regions) {
 
 	public void addMember(UUID member) {
 		forEach(region -> region.getMembers().addPlayer(member));
@@ -37,5 +38,12 @@ public record WgRegionSet(RegionContainer container, Set<ClanRegion> regions) {
 		for(ClanRegion region : regions) {
 			new ProtectedRegionOf(container, region).region().ifPresent(consumer);
 		}
+	}
+	public Collection<ProtectedRegion> protectedRegions() {
+		HashSet<ProtectedRegion> result = new HashSet<>();
+		for(ClanRegion region : regions) {
+			new ProtectedRegionOf(container, region).region().ifPresent(result::add);
+		}
+		return result;
 	}
 }

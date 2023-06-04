@@ -25,20 +25,24 @@ import me.gepronix.decaliumcustomitems.event.ItemTriggerContext;
 import me.gepronix.decaliumcustomitems.item.Item;
 import me.gepronix.decaliumcustomitems.item.SimpleItem;
 import me.gepronix.decaliumcustomitems.item.modifier.ItemModifierImpl;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.DecaliumClansApi;
-import org.gepron1x.clans.api.clan.Clan;
+import org.gepron1x.clans.api.shield.ClanRegion;
+import org.gepron1x.clans.api.shield.RegionOverlapsException;
 import org.gepron1x.clans.api.user.ClanUser;
 import org.gepron1x.clans.gui.DecaliumClansGui;
 import org.gepron1x.clans.gui.RegionGui;
@@ -46,7 +50,7 @@ import org.gepron1x.clans.plugin.DecaliumClansPlugin;
 
 import java.util.Optional;
 
-public final class ClanHomeItem implements BuildableItem.NoConfig, Listener {
+public final class ClanRegionItem implements BuildableItem.NoConfig, Listener {
 
 	public static final NamespacedKey HOME_ITEM = new NamespacedKey(JavaPlugin.getPlugin(DecaliumClansPlugin.class), "clan_region");
 
@@ -55,7 +59,7 @@ public final class ClanHomeItem implements BuildableItem.NoConfig, Listener {
 	private final Plugin plugin;
 	private final DecaliumClansApi clans;
 
-	public ClanHomeItem(Plugin plugin, DecaliumClansApi clans) {
+	public ClanRegionItem(Plugin plugin, DecaliumClansApi clans) {
 		this.plugin = plugin;
 		this.clans = clans;
 	}
@@ -63,6 +67,7 @@ public final class ClanHomeItem implements BuildableItem.NoConfig, Listener {
 	@Override
 	public Item build() {
 		Bukkit.getPluginManager().registerEvents(this, plugin);
+		Bukkit.getPluginManager().registerEvents(new BlockProtection(block -> new CustomBlockData(block, plugin).has(REGION_ID, PersistentDataType.INTEGER)), plugin);
 		return SimpleItem.builder(Material.LODESTONE)
 				.key(HOME_ITEM).modifier(ItemModifierImpl.builder().name(DecaliumClansGui.message("Клановый приват").asComponent()).build())
 				.listener(ItemEventTrigger.BLOCK_PLACE, this::onPlace).build();
@@ -72,40 +77,28 @@ public final class ClanHomeItem implements BuildableItem.NoConfig, Listener {
 		Player player = event.getPlayer();
 		ClanUser user = clans.users().userFor(player);
 		user.regions().ifPresent(regions -> {
-			regions.create(event.getBlockPlaced().getLocation()).thenAcceptSync(region -> {
-				new CustomBlockData(event.getBlock(), plugin).set(REGION_ID, PersistentDataType.INTEGER, region.id());
-			});
+			Block block = event.getBlockPlaced();
+			try {
+				ClanRegion region = regions.create(block.getLocation());
+				var blockData = new CustomBlockData(block, plugin);
+				blockData.set(REGION_ID, PersistentDataType.INTEGER, region.id());
+				blockData.setProtected(true);
+			} catch(RegionOverlapsException e) {
+				player.showTitle(Title.title(Component.text("❌ Это место уже занято! ❌", NamedTextColor.RED), Component.text("Попробуйте поставить блок в другом месте")));
+				event.setCancelled(true);
+			}
+
 		});
 	}
 
-	@EventHandler
-	public void on(BlockBreakEvent event) {
-		ClanUser user = clans.users().userFor(event.getPlayer());
-		if(new CustomBlockData(event.getBlock(), plugin).has(REGION_ID, PersistentDataType.INTEGER)) {
-			event.setCancelled(true);
-		}
-	}
+
+
 
 	@EventHandler
 	public void on(PlayerInteractEvent event) {
 		ClanUser user = clans.users().userFor(event.getPlayer());
 		Optional.ofNullable(event.getClickedBlock()).map(b -> new CustomBlockData(b, plugin).get(REGION_ID, PersistentDataType.INTEGER)).flatMap(id -> {
-			return user.regions().map(regions -> regions.region(id));
-		}).orElseGet(() -> clans.futuresFactory().completedFuture(Optional.empty())).thenAcceptSync(opt -> {
-			opt.ifPresent(region -> new RegionGui(clans, user, region, plugin).asGui().show(event.getPlayer()));
-		}).exceptionally(t -> {
-			t.printStackTrace();
-			return null;
-		});
-	}
-
-	private String name(Player player, Clan clan) {
-		String name = player.getName() + "-home";
-		int i = 1;
-		while(clan.home(name).isPresent()) {
-			name = player.getName() + "-home-" + i;
-			i++;
-		}
-		return name;
+			return user.regions().flatMap(regions -> regions.region(id));
+		}).ifPresent(region -> new RegionGui(clans, user, region, plugin).asGui().show(event.getPlayer()));
 	}
 }

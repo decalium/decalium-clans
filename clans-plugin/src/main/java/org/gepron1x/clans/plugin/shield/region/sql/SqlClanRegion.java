@@ -18,55 +18,42 @@
  */
 package org.gepron1x.clans.plugin.shield.region.sql;
 
-import com.google.common.base.MoreObjects;
 import org.bukkit.Location;
+import org.gepron1x.clans.api.reference.ClanReference;
 import org.gepron1x.clans.api.shield.ClanRegion;
 import org.gepron1x.clans.api.shield.Shield;
-import org.gepron1x.clans.plugin.shield.ShieldImpl;
-import org.gepron1x.clans.plugin.storage.implementation.sql.AsyncJdbi;
-import space.arim.omnibus.util.concurrent.CentralisedFuture;
+import org.gepron1x.clans.plugin.storage.implementation.sql.SqlQueue;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.util.Objects;
 
 public final class SqlClanRegion implements ClanRegion {
 
-	private final int id;
 
+	private final ClanRegion region;
+	private final SqlQueue queue;
 
-	private final Region region;
-	private transient final AsyncJdbi jdbi;
-
-	public SqlClanRegion(int id, Region region, AsyncJdbi jdbi) {
-
-		this.id = id;
+	public SqlClanRegion(ClanRegion region, SqlQueue queue) {
 		this.region = region;
-		this.jdbi = jdbi;
+		this.queue = queue;
+
 	}
 	@Override
 	public int id() {
-		return id;
+		return region.id();
 	}
 
 	@Override
-	public int level() {
-		return this.region.level();
+	public ClanReference clan() {
+		return region.clan();
 	}
+
 
 	@Override
 	public Location location() {
 		return this.region.location().clone();
 	}
 
-	@Override
-	public CentralisedFuture<ClanRegion> upgrade() {
-		return jdbi.useHandle(handle -> handle.execute("UPDATE `regions` SET `level`=`level`+1 WHERE `id`=?", id))
-				.thenApply(ignored -> {
-			return new SqlClanRegion(id, region.upgrade(), jdbi);
-		});
-
-	}
 
 	@Override
 	public Shield shield() {
@@ -74,23 +61,23 @@ public final class SqlClanRegion implements ClanRegion {
 	}
 
 	@Override
-	public CentralisedFuture<ClanRegion> addShield(Duration duration) {
-		Instant now = Instant.now();
-		Instant end = now.plus(duration);
-		return jdbi.withHandle(handle -> {
+	public Shield addShield(Duration duration) {
+		var shield = region.addShield(duration);
+
+		queue.add(handle -> {
 			handle.createUpdate("INSERT INTO region_shields (`region_id`, `start`, `end`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `start`=VALUES(`start`), `end`=VALUES(`end`)")
-					.bind(0, id)
-					.bind(1, now)
-					.bind(2, end).execute();
-			return new SqlClanRegion(id, region.withShield(new ShieldImpl(now, end)), jdbi);
+					.bind(0, region.id())
+					.bind(1, shield.started())
+					.bind(2, shield.end()).execute();
 		});
+		return shield;
 	}
 
 	@Override
-	public CentralisedFuture<ClanRegion> removeShield() {
-		return jdbi.withHandle(handle -> {
-			handle.execute("DELETE FROM region_shields WHERE `region_id`=?", id);
-			return new SqlClanRegion(id, region.withShield(Shield.NONE), jdbi);
+	public void removeShield() {
+		region.removeShield();
+		queue.add(handle -> {
+			handle.execute("DELETE FROM region_shields WHERE `region_id`=?", region.id());
 		});
 	}
 
@@ -99,19 +86,11 @@ public final class SqlClanRegion implements ClanRegion {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		SqlClanRegion that = (SqlClanRegion) o;
-		return id == that.id && Objects.equals(region, that.region);
+		return Objects.equals(region, that.region) && Objects.equals(queue, that.queue);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, region);
-	}
-
-	@Override
-	public String toString() {
-		return MoreObjects.toStringHelper(this)
-				.add("id", id)
-				.add("region", region)
-				.toString();
+		return Objects.hash(region, queue);
 	}
 }

@@ -2,13 +2,12 @@ package org.gepron1x.clans.plugin.shield.region.wg;
 
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.gepron1x.clans.api.clan.Clan;
-import org.gepron1x.clans.api.shield.ClanRegion;
 import org.gepron1x.clans.api.shield.ClanRegions;
 import org.gepron1x.clans.api.shield.GlobalRegions;
 import org.gepron1x.clans.plugin.config.Configs;
-import space.arim.omnibus.util.concurrent.CentralisedFuture;
 
-import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class WgGlobalRegions implements GlobalRegions {
 
@@ -23,23 +22,20 @@ public final class WgGlobalRegions implements GlobalRegions {
 		this.configs = configs;
 	}
 	@Override
-	public CentralisedFuture<? extends Collection<ClanRegion>> listRegions() {
-		return regions.listRegions().thenApply(regions -> regions.stream().
-				<ClanRegion>map(r -> new WgClanRegion(r, container, configs)).toList());
+	public Set<ClanRegions> listRegions() {
+		return regions.listRegions().stream().map(r -> new WgClanRegions(r, regions, container, configs))
+				.collect(Collectors.toUnmodifiableSet());
 	}
-
-
-
 	@Override
 	public ClanRegions clanRegions(Clan clan) {
-		return new WgClanRegions(regions.clanRegions(clan), clan, container, configs);
+		return new WgClanRegions(regions.clanRegions(clan), regions, container, configs);
 	}
 
 	@Override
-	public CentralisedFuture<?> remove(int id) {
-		return regions.remove(id).thenAccept($ -> {
-			/* new ProtectedRegionOf(container, region).remove();
-			DHAPI.removeHologram(WgExtension.regionName(region)); */
-		});
+	public void remove(int id) {
+		for(ClanRegions regions : listRegions()) {
+			regions.region(id).ifPresent(regions::remove);
+		}
+		regions.remove(id);
 	}
 }

@@ -20,12 +20,11 @@ package org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.gepron1x.clans.api.reference.ClanReference;
 import org.gepron1x.clans.api.shield.ClanRegion;
 import org.gepron1x.clans.api.shield.Shield;
 import org.gepron1x.clans.plugin.shield.ShieldImpl;
-import org.gepron1x.clans.plugin.shield.region.sql.Region;
-import org.gepron1x.clans.plugin.shield.region.sql.SqlClanRegion;
-import org.gepron1x.clans.plugin.storage.implementation.sql.AsyncJdbi;
+import org.gepron1x.clans.plugin.shield.region.RegionImpl;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
 
@@ -35,10 +34,10 @@ import java.sql.Timestamp;
 
 public final class ClanRegionMapper implements RowMapper<ClanRegion> {
 
-	private final AsyncJdbi jdbi;
 
-	public ClanRegionMapper(AsyncJdbi jdbi) {
-		this.jdbi = jdbi;
+
+
+	public ClanRegionMapper() {
 	}
 	@Override
 	public ClanRegion map(ResultSet rs, StatementContext ctx) throws SQLException {
@@ -48,9 +47,10 @@ public final class ClanRegionMapper implements RowMapper<ClanRegion> {
 				rs.getInt("y"),
 				rs.getInt("z")
 		);
+		ClanReference reference = ctx.findColumnMapperFor(ClanReference.class).orElseThrow().map(rs, "clan_tag", ctx);
 		Timestamp start = rs.getTimestamp("start");
 		Timestamp end = rs.getTimestamp("end");
 		Shield shield = start == null ? Shield.NONE : new ShieldImpl(start.toInstant(), end.toInstant());
-		return new SqlClanRegion(rs.getInt("id"), new Region(rs.getInt("level"), location, shield), jdbi);
+		return new RegionImpl(rs.getInt("id"), reference, location, shield);
 	}
 }

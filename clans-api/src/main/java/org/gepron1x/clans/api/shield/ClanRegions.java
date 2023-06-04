@@ -19,11 +19,14 @@
 package org.gepron1x.clans.api.shield;
 
 import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 
-public interface ClanRegions {
+public interface ClanRegions extends Iterable<ClanRegion> {
+
 	Set<ClanRegion> regions();
 
 	Optional<ClanRegion> region(int id);
@@ -34,4 +37,11 @@ public interface ClanRegions {
 	void remove(ClanRegion region);
 
 	ClanRegion create(Location location);
+
+
+	@NotNull
+	@Override
+	default Iterator<ClanRegion> iterator() {
+		return regions().iterator();
+	}
 }

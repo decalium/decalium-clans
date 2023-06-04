@@ -19,13 +19,9 @@
 package org.gepron1x.clans.plugin.shield.region.sql;
 
 import org.bukkit.Location;
-import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.shield.ClanRegion;
 import org.gepron1x.clans.api.shield.ClanRegions;
-import org.gepron1x.clans.api.shield.Shield;
-import org.gepron1x.clans.plugin.storage.implementation.sql.AsyncJdbi;
-import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.ClanRegionMapper;
-import space.arim.omnibus.util.concurrent.CentralisedFuture;
+import org.gepron1x.clans.plugin.storage.implementation.sql.SqlQueue;
 
 import java.util.Optional;
 import java.util.Set;
@@ -33,50 +29,53 @@ import java.util.stream.Collectors;
 
 public final class SqlClanRegions implements ClanRegions {
 
-	private final Clan clan;
-	private final AsyncJdbi jdbi;
 
+	private final ClanRegions regions;
+	private final int clanId;
 
-	public SqlClanRegions(Clan clan, AsyncJdbi jdbi) {
-		this.clan = clan;
-		this.jdbi = jdbi;
+	private final SqlQueue queue;
+
+	public SqlClanRegions(ClanRegions regions, int clanId, SqlQueue queue) {
+		this.regions = regions;
+		this.clanId = clanId;
+		this.queue = queue;
 	}
 
 	@Override
-	public CentralisedFuture<Set<ClanRegion>> regions() {
-		return jdbi.withHandle(handle -> handle.createQuery("SELECT * FROM `regions_simple` WHERE clan_id=?").bind(0, clan.id())
-				.map(new ClanRegionMapper(jdbi)).collect(Collectors.toSet()));
+	public Set<ClanRegion> regions() {
+		return regions.regions().stream().map(r -> new SqlClanRegion(r, queue)).collect(Collectors.toSet());
 	}
 
 	@Override
-	public CentralisedFuture<Optional<ClanRegion>> region(int id) {
-		return jdbi.withHandle(handle -> handle.createQuery("SELECT * FROM `regions_simple` WHERE id=? AND clan_id=?").bind(0, id).bind(1, clan.id())
-				.map(new ClanRegionMapper(jdbi)).findFirst());
+	public Optional<ClanRegion> region(int id) {
+		return regions.region(id).map(region -> new SqlClanRegion(region, queue));
 	}
 
 	@Override
-	public CentralisedFuture<Optional<ClanRegion>> region(Location location) {
-		return jdbi.completed(Optional.empty());
+	public Optional<ClanRegion> region(Location location) {
+		return regions.region(location).map(region -> new SqlClanRegion(region, queue));
 	}
 
 	@Override
-	public CentralisedFuture<?> remove(ClanRegion region) {
-		return jdbi.useHandle(handle -> handle.execute("DELETE FROM `regions` WHERE `id`=?", region.id()));
+	public void remove(ClanRegion region) {
+		regions.remove(region);
+		queue.add(handle -> handle.execute("DELETE FROM `regions` WHERE `id`=?", region.id()));
 	}
 
 
 	@Override
-	public CentralisedFuture<ClanRegion> create(Location location) {
-		return jdbi.withHandle(handle -> {
-			int id = handle.createUpdate("INSERT INTO `regions` (clan_id, x, y, z, world) VALUES (?, ?, ?, ?, ?)")
-					.bind(0, clan.id())
-					.bind(1, location.getBlockX())
-					.bind(2, location.getBlockY())
-					.bind(3, location.getBlockZ())
-					.bind(4, location.getWorld().getName())
-					.executeAndReturnGeneratedKeys("id")
-					.mapTo(Integer.class).first();
-			return new SqlClanRegion(id, new Region(0, location, Shield.NONE), jdbi);
+	public ClanRegion create(Location location) {
+		ClanRegion region = regions.create(location);
+		queue.add(handle -> {
+			handle.createUpdate("INSERT INTO `regions` (id, clan_id, x, y, z, world) VALUES (?, ?, ?, ?, ?, ?)")
+					.bind(0, region.id())
+					.bind(1, clanId)
+					.bind(2, location.getBlockX())
+					.bind(3, location.getBlockY())
+					.bind(4, location.getBlockZ())
+					.bind(5, location.getWorld().getName())
+					.execute();
 		});
+		return new SqlClanRegion(region, queue);
 	}
 }

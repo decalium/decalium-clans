@@ -23,17 +23,14 @@ import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.edition.ClanEdition;
-import org.gepron1x.clans.api.shield.ClanRegion;
 import org.gepron1x.clans.api.shield.ClanRegions;
 import org.gepron1x.clans.plugin.clan.DelegatingClan;
 import org.gepron1x.clans.plugin.config.Configs;
 import org.gepron1x.clans.plugin.edition.PostClanEdition;
 import org.jetbrains.annotations.NotNull;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
-import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Consumer;
 
 public class WgClan implements DelegatingClan, Clan {
@@ -41,14 +38,12 @@ public class WgClan implements DelegatingClan, Clan {
     private final Configs configs;
 	private final RegionContainer container;
 	private final ClanRegions regions;
-	private final FactoryOfTheFuture futuresFactory;
 
-	public WgClan(Clan delegate, Configs configs, RegionContainer container, ClanRegions regions, FactoryOfTheFuture futuresFactory) {
+	public WgClan(Clan delegate, Configs configs, RegionContainer container, ClanRegions regions) {
         this.delegate = delegate;
         this.configs = configs;
 		this.container = container;
 		this.regions = regions;
-		this.futuresFactory = futuresFactory;
 	}
 
 
@@ -60,12 +55,9 @@ public class WgClan implements DelegatingClan, Clan {
 
     @Override
     public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
-		CentralisedFuture<Clan> edition = this.delegate.edit(transaction);
-		CentralisedFuture<Set<ClanRegion>> regionSet = this.regions.regions();
-		return futuresFactory.allOf(edition, regionSet).thenApply($ -> {
-			Clan newClan = edition.join();
-			transaction.accept(new PostClanEdition(newClan, configs.config(), new WgRegionSet(container, regionSet.join())));
-			return new WgClan(newClan, configs, container, regions, futuresFactory);
+		return this.delegate.edit(transaction).thenApply(clan -> {
+			transaction.accept(new PostClanEdition(clan, configs.config(), new WgRegionSet(container, regions)));
+			return new WgClan(clan, configs, container, regions);
 		});
     }
 

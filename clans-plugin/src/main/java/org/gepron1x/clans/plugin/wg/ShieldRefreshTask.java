@@ -23,50 +23,46 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.gepron1x.clans.api.clan.Clan;
-import org.gepron1x.clans.api.repository.ClanRepository;
+import org.gepron1x.clans.api.reference.ClanReference;
 import org.gepron1x.clans.api.shield.ClanRegion;
+import org.gepron1x.clans.api.shield.ClanRegions;
 import org.gepron1x.clans.api.shield.GlobalRegions;
 import org.gepron1x.clans.plugin.config.Configs;
 import org.gepron1x.clans.plugin.shield.region.wg.RegionHologram;
 
 import java.time.Duration;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 public final class ShieldRefreshTask extends BukkitRunnable {
 
 	private final GlobalRegions regions;
 	private final RegionContainer container;
-	private final ClanRepository repository;
 	private final Configs configs;
 
-	private final AsyncLoadingCache<String, Optional<Clan>> clanCache;
+	private final AsyncLoadingCache<ClanReference, Optional<Clan>> clanCache;
 
 
 
-	public ShieldRefreshTask(GlobalRegions regions, RegionContainer container, ClanRepository repository, Configs configs) {
+	public ShieldRefreshTask(GlobalRegions regions, RegionContainer container, Configs configs) {
 		this.regions = regions;
 		this.container = container;
-		this.repository = repository;
 		this.configs = configs;
-		this.clanCache = Caffeine.newBuilder().expireAfterWrite(Duration.ofMinutes(2)).buildAsync((s, e) -> repository.requestClan(s));
+		this.clanCache = Caffeine.newBuilder().expireAfterWrite(Duration.ofMinutes(2)).buildAsync((c, e) -> c.clan());
 	}
     @Override
     public void run() {
-       regions.listRegions().thenAccept(list -> {
-		   for(ClanRegion region : list) {
-			   var protectedRegion = new ProtectedRegionOf(container, region);
-			   if(region.shield().expired() &&
-					   protectedRegion.region().map(r -> r.getFlag(WgExtension.SHIELD_ACTIVE)).orElse(false)) {
-				   region.removeShield();
-			   }
-			   new ProtectedRegionOf(container, region).clanTag().map(clanCache::get)
-					   .orElseGet(() -> CompletableFuture.completedFuture(Optional.empty()))
-					   .thenAccept(o -> o.ifPresent(clan -> {
-						   new RegionHologram(region, clan, configs).update();
-					   }));
+       for(ClanRegions regions : regions.listRegions()) for (ClanRegion region : regions) {
+		   var protectedRegion = new ProtectedRegionOf(container, region);
+		   if(region.shield().expired() &&
+				   protectedRegion.region().map(r -> r.getFlag(WgExtension.SHIELD_ACTIVE)).orElse(false)) {
+			   region.removeShield();
 		   }
-	   }).join();
+		   clanCache.get(region.clan()).thenAccept(o -> {
+			   o.ifPresent(clan -> {
+					new RegionHologram(region, clan, configs).update();
+			   });
+		   });
+	   }
     }
 
 }

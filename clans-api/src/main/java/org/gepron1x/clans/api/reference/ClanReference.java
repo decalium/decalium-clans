@@ -41,6 +41,10 @@ public interface ClanReference {
         return cached().orElseThrow();
     }
 
+	default void ifPresent(Consumer<Clan> consumer) {
+		cached().ifPresentOrElse(consumer, () -> clan().thenAccept(o -> o.ifPresent(consumer)));
+	}
+
 
 
 

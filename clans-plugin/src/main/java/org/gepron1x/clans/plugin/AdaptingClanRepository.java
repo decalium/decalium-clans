@@ -70,4 +70,8 @@ public abstract class AdaptingClanRepository implements ClanRepository {
         return this.repository.clans().thenApply(clans -> clans.stream().map(mappingFunction).collect(Collectors.toUnmodifiableSet()));
     }
 
+	protected Clan adapt(Clan clan) {
+		return mappingFunction.apply(clan);
+	}
+
 }

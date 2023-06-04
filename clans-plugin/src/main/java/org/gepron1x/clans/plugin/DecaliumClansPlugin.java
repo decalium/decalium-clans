@@ -65,13 +65,14 @@ import org.gepron1x.clans.plugin.listener.CacheListener;
 import org.gepron1x.clans.plugin.listener.HologramProtection;
 import org.gepron1x.clans.plugin.listener.StatisticListener;
 import org.gepron1x.clans.plugin.papi.PlaceholderAPIHook;
-import org.gepron1x.clans.plugin.shield.region.sql.SqlGlobalRegions;
 import org.gepron1x.clans.plugin.shield.region.wg.WgGlobalRegions;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
 import org.gepron1x.clans.plugin.storage.HikariDataSourceCreation;
-import org.gepron1x.clans.plugin.storage.implementation.sql.AsyncJdbiImpl;
+import org.gepron1x.clans.plugin.storage.RegionStorage;
 import org.gepron1x.clans.plugin.storage.implementation.sql.JdbiCreation;
 import org.gepron1x.clans.plugin.storage.implementation.sql.SqlClanStorage;
+import org.gepron1x.clans.plugin.storage.implementation.sql.SqlQueue;
+import org.gepron1x.clans.plugin.storage.implementation.sql.SqlRegionStorage;
 import org.gepron1x.clans.plugin.users.DefaultUsers;
 import org.gepron1x.clans.plugin.util.AsciiArt;
 import org.gepron1x.clans.plugin.util.hologram.Line;
@@ -185,10 +186,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
         ClanRepository base = new ClanRepositoryImpl(this.storage, futuresFactory);
 
-		GlobalRegions regions = new WgGlobalRegions(new SqlGlobalRegions(new AsyncJdbiImpl(futuresFactory, jdbi)), WorldGuard.getInstance().getPlatform().getRegionContainer(), configs);
-
-        ClanRepository repository = new AnnouncingClanRepository(
-                isEnabled("WorldGuard") ? new WgExtension(base, configs, regions, futuresFactory).make() : base,
+        ClanRepository repository = new AnnouncingClanRepository(base,
                 getServer(),
                 messages);
 
@@ -199,11 +197,19 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
         userCaching = new UserCaching(repository, clanCache, getServer());
 
-        CachingClanRepository clanRepository = new CachingClanRepositoryImpl(
-                repository,
-                futuresFactory,
-                clanCache
-        );
+		CachingClanRepository cachingClanRepository = new CachingClanRepositoryImpl(
+				repository,
+				futuresFactory,
+				clanCache
+		);
+
+		RegionStorage regionStorage = new SqlRegionStorage(jdbi, cachingClanRepository, new SqlQueue());
+		GlobalRegions regions = new WgGlobalRegions(regionStorage.loadRegions(), WorldGuard.getInstance().getPlatform().getRegionContainer(), configs);
+        CachingClanRepository clanRepository = new WgExtension(cachingClanRepository, configs, regions).make();
+
+		getServer().getScheduler().runTaskTimerAsynchronously(this, regionStorage::save, 20 * 60, 20 * 60);
+
+
 
         Services services = new PluginServices(this);
         Users users = new DefaultUsers(clanRepository, regions);
@@ -261,10 +267,6 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         );
 		commandManager.command(commandManager.commandBuilder("clan").literal("region").permission("clans.region").handler(new ClanExecutionHandler(ctx -> {
 			Clan clan = ctx.get(ClanExecutionHandler.CLAN);
-			regions.clanRegions(clan).create(((Player) ctx.getSender()).getLocation()).exceptionally(t -> {
-				t.printStackTrace();
-				return null;
-			});
 		}, users, messages, logger)));
         var help = new MinecraftHelp<>("/clan help", AudienceProvider.nativeAudience(), this.commandManager);
         help.setHelpColors(messages.help().colors());
@@ -278,7 +280,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         StatisticListener statisticListener = new StatisticListener(clanRepository, this, futuresFactory, config);
         getServer().getPluginManager().registerEvents(statisticListener, this);
         statisticListener.start();
-        new ShieldRefreshTask(regions, WorldGuard.getInstance().getPlatform().getRegionContainer(), clanRepository, configs)
+        new ShieldRefreshTask(regions, WorldGuard.getInstance().getPlatform().getRegionContainer(), configs)
                 .runTaskTimerAsynchronously(this, 20, 20 * 20);
 
         DecaliumClansApi clansApi = new DecaliumClansApiImpl(clanRepository, users, this.roleRegistry, builderFactory, futuresFactory, wars, regions, prices.data());

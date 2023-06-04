@@ -73,9 +73,6 @@ public final class PostClanEdition implements EmptyClanEdition {
         return this;
     }
 
-
-
-
     @Override
     public ClanEdition removeHome(@NotNull ClanHome home) {
 		new HologramOfHome(this.clansConfig, clan, home).destroy();

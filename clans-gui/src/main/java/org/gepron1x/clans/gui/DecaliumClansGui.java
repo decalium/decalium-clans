@@ -21,6 +21,7 @@ package org.gepron1x.clans.gui;
 import cloud.commandframework.bukkit.parsers.PlayerArgument;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
+import com.jeff_media.customblockdata.CustomBlockData;
 import me.gepronix.decaliumcustomitems.DecaliumCustomItems;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -28,7 +29,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.DecaliumClansApi;
-import org.gepron1x.clans.gui.item.ClanHomeItem;
+import org.gepron1x.clans.gui.item.ClanRegionItem;
 import org.gepron1x.clans.plugin.DecaliumClansPlugin;
 import org.gepron1x.clans.plugin.util.message.Message;
 import org.gepron1x.clans.plugin.util.services.PluginServices;
@@ -50,6 +51,8 @@ public final class DecaliumClansGui extends JavaPlugin {
 
     @Override
     public void onEnable() {
+		CustomBlockData.registerListener(this);
+
         DecaliumClansApi api = new PluginServices(this).get(DecaliumClansApi.class).orElseThrow();
 		DecaliumClansPlugin clansPlugin = JavaPlugin.getPlugin(DecaliumClansPlugin.class);
         PaperCommandManager<CommandSender> commandManager;
@@ -63,7 +66,7 @@ public final class DecaliumClansGui extends JavaPlugin {
             return;
         }
 
-		DecaliumCustomItems.get().getItemRegistry().registerItem(new ClanHomeItem(this, api).build());
+		DecaliumCustomItems.get().getItemRegistry().registerItem(new ClanRegionItem(this, api).build());
         commandManager.registerBrigadier();
         commandManager.command(commandManager.commandBuilder("clangui").senderType(Player.class)
                 .permission("clans.gui").argument(PlayerArgument.optional("player"))
