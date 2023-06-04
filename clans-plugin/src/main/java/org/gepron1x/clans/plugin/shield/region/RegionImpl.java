@@ -1,5 +1,6 @@
 package org.gepron1x.clans.plugin.shield.region;
 
+import com.google.common.base.MoreObjects;
 import org.bukkit.Location;
 import org.gepron1x.clans.api.reference.ClanReference;
 import org.gepron1x.clans.api.shield.ClanRegion;
@@ -8,6 +9,7 @@ import org.gepron1x.clans.plugin.shield.ShieldImpl;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Objects;
 
 public final class RegionImpl implements ClanRegion {
 
@@ -55,5 +57,28 @@ public final class RegionImpl implements ClanRegion {
 	@Override
 	public void removeShield() {
 		this.shield = Shield.NONE;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		RegionImpl region = (RegionImpl) o;
+		return id == region.id && Objects.equals(clan, region.clan) && Objects.equals(location, region.location) && Objects.equals(shield, region.shield);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, clan, location, shield);
+	}
+
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("id", id)
+				.add("clan", clan)
+				.add("location", location)
+				.add("shield", shield)
+				.toString();
 	}
 }

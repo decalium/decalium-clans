@@ -11,6 +11,8 @@ import org.gepron1x.clans.plugin.util.hologram.ClanHologram;
 import org.gepron1x.clans.plugin.util.hologram.DecentClanHologram;
 import org.gepron1x.clans.plugin.wg.WgExtension;
 
+import java.util.Objects;
+
 public final class RegionHologram {
 
 	private final ClanRegion region;
@@ -36,4 +38,16 @@ public final class RegionHologram {
 				.resolver(new BooleanStateResolver("shield_active", !region.shield().expired())).build());
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		RegionHologram that = (RegionHologram) o;
+		return Objects.equals(region, that.region) && Objects.equals(clan, that.clan);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(region, clan);
+	}
 }

@@ -1,5 +1,6 @@
 package org.gepron1x.clans.plugin.shield.region.wg;
 
+import com.google.common.base.MoreObjects;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -85,5 +86,25 @@ public final class WgClanRegions implements ClanRegions {
 		});
 
 		return new WgClanRegion(r, container, configs);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		WgClanRegions that = (WgClanRegions) o;
+		return Objects.equals(regions, that.regions) && Objects.equals(global, that.global);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(regions, global);
+	}
+
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("regions", regions)
+				.toString();
 	}
 }

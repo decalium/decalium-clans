@@ -10,6 +10,7 @@ import org.gepron1x.clans.plugin.storage.implementation.sql.SqlQueue;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -50,5 +51,18 @@ public final class SqlGlobalRegions implements GlobalRegions {
 			regions.region(id).ifPresent(regions::remove);
 		}
 		queue.add(handle -> handle.execute("DELETE FROM `regions` WHERE `id`=?", id));
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		SqlGlobalRegions that = (SqlGlobalRegions) o;
+		return Objects.equals(regions, that.regions) && Objects.equals(idCounter, that.idCounter);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(regions, idCounter);
 	}
 }

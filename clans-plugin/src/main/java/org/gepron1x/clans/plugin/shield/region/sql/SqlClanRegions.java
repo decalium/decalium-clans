@@ -23,6 +23,7 @@ import org.gepron1x.clans.api.shield.ClanRegion;
 import org.gepron1x.clans.api.shield.ClanRegions;
 import org.gepron1x.clans.plugin.storage.implementation.sql.SqlQueue;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -77,5 +78,18 @@ public final class SqlClanRegions implements ClanRegions {
 					.execute();
 		});
 		return new SqlClanRegion(region, queue);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		SqlClanRegions that = (SqlClanRegions) o;
+		return clanId == that.clanId && Objects.equals(regions, that.regions);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(regions, clanId);
 	}
 }

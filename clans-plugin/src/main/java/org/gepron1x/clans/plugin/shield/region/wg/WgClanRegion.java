@@ -13,6 +13,7 @@ import org.gepron1x.clans.plugin.wg.ProtectedRegionOf;
 import org.gepron1x.clans.plugin.wg.WgExtension;
 
 import java.time.Duration;
+import java.util.Objects;
 import java.util.Optional;
 
 public final class WgClanRegion implements ClanRegion {
@@ -72,5 +73,18 @@ public final class WgClanRegion implements ClanRegion {
 
 	public Optional<ProtectedRegion> region() {
 		return new ProtectedRegionOf(container, region).region();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		WgClanRegion that = (WgClanRegion) o;
+		return Objects.equals(region, that.region);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(region);
 	}
 }
