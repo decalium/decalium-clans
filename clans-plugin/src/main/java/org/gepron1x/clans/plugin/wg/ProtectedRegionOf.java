@@ -22,8 +22,4 @@ public record ProtectedRegionOf(RegionContainer container, ClanRegion clanRegion
 	public Optional<RegionManager> regionManager() {
 		return Optional.ofNullable(container.get(BukkitAdapter.adapt(clanRegion.location().getWorld())));
 	}
-
-	public Optional<String> clanTag() {
-		return region().map(r -> r.getFlag(WgExtension.CLAN));
-	}
 }
