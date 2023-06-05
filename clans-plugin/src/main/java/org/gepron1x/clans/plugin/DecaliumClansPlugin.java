@@ -41,7 +41,6 @@ import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.repository.ClanRepository;
-import org.gepron1x.clans.api.shield.GlobalRegions;
 import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.api.war.Wars;
 import org.gepron1x.clans.plugin.announce.AnnouncingClanRepository;
@@ -204,7 +203,8 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 		);
 
 		RegionStorage regionStorage = new SqlRegionStorage(jdbi, cachingClanRepository, new SqlQueue());
-		GlobalRegions regions = new WgGlobalRegions(regionStorage.loadRegions(), WorldGuard.getInstance().getPlatform().getRegionContainer(), configs);
+		WgGlobalRegions regions = new WgGlobalRegions(regionStorage.loadRegions(), WorldGuard.getInstance().getPlatform().getRegionContainer(), configs);
+		regions.update();
         CachingClanRepository clanRepository = new WgExtension(cachingClanRepository, configs, regions).make();
 
 		getServer().getScheduler().runTaskTimerAsynchronously(this, regionStorage::save, 20 * 60, 20 * 60);

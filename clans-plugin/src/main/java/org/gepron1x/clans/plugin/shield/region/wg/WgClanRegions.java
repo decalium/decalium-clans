@@ -75,9 +75,8 @@ public final class WgClanRegions implements ClanRegions {
 		manager.addRegion(region);
 		r.clan().ifPresent(clan -> {
 			var holo = new RegionHologram(r, clan, configs);
-			region.setFlag(WgExtension.CLAN, clan.tag());
 			holo.update();
-			holo.update();
+			holo.update(); // why
 		});
 
 		return new WgClanRegion(r, container, configs);
