@@ -41,11 +41,4 @@ public interface LevelMessages {
     @DefaultString("<prefix> Successfully upgraded clan to level <level>.")
     Message upgraded();
 
-    @DefaultString("<prefix> <red>Can't create shield. Upgrade your clan to level <level>.")
-    @ConfKey("cannot-create-shield")
-    Message cannotCreateShield();
-
-
-
-
 }

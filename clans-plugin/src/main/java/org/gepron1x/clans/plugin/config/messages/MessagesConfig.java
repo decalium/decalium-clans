@@ -19,6 +19,7 @@
 package org.gepron1x.clans.plugin.config.messages;
 
 import net.kyori.adventure.text.Component;
+import org.gepron1x.clans.plugin.util.action.FormattedAction;
 import org.gepron1x.clans.plugin.util.message.Message;
 import space.arim.dazzleconf.annote.ConfComments;
 import space.arim.dazzleconf.annote.ConfHeader;
@@ -26,6 +27,7 @@ import space.arim.dazzleconf.annote.ConfKey;
 import space.arim.dazzleconf.annote.SubSection;
 
 import static space.arim.dazzleconf.annote.ConfDefault.DefaultString;
+import static space.arim.dazzleconf.annote.ConfDefault.DefaultStrings;
 @ConfHeader({"Messages configuration. Placeholders are based on message context.",
         "Plugin uses minimessage format, legacy color codes (&a, &b, &c) WILL NOT WORK.",
         "See https://docs.adventure.kyori.net/minimessage/format.html to get understanding."})
@@ -79,10 +81,14 @@ public interface MessagesConfig {
     @ConfKey("war")
     War war();
 
+	@ConfKey("region")
+	@SubSection Region region();
+
 
     @SubSection
     @ConfKey("commands")
     Commands commands();
+
 
 
 
@@ -130,7 +136,7 @@ public interface MessagesConfig {
 
         @ConfKey("player-died")
         @DefaultString("<prefix> ClanWar -> <member> died!")
-        Message playerDied();
+		FormattedAction playerDied();
 
 		@ConfKey("player-died-subtitle")
 		@DefaultString("<gray><killer> \uD83D\uDDE1<red>\uD83C\uDF27</red> <victim></gray>")
@@ -138,7 +144,7 @@ public interface MessagesConfig {
 
         @ConfKey("win")
         @DefaultString("<prefix> ClanWar -> <clan_display_name> wins! Congratulations!")
-        Message win();
+        FormattedAction win();
 
         @ConfKey("preparation-title")
         @DefaultString("<first_display_name> vs <second_display_name>")
@@ -157,6 +163,17 @@ public interface MessagesConfig {
         Message navigationDifferentWorld();
     }
 
+	interface Region {
+
+		@ConfKey("region-overlaps")
+		@DefaultString("[title] <red>❌ Это место уже занято! ❌;Попробуйте поставить блок подальше")
+		FormattedAction regionOverlaps();
+
+		@ConfKey("not-in-clan")
+		@DefaultStrings({"[sound] minecraft:note_block.iron_xylophone", "[title]<red>❌ Вы не состите в клане! ❌;Вступите в клан или создайте его."})
+		FormattedAction notInClan();
+	}
+
 
 
 
@@ -174,7 +191,7 @@ public interface MessagesConfig {
         Message onlyPlayersCanDoThis();
 
         @ConfKey("info-format")
-        @DefaultString("Clan <clan_display_name> (<clan_tag>)<br>Owner: <clan_owner><br>Members: <members>")
+        @DefaultString("Clan <clan_display_name> (<clan_tag>)<br>Owner: <clan_owner_name><br>Members: <members>")
         Message infoFormat();
 
 
@@ -217,11 +234,6 @@ public interface MessagesConfig {
         @ConfKey("war")
         @SubSection
         WarRequest wars();
-
-
-
-        @ConfKey("shields")
-        @SubSection Shield shields();
 
         interface Creation {
 
@@ -288,12 +300,6 @@ public interface MessagesConfig {
 
         }
 
-        interface Shield {
-
-            @ConfKey("shield-added")
-            @DefaultString("<prefix> Successfully protected your clan homes")
-            Message added();
-        }
 
         interface Member {
 
@@ -375,10 +381,6 @@ public interface MessagesConfig {
             @DefaultString("<prefix> Deleted home succesfully.")
             Message deleted();
 
-            @ConfKey("please-hold-an-icon")
-            @DefaultString("<prefix> Please, hold an item in your hand. It will be used as home's icon.")
-            Message holdAnItem();
-
             @ConfKey("teleported")
             @DefaultString("<prefix> Teleported to <home>")
             Message teleported();
@@ -390,10 +392,6 @@ public interface MessagesConfig {
             @ConfKey("upgraded")
             @DefaultString("<prefix> Successfully upgraded home to level <level>.")
             Message upgraded();
-
-            @ConfKey("region-conflict")
-            @DefaultString("<prefix> Cannot create home. Region collides with enemy's clan home.")
-            Message regionConflict();
 
 
         }

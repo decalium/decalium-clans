@@ -42,7 +42,7 @@ public final class AnnouncingWar implements War {
         if(!this.war.onPlayerDeath(player)) return false;
         player.getWorld().strikeLightningEffect(player.getLocation());
         Audience audience = new WarAudience(this.war);
-        audience.sendMessage(this.messages.war().playerDied().with("member", player.displayName()));
+        this.messages.war().playerDied().with("member", player.displayName()).send(audience);
 		if(player.getKiller() != null && team(player.getKiller()).isPresent()) {
 			audience.sendTitlePart(TitlePart.SUBTITLE, this.messages.war().playerDiedSubTitle()
 					.with("killer", player.getKiller().displayName())
@@ -65,7 +65,7 @@ public final class AnnouncingWar implements War {
         bars.hide(audience);
         this.war.teams().stream().filter(Team::isAlive).findFirst()
                 .flatMap(team -> team.clan().cached()).ifPresent(clan -> {
-                    audience.sendMessage(this.messages.war().win().with(ClanTagResolver.prefixed(clan)));
+                    this.messages.war().win().with(ClanTagResolver.prefixed(clan)).send(audience);
                 });
     }
 

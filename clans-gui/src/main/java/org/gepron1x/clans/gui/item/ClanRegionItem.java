@@ -25,9 +25,6 @@ import me.gepronix.decaliumcustomitems.event.ItemTriggerContext;
 import me.gepronix.decaliumcustomitems.item.Item;
 import me.gepronix.decaliumcustomitems.item.SimpleItem;
 import me.gepronix.decaliumcustomitems.item.modifier.ItemModifierImpl;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -47,6 +44,7 @@ import org.gepron1x.clans.api.user.ClanUser;
 import org.gepron1x.clans.gui.DecaliumClansGui;
 import org.gepron1x.clans.gui.RegionGui;
 import org.gepron1x.clans.plugin.DecaliumClansPlugin;
+import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
 
 import java.util.Optional;
 
@@ -58,10 +56,12 @@ public final class ClanRegionItem implements BuildableItem.NoConfig, Listener {
 
 	private final Plugin plugin;
 	private final DecaliumClansApi clans;
+	private final MessagesConfig messages;
 
-	public ClanRegionItem(Plugin plugin, DecaliumClansApi clans) {
+	public ClanRegionItem(Plugin plugin, DecaliumClansApi clans, MessagesConfig messages) {
 		this.plugin = plugin;
 		this.clans = clans;
+		this.messages = messages;
 	}
 
 	@Override
@@ -76,7 +76,7 @@ public final class ClanRegionItem implements BuildableItem.NoConfig, Listener {
 	private void onPlace(BlockPlaceEvent event, ItemTriggerContext ctx) {
 		Player player = event.getPlayer();
 		ClanUser user = clans.users().userFor(player);
-		user.regions().ifPresent(regions -> {
+		user.regions().ifPresentOrElse(regions -> {
 			Block block = event.getBlockPlaced();
 			try {
 				ClanRegion region = regions.create(block.getLocation());
@@ -84,11 +84,11 @@ public final class ClanRegionItem implements BuildableItem.NoConfig, Listener {
 				blockData.set(REGION_ID, PersistentDataType.INTEGER, region.id());
 				blockData.setProtected(true);
 			} catch(RegionOverlapsException e) {
-				player.showTitle(Title.title(Component.text("❌ Это место уже занято! ❌", NamedTextColor.RED), Component.text("Попробуйте поставить блок в другом месте")));
+				messages.region().regionOverlaps().send(player);
 				event.setCancelled(true);
 			}
 
-		});
+		}, () -> messages.region().notInClan().send(player));
 	}
 
 
