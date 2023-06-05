@@ -8,6 +8,7 @@ import org.gepron1x.clans.plugin.config.Configs;
 
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class WgGlobalRegions implements GlobalRegions {
 
@@ -23,8 +24,15 @@ public final class WgGlobalRegions implements GlobalRegions {
 	}
 	@Override
 	public Set<ClanRegions> listRegions() {
-		return regions.listRegions().stream().map(r -> new WgClanRegions(r, regions, container, configs))
-				.collect(Collectors.toUnmodifiableSet());
+		return wgClanRegions().collect(Collectors.toUnmodifiableSet());
+	}
+
+	private Stream<WgClanRegions> wgClanRegions() {
+		return regions.listRegions().stream().map(r -> new WgClanRegions(r, regions, container, configs));
+	}
+
+	public void update() {
+		wgClanRegions().forEach(WgClanRegions::updateRegions);
 	}
 	@Override
 	public ClanRegions clanRegions(Clan clan) {

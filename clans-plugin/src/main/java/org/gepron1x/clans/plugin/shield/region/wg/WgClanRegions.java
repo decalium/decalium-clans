@@ -66,17 +66,12 @@ public final class WgClanRegions implements ClanRegions {
 
 	@Override
 	public ClanRegion create(Location location) {
+		var dummy = RegionCreation.create("dummy", location, configs.config().homes().homeRegionRadius());
+		if(checkIntersecting(dummy, location)) throw new RegionOverlapsException();
+
 		ClanRegion r = regions.create(location);
 		ProtectedRegion region = new RegionCreation(configs, r).create();
 		RegionManager manager = requireNonNull(container.get(BukkitAdapter.adapt(location.getWorld())));
-		var iterator = global.listRegions().stream().flatMap(regions -> regions.regions().stream())
-				.filter(region1 -> Objects.equals(region1.location().getWorld(), location.getWorld())).iterator();
-		region.getIntersectingRegions(new WgRegionSet(container, () -> iterator).protectedRegions()).stream()
-				.filter(overlapping -> overlapping.getFlag(WgExtension.REGION_ID) != null).findAny()
-				.ifPresent($ -> {
-					 remove(r);
-					 throw new RegionOverlapsException(r);
-				});
 		manager.addRegion(region);
 		r.clan().ifPresent(clan -> {
 			var holo = new RegionHologram(r, clan, configs);
@@ -86,6 +81,22 @@ public final class WgClanRegions implements ClanRegions {
 		});
 
 		return new WgClanRegion(r, container, configs);
+	}
+
+	public void updateRegions() {
+		for(ClanRegion region : regions.regions()) {
+			var regionOf = new ProtectedRegionOf(container, region);
+			regionOf.region().ifPresentOrElse(r -> {}, () -> {
+				regionOf.regionManager().ifPresent(manager -> manager.addRegion(new RegionCreation(configs, region).create()));
+			});
+		}
+	}
+
+	private boolean checkIntersecting(ProtectedRegion region, Location location) {
+		var iterator = global.listRegions().stream().flatMap(regions -> regions.regions().stream())
+				.filter(region1 -> Objects.equals(region1.location().getWorld(), location.getWorld())).iterator();
+		return region.getIntersectingRegions(new WgRegionSet(container, () -> iterator).protectedRegions()).stream()
+				.anyMatch(overlapping -> overlapping.getFlag(WgExtension.REGION_ID) != null);
 	}
 
 	@Override

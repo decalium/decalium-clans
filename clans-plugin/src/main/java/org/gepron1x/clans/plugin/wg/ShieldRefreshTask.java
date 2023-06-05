@@ -65,4 +65,5 @@ public final class ShieldRefreshTask extends BukkitRunnable {
 	   }
     }
 
+
 }

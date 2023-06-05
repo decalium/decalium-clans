@@ -11,15 +11,13 @@ import org.gepron1x.clans.plugin.wg.WgExtension;
 public record RegionCreation(Configs configs, ClanRegion region) {
 
 	public ProtectedRegion create() {
-		Location location = region.location();
-		double s = this.configs.config().homes().homeRegionRadius();
-		double halfSize = s / 2;
-		int x = location.getBlockX();
-		int y = location.getBlockY();
-		int z = location.getBlockZ();
-		BlockVector3 first = BlockVector3.at(x - halfSize, y - halfSize, z - halfSize);
-		BlockVector3 second = BlockVector3.at(x + halfSize, y + halfSize, z + halfSize);
-		ProtectedRegion protectedRegion = new ProtectedCuboidRegion(WgExtension.regionName(region), first, second);
+
+		ProtectedRegion protectedRegion = create(
+				WgExtension.regionName(region),
+				region.location(),
+				configs.config().homes().homeRegionRadius()
+		);
+
 		configs.config().homes().worldGuardFlags().apply(protectedRegion);
 		if(!region.shield().expired()) {
 			configs.config().shields().shieldFlags().apply(protectedRegion);
@@ -27,5 +25,15 @@ public record RegionCreation(Configs configs, ClanRegion region) {
 		}
 		protectedRegion.setFlag(WgExtension.REGION_ID, region.id());
 		return protectedRegion;
+	}
+
+	public static ProtectedRegion create(String name, Location location, double radius) {
+		double halfSize = radius / 2;
+		int x = location.getBlockX();
+		int y = location.getBlockY();
+		int z = location.getBlockZ();
+		BlockVector3 first = BlockVector3.at(x - halfSize, y - halfSize, z - halfSize);
+		BlockVector3 second = BlockVector3.at(x + halfSize, y + halfSize, z + halfSize);
+		return new ProtectedCuboidRegion(name, true, first, second);
 	}
 }
