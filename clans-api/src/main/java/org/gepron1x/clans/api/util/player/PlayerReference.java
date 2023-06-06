@@ -17,16 +17,17 @@
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
 package org.gepron1x.clans.api.util.player;
+
 import com.destroystokyo.paper.profile.PlayerProfile;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.audience.ForwardingAudience;
 import org.bukkit.entity.Player;
+import org.gepron1x.clans.api.chat.GroupAudience;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public interface PlayerReference extends ForwardingAudience.Single {
+public interface PlayerReference extends GroupAudience.Single {
 
 
     static PlayerReference reference(Player player) {

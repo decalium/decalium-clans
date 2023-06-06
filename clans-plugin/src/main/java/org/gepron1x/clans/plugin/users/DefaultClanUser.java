@@ -20,6 +20,7 @@ package org.gepron1x.clans.plugin.users;
 
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
+import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.repository.ClanCreationResult;
 import org.gepron1x.clans.api.shield.ClanRegions;
@@ -52,7 +53,12 @@ public final class DefaultClanUser implements ClanUser {
         return repository.userClanIfCached(uuid);
     }
 
-    @Override
+	@Override
+	public Optional<ClanMember> member() {
+		return clan().flatMap(clan -> clan.member(uuid));
+	}
+
+	@Override
     public CentralisedFuture<ClanCreationResult> create(DraftClan draft) {
         return this.repository.createClan(draft);
     }

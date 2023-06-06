@@ -2,13 +2,13 @@ package org.gepron1x.clans.plugin.war.announce;
 
 import com.google.common.base.MoreObjects;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.audience.ForwardingAudience;
+import org.gepron1x.clans.api.chat.GroupAudience;
 import org.gepron1x.clans.api.war.War;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public final class WarAudience implements ForwardingAudience {
+public final class WarAudience implements GroupAudience {
     private final War war;
 
     public WarAudience(War war) {
@@ -28,7 +28,7 @@ public final class WarAudience implements ForwardingAudience {
         return war.equals(that.war);
     }
 
-    @Override
+	@Override
     public int hashCode() {
         return Objects.hash(war);
     }

@@ -19,15 +19,15 @@
 package org.gepron1x.clans.api.war;
 
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.audience.ForwardingAudience;
 import org.bukkit.entity.Player;
+import org.gepron1x.clans.api.chat.GroupAudience;
 import org.gepron1x.clans.api.reference.ClanReference;
 import org.gepron1x.clans.api.util.player.PlayerReference;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
-public interface Team extends ForwardingAudience {
+public interface Team extends GroupAudience {
 
     ClanReference clan();
 

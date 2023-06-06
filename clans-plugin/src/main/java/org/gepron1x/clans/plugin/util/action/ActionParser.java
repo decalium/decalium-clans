@@ -57,7 +57,7 @@ public final class ActionParser {
                 Key key = args.requireArg(0).asKey();
                 float volume = args.arg(1).map(ActionArgs.Arg::asFloat).orElse(1f);
                 float pitch = args.arg(2).map(ActionArgs.Arg::asFloat).orElse(1f);
-                yield new SoundAction(Sound.sound(key, Sound.Source.PLAYER, volume, pitch));
+                yield new SoundAction(Sound.sound(key, Sound.Source.AMBIENT, volume, pitch));
             }
             case "title" -> {
                 Message title = args.requireArg(0).asMessage(miniMessage);

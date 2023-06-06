@@ -72,10 +72,9 @@ public final class DecaliumClansGui extends JavaPlugin {
                 .permission("clans.gui").argument(PlayerArgument.optional("player"))
                 .handler(ctx -> {
                     Player player = (Player) ctx.getOrSupplyDefault("player", ctx::getSender);
-                    api.repository().userClanIfCached(player).ifPresentOrElse(clan -> {
-                        new ClanGui(getServer(), clan, api).asGui().show((Player) ctx.getSender());
-                    }, () -> {
-						ctx.getSender().sendMessage(clansPlugin.messages().notInTheClan());
+					Player viewer = (Player) ctx.getSender();
+					api.users().userFor(player).clan().ifPresent(clan -> {
+						new ClanGui(getServer(), clan, api.users().userFor(viewer), api).asGui().show(viewer);
 					});
                 })
         );

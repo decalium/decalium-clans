@@ -2,8 +2,8 @@ package org.gepron1x.clans.plugin.war.announce;
 
 import com.google.common.base.MoreObjects;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
-import net.kyori.adventure.title.TitlePart;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.chat.ClanTagResolver;
 import org.gepron1x.clans.api.war.Team;
@@ -44,10 +44,10 @@ public final class AnnouncingWar implements War {
         Audience audience = new WarAudience(this.war);
         this.messages.war().playerDied().with("member", player.displayName()).send(audience);
 		if(player.getKiller() != null && team(player.getKiller()).isPresent()) {
-			audience.sendTitlePart(TitlePart.SUBTITLE, this.messages.war().playerDiedSubTitle()
+			Title title = Title.title(Component.empty(), this.messages.war().playerDiedSubTitle()
 					.with("killer", player.getKiller().displayName())
 					.with("victim", player.displayName()).asComponent());
-			audience.sendTitlePart(TitlePart.TIMES, Title.DEFAULT_TIMES);
+			audience.showTitle(title);
 		}
 
         return true;

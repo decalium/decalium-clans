@@ -20,6 +20,7 @@ package org.gepron1x.clans.api.user;
 
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
+import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.repository.ClanCreationResult;
 import org.gepron1x.clans.api.shield.ClanRegions;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
@@ -31,6 +32,8 @@ public interface ClanUser {
     Optional<ClanRegions> regions();
 
     Optional<Clan> clan();
+
+	Optional<ClanMember> member();
     
     CentralisedFuture<ClanCreationResult> create(DraftClan draft);
 
