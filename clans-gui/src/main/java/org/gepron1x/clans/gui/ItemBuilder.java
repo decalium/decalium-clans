@@ -22,8 +22,6 @@ import com.destroystokyo.paper.profile.PlayerProfile;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.google.common.collect.Lists;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Material;
@@ -120,7 +118,7 @@ public final class ItemBuilder implements Formatted<ItemBuilder> {
 	}
 
 	private Component parse(String s, TagResolver resolver) {
-		return MiniMessage.miniMessage().deserialize(s, resolver).decoration(TextDecoration.ITALIC, false);
+		return DecaliumClansGui.MINI_MESSAGE.deserialize(s, resolver);
 	}
 
 	public ItemStack stack() {

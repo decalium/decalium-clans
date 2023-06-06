@@ -58,10 +58,14 @@ public final class ClanGui implements GuiLike {
 		this.api = api;
 	}
 
+	private boolean ownsClan() {
+		return viewer.clan().map(c -> c.id() == clan.id()).orElse(false);
+	}
+
     @Override
     public Gui asGui() {
 		int rows = 3;
-		if(viewer.clan().map(c -> c.id() != clan.id()).orElse(false)) rows += 1;
+		if(ownsClan()) rows += 1;
         ChestGui gui = new ChestGui(rows, ComponentHolder.of(message("Клан <clan>").with("clan", clan.displayName()).asComponent()));
         StaticPane pane = new StaticPane(9, rows);
 		pane.setOnClick(e -> e.setCancelled(true));
@@ -123,7 +127,7 @@ public final class ClanGui implements GuiLike {
 		if(viewer.clan().isEmpty()) {
 			interaction = List.of("<#fb2727> ⇄ Вы не можете вызывать на битвы", "<#fb2727>без клана!");
 			material = Material.BARRIER;
-		} else if(viewer.clan().map(c -> c.id() == clan.id()).orElse(false)) {
+		} else if(ownsClan()) {
 			interaction = List.of("<#7CD8D8> ⇄ Нажмите на этот предмет в меню другого клана", "<#7CD8D8>для вызова на битву!");
 		} else if(viewer.member().map(member -> !member.hasPermission(ClanPermission.SEND_WAR_REQUEST)).orElse(false)) {
 			interaction = List.of("<#fb2727> ⇄ Ваша роль не позволяет вызывать", "<#fb2727>кланы на битву.");
@@ -148,7 +152,33 @@ public final class ClanGui implements GuiLike {
 		lore.addAll(interaction);
 
 		return ItemBuilder.create(material).name("<gradient:#fb2727:#fd439c>Клановые битвы").lore(lore)
-				.with(ClanTagResolver.clan(clan)).guiItem(consumer);
+				.with(ClanTagResolver.clan(clan)).edit(meta -> meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)).guiItem(consumer);
+	}
+
+	private GuiItem clanInfo() {
+		ClanTagResolver resolver = ClanTagResolver.clan(clan);
+		List<String> lore = new ArrayList<>();
+		lore.addAll(List.of(
+				" ",
+				"<white>Уровень: <#42C4FB><level>",
+				" ",
+				"<#63FFE8><dagger> <white>Убийств: <#42C4FB><statistic_kills>",
+				"<#63FFE8><skull> <white>Смертей: <#42C4FB><statistic_deaths>",
+				" ",
+				"<#63FFE8><crossed_swords> <white>Побед в битвах: <#42C4FB><statistic_clan_war_wins>",
+				"<#63FFE8><flag> <white>Поражений в битвах: <#42C4FB><statistic_clan_war_wins>"
+		));
+
+		if(ownsClan()) {
+			lore.add(" ");
+			lore.add("<#42C4FB> ⇄ Нажмите, чтобы редактировать");
+		}
+
+		return ItemBuilder.create(Material.SKULL_BANNER_PATTERN).name("<gradient:#42C4FB:#63FFE8>Клан<reset> <display_name>")
+				.lore(lore)
+				.with("dagger", "\uD83D\uDDE1").with("skull", "☠").with("crossed_swords", "⚔").with("flag", "⚐")
+				.with(resolver)
+				.edit(meta -> meta.addItemFlags(ItemFlag.values())).guiItem();
 	}
 
 
