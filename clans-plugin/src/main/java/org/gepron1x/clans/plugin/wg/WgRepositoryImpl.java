@@ -24,9 +24,11 @@ import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.shield.GlobalRegions;
 import org.gepron1x.clans.plugin.AdaptingClanRepository;
 import org.gepron1x.clans.plugin.config.Configs;
+import org.gepron1x.clans.plugin.storage.RegionStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
+import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -36,22 +38,31 @@ import java.util.stream.Collectors;
 public class WgRepositoryImpl extends AdaptingClanRepository implements CachingClanRepository {
 
 
+	public record AsyncRegionStorage(FactoryOfTheFuture futures, RegionStorage storage) {
+		public CentralisedFuture<?> saveAsync() {
+			return futures.runAsync(storage::save);
+		}
+	}
+
+
 	private final CachingClanRepository clanRepository;
 	private final WorldGuard worldGuard;
 	private final GlobalRegions regions;
+	private final AsyncRegionStorage regionStorage;
 
-	public WgRepositoryImpl(CachingClanRepository repository, Configs configs, WorldGuard worldGuard, GlobalRegions regions) {
+	public WgRepositoryImpl(CachingClanRepository repository, Configs configs, WorldGuard worldGuard, GlobalRegions regions, AsyncRegionStorage regionStorage) {
         super(repository, clan -> new WgClan(clan, configs,  worldGuard.getPlatform().getRegionContainer(), regions.clanRegions(clan)));
 		this.clanRepository = repository;
 		this.worldGuard = worldGuard;
 		this.regions = regions;
+		this.regionStorage = regionStorage;
 	}
 
     @Override
     public @NotNull CentralisedFuture<Boolean> removeClan(@NotNull Clan clan) {
-		return super.removeClan(clan).thenApply(bool -> {
+		return regionStorage.saveAsync().thenCompose($ -> super.removeClan(clan)).thenApplySync(bool -> {
+			regions.clanRegions(clan).clear();
 			if(!bool) return false;
-			new WgRegionSet(worldGuard.getPlatform().getRegionContainer(), regions.clanRegions(clan)).clear();
 			return true;
 		});
     }

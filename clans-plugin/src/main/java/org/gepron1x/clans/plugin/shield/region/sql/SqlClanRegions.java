@@ -81,6 +81,11 @@ public final class SqlClanRegions implements ClanRegions {
 	}
 
 	@Override
+	public void clear() {
+		regions.clear();
+	}
+
+	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;

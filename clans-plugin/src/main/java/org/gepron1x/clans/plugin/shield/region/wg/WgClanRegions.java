@@ -7,11 +7,13 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import eu.decentsoftware.holograms.api.DHAPI;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.gepron1x.clans.api.shield.ClanRegion;
 import org.gepron1x.clans.api.shield.ClanRegions;
 import org.gepron1x.clans.api.shield.GlobalRegions;
 import org.gepron1x.clans.api.shield.RegionOverlapsException;
 import org.gepron1x.clans.plugin.config.Configs;
+import org.gepron1x.clans.plugin.shield.region.RegionBlock;
 import org.gepron1x.clans.plugin.wg.ProtectedRegionOf;
 import org.gepron1x.clans.plugin.wg.WgExtension;
 import org.gepron1x.clans.plugin.wg.WgRegionSet;
@@ -62,6 +64,7 @@ public final class WgClanRegions implements ClanRegions {
 		regions.remove(region);
 		new ProtectedRegionOf(container, region).remove();
 		DHAPI.removeHologram(WgExtension.regionName(region));
+		RegionBlock.remove(region.location().getBlock());
 	}
 
 	@Override
@@ -78,8 +81,19 @@ public final class WgClanRegions implements ClanRegions {
 			holo.update();
 			holo.update(); // why
 		});
-
+		RegionBlock.set(location.getBlock(), r.id());
 		return new WgClanRegion(r, container, configs);
+	}
+
+	@Override
+	public void clear() {
+		new WgRegionSet(container, regions.regions()).clear();
+		regions.forEach(r -> {
+			DHAPI.removeHologram(WgExtension.regionName(r));
+			r.location().getBlock().setType(Material.AIR);
+			RegionBlock.remove(r.location().getBlock());
+		});
+		regions.clear();
 	}
 
 	public void updateRegions() {
@@ -87,6 +101,7 @@ public final class WgClanRegions implements ClanRegions {
 			var regionOf = new ProtectedRegionOf(container, region);
 			regionOf.region().ifPresentOrElse(r -> {}, () -> {
 				regionOf.regionManager().ifPresent(manager -> manager.addRegion(new RegionCreation(configs, region).create()));
+				RegionBlock.set(region.location().getBlock(), region.id());
 			});
 		}
 	}

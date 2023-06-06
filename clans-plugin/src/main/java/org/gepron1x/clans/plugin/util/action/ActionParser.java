@@ -46,7 +46,7 @@ public final class ActionParser {
     public Action parseSingle(String value) {
         Matcher matcher = ACTION_PATTERN.matcher(value);
         if(!matcher.matches()) {
-			return new MessageAction(Message.message(value, miniMessage));
+			return new ParsedAction(new MessageAction(Message.message(value, miniMessage)), value);
 		}
         String type = matcher.group(1);
 		String text = matcher.group(2);
@@ -68,7 +68,7 @@ public final class ActionParser {
                 yield new TitleAction(title, subTitle, Title.Times.times(fadeIn, stay, fadeOut));
             }
             default -> new MessageAction(Message.message(text, miniMessage));
-        }, text);
+        }, value);
     }
 
     public Action parse(Collection<String> values) {

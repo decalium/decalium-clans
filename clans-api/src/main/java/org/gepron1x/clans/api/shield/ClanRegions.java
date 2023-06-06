@@ -38,6 +38,8 @@ public interface ClanRegions extends Iterable<ClanRegion> {
 
 	ClanRegion create(Location location);
 
+	void clear();
+
 
 	@NotNull
 	@Override

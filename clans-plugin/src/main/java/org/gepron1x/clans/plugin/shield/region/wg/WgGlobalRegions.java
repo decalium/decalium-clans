@@ -1,11 +1,14 @@
 package org.gepron1x.clans.plugin.shield.region.wg;
 
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import org.bukkit.block.Block;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.shield.ClanRegions;
 import org.gepron1x.clans.api.shield.GlobalRegions;
 import org.gepron1x.clans.plugin.config.Configs;
+import org.gepron1x.clans.plugin.shield.region.RegionBlock;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -45,5 +48,10 @@ public final class WgGlobalRegions implements GlobalRegions {
 			regions.region(id).ifPresent(regions::remove);
 		}
 		regions.remove(id);
+	}
+
+	@Override
+	public Optional<Integer> regionId(Block block) {
+		return RegionBlock.get(block);
 	}
 }

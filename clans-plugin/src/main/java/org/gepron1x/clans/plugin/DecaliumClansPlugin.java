@@ -74,6 +74,7 @@ import org.gepron1x.clans.plugin.storage.implementation.sql.SqlQueue;
 import org.gepron1x.clans.plugin.storage.implementation.sql.SqlRegionStorage;
 import org.gepron1x.clans.plugin.users.DefaultUsers;
 import org.gepron1x.clans.plugin.util.AsciiArt;
+import org.gepron1x.clans.plugin.util.action.ActionParser;
 import org.gepron1x.clans.plugin.util.hologram.Line;
 import org.gepron1x.clans.plugin.util.services.PluginServices;
 import org.gepron1x.clans.plugin.util.services.Services;
@@ -86,6 +87,8 @@ import space.arim.dazzleconf.ConfigurationOptions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static org.gepron1x.clans.plugin.wg.WgRepositoryImpl.AsyncRegionStorage;
 
 
 public final class DecaliumClansPlugin extends JavaPlugin {
@@ -155,6 +158,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
                 .addSerialiser(new FlagSetSerializer())
                 .addSerialiser(new TimeFormatSerializer())
 				.addSerialiser(new Line.Serializer())
+				.addSerialiser(new ActionSerializer(new ActionParser(miniMessage)))
                 .setCreateSingleElementCollections(true)
                 .build();
         this.messagesConfiguration = Configuration.create(this, "messages.yml", MessagesConfig.class, options);
@@ -205,7 +209,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 		RegionStorage regionStorage = new SqlRegionStorage(jdbi, cachingClanRepository, new SqlQueue());
 		WgGlobalRegions regions = new WgGlobalRegions(regionStorage.loadRegions(), WorldGuard.getInstance().getPlatform().getRegionContainer(), configs);
 		regions.update();
-        CachingClanRepository clanRepository = new WgExtension(cachingClanRepository, configs, regions).make();
+        CachingClanRepository clanRepository = new WgExtension(cachingClanRepository, configs, regions, new AsyncRegionStorage(futuresFactory, regionStorage)).make();
 
 		getServer().getScheduler().runTaskTimerAsynchronously(this, regionStorage::save, 20 * 60, 20 * 60);
 

@@ -54,6 +54,11 @@ public final class ClanRegionsImpl implements ClanRegions {
 	}
 
 	@Override
+	public void clear() {
+		this.regions.clear();
+	}
+
+	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;

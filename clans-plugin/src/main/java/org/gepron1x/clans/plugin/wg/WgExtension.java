@@ -40,16 +40,18 @@ public final class WgExtension {
     private final Configs configs;
     private final CachingClanRepository repository;
 	private final GlobalRegions regions;
+	private final WgRepositoryImpl.AsyncRegionStorage storage;
 
-	public WgExtension(CachingClanRepository repository, Configs configs, GlobalRegions regions) {
+	public WgExtension(CachingClanRepository repository, Configs configs, GlobalRegions regions, WgRepositoryImpl.AsyncRegionStorage storage) {
         this.configs = configs;
         this.repository = repository;
 		this.regions = regions;
+		this.storage = storage;
 	}
 
 
     public CachingClanRepository make() {
-        return new WgRepositoryImpl(this.repository, configs, WorldGuard.getInstance(), regions);
+        return new WgRepositoryImpl(this.repository, configs, WorldGuard.getInstance(), regions, storage);
     }
 
     public static void registerFlags() {

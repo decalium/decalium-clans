@@ -18,7 +18,6 @@
  */
 package org.gepron1x.clans.gui.item;
 
-import com.jeff_media.customblockdata.CustomBlockData;
 import me.gepronix.decaliumcustomitems.BuildableItem;
 import me.gepronix.decaliumcustomitems.event.ItemEventTrigger;
 import me.gepronix.decaliumcustomitems.event.ItemTriggerContext;
@@ -34,7 +33,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.DecaliumClansApi;
@@ -67,7 +65,7 @@ public final class ClanRegionItem implements BuildableItem.NoConfig, Listener {
 	@Override
 	public Item build() {
 		Bukkit.getPluginManager().registerEvents(this, plugin);
-		Bukkit.getPluginManager().registerEvents(new BlockProtection(block -> new CustomBlockData(block, plugin).has(REGION_ID, PersistentDataType.INTEGER)), plugin);
+		Bukkit.getPluginManager().registerEvents(new BlockProtection(block -> clans.regions().regionId(block).isPresent()), plugin);
 		return SimpleItem.builder(Material.LODESTONE)
 				.key(HOME_ITEM).modifier(ItemModifierImpl.builder().name(DecaliumClansGui.message("Клановый приват").asComponent()).build())
 				.listener(ItemEventTrigger.BLOCK_PLACE, this::onPlace).build();
@@ -80,15 +78,15 @@ public final class ClanRegionItem implements BuildableItem.NoConfig, Listener {
 			Block block = event.getBlockPlaced();
 			try {
 				ClanRegion region = regions.create(block.getLocation());
-				var blockData = new CustomBlockData(block, plugin);
-				blockData.set(REGION_ID, PersistentDataType.INTEGER, region.id());
-				blockData.setProtected(true);
 			} catch(RegionOverlapsException e) {
 				messages.region().regionOverlaps().send(player);
 				event.setCancelled(true);
 			}
 
-		}, () -> messages.region().notInClan().send(player));
+		}, () -> {
+			event.setCancelled(true);
+			messages.region().notInClan().send(player);
+		});
 	}
 
 
@@ -97,7 +95,7 @@ public final class ClanRegionItem implements BuildableItem.NoConfig, Listener {
 	@EventHandler
 	public void on(PlayerInteractEvent event) {
 		ClanUser user = clans.users().userFor(event.getPlayer());
-		Optional.ofNullable(event.getClickedBlock()).map(b -> new CustomBlockData(b, plugin).get(REGION_ID, PersistentDataType.INTEGER)).flatMap(id -> {
+		Optional.ofNullable(event.getClickedBlock()).flatMap(b -> clans.regions().regionId(b)).flatMap(id -> {
 			return user.regions().flatMap(regions -> regions.region(id));
 		}).ifPresent(region -> new RegionGui(clans, user, region, plugin).asGui().show(event.getPlayer()));
 	}
