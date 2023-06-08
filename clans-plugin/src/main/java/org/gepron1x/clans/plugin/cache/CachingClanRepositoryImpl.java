@@ -41,7 +41,7 @@ public final class CachingClanRepositoryImpl extends AdaptingClanRepository impl
     private final ClanCache cache;
 
     public CachingClanRepositoryImpl(ClanRepository repository, FactoryOfTheFuture futuresFactory, ClanCache cache) {
-        super(repository, clan -> new CachingClan(clan, cache, futuresFactory));
+        super(repository, clan -> new CachingClan(clan, futuresFactory));
         this.futuresFactory = futuresFactory;
         this.repository = repository;
         this.cache = cache;
@@ -53,7 +53,7 @@ public final class CachingClanRepositoryImpl extends AdaptingClanRepository impl
     public @NotNull CentralisedFuture<ClanCreationResult> createClan(@NotNull DraftClan draftClan) {
         if(cache.isCached(draftClan.tag())) return futuresFactory.completedFuture(ClanCreationResult.alreadyExists());
         return repository.createClan(draftClan).thenApply(result -> {
-            result.ifSuccess(this.cache::cacheClan);
+            result.ifSuccess(clan -> cache.cacheClan(new CachingClan(clan, futuresFactory)));
             return result;
         });
     }
@@ -70,7 +70,7 @@ public final class CachingClanRepositoryImpl extends AdaptingClanRepository impl
     public @NotNull CentralisedFuture<Optional<Clan>> requestClan(@NotNull String tag) {
         Clan clan = cache.getClan(tag);
         if(clan != null) {
-            return this.futuresFactory.completedFuture(Optional.of(new CachingClan(clan, cache, futuresFactory)));
+            return this.futuresFactory.completedFuture(Optional.of(clan));
         }
         return super.requestClan(tag);
     }
@@ -78,19 +78,19 @@ public final class CachingClanRepositoryImpl extends AdaptingClanRepository impl
     @Override
     public @NotNull CentralisedFuture<Optional<Clan>> requestUserClan(@NotNull UUID uuid) {
         Clan clan = cache.getUserClan(uuid);
-        if(clan != null) return this.futuresFactory.completedFuture(Optional.of(new CachingClan(clan, cache, futuresFactory)));
+        if(clan != null) return this.futuresFactory.completedFuture(Optional.of(clan));
         return super.requestUserClan(uuid);
     }
 
 
     @Override
     public Optional<Clan> userClanIfCached(@NotNull UUID uuid) {
-        return Optional.ofNullable(cache.getUserClan(uuid)).map(clan -> new CachingClan(clan, cache, futuresFactory));
+        return Optional.ofNullable(cache.getUserClan(uuid));
     }
 
     @Override
     public Optional<Clan> clanIfCached(@NotNull String tag) {
-        return Optional.ofNullable(cache.getClan(tag)).map(clan -> new CachingClan(clan, cache, futuresFactory));
+        return Optional.ofNullable(cache.getClan(tag));
     }
 
     @Override

@@ -21,6 +21,7 @@ package org.gepron1x.clans.plugin.cache;
 import org.bukkit.Server;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.repository.ClanRepository;
+import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.util.UUID;
 
@@ -29,17 +30,18 @@ public final class UserCaching {
     private final ClanRepository repository;
     private final ClanCache cache;
     private final Server server;
+	private final FactoryOfTheFuture futures;
 
-    public UserCaching(ClanRepository repository, ClanCache cache, Server server) {
-
+	public UserCaching(ClanRepository repository, ClanCache cache, Server server, FactoryOfTheFuture futures) {
         this.repository = repository;
         this.cache = cache;
         this.server = server;
-    }
+		this.futures = futures;
+	}
 
     public void cacheUser(UUID uniqueId) {
         if(cache.getUserClan(uniqueId) != null) return;
-        this.repository.requestUserClan(uniqueId).join().ifPresent(cache::cacheClan);
+        this.repository.requestUserClan(uniqueId).join().ifPresent(clan -> cache.cacheClan(new CachingClan(clan, futures)));
     }
 
     public void remove(UUID uniqueId) {

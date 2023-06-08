@@ -32,15 +32,13 @@ import java.util.function.Consumer;
 public final class CachingClan implements Clan, DelegatingClan {
 
     private volatile Clan delegate;
-    private final ClanCache cache;
 	private final FactoryOfTheFuture futuresFactory;
 
 	private CentralisedFuture<Clan> currentEdition;
 
-    public CachingClan(Clan delegate, ClanCache cache, FactoryOfTheFuture futuresFactory) {
+    public CachingClan(Clan delegate, FactoryOfTheFuture futuresFactory) {
         this.delegate = delegate;
 		this.currentEdition = futuresFactory.completedFuture(delegate);
-        this.cache = cache;
 		this.futuresFactory = futuresFactory;
 	}
 
@@ -49,11 +47,9 @@ public final class CachingClan implements Clan, DelegatingClan {
 		if(currentEdition.isCompletedExceptionally()) currentEdition = futuresFactory.completedFuture(delegate);
 		this.currentEdition = currentEdition.thenCompose(clan -> clan.edit(transaction));
         return currentEdition.thenApply(clan -> {
-			if(cache.isCached(clan.tag())) {
-				cache.removeClan(clan.tag());
-				cache.cacheClan(clan);
+			synchronized(this) {
+				this.delegate = clan;
 			}
-			this.delegate = clan;
 			return this;
 		});
     }
@@ -73,11 +69,11 @@ public final class CachingClan implements Clan, DelegatingClan {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CachingClan that = (CachingClan) o;
-        return delegate.equals(that.delegate) && cache.equals(that.cache);
+        return delegate.equals(that.delegate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(delegate, cache);
+        return Objects.hash(delegate);
     }
 }

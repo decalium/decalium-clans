@@ -198,7 +198,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
             repository = new LeveledClanRepository(repository, futuresFactory, configs);
         }
 
-        userCaching = new UserCaching(repository, clanCache, getServer());
+        userCaching = new UserCaching(repository, clanCache, getServer(), futuresFactory);
 
 		CachingClanRepository cachingClanRepository = new CachingClanRepositoryImpl(
 				repository,
