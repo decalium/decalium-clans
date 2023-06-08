@@ -29,15 +29,15 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class ClanCache {
-    private final Map<String, Clan> clanMap = new ConcurrentHashMap<>();
-    private final Map<UUID, Clan> userClanMap = new ConcurrentHashMap<>();
+    private final Map<String, CachingClan> clanMap = new ConcurrentHashMap<>();
+    private final Map<UUID, CachingClan> userClanMap = new ConcurrentHashMap<>();
 
     public ClanCache() {
 
     }
 
     @Nullable
-    public Clan getUserClan(@NotNull UUID uuid) {
+    public CachingClan getUserClan(@NotNull UUID uuid) {
         return userClanMap.get(uuid);
 
     }
@@ -53,12 +53,12 @@ public final class ClanCache {
     }
 
     @Nullable
-    public Clan getClan(@NotNull String tag) {
+    public CachingClan getClan(@NotNull String tag) {
         return clanMap.get(tag);
     }
 
 
-    public void cacheClan(Clan clan) {
+    public void cacheClan(CachingClan clan) {
         clanMap.put(clan.tag(), clan);
         for(ClanMember member : clan.members()) {
             userClanMap.put(member.uniqueId(), clan);
