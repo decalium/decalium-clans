@@ -21,6 +21,7 @@ package org.gepron1x.clans.api.user;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
+import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.repository.ClanCreationResult;
 import org.gepron1x.clans.api.shield.ClanRegions;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
@@ -28,6 +29,14 @@ import space.arim.omnibus.util.concurrent.CentralisedFuture;
 import java.util.Optional;
 
 public interface ClanUser {
+
+	default boolean isIn(Clan clan) {
+		return clan().map(c -> c.id() == clan.id()).orElse(false);
+	}
+
+	default boolean hasPermission(ClanPermission permission) {
+		return member().map(member -> member.hasPermission(permission)).orElse(false);
+	}
 
     Optional<ClanRegions> regions();
 

@@ -34,7 +34,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface ClanMember extends Buildable<ClanMember, ClanMember.Builder>, ComponentLike {
+public interface ClanMember extends Buildable<ClanMember, ClanMember.Builder>, ComponentLike, Comparable<ClanMember> {
 
 
     @NotNull UUID uniqueId();
@@ -51,7 +51,12 @@ public interface ClanMember extends Buildable<ClanMember, ClanMember.Builder>, C
         return Optional.ofNullable(server.getPlayer(uniqueId()));
     }
 
-    @NotNull
+	@Override
+	default int compareTo(@NotNull ClanMember member) {
+		return role().compareTo(member.role());
+	}
+
+	@NotNull
     default OfflinePlayer asOffline(@NotNull Server server) {
         return server.getOfflinePlayer(uniqueId());
     }

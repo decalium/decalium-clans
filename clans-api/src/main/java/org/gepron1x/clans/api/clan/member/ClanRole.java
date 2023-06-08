@@ -42,6 +42,7 @@ public interface ClanRole extends Comparable<ClanRole>, Buildable<ClanRole, Clan
         return displayName();
     }
 
+
     @Override
     default int compareTo(@NotNull ClanRole clanRole) {
         return weight() - clanRole.weight();

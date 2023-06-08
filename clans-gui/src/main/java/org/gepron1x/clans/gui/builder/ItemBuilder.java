@@ -16,32 +16,42 @@
  * along with decalium-clans. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package org.gepron1x.clans.gui;
+package org.gepron1x.clans.gui.builder;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
+import com.destroystokyo.paper.profile.ProfileProperty;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
-import com.google.common.collect.Lists;
+import com.google.gson.JsonObject;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.gepron1x.clans.gui.DecaliumClansGui;
 import org.gepron1x.clans.plugin.util.message.Formatted;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 
 public final class ItemBuilder implements Formatted<ItemBuilder> {
 
+	private static final Component DESCRIPTION_SEPARATOR = Component.text("├─", NamedTextColor.GRAY);
+	private static final Component DESCRIPTION_SPACE = Component.text("│", NamedTextColor.GRAY);
+	private static final Component DESCRIPTION_END = Component.text("└─", NamedTextColor.GRAY);
+
 	private TagResolver.Builder resolver;
 	private String displayName;
-	private List<String> lore;
+	private List<LoreApplicable> lore = new ArrayList<>();
+	private static Component parse(String s, TagResolver resolver) {
+		return DecaliumClansGui.MINI_MESSAGE.deserialize(s, resolver).colorIfAbsent(NamedTextColor.WHITE);
+	}
 
 	private final ItemStack item;
 
@@ -64,8 +74,27 @@ public final class ItemBuilder implements Formatted<ItemBuilder> {
 
 	public static ItemBuilder skull(PlayerProfile profile) {
 		ItemStack item = new ItemStack(Material.PLAYER_HEAD);
-		item.editMeta(SkullMeta.class, m -> m.setPlayerProfile(profile));
+		SkullMeta meta = (SkullMeta) item.getItemMeta();
+		meta.setPlayerProfile(profile);
+		item.setItemMeta(meta);
 		return create(item);
+	}
+
+	public static ItemBuilder skull(String base64) {
+		PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID());
+		profile.setProperty(new ProfileProperty("textures", base64));
+		return skull(profile);
+	}
+
+	public static ItemBuilder skullFromId(String id) {
+		String url = "http://textures.minecraft.net/texture/"+id;
+		JsonObject skin = new JsonObject();
+		skin.addProperty("url", url);
+		JsonObject textures = new JsonObject();
+		textures.add("SKIN", skin);
+		JsonObject object = new JsonObject();
+		object.add("textures", textures);
+		return skull(Base64.getEncoder().encodeToString(object.toString().getBytes()));
 	}
 
 
@@ -93,13 +122,39 @@ public final class ItemBuilder implements Formatted<ItemBuilder> {
 	}
 
 	public ItemBuilder lore(List<String> lore) {
-		this.lore = new ArrayList<>(lore);
+		return lore(LoreApplicable.text(lore));
+	}
+
+	public ItemBuilder lore(LoreApplicable applicable) {
+		this.lore.add(applicable);
 		return this;
 	}
 
+	public ItemBuilder description(String... strings) {
+		return lore(new DescriptionLoreApplicable(LoreApplicable.text(strings)));
+	}
+
+	public ItemBuilder interaction(TextColor color, List<String> strings) {
+		return lore(new InteractionLoreApplicable(LoreApplicable.text(strings), color));
+	}
+
+	public ItemBuilder menuInteraction(TextColor color) {
+		return interaction(color, "Нажмите, чтобы перейти в меню");
+	}
+	public ItemBuilder menuInteraction() {
+		return menuInteraction(InteractionLoreApplicable.POSITIVE);
+	}
+
+	public ItemBuilder interaction(TextColor color, String... strings) {
+		return interaction(color, List.of(strings));
+	}
+
+	public ItemBuilder space() {
+		return lore(LoreApplicable.SPACE);
+	}
+
 	public ItemBuilder lore(String... lore) {
-		this.lore = Lists.newArrayList(lore);
-		return this;
+		return lore(LoreApplicable.text(lore));
 	}
 
 	public ItemBuilder amount(int amount) {
@@ -117,15 +172,16 @@ public final class ItemBuilder implements Formatted<ItemBuilder> {
 		return this;
 	}
 
-	private Component parse(String s, TagResolver resolver) {
-		return DecaliumClansGui.MINI_MESSAGE.deserialize(s, resolver);
+	private static Component cleanItalic(Component component) {
+		if(component.hasDecoration(TextDecoration.ITALIC)) return component;
+		return component.decoration(TextDecoration.ITALIC, false);
 	}
 
 	public ItemStack stack() {
 		this.item.editMeta(meta -> {
 			TagResolver r = resolver.build();
 			Optional.ofNullable(this.displayName).map(s -> parse(s, r)).ifPresent(meta::displayName);
-			Optional.ofNullable(this.lore).map(list -> list.stream().map(s -> parse(s, r)).toList()).ifPresent(meta::lore);
+			Optional.ofNullable(this.lore).map(list -> LoreApplicable.combined(list).map(ItemBuilder::cleanItalic).lore(r)).ifPresent(meta::lore);
 		});
 		return this.item;
 	}

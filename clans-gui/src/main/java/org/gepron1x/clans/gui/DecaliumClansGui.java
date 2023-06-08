@@ -23,7 +23,6 @@ import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import com.jeff_media.customblockdata.CustomBlockData;
 import me.gepronix.decaliumcustomitems.DecaliumCustomItems;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.CommandSender;
@@ -39,7 +38,12 @@ import java.util.function.UnaryOperator;
 
 public final class DecaliumClansGui extends JavaPlugin {
 
-	public static final MiniMessage MINI_MESSAGE = MiniMessage.builder().postProcessor(c -> c.decoration(TextDecoration.ITALIC, false).colorIfAbsent(NamedTextColor.WHITE))
+	public static final MiniMessage MINI_MESSAGE = MiniMessage.builder()
+			.postProcessor(c -> {
+				var result = c;
+				if(!result.hasDecoration(TextDecoration.ITALIC)) result = result.decoration(TextDecoration.ITALIC, false);
+				return result;
+			})
 			.editTags(builder -> {
 			builder.resolver(new DecaliumColorResolver());
 	}).build();

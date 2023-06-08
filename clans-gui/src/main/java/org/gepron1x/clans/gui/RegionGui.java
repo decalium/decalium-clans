@@ -14,6 +14,7 @@ import org.gepron1x.clans.api.DecaliumClansApi;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.shield.ClanRegion;
 import org.gepron1x.clans.api.user.ClanUser;
+import org.gepron1x.clans.gui.builder.ItemBuilder;
 import org.gepron1x.clans.gui.item.ClanRegionItem;
 
 import static org.gepron1x.clans.gui.DecaliumClansGui.message;

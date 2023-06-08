@@ -23,7 +23,9 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
+import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Server;
@@ -31,15 +33,14 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.gepron1x.clans.api.DecaliumClansApi;
-import org.gepron1x.clans.api.chat.ClanMemberTagResolver;
 import org.gepron1x.clans.api.chat.ClanTagResolver;
 import org.gepron1x.clans.api.clan.Clan;
-import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.user.ClanUser;
 import org.gepron1x.clans.api.util.player.UuidPlayerReference;
+import org.gepron1x.clans.gui.builder.InteractionLoreApplicable;
+import org.gepron1x.clans.gui.builder.ItemBuilder;
 
-import java.util.*;
 import java.util.function.Consumer;
 
 import static org.gepron1x.clans.gui.DecaliumClansGui.message;
@@ -70,115 +71,121 @@ public final class ClanGui implements GuiLike {
         StaticPane pane = new StaticPane(9, rows);
 		pane.setOnClick(e -> e.setCancelled(true));
 		ClanTagResolver resolver = ClanTagResolver.clan(clan);
-		var clanInfo = ItemBuilder.create(Material.SKULL_BANNER_PATTERN).name("<gradient:#42C4FB:#63FFE8>Клан<reset> <display_name>")
-				.lore("<white>Уровень: <#42C4FB><level>",
-						" ",
-						"<#63FFE8><dagger> <white>Убийств: <#42C4FB><statistic_kills>",
-						"<#63FFE8><skull> <white>Смертей: <#42C4FB><statistic_deaths>",
-						" ",
-						"<#63FFE8><crossed_swords> <white>Побед в битвах: <#42C4FB><statistic_clan_war_wins>",
-						"<#63FFE8><flag> <white>Поражений в битвах: <#42C4FB><statistic_clan_war_wins>")
-				.with("dagger", "\uD83D\uDDE1").with("skull", "☠").with("crossed_swords", "⚔").with("flag", "⚐")
-				.with(resolver)
-				.edit(meta -> meta.addItemFlags(ItemFlag.values())).guiItem();
 
-        var memberList = ItemBuilder.skull(new UuidPlayerReference(server, clan.owner().uniqueId()).profile())
-				.name("<gradient:#92FF25:#DBFF4B>Участники клана")
-				.amount(Math.min(64, clan.members().size()))
-				.edit(meta -> {
-					ArrayList<Component> lore = new ArrayList<>();
-					lore.add(Component.empty());
-					var members = new TreeSet<>(Comparator.comparing(ClanMember::role));
-					members.addAll(clan.members());
-					Iterator<? extends ClanMember> iterator = members.iterator();
-					int size = 0;
-					for(int i = 0; i < 5; i++) {
-						if(!iterator.hasNext()) break;
-						lore.add(message("<#7CD8D8><role> <#DBFDFF><name>").with(ClanMemberTagResolver.clanMember(iterator.next())).asComponent());
-						size++;
-					}
-					if(size != clan.members().size()) {
-						lore.add(message("<#DBFDFF>...И еще <size>").with("size", clan.members().size() - size).asComponent());
-					}
-					lore.add(message("<gray>⇄ Нажми для перемещения.").asComponent());
-					meta.lore(lore);
-				})
-				.with(resolver).guiItem(event -> {
-					event.setCancelled(true);
-					event.getWhoClicked().closeInventory();
-					new ClanMemberListGui(clan, server).asGui().show(event.getWhoClicked());
-				});
-
-		pane.addItem(clanInfo, 4, 1);
-		pane.addItem(memberList, 2, 1);
+		pane.addItem(memberList(), 2, 1);
+		pane.addItem(clanInfo(), 4, 1);
 		pane.addItem(clanWars(), 6, 1);
+
+		if(ownsClan()) {
+			pane.addItem(clanUpgrade(), 2, 2);
+			pane.addItem(regions(), 4, 2);
+			pane.addItem(clanHomes(), 6, 2);
+		}
 
         gui.addPane(pane);
 		gui.addPane(border(0, rows));
 		gui.addPane(border(8, rows));
+		gui.setOnGlobalDrag(e -> e.setCancelled(true));
         return gui;
     }
+
+	private GuiItem memberList() {
+		return ItemBuilder.skull(new UuidPlayerReference(server, clan.owner().uniqueId()).profile())
+				.name("<gradient:#92FF25:#DBFF4B>Участники клана")
+				.amount(Math.min(64, clan.members().size()))
+				.space()
+				.description("Взгляни на свой состав или", "проследи за интересующим тебя кланом!")
+				.space()
+				.menuInteraction(TextColor.color(ownsClan() ? 0x92FF25 : 0xDBFDFF))
+				.guiItem(event -> {
+					new GoBackGui(new ClanMemberListGui(clan, viewer, server), Slot.fromXY(6, 5), this).asGui().show(event.getWhoClicked());
+				});
+	}
 
 
 	private GuiItem clanWars() {
 		Material material = Material.IRON_SWORD;
-		List<String> interaction;
+		String interaction;
+		TextColor color = InteractionLoreApplicable.NEGATIVE;
 		Consumer<InventoryClickEvent> consumer = e -> {};
 		if(viewer.clan().isEmpty()) {
-			interaction = List.of("<#fb2727> ⇄ Вы не можете вызывать на битвы", "<#fb2727>без клана!");
+			interaction = "Вы не можете вызывать на битвы без клана!";
 			material = Material.BARRIER;
 		} else if(ownsClan()) {
-			interaction = List.of("<#7CD8D8> ⇄ Нажмите на этот предмет в меню другого клана", "<#7CD8D8>для вызова на битву!");
+			interaction = "Нажмите в меню другого клана для вызова на битву!";
+			color = InteractionLoreApplicable.NEUTRAL;
 		} else if(viewer.member().map(member -> !member.hasPermission(ClanPermission.SEND_WAR_REQUEST)).orElse(false)) {
-			interaction = List.of("<#fb2727> ⇄ Ваша роль не позволяет вызывать", "<#fb2727>кланы на битву.");
+			interaction = "Ваша роль не позволяет вызывать кланы на битву.";
 			material = Material.BARRIER;
 		} else {
-			interaction = List.of("<#42C4FB> ⇄ Нажмите, чтобы вызвать <display_name> на битву!");
+			color = TextColor.color(0x42C4FB);
+			interaction = "Нажмите, чтобы вызвать <reset><display_name></reset> на битву!";
 			consumer = e -> {
 				Bukkit.dispatchCommand(e.getWhoClicked(), "clan war request "+clan.tag()); // TODO: proper war request api
 				e.getWhoClicked().closeInventory();
 			};
 		}
 
-		List<String> lore = new ArrayList<>();
-		lore.add(" ");
-		lore.addAll(List.of(
-				"<gray>├─<white> Устраивай незабываемые сражения",
-				"<gray>├─<white> на любой территории. Ограничений нет - победу",
-				"<gray>└─<white> определяет только мастерство и подготовка!"
-				)
-		);
-		lore.add(" ");
-		lore.addAll(interaction);
-
-		return ItemBuilder.create(material).name("<gradient:#fb2727:#fd439c>Клановые битвы").lore(lore)
+		return ItemBuilder.create(material).name("<gradient:#fb2727:#fd439c>Клановые битвы")
+				.space()
+				.description("Устраивай незабываемые сражения",
+						"на любой территории. Ограничений нет - победу",
+						"определяет только мастерство и подготовка!")
+				.space()
+				.interaction(color, interaction)
 				.with(ClanTagResolver.clan(clan)).edit(meta -> meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)).guiItem(consumer);
 	}
 
 	private GuiItem clanInfo() {
 		ClanTagResolver resolver = ClanTagResolver.clan(clan);
-		List<String> lore = new ArrayList<>();
-		lore.addAll(List.of(
-				" ",
-				"<white>Уровень: <#42C4FB><level>",
-				" ",
-				"<#63FFE8><dagger> <white>Убийств: <#42C4FB><statistic_kills>",
-				"<#63FFE8><skull> <white>Смертей: <#42C4FB><statistic_deaths>",
-				" ",
-				"<#63FFE8><crossed_swords> <white>Побед в битвах: <#42C4FB><statistic_clan_war_wins>",
-				"<#63FFE8><flag> <white>Поражений в битвах: <#42C4FB><statistic_clan_war_wins>"
-		));
 
+		var builder = ItemBuilder.create(Material.SKULL_BANNER_PATTERN)
+				.name("<gradient:#42C4FB:#63FFE8>Информация о клане <reset><display_name>")
+				.space()
+				.description(
+						"Уровень<gray>:<#42C4FB> <level> <#dbfdff><potion>",
+						" ",
+						"Убийства<gray>:<#42C4FB> <statistic_kills> <#dbfdff><dagger>",
+						"Смерти<gray>:<#42C4FB> <statistic_deaths> <#dbfdff><skull>",
+						" ",
+						"Побед в войнах:<#42C4FB> <statistic_clan_war_wins> <#dbfdff><crossed_swords>",
+						"Поражений в войнах<gray>:<#42C4FB> <statistic_clan_war_loses> <#dbfdff><flag>"
+				)
+				.with("dagger", "\uD83D\uDDE1").with("skull", "☠").with("crossed_swords", "⚔").with("flag", "⚐").with("potion", "\uD83E\uDDEA")
+				.with(resolver)
+				.edit(meta -> meta.addItemFlags(ItemFlag.values()));
 		if(ownsClan()) {
-			lore.add(" ");
-			lore.add("<#42C4FB> ⇄ Нажмите, чтобы редактировать");
+			builder.space().interaction(InteractionLoreApplicable.POSITIVE, "Нажмите для кастомизации клана");
 		}
 
-		return ItemBuilder.create(Material.SKULL_BANNER_PATTERN).name("<gradient:#42C4FB:#63FFE8>Клан<reset> <display_name>")
-				.lore(lore)
-				.with("dagger", "\uD83D\uDDE1").with("skull", "☠").with("crossed_swords", "⚔").with("flag", "⚐")
-				.with(resolver)
-				.edit(meta -> meta.addItemFlags(ItemFlag.values())).guiItem();
+		return builder.guiItem();
+	}
+
+	private GuiItem clanUpgrade() {
+		return ItemBuilder.create(Material.TOTEM_OF_UNDYING).amount(Math.min(1, clan.level()))
+				.name("<gradient:#FDA624:#FFD84A>Улучшение клана")
+				.space()
+				.description("Прокачивай уровень и", "открывай новые возможности", "для себя и своих соклановцев!")
+				.space()
+				.menuInteraction()
+				.guiItem();
+	}
+
+	private GuiItem regions() {
+		return ItemBuilder.create(Material.LODESTONE)
+				.name("<gradient:#7CD8D8:#DBFDFF>Регионы клана")
+				.space()
+				.description("Управляй своими владениями", "с любой точки сервера").space()
+				.menuInteraction()
+				.guiItem();
+	}
+
+	private GuiItem clanHomes() {
+		return ItemBuilder.create(Material.CHORUS_FRUIT)
+				.name("<gradient:#c733fb:#fd439c>Клановые телепорты")
+				.space()
+				.description("Используйте общие точки", "телепорта со своим кланом!")
+				.space().menuInteraction().guiItem();
 	}
 
 
@@ -191,7 +198,7 @@ public final class ClanGui implements GuiLike {
 		gray.editMeta(meta -> meta.displayName(Component.space()));
 
 		pane.addItem(new GuiItem(gray), 0, 0);
-		for (int i = 1; i > size - 1; i++) pane.addItem(new GuiItem(itemStack), 0, i);
+		for (int i = 1; i < size - 1; i++) pane.addItem(new GuiItem(itemStack), 0, i);
 		pane.addItem(new GuiItem(gray), 0, size - 1);
 		return pane;
 	}

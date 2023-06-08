@@ -75,6 +75,7 @@ dependencies {
     compileOnly("com.github.decentsoftware-eu:decentholograms:2.8.1")
     testImplementation("net.kyori:adventure-text-minimessage:4.13.1")
     testImplementation("com.google.guava:guava:32.0.0-jre")
+    testImplementation("com.google.code.gson:gson:2.10.1")
 
 
 }

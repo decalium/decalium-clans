@@ -50,16 +50,20 @@ public final class PaginatedGui<E> implements GuiLike {
     @Override
     public ChestGui asGui() {
         ChestGui gui = new ChestGui(6, "Paginated Gui");
-        PaginatedPane pages = new PaginatedPane(9, 5);
+		gui.addPane(ClanGui.border(0, 6));
+		gui.addPane(ClanGui.border(8, 6));
+        PaginatedPane pages = new PaginatedPane(2, 1, 5, 3);
         pages.populateWithGuiItems(elements.stream().map(mapper).toList());
         pages.setOnClick(onClick);
         gui.addPane(pages);
-        StaticPane navigation = new StaticPane(0, 5, 9, 1);
+        if(pages.getPages() < 2) return gui;
+
+		StaticPane navigation = new StaticPane(2, 4, 5, 1);
         navigation.setOnClick(event -> event.setCancelled(true));
+
         navigation.addItem(new GuiItem(new ItemStack(Material.RED_WOOL), event -> {
             if (pages.getPage() > 0) {
                 pages.setPage(pages.getPage() - 1);
-				event.setCancelled(true);
                 gui.update();
             }
         }), 0, 0);
@@ -67,10 +71,9 @@ public final class PaginatedGui<E> implements GuiLike {
         navigation.addItem(new GuiItem(new ItemStack(Material.GREEN_WOOL), event -> {
             if (pages.getPage() < pages.getPages() - 1) {
                 pages.setPage(pages.getPage() + 1);
-				event.setCancelled(true);
                 gui.update();
             }
-        }), 8, 0);
+        }), 4, 0);
 
         gui.addPane(navigation);
 
