@@ -31,6 +31,7 @@ import org.gepron1x.clans.api.edition.member.MemberEdition;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,6 +39,8 @@ public interface ClanMember extends Buildable<ClanMember, ClanMember.Builder>, C
 
 
     @NotNull UUID uniqueId();
+
+	@NotNull Instant joined();
     @NotNull ClanRole role();
 
     default boolean hasPermission(@NotNull ClanPermission permission) {
@@ -82,6 +85,9 @@ public interface ClanMember extends Buildable<ClanMember, ClanMember.Builder>, C
 
         @Contract("_ -> this")
         @NotNull Builder role(@NotNull ClanRole role);
+
+		@Contract("_ -> this")
+		@NotNull Builder joined(Instant date);
 
 
     }

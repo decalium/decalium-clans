@@ -24,12 +24,13 @@ import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.api.edition.member.MemberEdition;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 public record ClanMemberImpl(UUID uuid,
-                             ClanRole role) implements ClanMember {
+							 ClanRole role, Instant joined) implements ClanMember {
 
     @Override
     public @NotNull UUID uniqueId() {
@@ -43,7 +44,7 @@ public record ClanMemberImpl(UUID uuid,
 
     @Override
     public @NotNull ClanMember withRole(@NotNull ClanRole role) {
-        return new ClanMemberImpl(uuid, role);
+        return new ClanMemberImpl(uuid, role, joined);
     }
 
     @Override
@@ -59,6 +60,8 @@ public record ClanMemberImpl(UUID uuid,
         private UUID uuid;
         private ClanRole role;
 
+		private Instant joined;
+
         @Override
         public @NotNull Builder uuid(UUID uuid) {
             this.uuid = uuid;
@@ -71,9 +74,15 @@ public record ClanMemberImpl(UUID uuid,
             return this;
         }
 
-        @Override
+		@Override
+		public @NotNull Builder joined(Instant date) {
+			this.joined = date;
+			return this;
+		}
+
+		@Override
         public @NotNull ClanMember build() {
-            return new ClanMemberImpl(uuid, role);
+            return new ClanMemberImpl(Objects.requireNonNull((uuid)), Objects.requireNonNull(role), joined == null ? Instant.now() : joined);
         }
 
         @Override
@@ -81,7 +90,7 @@ public record ClanMemberImpl(UUID uuid,
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             BuilderImpl builder = (BuilderImpl) o;
-            return Objects.equals(uuid, builder.uuid) && Objects.equals(role, builder.role);
+            return Objects.equals(uuid, builder.uuid) && Objects.equals(role, builder.role) && Objects.equals(joined, builder.joined);
         }
 
         @Override
@@ -94,6 +103,7 @@ public record ClanMemberImpl(UUID uuid,
             return MoreObjects.toStringHelper(this)
                     .add("uuid", uuid)
                     .add("role", role)
+					.add("joined", joined)
                     .toString();
         }
 
