@@ -65,6 +65,14 @@ public final class ClanCache {
         }
     }
 
+	public void cacheClan(UUID user, CachingClan clan) {
+		userClanMap.put(user, clan);
+	}
+
+	public void removeClanEntry(UUID user) {
+		userClanMap.remove(user);
+	}
+
 
     public void removeClan(String tag) {
         Clan clan = clanMap.remove(tag);

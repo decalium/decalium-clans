@@ -20,7 +20,9 @@ package org.gepron1x.clans.plugin.cache;
 
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
+import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.edition.ClanEdition;
+import org.gepron1x.clans.api.edition.EmptyClanEdition;
 import org.gepron1x.clans.plugin.clan.DelegatingClan;
 import org.jetbrains.annotations.NotNull;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
@@ -32,12 +34,14 @@ import java.util.function.Consumer;
 public final class CachingClan implements Clan, DelegatingClan {
 
     private volatile Clan delegate;
+	private final ClanCache cache;
 	private final FactoryOfTheFuture futuresFactory;
 
 	private CentralisedFuture<Clan> currentEdition;
 
-    public CachingClan(Clan delegate, FactoryOfTheFuture futuresFactory) {
+    public CachingClan(Clan delegate, ClanCache cache, FactoryOfTheFuture futuresFactory) {
         this.delegate = delegate;
+		this.cache = cache;
 		this.currentEdition = futuresFactory.completedFuture(delegate);
 		this.futuresFactory = futuresFactory;
 	}
@@ -47,7 +51,20 @@ public final class CachingClan implements Clan, DelegatingClan {
 		if(currentEdition.isCompletedExceptionally()) currentEdition = futuresFactory.completedFuture(delegate);
 		this.currentEdition = currentEdition.thenCompose(clan -> clan.edit(transaction));
         return currentEdition.thenApply(clan -> {
-			synchronized(this) {
+			transaction.accept(new EmptyClanEdition() {
+				@Override
+				public ClanEdition addMember(@NotNull ClanMember member) {
+					cache.cacheClan(member.uniqueId(), CachingClan.this);
+					return this;
+				}
+
+				@Override
+				public ClanEdition removeMember(@NotNull ClanMember member) {
+					cache.removeClanEntry(member.uniqueId());
+					return this;
+				}
+			});
+			synchronized(CachingClan.this) {
 				this.delegate = clan;
 			}
 			return this;

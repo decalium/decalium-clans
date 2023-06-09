@@ -41,7 +41,7 @@ public final class CachingClanRepositoryImpl extends AdaptingClanRepository impl
     private final ClanCache cache;
 
     public CachingClanRepositoryImpl(ClanRepository repository, FactoryOfTheFuture futuresFactory, ClanCache cache) {
-        super(repository, clan -> new CachingClan(clan, futuresFactory));
+        super(repository, clan -> new CachingClan(clan, cache, futuresFactory));
         this.futuresFactory = futuresFactory;
         this.repository = repository;
         this.cache = cache;
@@ -53,7 +53,7 @@ public final class CachingClanRepositoryImpl extends AdaptingClanRepository impl
     public @NotNull CentralisedFuture<ClanCreationResult> createClan(@NotNull DraftClan draftClan) {
         if(cache.isCached(draftClan.tag())) return futuresFactory.completedFuture(ClanCreationResult.alreadyExists());
         return repository.createClan(draftClan).thenApply(result -> {
-            result.ifSuccess(clan -> cache.cacheClan(new CachingClan(clan, futuresFactory)));
+            result.ifSuccess(clan -> cache.cacheClan(new CachingClan(clan, cache, futuresFactory)));
             return result;
         });
     }

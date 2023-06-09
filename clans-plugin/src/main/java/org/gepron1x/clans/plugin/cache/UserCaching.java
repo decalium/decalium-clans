@@ -41,7 +41,7 @@ public final class UserCaching {
 
     public void cacheUser(UUID uniqueId) {
         if(cache.getUserClan(uniqueId) != null) return;
-        this.repository.requestUserClan(uniqueId).join().ifPresent(clan -> cache.cacheClan(new CachingClan(clan, futures)));
+        this.repository.requestUserClan(uniqueId).join().ifPresent(clan -> cache.cacheClan(new CachingClan(clan, cache, futures)));
     }
 
     public void remove(UUID uniqueId) {
