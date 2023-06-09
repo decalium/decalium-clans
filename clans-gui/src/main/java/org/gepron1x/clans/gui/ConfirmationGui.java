@@ -5,6 +5,7 @@ import com.github.stefvanschie.inventoryframework.gui.type.HopperGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentLike;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.gepron1x.clans.gui.builder.ItemBuilder;
 
@@ -22,22 +23,26 @@ public final class ConfirmationGui implements GuiLike {
 	private final Consumer<InventoryClickEvent> onConfirm;
 	private final Runnable onFail;
 
-	public ConfirmationGui(Component title, Consumer<InventoryClickEvent> onConfirm, Runnable onFail) {
+	public ConfirmationGui(ComponentLike title, Consumer<InventoryClickEvent> onConfirm, Runnable onFail) {
 
-		this.title = title;
+		this.title = title.asComponent();
 		this.onConfirm = onConfirm;
 		this.onFail = onFail;
+	}
+
+	public static ConfirmationGui confirmAndReturn(ComponentLike title, Consumer<InventoryClickEvent> onConfirm, InventoryClickEvent event) {
+		return new ConfirmationGui(title, onConfirm.andThen(e -> e.getWhoClicked().openInventory(event.getInventory())),
+				() -> event.getWhoClicked().openInventory(event.getInventory()));
 	}
 	@Override
 	public Gui asGui() {
 		HopperGui gui = new HopperGui(ComponentHolder.of(title));
-		gui.setOnClose(e -> onFail.run());
 		StaticPane pane = new StaticPane(5, 1);
 		pane.setOnClick(e -> e.setCancelled(true));
 		pane.addItem(CONFIRM.guiItem(onConfirm), 1, 0);
 		pane.addItem(CANCEL.guiItem(e -> {
-			onFail.run();
 			e.getWhoClicked().closeInventory();
+			onFail.run();
 		}), 3, 0);
 		gui.getSlotsComponent().addPane(pane);
 		return gui;

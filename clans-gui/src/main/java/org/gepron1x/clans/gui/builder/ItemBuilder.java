@@ -48,6 +48,8 @@ public final class ItemBuilder implements Formatted<ItemBuilder> {
 
 	private TagResolver.Builder resolver;
 	private String displayName;
+
+	private Consumer<InventoryClickEvent> consumer = e -> {};
 	private List<LoreApplicable> lore = new ArrayList<>();
 	private static Component parse(String s, TagResolver resolver) {
 		return DecaliumClansGui.MINI_MESSAGE.deserialize(s, resolver).colorIfAbsent(NamedTextColor.WHITE);
@@ -172,6 +174,15 @@ public final class ItemBuilder implements Formatted<ItemBuilder> {
 		return this;
 	}
 
+	public ItemBuilder consumer(Consumer<InventoryClickEvent> consumer) {
+		this.consumer = consumer;
+		return this;
+	}
+
+	public ItemBuilder cancelEvent() {
+		return consumer(e -> e.setCancelled(true));
+	}
+
 	private static Component cleanItalic(Component component) {
 		if(component.hasDecoration(TextDecoration.ITALIC)) return component;
 		return component.decoration(TextDecoration.ITALIC, false);
@@ -187,10 +198,10 @@ public final class ItemBuilder implements Formatted<ItemBuilder> {
 	}
 
 	public GuiItem guiItem(Consumer<InventoryClickEvent> event) {
-		return new GuiItem(stack(), event);
+		return new GuiItem(stack(), consumer.andThen(event));
 	}
 
 	public GuiItem guiItem() {
-		return guiItem(e -> {});
+		return guiItem(consumer);
 	}
 }

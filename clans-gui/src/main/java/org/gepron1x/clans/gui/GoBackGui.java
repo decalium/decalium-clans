@@ -4,12 +4,13 @@ import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.gepron1x.clans.gui.builder.ItemBuilder;
 
 public final class GoBackGui implements GuiLike {
 
-	private static final String TEXTURE = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzQxMzNmNmFjM2JlMmUyNDk5YTc4NGVmYWRjZmZmZWI5YWNlMDI1YzM2NDZhZGE2N2YzNDE0ZTVlZjMzOTQifX19";
-	private static final ItemBuilder GO_BACK = ItemBuilder.skull(TEXTURE).name("<#fb2727>Обратно в меню");
+	private static final String TEXTURE = "74133f6ac3be2e2499a784efadcfffeb9ace025c3646ada67f3414e5ef3394";
+	private static final ItemBuilder GO_BACK = ItemBuilder.skullFromId(TEXTURE).name("<#fb2727>Обратно в меню");
 	private final GuiLike guiLike;
 	private final Slot slot;
 	private final GuiLike toGo;
@@ -30,6 +31,9 @@ public final class GoBackGui implements GuiLike {
 			toGo.asGui().show(e.getWhoClicked());
 		}), 0, 0);
 		gui.addPane(pane);
+		gui.setOnClose(e -> {
+			if(e.getReason() == InventoryCloseEvent.Reason.PLAYER) toGo.asGui().show(e.getPlayer());
+		});
 		return gui;
 	}
 }

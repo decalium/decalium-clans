@@ -98,7 +98,7 @@ public final class ClanGui implements GuiLike {
 				.space()
 				.menuInteraction(TextColor.color(ownsClan() ? 0x92FF25 : 0xDBFDFF))
 				.guiItem(event -> {
-					new GoBackGui(new ClanMemberListGui(clan, viewer, server), Slot.fromXY(6, 5), this).asGui().show(event.getWhoClicked());
+					new GoBackGui(new ClanMemberListGui(clan, viewer, api), Slot.fromXY(6, 5), this).asGui().show(event.getWhoClicked());
 				});
 	}
 
