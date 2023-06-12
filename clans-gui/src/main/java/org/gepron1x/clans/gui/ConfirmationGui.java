@@ -17,7 +17,7 @@ public final class ConfirmationGui implements GuiLike {
 			.name("<#92FF25>Подтвердить");
 
 	private static final ItemBuilder CANCEL = ItemBuilder.skullFromId("beb588b21a6f98ad1ff4e085c552dcb050efc9cab427f46048f18fc803475f7")
-			.name("<#92FF25>Отменить");
+			.name("<#fb2727>Отменить");
 
 	private final Component title;
 	private final Consumer<InventoryClickEvent> onConfirm;

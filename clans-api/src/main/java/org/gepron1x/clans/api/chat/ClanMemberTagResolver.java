@@ -25,10 +25,17 @@ import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+
 public record ClanMemberTagResolver(@NotNull ClanMember member) implements TagResolver.WithoutArguments {
     private static final String ROLE = "role";
     private static final String NAME = "name";
     private static final String UUID = "uuid";
+	private static final String JOINED = "joined";
+
+	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yy")
+			.withZone(ZoneId.systemDefault());
 
     public static ClanMemberTagResolver clanMember(@NotNull ClanMember member) {
         return new ClanMemberTagResolver(member);
@@ -40,6 +47,7 @@ public record ClanMemberTagResolver(@NotNull ClanMember member) implements TagRe
             case ROLE -> member.role().asComponent();
             case NAME -> member.asComponent();
             case UUID -> Component.text(member.uniqueId().toString());
+			case JOINED -> Component.text(FORMATTER.format(member.joined()));
             default -> null;
         };
         return component == null ? null : Tag.selfClosingInserting(component);

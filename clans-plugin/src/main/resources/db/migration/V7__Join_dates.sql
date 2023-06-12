@@ -1,12 +1,13 @@
 ALTER TABLE `members` ADD `joined` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
 CREATE OR REPLACE VIEW `clans_simple` AS SELECT
-clans.id `clan_id`, clans.tag `clan_tag`, clans.owner `clan_owner`, clans.display_name `clan_display_name`,
-members.uuid `member_uuid`, members.role `member_role`, members.joined `member_joined`
-homes.name `home_name`, homes.creator `home_creator`, homes.display_name `home_display_name`, homes.icon `home_icon`, homes.level `home_level`,
-locations.x `location_x`, locations.y `location_y`, locations.z `location_z`, locations.world `location_world`,
-statistics.type `statistic_type`, statistics.value `statistic_value`
-FROM clans
-LEFT JOIN members ON clans.id = members.clan_id
-LEFT JOIN homes ON clans.id = homes.clan_id
-LEFT JOIN locations ON homes.id = locations.home_id
-LEFT JOIN statistics ON clans.id = statistics.clan_id;
+`C`.`id` `clan_id`, `C`.`tag` `clan_tag`, `C`.`owner` `clan_owner`, `C`.`display_name` `clan_display_name`,
+`M`.`uuid` `member_uuid`, `M`.`role` `member_role`, `M`.`joined` `member_joined`,
+`H`.`name` `home_name`, `H`.`creator` `home_creator`, `H`.`display_name` `home_display_name`, `H`.`icon` `home_icon`, `H`.`level` `home_level`,
+`L`.`x` `location_x`, `L`.`y` `location_y`, `L`.`z` `location_z`, `L`.`world` `location_world`,
+`S`.`type` `statistic_type`, `S`.`value` `statistic_value`
+FROM `clans` `C`
+LEFT JOIN `members` `M` ON `C`.`id` = `M`.`clan_id`
+LEFT JOIN `homes` `H` ON `C`.`id` = `H`.`clan_id`
+LEFT JOIN `locations` `L` ON `H`.`id` = `L`.`home_id`
+LEFT JOIN `statistics` `S` ON `C`.`id` = `S`.`clan_id`;

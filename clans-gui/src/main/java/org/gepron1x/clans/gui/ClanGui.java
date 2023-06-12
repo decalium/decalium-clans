@@ -72,6 +72,10 @@ public final class ClanGui implements GuiLike {
 		pane.setOnClick(e -> e.setCancelled(true));
 		ClanTagResolver resolver = ClanTagResolver.clan(clan);
 
+        gui.addPane(pane);
+		gui.addPane(border(0, rows));
+		gui.addPane(border(8, rows));
+		gui.setOnGlobalDrag(e -> e.setCancelled(true));
 		pane.addItem(memberList(), 2, 1);
 		pane.addItem(clanInfo(), 4, 1);
 		pane.addItem(clanWars(), 6, 1);
@@ -81,11 +85,6 @@ public final class ClanGui implements GuiLike {
 			pane.addItem(regions(), 4, 2);
 			pane.addItem(clanHomes(), 6, 2);
 		}
-
-        gui.addPane(pane);
-		gui.addPane(border(0, rows));
-		gui.addPane(border(8, rows));
-		gui.setOnGlobalDrag(e -> e.setCancelled(true));
         return gui;
     }
 

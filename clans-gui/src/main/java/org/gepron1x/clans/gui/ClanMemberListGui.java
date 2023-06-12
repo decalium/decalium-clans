@@ -39,12 +39,12 @@ import java.util.Comparator;
 import java.util.function.Consumer;
 
 public final class ClanMemberListGui implements GuiLike {
-    private final Clan clan;
+	private final Clan clan;
 	private final ClanUser viewer;
 	private final DecaliumClansApi clansApi;
 
 	public ClanMemberListGui(Clan clan, ClanUser viewer, DecaliumClansApi clansApi) {
-        this.clan = clan;
+		this.clan = clan;
 		this.viewer = viewer;
 		this.clansApi = clansApi;
 	}
@@ -54,13 +54,14 @@ public final class ClanMemberListGui implements GuiLike {
         ChestGui gui = new PaginatedGui<>(clan.members().stream().sorted(Comparator.reverseOrder()).toList(), clanMember -> {
 			var resolver = ClanMemberTagResolver.clanMember(clanMember);
 			var builder = ItemBuilder.skull(new UuidPlayerReference(Bukkit.getServer(), clanMember.uniqueId()).profile()).name("<role> <name>")
-					.with(resolver);
+					.with(resolver).description("Вступил<gray>:<#42C4FB> <joined> <#dbfdff>⌚");
 			if(!viewer.isIn(clan)) return builder.guiItem();
 			ClanMember member = viewer.member().orElseThrow();
 			if(member.equals(clanMember) || member.compareTo(clanMember) <= 0) return builder.guiItem();
 			Consumer<InventoryClickEvent> event = e -> {};
+			builder.space();
             if(member.hasPermission(ClanPermission.SET_ROLE)) {
-				builder.space().interaction(InteractionLoreApplicable.POSITIVE, "Нажмите чтобы повысить.");
+				builder.interaction(InteractionLoreApplicable.POSITIVE, "Нажмите чтобы повысить.");
 				event = event.andThen(e -> {
 					if(e.getClick() == ClickType.LEFT) {
 						e.getWhoClicked().closeInventory();
@@ -69,7 +70,7 @@ public final class ClanMemberListGui implements GuiLike {
 				});
 			}
 			if(member.hasPermission(ClanPermission.KICK)) {
-				builder.space().interaction(InteractionLoreApplicable.NEGATIVE, "Нажмите Shift+ЛКМ чтобы кикнуть.");
+				builder.interaction(InteractionLoreApplicable.NEGATIVE, "Нажмите Shift+ЛКМ чтобы кикнуть.");
 				event = event.andThen(e -> {
 					if(e.getClick() == ClickType.SHIFT_LEFT) {
 						new ConfirmationGui(DecaliumClansGui.message("Исключить <name>?").with(resolver), confirmEvent -> {
@@ -84,7 +85,7 @@ public final class ClanMemberListGui implements GuiLike {
 			return builder.guiItem(event);
         }).asGui();
         gui.setTitle(ComponentHolder.of(DecaliumClansGui.message("Участники клана <display_name>").with(ClanTagResolver.clan(clan)).asComponent()));
-		gui.update();;
+		gui.update();
         return gui;
     }
 }
