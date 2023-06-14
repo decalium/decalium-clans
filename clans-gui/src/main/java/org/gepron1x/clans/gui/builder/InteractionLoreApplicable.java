@@ -8,12 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class InteractionLoreApplicable implements LoreApplicable {
-
-	public static final TextColor NEGATIVE = TextColor.color(0xfb2727);
-	public static final TextColor NEUTRAL = TextColor.color(0xDBFDFF);
-	public static final TextColor POSITIVE = TextColor.color(0x92FF25);
-
-
 	private final LoreApplicable applicable;
 	private final TextColor color;
 

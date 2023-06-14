@@ -18,7 +18,7 @@
  */
 package org.gepron1x.clans.plugin.config.settings;
 
-import org.gepron1x.clans.api.clan.DraftClan;
+import org.gepron1x.clans.api.economy.LevelsMeta;
 import space.arim.dazzleconf.annote.ConfKey;
 import space.arim.dazzleconf.annote.SubSection;
 
@@ -27,38 +27,63 @@ import java.util.Map;
 
 import static space.arim.dazzleconf.annote.ConfDefault.*;
 
-public interface Levels {
+public interface Levels extends LevelsMeta {
 
     @DefaultBoolean(true)
     boolean enabled();
 
+	@Override
     @DefaultInteger(10)
     @ConfKey("max-level")
     int maxLevel();
 
+	@Override
     @ConfKey("allow-at")
     @SubSection AllowAt allowAt();
 
-     interface AllowAt {
+     interface AllowAt extends LevelsMeta.AllowAt {
 
+		 @Override
          @DefaultInteger(1)
          int wars();
 
+		 @Override
          @DefaultInteger(3)
-         int shields();
+         int regions();
+
+		 @Override
+		 @DefaultInteger(5)
+		 int homes();
+		 @Override
+		 @DefaultInteger(4)
+		 @ConfKey("region-effects")
+		 int regionEffects();
+
+		 @Override
+		 @DefaultInteger(3)
+		 int shields();
+
+
+
      }
 
      @ConfKey("per-level")
      @SubSection PerLevel perLevel();
 
-    interface PerLevel {
-
+    interface PerLevel extends LevelsMeta.PerLevel {
+		@Override
         @DefaultInteger(5)
         int slots();
 
+		@Override
         @DefaultInteger(1)
         int homes();
 
+		@Override
+		@DefaultInteger(1)
+		int regions();
+
+		@Override
         @ConfKey("shield-duration")
         @DefaultString("2h")
         Duration shieldDuration();
@@ -85,7 +110,12 @@ public interface Levels {
             return per.slots() * level;
         }
 
-        @Override
+		@Override
+		public int regions() {
+			return per.regions() * level;
+		}
+
+		@Override
         public Duration shieldDuration() {
             return per.shieldDuration().multipliedBy(level);
         }
@@ -94,6 +124,7 @@ public interface Levels {
 
     @DefaultMap({})
     Map<Integer, @SubSection PerLevel> individual();
+	@Override
     default PerLevel forLevel(int level) {
         PerLevel per = individual().get(level);
         if(per != null) return per;
@@ -101,8 +132,5 @@ public interface Levels {
 
     }
 
-    default PerLevel forLevel(DraftClan clan) {
-        return forLevel(clan.level());
-    }
 
 }

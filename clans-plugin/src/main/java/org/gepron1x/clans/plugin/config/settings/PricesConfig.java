@@ -20,22 +20,20 @@ package org.gepron1x.clans.plugin.config.settings;
 
 import org.gepron1x.clans.api.economy.Prices;
 import org.gepron1x.clans.plugin.util.message.Message;
+import space.arim.dazzleconf.annote.ConfDefault;
 import space.arim.dazzleconf.annote.ConfKey;
+
+import java.util.Map;
 
 import static space.arim.dazzleconf.annote.ConfDefault.DefaultDouble;
 import static space.arim.dazzleconf.annote.ConfDefault.DefaultString;
 
 public interface PricesConfig extends Prices {
 
-    @DefaultDouble(50)
+    @DefaultDouble(800)
     @ConfKey("home-creation")
 	@Override
     double homeCreation();
-
-    @DefaultDouble(50)
-    @ConfKey("home-upgrade")
-	@Override
-    double homeUpgrade();
 
     @DefaultDouble(100)
     @ConfKey("clan-creation")
@@ -44,10 +42,24 @@ public interface PricesConfig extends Prices {
 
     @DefaultDouble(200)
     @ConfKey("clan-upgrade")
-	@Override
     double clanUpgrade();
 
-    @DefaultDouble(1000)
+	@ConfDefault.DefaultMap({})
+	@ConfKey("upgrade-prices")
+	Map<Integer, Double> upgradePrices();
+
+	@Override
+	default double clanUpgrade(int level) {
+		Double value = upgradePrices().get(level);
+		return value == null ? clanUpgrade() * (Math.pow(2, level)) / 2 : value;
+	}
+
+	@Override
+	@ConfKey("region")
+	@DefaultDouble(500)
+	double region();
+
+	@DefaultDouble(1000)
 	@Override
     double shield();
 

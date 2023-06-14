@@ -50,7 +50,7 @@ public interface ClanEdition extends Edition<DraftClan> {
     }
 
     default ClanEdition upgrade() {
-        return addStatistics(Map.of(StatisticType.LEVEL, 1));
+        return incrementStatistic(StatisticType.LEVEL);
     }
 
 

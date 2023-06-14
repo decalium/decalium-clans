@@ -22,13 +22,12 @@ public interface Prices {
 
 	double homeCreation();
 
-	double homeUpgrade();
-
-
 	double clanCreation();
 
+	double region();
 
-	double clanUpgrade();
+
+	double clanUpgrade(int level);
 
 	double shield();
 }

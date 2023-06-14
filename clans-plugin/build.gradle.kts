@@ -87,7 +87,6 @@ fun com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar.relocateDependenc
     relocate(pkg, "$libraryPackage.$pkg")
 }
 
-
 tasks {
     shadowJar {
         relocateDependency("org.antlr")
@@ -126,6 +125,7 @@ tasks {
         // Your plugin's jar (or shadowJar if present) will be used automatically.
         minecraftVersion("1.18.2")
         jvmArgs("-Xms128M", "-Xmx512M")
+
     }
 }
 

@@ -1,6 +1,8 @@
 package org.gepron1x.clans.gui.builder;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.gepron1x.clans.gui.DecaliumClansGui;
 
@@ -49,6 +51,17 @@ public interface LoreApplicable {
 
 	default LoreApplicable map(UnaryOperator<Component> mapper) {
 		return r -> this.lore(r).stream().map(mapper).toList();
+	}
+
+	default LoreApplicable color(TextColor color) {
+		return map(c -> c.color(color));
+	}
+
+	default LoreApplicable noItalic() {
+		return map(c -> {
+			if(c.hasDecoration(TextDecoration.ITALIC)) return c.decoration(TextDecoration.ITALIC, false);
+			return c;
+		});
 	}
 
 

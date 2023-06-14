@@ -58,11 +58,10 @@ public final class EconomyEdition implements EmptyClanEdition {
         return this;
     }
 
-    private final class EconomyHomeEdition implements EmptyHomeEdition {
+    private static final class EconomyHomeEdition implements EmptyHomeEdition {
 
         @Override
         public HomeEdition upgrade() {
-            pay(prices.homeUpgrade());
             return this;
         }
     }

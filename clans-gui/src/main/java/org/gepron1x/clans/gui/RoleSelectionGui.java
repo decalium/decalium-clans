@@ -16,7 +16,6 @@ import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.api.user.ClanUser;
-import org.gepron1x.clans.gui.builder.InteractionLoreApplicable;
 import org.gepron1x.clans.gui.builder.ItemBuilder;
 
 import java.util.Iterator;
@@ -40,6 +39,7 @@ public final class RoleSelectionGui implements GuiLike {
 	@Override
 	public Gui asGui() {
 		HopperGui gui = new HopperGui(ComponentHolder.of(Component.text("Выбор роли ").append(member)));
+		gui.setOnClose(e -> parent.asGui().show(e.getPlayer()));
 		ClanRole defaultRole = clansApi.roleRegistry().defaultRole();
 		ClanRole helperRole = clansApi.roleRegistry().value("helper").orElseThrow();
 		ClanRole ownerRole = clansApi.roleRegistry().ownerRole();
@@ -58,7 +58,7 @@ public final class RoleSelectionGui implements GuiLike {
 		var owner = ItemBuilder.create(Material.MUSIC_DISC_PIGSTEP).name("<gradient:#fb2727:#fd439c>Назначить владельцем").space()
 				.description("Передает клан игроку.",
 						"После передачи вы <color:#fb2727>потеряете роль вдалельца</color>.").space()
-				.interaction(InteractionLoreApplicable.NEGATIVE, "Нажмите для передачи!").consumer(event -> {
+				.interaction(Colors.NEGATIVE, "Нажмите для передачи!").consumer(event -> {
 					ConfirmationGui.confirmAndReturn(
 							DecaliumClansGui.message("Передача клана <name>").with(ClanMemberTagResolver.clanMember(member)),
 							confirmEvent -> {
@@ -87,7 +87,7 @@ public final class RoleSelectionGui implements GuiLike {
 			builder.edit(meta -> meta.addEnchant(Enchantment.ARROW_INFINITE, 1, true));
 		}
 		else {
-			builder.space().interaction(InteractionLoreApplicable.POSITIVE, "Нажмите, чтобы выбрать!").consumer(e -> {
+			builder.space().interaction(Colors.POSITIVE, "Нажмите, чтобы выбрать!").consumer(e -> {
 				e.getWhoClicked().closeInventory();
 				new ConfirmationGui(Component.text("Вы уверены?"), confirmEvent -> {
 					clan.edit(edition -> edition.editMember(member.uniqueId(), memberEdition -> memberEdition.appoint(role))).thenAcceptSync(newClan -> {

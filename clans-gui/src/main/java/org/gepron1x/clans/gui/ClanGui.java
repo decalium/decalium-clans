@@ -23,7 +23,6 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
-import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
@@ -38,7 +37,6 @@ import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.user.ClanUser;
 import org.gepron1x.clans.api.util.player.UuidPlayerReference;
-import org.gepron1x.clans.gui.builder.InteractionLoreApplicable;
 import org.gepron1x.clans.gui.builder.ItemBuilder;
 
 import java.util.function.Consumer;
@@ -60,7 +58,7 @@ public final class ClanGui implements GuiLike {
 	}
 
 	private boolean ownsClan() {
-		return viewer.clan().map(c -> c.id() == clan.id()).orElse(false);
+		return viewer.isIn(clan);
 	}
 
     @Override
@@ -97,7 +95,7 @@ public final class ClanGui implements GuiLike {
 				.space()
 				.menuInteraction(TextColor.color(ownsClan() ? 0x92FF25 : 0xDBFDFF))
 				.guiItem(event -> {
-					new GoBackGui(new ClanMemberListGui(clan, viewer, api), Slot.fromXY(6, 5), this).asGui().show(event.getWhoClicked());
+					new ClanMemberListGui(this, clan, viewer, api).asGui().show(event.getWhoClicked());
 				});
 	}
 
@@ -105,15 +103,15 @@ public final class ClanGui implements GuiLike {
 	private GuiItem clanWars() {
 		Material material = Material.IRON_SWORD;
 		String interaction;
-		TextColor color = InteractionLoreApplicable.NEGATIVE;
+		TextColor color = Colors.NEGATIVE;
 		Consumer<InventoryClickEvent> consumer = e -> {};
 		if(viewer.clan().isEmpty()) {
 			interaction = "Вы не можете вызывать на битвы без клана!";
 			material = Material.BARRIER;
 		} else if(ownsClan()) {
 			interaction = "Нажмите в меню другого клана для вызова на битву!";
-			color = InteractionLoreApplicable.NEUTRAL;
-		} else if(viewer.member().map(member -> !member.hasPermission(ClanPermission.SEND_WAR_REQUEST)).orElse(false)) {
+			color = Colors.NEUTRAL;
+		} else if(viewer.hasPermission(ClanPermission.SEND_WAR_REQUEST)) {
 			interaction = "Ваша роль не позволяет вызывать кланы на битву.";
 			material = Material.BARRIER;
 		} else {
@@ -154,7 +152,7 @@ public final class ClanGui implements GuiLike {
 				.with(resolver)
 				.edit(meta -> meta.addItemFlags(ItemFlag.values()));
 		if(ownsClan()) {
-			builder.space().interaction(InteractionLoreApplicable.POSITIVE, "Нажмите для кастомизации клана");
+			builder.space().interaction(Colors.POSITIVE, "Нажмите для кастомизации клана");
 		}
 
 		return builder.guiItem();
@@ -167,7 +165,7 @@ public final class ClanGui implements GuiLike {
 				.description("Прокачивай уровень и", "открывай новые возможности", "для себя и своих соклановцев!")
 				.space()
 				.menuInteraction()
-				.guiItem();
+				.guiItem(e -> new UpgradeGui(this, viewer, api).asGui().show(e.getWhoClicked()));
 	}
 
 	private GuiItem regions() {

@@ -22,6 +22,7 @@ import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
+import org.gepron1x.clans.api.economy.LevelsMeta;
 import org.gepron1x.clans.api.economy.Prices;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.shield.GlobalRegions;
@@ -48,6 +49,8 @@ public interface DecaliumClansApi extends ClanBuilderFactory {
     @NotNull Wars wars();
 
 	@NotNull Prices prices();
+
+	@NotNull LevelsMeta levels();
 
 
 

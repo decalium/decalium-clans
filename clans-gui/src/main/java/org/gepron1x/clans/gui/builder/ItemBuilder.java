@@ -34,6 +34,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.gepron1x.clans.gui.Colors;
 import org.gepron1x.clans.gui.DecaliumClansGui;
 import org.gepron1x.clans.plugin.util.message.Formatted;
 
@@ -132,8 +133,12 @@ public final class ItemBuilder implements Formatted<ItemBuilder> {
 		return this;
 	}
 
-	public ItemBuilder description(String... strings) {
+	public ItemBuilder description(List<String> strings) {
 		return lore(new DescriptionLoreApplicable(LoreApplicable.text(strings)));
+	}
+
+	public ItemBuilder description(String... strings) {
+		return description(List.of(strings));
 	}
 
 	public ItemBuilder interaction(TextColor color, List<String> strings) {
@@ -144,7 +149,7 @@ public final class ItemBuilder implements Formatted<ItemBuilder> {
 		return interaction(color, "Нажмите, чтобы перейти в меню");
 	}
 	public ItemBuilder menuInteraction() {
-		return menuInteraction(InteractionLoreApplicable.POSITIVE);
+		return menuInteraction(Colors.POSITIVE);
 	}
 
 	public ItemBuilder interaction(TextColor color, String... strings) {
@@ -202,6 +207,6 @@ public final class ItemBuilder implements Formatted<ItemBuilder> {
 	}
 
 	public GuiItem guiItem() {
-		return guiItem(consumer);
+		return guiItem(e -> {});
 	}
 }

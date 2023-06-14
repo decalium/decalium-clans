@@ -21,6 +21,7 @@ package org.gepron1x.clans.plugin;
 import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.DecaliumClansApi;
 import org.gepron1x.clans.api.RoleRegistry;
+import org.gepron1x.clans.api.economy.LevelsMeta;
 import org.gepron1x.clans.api.economy.Prices;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.shield.GlobalRegions;
@@ -74,6 +75,11 @@ public final class MutableClansApi implements DecaliumClansApi {
 	@Override
 	public @NotNull Prices prices() {
 		return this.api.prices();
+	}
+
+	@Override
+	public @NotNull LevelsMeta levels() {
+		return this.api.levels();
 	}
 
 	public void setApi(DecaliumClansApi api) {

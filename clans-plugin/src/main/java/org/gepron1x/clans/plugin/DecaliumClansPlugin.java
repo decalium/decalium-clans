@@ -287,7 +287,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         new ShieldRefreshTask(regions, WorldGuard.getInstance().getPlatform().getRegionContainer(), configs)
                 .runTaskTimerAsynchronously(this, 20, 20 * 20);
 
-        DecaliumClansApi clansApi = new DecaliumClansApiImpl(clanRepository, users, this.roleRegistry, builderFactory, futuresFactory, wars, regions, prices.data());
+        DecaliumClansApi clansApi = new DecaliumClansApiImpl(clanRepository, users, this.roleRegistry, builderFactory, futuresFactory, wars, regions, prices.data(), config.levels());
 		this.api = this.api == null ? new MutableClansApi(clansApi) : this.api;
 		this.api.setApi(clansApi);
         services.register(DecaliumClansApi.class, this.api);

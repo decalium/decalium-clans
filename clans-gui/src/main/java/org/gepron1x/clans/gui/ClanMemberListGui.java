@@ -21,6 +21,7 @@ package org.gepron1x.clans.gui;
 import com.github.stefvanschie.inventoryframework.adventuresupport.ComponentHolder;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
+import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -32,18 +33,19 @@ import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.user.ClanUser;
 import org.gepron1x.clans.api.util.player.UuidPlayerReference;
-import org.gepron1x.clans.gui.builder.InteractionLoreApplicable;
 import org.gepron1x.clans.gui.builder.ItemBuilder;
 
 import java.util.Comparator;
 import java.util.function.Consumer;
 
 public final class ClanMemberListGui implements GuiLike {
+	private final GuiLike parent;
 	private final Clan clan;
 	private final ClanUser viewer;
 	private final DecaliumClansApi clansApi;
 
-	public ClanMemberListGui(Clan clan, ClanUser viewer, DecaliumClansApi clansApi) {
+	public ClanMemberListGui(GuiLike parent, Clan clan, ClanUser viewer, DecaliumClansApi clansApi) {
+		this.parent = parent;
 		this.clan = clan;
 		this.viewer = viewer;
 		this.clansApi = clansApi;
@@ -61,7 +63,7 @@ public final class ClanMemberListGui implements GuiLike {
 			Consumer<InventoryClickEvent> event = e -> {};
 			builder.space();
             if(member.hasPermission(ClanPermission.SET_ROLE)) {
-				builder.interaction(InteractionLoreApplicable.POSITIVE, "Нажмите чтобы повысить.");
+				builder.interaction(Colors.POSITIVE, "Нажмите чтобы повысить.");
 				event = event.andThen(e -> {
 					if(e.getClick() == ClickType.LEFT) {
 						e.getWhoClicked().closeInventory();
@@ -70,7 +72,7 @@ public final class ClanMemberListGui implements GuiLike {
 				});
 			}
 			if(member.hasPermission(ClanPermission.KICK)) {
-				builder.interaction(InteractionLoreApplicable.NEGATIVE, "Нажмите Shift+ЛКМ чтобы кикнуть.");
+				builder.interaction(Colors.NEGATIVE, "Нажмите Shift+ЛКМ чтобы кикнуть.");
 				event = event.andThen(e -> {
 					if(e.getClick() == ClickType.SHIFT_LEFT) {
 						new ConfirmationGui(DecaliumClansGui.message("Исключить <name>?").with(resolver), confirmEvent -> {
@@ -86,6 +88,6 @@ public final class ClanMemberListGui implements GuiLike {
         }).asGui();
         gui.setTitle(ComponentHolder.of(DecaliumClansGui.message("Участники клана <display_name>").with(ClanTagResolver.clan(clan)).asComponent()));
 		gui.update();
-        return gui;
+        return new GoBackGui(gui, Slot.fromXY(6, 5), parent).asGui();
     }
 }

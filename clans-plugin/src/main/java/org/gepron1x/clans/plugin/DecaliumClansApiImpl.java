@@ -21,6 +21,7 @@ package org.gepron1x.clans.plugin;
 import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.DecaliumClansApi;
 import org.gepron1x.clans.api.RoleRegistry;
+import org.gepron1x.clans.api.economy.LevelsMeta;
 import org.gepron1x.clans.api.economy.Prices;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.shield.GlobalRegions;
@@ -34,5 +35,5 @@ public record DecaliumClansApiImpl(@NotNull CachingClanRepository repository,
 								   @NotNull RoleRegistry roleRegistry,
 								   @NotNull ClanBuilderFactory builderFactory,
 								   @NotNull FactoryOfTheFuture futuresFactory,
-								   @NotNull Wars wars,
-								   @NotNull GlobalRegions regions, @NotNull Prices prices) implements DecaliumClansApi { }
+								   @NotNull Wars wars,@Override
+								   @NotNull GlobalRegions regions, @NotNull Prices prices, LevelsMeta levels) implements DecaliumClansApi { }
