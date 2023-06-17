@@ -35,7 +35,7 @@ public final class RegionHologram {
 
 	public void update() {
 		hologram().lines(configs.config().region().hologram().format(), TagResolver.builder().resolver(ClanTagResolver.clan(clan))
-				.resolver(new BooleanStateResolver("shield_active", !region.shield().expired())).build());
+				.resolver(new BooleanStateResolver("shield_active", region.shield().active())).build());
 	}
 
 	@Override

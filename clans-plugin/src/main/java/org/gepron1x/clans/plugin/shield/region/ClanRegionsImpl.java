@@ -7,10 +7,7 @@ import org.gepron1x.clans.api.shield.ClanRegion;
 import org.gepron1x.clans.api.shield.ClanRegions;
 import org.gepron1x.clans.api.shield.Shield;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class ClanRegionsImpl implements ClanRegions {
@@ -27,8 +24,8 @@ public final class ClanRegionsImpl implements ClanRegions {
 	}
 
 	@Override
-	public Set<ClanRegion> regions() {
-		return Set.copyOf(regions.values());
+	public Collection<ClanRegion> regions() {
+		return Collections.unmodifiableCollection(regions.values());
 	}
 
 	@Override

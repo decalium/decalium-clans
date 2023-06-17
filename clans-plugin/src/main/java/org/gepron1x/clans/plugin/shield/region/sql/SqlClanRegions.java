@@ -23,9 +23,9 @@ import org.gepron1x.clans.api.shield.ClanRegion;
 import org.gepron1x.clans.api.shield.ClanRegions;
 import org.gepron1x.clans.plugin.storage.implementation.sql.SqlQueue;
 
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class SqlClanRegions implements ClanRegions {
@@ -43,8 +43,8 @@ public final class SqlClanRegions implements ClanRegions {
 	}
 
 	@Override
-	public Set<ClanRegion> regions() {
-		return regions.regions().stream().map(r -> new SqlClanRegion(r, queue)).collect(Collectors.toSet());
+	public Collection<ClanRegion> regions() {
+		return regions.regions().stream().map(r -> new SqlClanRegion(r, queue)).collect(Collectors.toUnmodifiableList());
 	}
 
 	@Override

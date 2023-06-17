@@ -21,13 +21,13 @@ package org.gepron1x.clans.api.shield;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Optional;
-import java.util.Set;
 
 public interface ClanRegions extends Iterable<ClanRegion> {
 
-	Set<ClanRegion> regions();
+	Collection<ClanRegion> regions();
 
 	Optional<ClanRegion> region(int id);
 

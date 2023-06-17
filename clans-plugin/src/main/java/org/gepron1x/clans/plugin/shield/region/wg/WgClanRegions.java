@@ -18,9 +18,10 @@ import org.gepron1x.clans.plugin.wg.ProtectedRegionOf;
 import org.gepron1x.clans.plugin.wg.WgExtension;
 import org.gepron1x.clans.plugin.wg.WgRegionSet;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
@@ -43,8 +44,8 @@ public final class WgClanRegions implements ClanRegions {
 
 
 	@Override
-	public Set<ClanRegion> regions() {
-		return regions.regions().stream().map(r -> new WgClanRegion(r, container, configs)).collect(Collectors.toSet());
+	public Collection<ClanRegion> regions() {
+		return regions.regions().stream().map(r -> new WgClanRegion(r, container, configs)).collect(Collectors.toUnmodifiableList());
 	}
 
 	@Override
@@ -107,7 +108,7 @@ public final class WgClanRegions implements ClanRegions {
 	}
 
 	private boolean checkIntersecting(ProtectedRegion region, Location location) {
-		var iterator = global.listRegions().stream().flatMap(regions -> regions.regions().stream())
+		Iterator<ClanRegion> iterator = global.listRegions().stream().flatMap(regions -> regions.regions().stream())
 				.filter(region1 -> Objects.equals(region1.location().getWorld(), location.getWorld())).iterator();
 		return region.getIntersectingRegions(new WgRegionSet(container, () -> iterator).protectedRegions()).stream()
 				.anyMatch(overlapping -> overlapping.getFlag(WgExtension.REGION_ID) != null);
