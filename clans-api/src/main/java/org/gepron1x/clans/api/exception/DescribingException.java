@@ -21,7 +21,7 @@ package org.gepron1x.clans.api.exception;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 
-public final class DescribingException extends RuntimeException {
+public class DescribingException extends RuntimeException {
 
     private final Component description;
 

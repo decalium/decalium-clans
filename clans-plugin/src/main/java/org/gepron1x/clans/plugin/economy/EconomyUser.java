@@ -21,7 +21,7 @@ package org.gepron1x.clans.plugin.economy;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
-import org.gepron1x.clans.api.exception.DescribingException;
+import org.gepron1x.clans.api.exception.NotEnoughMoneyException;
 import org.gepron1x.clans.api.repository.ClanCreationResult;
 import org.gepron1x.clans.api.shield.ClanRegions;
 import org.gepron1x.clans.api.user.ClanUser;
@@ -47,7 +47,7 @@ public final class EconomyUser implements ClanUser {
 
 	@Override
 	public Optional<ClanRegions> regions() {
-		return user.regions();
+		return user.regions().map(regions -> new EconomyRegions(regions, player, prices));
 	}
 
 	@Override
@@ -62,7 +62,13 @@ public final class EconomyUser implements ClanUser {
 
 	@Override
     public CentralisedFuture<ClanCreationResult> create(DraftClan draft) {
-        if(!player.has(prices.clanCreation())) return futuresFactory.failedFuture(new DescribingException(prices.notEnoughMoney().with("amount", prices.clanCreation()).asComponent()));
+        if(!player.has(prices.clanCreation())) {
+			return futuresFactory.failedFuture(new NotEnoughMoneyException(
+					prices.notEnoughMoney().with("amount", prices.clanCreation()).asComponent(),
+					prices.clanCreation(), player.balance()
+					)
+			);
+		}
         return user.create(draft);
     }
 

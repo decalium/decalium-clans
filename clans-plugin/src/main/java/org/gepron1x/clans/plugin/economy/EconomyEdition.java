@@ -47,6 +47,11 @@ public final class EconomyEdition implements EmptyClanEdition {
         return pay(prices.homeCreation());
     }
 
+	@Override
+	public ClanEdition upgrade() {
+		return pay(prices.clanUpgrade(clan.level() + 1));
+	}
+
     @Override
     public ClanEdition editHome(@NotNull String name, @NotNull Consumer<HomeEdition> consumer) {
         consumer.accept(new EconomyHomeEdition());

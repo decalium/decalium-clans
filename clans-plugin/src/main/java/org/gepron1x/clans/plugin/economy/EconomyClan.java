@@ -23,7 +23,7 @@ import com.google.common.util.concurrent.AtomicDouble;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.edition.ClanEdition;
-import org.gepron1x.clans.api.exception.DescribingException;
+import org.gepron1x.clans.api.exception.NotEnoughMoneyException;
 import org.gepron1x.clans.plugin.clan.DelegatingClan;
 import org.gepron1x.clans.plugin.config.settings.PricesConfig;
 import org.jetbrains.annotations.NotNull;
@@ -52,7 +52,7 @@ public final class EconomyClan implements Clan, DelegatingClan {
         AtomicDouble cost = new AtomicDouble(0);
         transaction.accept(new EconomyEdition(cost, prices, clan));
         if(!player.has(cost.get())) {
-            return futuresFactory.failedFuture(new DescribingException(prices.notEnoughMoney().with("price", cost.get())));
+            return futuresFactory.failedFuture(new NotEnoughMoneyException(prices.notEnoughMoney().with("price", cost.get()), cost.get(), player.balance()));
         }
         player.withdraw(cost.get());
         return clan.edit(transaction).thenApply(c -> new EconomyClan(clan, prices, player, futuresFactory));
