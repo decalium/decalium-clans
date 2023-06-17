@@ -13,7 +13,6 @@ import org.gepron1x.clans.plugin.storage.RegionStorage;
 import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.ClanRegionMapper;
 import org.jdbi.v3.core.Jdbi;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -50,7 +49,7 @@ public final class SqlRegionStorage implements RegionStorage {
 			AtomicInteger idCounter = new AtomicInteger(
 					handle.createQuery("SELECT MAX(`id`) AS max_id FROM `regions`").map((r, ctx) -> r.getInt(1)).findFirst().orElse(1)
 			);
-			Map<Integer, ClanRegions> clanRegions = new HashMap<>();
+			Map<Integer, ClanRegions> clanRegions = new LinkedHashMap<>();
 			for(var entry : regionMap.entrySet()) {
 				ClanReference reference = new TagClanReference(repository, entry.getKey().tag);
 				clanRegions.put(entry.getKey().id,

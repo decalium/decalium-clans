@@ -6,11 +6,8 @@ import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.DecaliumClansApi;
 import org.gepron1x.clans.api.economy.LevelsMeta;
 import org.gepron1x.clans.api.edition.ClanEdition;
@@ -39,12 +36,14 @@ public final class UpgradeGui implements GuiLike {
 
 	@Override
 	public Gui asGui() {
-		ChestGui gui = new ChestGui(3, ComponentHolder.of(Component.text("Прокачка клана")));
+		ChestGui gui = new ChestGui(4, ComponentHolder.of(Component.text("Прокачка клана")));
 		StaticPane levels = new StaticPane(2, 1, 5, 1);
 		levels.setOnClick(e -> e.setCancelled(true));
 		fillLevels(gui, levels);
 		gui.addPane(levels);
-		return new GoBackGui(gui, Slot.fromXY(6, 2), parent).asGui();
+		gui.addPane(ClanGui.border(0, 4));
+		gui.addPane(ClanGui.border(8, 4));
+		return new GoBackGui(gui, Slot.fromXY(6, 3), parent).asGui();
 	}
 
 	private void fillLevels(Gui gui, StaticPane pane) {
@@ -94,14 +93,6 @@ public final class UpgradeGui implements GuiLike {
 		}
 	}
 	private void handleDescribingException(DescribingException ex, InventoryClickEvent event) {
-		event.setCancelled(true);
-		ItemStack og = event.getCurrentItem();
-		event.getClickedInventory().setItem(event.getSlot(), ItemBuilder.create(Material.BARRIER).edit(meta -> {
-			meta.displayName(ex.description());
-		}).stack());
-		Bukkit.getScheduler().runTaskLater(
-				JavaPlugin.getPlugin(DecaliumClansGui.class),
-				() -> event.getClickedInventory().setItem(event.getSlot(), og), 60
-		);
+		new ErrorItem(event, ex).show();
 	}
 }

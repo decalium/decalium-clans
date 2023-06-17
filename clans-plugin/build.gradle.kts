@@ -50,7 +50,7 @@ dependencies {
     implementation("cloud.commandframework:cloud-paper:1.8.3") {
         exclude("org.checkerframework", "checker-qual")
     }
-    implementation("cloud.commandframework:cloud-minecraft-extras:1.8.3") {
+    api("cloud.commandframework:cloud-minecraft-extras:1.8.3") {
         exclude("net.kyori", "adventure-api")
         exclude("net.kyori", "adventure-text-serializer-plain")
     }

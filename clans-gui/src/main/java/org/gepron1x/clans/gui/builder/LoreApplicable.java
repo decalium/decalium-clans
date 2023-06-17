@@ -4,6 +4,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.gepron1x.clans.gui.DecaliumClansGui;
 
 import java.util.ArrayList;
@@ -15,6 +17,26 @@ public interface LoreApplicable {
 	List<Component> SPACE_LORE = List.of(Component.space());
 
 	List<Component> lore(TagResolver resolver);
+
+	default List<Component> lore() {
+		return lore(TagResolver.empty());
+	}
+
+	default void apply(ItemMeta meta, TagResolver resolver) {
+		meta.lore(lore(resolver));
+	}
+
+	default void apply(ItemMeta meta) {
+		apply(meta, TagResolver.empty());
+	}
+
+	default void apply(ItemStack itemStack, TagResolver resolver) {
+		itemStack.editMeta(meta -> apply(meta, resolver));
+	}
+
+	default void apply(ItemStack itemStack) {
+		apply(itemStack, TagResolver.empty());
+	}
 
 
 	LoreApplicable SPACE = r -> SPACE_LORE;
