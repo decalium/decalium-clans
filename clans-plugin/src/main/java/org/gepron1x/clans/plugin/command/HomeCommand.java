@@ -39,7 +39,6 @@ import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
-import org.gepron1x.clans.api.edition.home.HomeEdition;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.plugin.command.argument.ComponentArgument;
@@ -112,16 +111,7 @@ public class HomeCommand extends AbstractClanCommand {
                 )
         );
 
-        manager.command(builder.literal("upgrade").meta(CommandMeta.DESCRIPTION, description.upgrade())
-                .permission("clans.home.upgrade")
-                .argument(manager.argumentBuilder(ClanHome.class, "home"))
-                .handler(clanExecutionHandler(this::upgradeHome)));
-
     }
-
-
-
-
     private void createHome(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
         String name = context.get("name");
@@ -187,15 +177,6 @@ public class HomeCommand extends AbstractClanCommand {
             context.getSender().sendMessage(this.messages.commands().home().renamed());
         }).exceptionally(exceptionHandler(context.getSender()));
     }
-
-    private void upgradeHome(CommandContext<CommandSender> context) {
-        Clan clan = context.get(ClanExecutionHandler.CLAN);
-        ClanHome home = context.get("home");
-        clan.edit(edition -> edition.editHome(home.name(), HomeEdition::upgrade)).thenAccept(c -> {
-            context.getSender().sendMessage(this.messages.commands().home().upgraded().with("level", home.level() + 1));
-        }).exceptionally(this.exceptionHandler(context.getSender()));
-    }
-
 
 
     private CommandExecutionHandler<CommandSender> checkHomeOwner(CommandExecutionHandler<CommandSender> delegate) {
