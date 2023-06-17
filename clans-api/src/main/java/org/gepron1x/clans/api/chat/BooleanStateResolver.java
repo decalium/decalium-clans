@@ -12,15 +12,14 @@ public final class BooleanStateResolver implements TagResolver {
 	private final boolean is;
 
 	public BooleanStateResolver(String name, boolean is) {
-
 		this.name = name;
 		this.is = is;
 	}
 	@Override
 	public @NotNull Tag resolve(@NotNull String name, @NotNull ArgumentQueue arguments, @NotNull Context ctx) throws ParsingException {
 		Tag trueValue = Tag.preProcessParsed(arguments.popOr("True value not present").value());
-		if(is) return trueValue;
-		return Tag.preProcessParsed(arguments.popOr("False value not present").value());
+		Tag falseValue = Tag.preProcessParsed(arguments.popOr("False value not present").value());
+		return is ? trueValue : falseValue;
 	}
 
 	@Override
