@@ -42,6 +42,10 @@ public interface Shield {
         return Instant.now().isAfter(end());
     }
 
+	default boolean active() {
+		return !expired();
+	}
+
 
     Shield NONE = new Shield() {
 
