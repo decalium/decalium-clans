@@ -25,12 +25,15 @@ import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Server;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.DecaliumClansApi;
 import org.gepron1x.clans.api.chat.ClanTagResolver;
 import org.gepron1x.clans.api.clan.Clan;
@@ -38,6 +41,8 @@ import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.user.ClanUser;
 import org.gepron1x.clans.api.util.player.UuidPlayerReference;
 import org.gepron1x.clans.gui.builder.ItemBuilder;
+import org.gepron1x.clans.plugin.economy.VaultPlayerImpl;
+import org.gepron1x.clans.plugin.util.services.PluginServices;
 
 import java.util.function.Consumer;
 
@@ -103,15 +108,17 @@ public final class ClanGui implements GuiLike {
 	private GuiItem clanWars() {
 		Material material = Material.IRON_SWORD;
 		String interaction;
-		TextColor color = Colors.NEGATIVE;
+		TextColor color;
 		Consumer<InventoryClickEvent> consumer = e -> {};
 		if(viewer.clan().isEmpty()) {
+			color = Colors.NEGATIVE;
 			interaction = "Вы не можете вызывать на битвы без клана!";
 			material = Material.BARRIER;
 		} else if(ownsClan()) {
 			interaction = "Нажмите в меню другого клана для вызова на битву!";
 			color = Colors.NEUTRAL;
 		} else if(viewer.hasPermission(ClanPermission.SEND_WAR_REQUEST)) {
+			color = Colors.NEGATIVE;
 			interaction = "Ваша роль не позволяет вызывать кланы на битву.";
 			material = Material.BARRIER;
 		} else {
@@ -123,14 +130,14 @@ public final class ClanGui implements GuiLike {
 			};
 		}
 
-		return ItemBuilder.create(material).name("<gradient:#fb2727:#fd439c>Клановые битвы")
+		Consumer<InventoryClickEvent> finalConsumer = consumer;
+		return levelRequired(api.levels().allowAt().wars(), ItemBuilder.create(material).name("<gradient:#fb2727:#fd439c>Клановые битвы")
 				.space()
 				.description("Устраивай незабываемые сражения",
 						"на любой территории. Ограничений нет - победу",
 						"определяет только мастерство и подготовка!")
-				.space()
-				.interaction(color, interaction)
-				.with(ClanTagResolver.clan(clan)).edit(meta -> meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)).guiItem(consumer);
+				.space(), builder -> builder.interaction(color, interaction).consumer(finalConsumer))
+				.with(ClanTagResolver.clan(clan)).edit(meta -> meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)).guiItem();
 	}
 
 	private GuiItem clanInfo() {
@@ -169,20 +176,33 @@ public final class ClanGui implements GuiLike {
 	}
 
 	private GuiItem regions() {
-		return ItemBuilder.create(Material.LODESTONE)
+		return levelRequired(api.levels().allowAt().regions(), ItemBuilder.create(Material.LODESTONE)
 				.name("<gradient:#7CD8D8:#DBFDFF>Регионы клана")
 				.space()
-				.description("Управляй своими владениями", "с любой точки сервера").space()
-				.menuInteraction()
-				.guiItem();
+				.description("Управляй своими владениями", "с любой точки сервера").space(), builder -> {
+			builder.menuInteraction().consumer(e -> {
+				Economy economy = new PluginServices(JavaPlugin.getPlugin(DecaliumClansGui.class)).get(Economy.class).orElseThrow();
+				VaultPlayerImpl player = new VaultPlayerImpl((Player) e.getWhoClicked(), economy);
+				new RegionsGui(this, viewer, player, api).asGui().show(e.getWhoClicked());
+					});
+		}).guiItem();
 	}
 
 	private GuiItem clanHomes() {
-		return ItemBuilder.create(Material.CHORUS_FRUIT)
+		return levelRequired(api.levels().allowAt().homes(), ItemBuilder.create(Material.CHORUS_FRUIT)
 				.name("<gradient:#c733fb:#fd439c>Клановые телепорты")
 				.space()
 				.description("Используйте общие точки", "телепорта со своим кланом!")
-				.space().menuInteraction().guiItem();
+				.space(), ItemBuilder::menuInteraction).guiItem();
+	}
+
+	private ItemBuilder levelRequired(int level, ItemBuilder builder, Consumer<ItemBuilder> consumer) {
+		if(viewer.clan().orElseThrow().level() < level) {
+			builder.interaction(Colors.NEGATIVE, "Необходим "+level+" уровень!");
+			return builder;
+		}
+		consumer.accept(builder);
+		return builder;
 	}
 
 
