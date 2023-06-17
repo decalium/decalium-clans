@@ -101,6 +101,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 	private BukkitFactoryOfTheFuture futuresFactory;
 
     private ClanStorage storage;
+	private RegionStorage regionStorage;
 
     private PaperCommandManager<CommandSender> commandManager;
 
@@ -206,7 +207,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 				clanCache
 		);
 
-		RegionStorage regionStorage = new SqlRegionStorage(jdbi, cachingClanRepository, new SqlQueue());
+		regionStorage = new SqlRegionStorage(jdbi, cachingClanRepository, new SqlQueue());
 		WgGlobalRegions regions = new WgGlobalRegions(regionStorage.loadRegions(), WorldGuard.getInstance().getPlatform().getRegionContainer(), configs);
 		regions.update();
         CachingClanRepository clanRepository = new WgExtension(cachingClanRepository, configs, regions, new AsyncRegionStorage(futuresFactory, regionStorage)).make();
@@ -285,7 +286,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(statisticListener, this);
         statisticListener.start();
         new ShieldRefreshTask(regions, WorldGuard.getInstance().getPlatform().getRegionContainer(), configs)
-                .runTaskTimerAsynchronously(this, 20, 20 * 20);
+                .runTaskTimerAsynchronously(this, 20, 5 * 20);
 
         DecaliumClansApi clansApi = new DecaliumClansApiImpl(clanRepository, users, this.roleRegistry, builderFactory, futuresFactory, wars, regions, prices.data(), config.levels());
 		this.api = this.api == null ? new MutableClansApi(clansApi) : this.api;
@@ -298,6 +299,8 @@ public final class DecaliumClansPlugin extends JavaPlugin {
     }
 
     private void disable() {
+		regionStorage.save();
+		this.getServer().getScheduler().cancelTasks(this);
         if(this.storage != null) this.storage.shutdown();
         HandlerList.unregisterAll(this);
 		try {
@@ -305,7 +308,6 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 		} catch (InterruptedException e) {
 			getSLF4JLogger().error("Failed to shutdown with following error:", e);
 		}
-		this.getServer().getScheduler().cancelTasks(this);
         getServer().getServicesManager().unregisterAll(this);
     }
 
@@ -329,6 +331,10 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
     public MessagesConfig messages() {
         return messagesConfiguration.data();
+    }
+
+    public PaperCommandManager<CommandSender> commandManager() {
+        return this.commandManager;
     }
 
 }

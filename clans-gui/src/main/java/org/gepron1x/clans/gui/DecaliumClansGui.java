@@ -18,23 +18,19 @@
  */
 package org.gepron1x.clans.gui;
 
-import cloud.commandframework.bukkit.parsers.PlayerArgument;
-import cloud.commandframework.execution.CommandExecutionCoordinator;
-import cloud.commandframework.paper.PaperCommandManager;
 import com.jeff_media.customblockdata.CustomBlockData;
 import me.gepronix.decaliumcustomitems.DecaliumCustomItems;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.DecaliumClansApi;
+import org.gepron1x.clans.api.user.ClanUser;
 import org.gepron1x.clans.gui.item.ClanRegionItem;
+import org.gepron1x.clans.libraries.cloud.commandframework.bukkit.parsers.PlayerArgument;
 import org.gepron1x.clans.plugin.DecaliumClansPlugin;
 import org.gepron1x.clans.plugin.util.message.Message;
 import org.gepron1x.clans.plugin.util.services.PluginServices;
-
-import java.util.function.UnaryOperator;
 
 public final class DecaliumClansGui extends JavaPlugin {
 
@@ -54,7 +50,7 @@ public final class DecaliumClansGui extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        super.onDisable();
+        DecaliumCustomItems.get().getItemRegistry().removeItem(ClanRegionItem.HOME_ITEM);
     }
 
     @Override
@@ -63,20 +59,10 @@ public final class DecaliumClansGui extends JavaPlugin {
 
         DecaliumClansApi api = new PluginServices(this).get(DecaliumClansApi.class).orElseThrow();
 		DecaliumClansPlugin clansPlugin = JavaPlugin.getPlugin(DecaliumClansPlugin.class);
-        PaperCommandManager<CommandSender> commandManager;
-        try {
-            commandManager = new PaperCommandManager<>(this,
-                    CommandExecutionCoordinator.simpleCoordinator(),
-                    UnaryOperator.identity(), UnaryOperator.identity());
-        } catch (Exception e) {
-            getSLF4JLogger().error("Error initializing command manager: ", e);
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
+        var commandManager = clansPlugin.commandManager();
 
 		DecaliumCustomItems.get().getItemRegistry().registerItem(new ClanRegionItem(this, api, clansPlugin.messages()).build());
-        commandManager.registerBrigadier();
-        commandManager.command(commandManager.commandBuilder("clangui").senderType(Player.class)
+        commandManager.command(commandManager.commandBuilder("clan").literal("gui").senderType(Player.class)
                 .permission("clans.gui").argument(PlayerArgument.optional("player"))
                 .handler(ctx -> {
                     Player player = (Player) ctx.getOrSupplyDefault("player", ctx::getSender);
@@ -86,6 +72,12 @@ public final class DecaliumClansGui extends JavaPlugin {
 					});
                 })
         );
+		commandManager.command(commandManager.commandBuilder("clan").senderType(Player.class).permission("clans.gui").handler(ctx -> {
+			Player sender = (Player) ctx.getSender();
+			ClanUser user = api.users().userFor(sender);
+			user.clan().map(clan -> new ClanGui(getServer(), clan, user, api).asGui())
+					.orElseGet(() -> new ClanCreationGui(user, api).asGui()).show(sender);
+		}));
 
     }
 }
