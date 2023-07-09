@@ -10,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.DecaliumClansApi;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.decoration.CombinedDecoration;
+import org.gepron1x.clans.gui.ClanGui;
 import org.gepron1x.clans.gui.GoBackGui;
 import org.gepron1x.clans.gui.GuiLike;
 import org.gepron1x.clans.gui.LevelRequiredBuilder;
@@ -62,6 +63,8 @@ public class CustomisationGui implements GuiLike {
 			clan.edit(edition -> edition.decoration(CombinedDecoration.EMPTY).rename(Component.text(clan.tag())));
 		}).guiItem(), 2, 1);
 		gui.addPane(decorations);
+		gui.addPane(ClanGui.border(0, 4));
+		gui.addPane(ClanGui.border(8, 4));
 		return new GoBackGui(gui, Slot.fromXY(6, 3), parent).asGui();
 	}
 
