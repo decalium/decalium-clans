@@ -22,6 +22,7 @@ import net.kyori.adventure.text.Component;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
+import org.gepron1x.clans.api.decoration.CombinedDecoration;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
@@ -40,6 +41,12 @@ public interface DelegatingClan extends DraftClan {
     default String tag() {
         return delegate().tag();
     }
+
+	@Override
+	@NotNull
+	default CombinedDecoration tagDecoration() {
+		return delegate().tagDecoration();
+	}
 
     @Override
     default @NotNull Component displayName() {

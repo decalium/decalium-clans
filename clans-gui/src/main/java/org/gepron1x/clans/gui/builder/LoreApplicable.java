@@ -49,6 +49,13 @@ public interface LoreApplicable {
 		}).toList();
 	}
 
+	static LoreApplicable components(List<Component> text) {
+		return r -> text;
+	}
+
+	static LoreApplicable components(Component... text) {
+		return components(List.of(text));
+	}
 	static LoreApplicable spaces(int count) {
 		var list = new ArrayList<Component>(count);
 		for(int i = 0; i < count; i++) list.add(Component.space());

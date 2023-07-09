@@ -80,7 +80,6 @@ public final class WgClanRegions implements ClanRegions {
 		r.clan().ifPresent(clan -> {
 			var holo = new RegionHologram(r, clan, configs);
 			holo.update();
-			holo.update(); // why
 		});
 		RegionBlock.set(location.getBlock(), r.id());
 		return new WgClanRegion(r, container, configs);

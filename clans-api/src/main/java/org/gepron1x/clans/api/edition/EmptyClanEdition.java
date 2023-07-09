@@ -24,6 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.clan.member.ClanRole;
+import org.gepron1x.clans.api.decoration.CombinedDecoration;
 import org.gepron1x.clans.api.edition.home.HomeEdition;
 import org.gepron1x.clans.api.edition.member.MemberEdition;
 import org.gepron1x.clans.api.statistic.StatisticType;
@@ -39,6 +40,11 @@ public interface EmptyClanEdition extends ClanEdition {
     default ClanEdition rename(@NotNull Component displayName) {
         return this;
     }
+
+	@Override
+	default ClanEdition decoration(@NotNull CombinedDecoration decoration) {
+		return this;
+	}
 
     @Override
     default ClanEdition setStatistic(@NotNull StatisticType type, int value) {

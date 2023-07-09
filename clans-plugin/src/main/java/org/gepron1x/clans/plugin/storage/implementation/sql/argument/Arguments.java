@@ -19,6 +19,7 @@
 package org.gepron1x.clans.plugin.storage.implementation.sql.argument;
 
 
+
 public final class Arguments {
     private Arguments() {}
     public static final ComponentArgumentFactory COMPONENT = new ComponentArgumentFactory();
@@ -28,4 +29,6 @@ public final class Arguments {
     public static final StatisticTypeArgumentFactory STATISTIC_TYPE = new StatisticTypeArgumentFactory();
 
     public static final InstantArgumentFactory INSTANT = new InstantArgumentFactory();
+
+	public static final DecorationArgumentFactory DECORATION = new DecorationArgumentFactory();
 }

@@ -45,6 +45,7 @@ public final class JdbiCreation {
                 .registerColumnMapper(ColumnMappers.UUID)
                 .registerColumnMapper(ColumnMappers.ITEM_STACK)
 				.registerColumnMapper(ColumnMappers.WORLD)
+				.registerColumnMapper(ColumnMappers.DECORATION)
                 .registerColumnMapper(ColumnMappers.INSTANT);
     }
 
@@ -54,6 +55,7 @@ public final class JdbiCreation {
                 .registerArgument(Arguments.CLAN_ROLE)
                 .registerArgument(Arguments.UUID)
                 .registerArgument(Arguments.ITEM_STACK)
+				.registerArgument(Arguments.DECORATION)
                 .registerArgument(Arguments.INSTANT);
     }
 }

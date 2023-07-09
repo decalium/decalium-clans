@@ -54,6 +54,7 @@ public class RegionGui implements GuiLike {
 		HopperGui gui = new HopperGui(ComponentHolder.of(message("Регион клана <clan>").with("clan", clan.displayName()).asComponent()));
 		StaticPane pane = new StaticPane(5, 1);
 		pane.setOnClick(e -> e.setCancelled(true));
+		pane.fillWith(new ItemStack(Material.LIGHT_BLUE_STAINED_GLASS_PANE));
 
 		pane.addItem(ItemBuilder.create(Material.BARRIER).name("<#fb2727>Нажмите, чтобы удалить регион!").guiItem(e -> {
 			e.getWhoClicked().closeInventory();

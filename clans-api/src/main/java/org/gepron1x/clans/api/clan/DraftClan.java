@@ -24,6 +24,7 @@ import net.kyori.adventure.util.Buildable;
 import org.bukkit.OfflinePlayer;
 import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
+import org.gepron1x.clans.api.decoration.CombinedDecoration;
 import org.gepron1x.clans.api.edition.ClanEdition;
 import org.gepron1x.clans.api.edition.EditionApplicable;
 import org.gepron1x.clans.api.statistic.StatisticHolder;
@@ -47,6 +48,8 @@ public interface DraftClan extends StatisticHolder, ComponentLike, Buildable<Dra
     @NotNull Component displayName();
 
     @NotNull ClanMember owner();
+
+	@NotNull CombinedDecoration tagDecoration();
 
     @NotNull @Unmodifiable
     default Collection<? extends ClanMember> members() {
@@ -90,6 +93,9 @@ public interface DraftClan extends StatisticHolder, ComponentLike, Buildable<Dra
 
         @Contract("_ -> this")
         @NotNull Builder displayName(@NotNull Component displayName);
+
+		@Contract("_ -> this")
+		@NotNull Builder tagDecoration(CombinedDecoration decoration);
 
         @Contract("_ -> this")
         @NotNull Builder addMember(@NotNull ClanMember member);

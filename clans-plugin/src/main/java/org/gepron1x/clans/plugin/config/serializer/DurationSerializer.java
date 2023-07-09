@@ -60,6 +60,7 @@ public class DurationSerializer implements ValueSerialiser<Duration> {
 
     @Override
     public String serialise(Duration duration, Decomposer decomposer) {
+		if(duration.isZero()) return 0 + "s";
         StringBuilder sb = new StringBuilder();
         long seconds = duration.toSeconds();
         for(TimeUnit unit : UNITS) {

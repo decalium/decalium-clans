@@ -46,6 +46,7 @@ public class DecentClanHologram implements ClanHologram {
 				hologramLine.setHeight(line.height());
 			} else {
 				HologramLine hologramLine = new HologramLine(page, page.getNextLineLocation(), content);
+				hologramLine.setHeight(line.height());
 				page.addLine(hologramLine);
 			}
 		}

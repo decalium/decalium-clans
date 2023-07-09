@@ -21,6 +21,7 @@ package org.gepron1x.clans.plugin.storage.implementation.sql.edition;
 import net.kyori.adventure.text.Component;
 import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
+import org.gepron1x.clans.api.decoration.CombinedDecoration;
 import org.gepron1x.clans.api.edition.ClanEdition;
 import org.gepron1x.clans.api.edition.home.HomeEdition;
 import org.gepron1x.clans.api.edition.member.MemberEdition;
@@ -52,6 +53,8 @@ public final class SqlClanEdition implements ClanEdition {
 
     @Language("SQL")
     private static final String UPDATE_OWNER = "UPDATE `clans` SET `owner`=? WHERE `id`=?";
+	@Language("SQL")
+	private static final String UPDATE_DECORATION = "UPDATE `clans` SET `decoration`=? WHERE `id`=?";
     private final Handle handle;
     private final int clanId;
 
@@ -68,7 +71,13 @@ public final class SqlClanEdition implements ClanEdition {
         return this;
     }
 
-    @Override
+	@Override
+	public ClanEdition decoration(@NotNull CombinedDecoration decoration) {
+		handle.createUpdate(UPDATE_DECORATION).bind(0, decoration).bind(1, clanId).execute();
+		return this;
+	}
+
+	@Override
     public ClanEdition setStatistic(@NotNull StatisticType type, int value) {;
         return setStatistics(Map.of(type, value));
     }
@@ -92,7 +101,7 @@ public final class SqlClanEdition implements ClanEdition {
 
     @Override
     public ClanEdition incrementStatistic(@NotNull StatisticType type) {
-        return this;
+        return addStatistics(Map.of(type, 1));
     }
 
     @Override

@@ -41,6 +41,7 @@ import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.user.ClanUser;
 import org.gepron1x.clans.api.util.player.UuidPlayerReference;
 import org.gepron1x.clans.gui.builder.ItemBuilder;
+import org.gepron1x.clans.gui.customisation.CustomisationGui;
 import org.gepron1x.clans.plugin.economy.VaultPlayerImpl;
 import org.gepron1x.clans.plugin.util.services.PluginServices;
 
@@ -159,7 +160,10 @@ public final class ClanGui implements GuiLike {
 				.with(resolver)
 				.edit(meta -> meta.addItemFlags(ItemFlag.values()));
 		if(ownsClan()) {
-			builder.space().interaction(Colors.POSITIVE, "Нажмите для кастомизации клана");
+			builder.space().interaction(Colors.POSITIVE, "Нажмите для кастомизации клана").consumer(e -> {
+				e.getWhoClicked().closeInventory();
+				new CustomisationGui(this, clan, api).asGui().show(e.getWhoClicked());
+			});
 		}
 
 		return builder.guiItem();

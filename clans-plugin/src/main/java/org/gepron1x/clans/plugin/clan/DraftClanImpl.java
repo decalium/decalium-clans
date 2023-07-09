@@ -23,6 +23,7 @@ import net.kyori.adventure.text.Component;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
+import org.gepron1x.clans.api.decoration.CombinedDecoration;
 import org.gepron1x.clans.api.edition.ClanEdition;
 import org.gepron1x.clans.api.edition.home.HomeEdition;
 import org.gepron1x.clans.api.edition.member.MemberEdition;
@@ -39,20 +40,22 @@ public final class DraftClanImpl implements DraftClan {
 
     private final String tag;
     private final Component displayName;
-    private final ClanMember owner;
+	private final CombinedDecoration tagDecoration;
+	private final ClanMember owner;
     private final Map<UUID, ClanMember> memberMap;
     private final Map<String, ClanHome> homeMap;
     private final Map<StatisticType, Integer> statistics;
 
     DraftClanImpl(String tag,
-                  Component displayName,
+                  Component displayName, CombinedDecoration tagDecoration,
                   ClanMember owner,
                   Map<UUID, ClanMember> memberMap,
                   Map<String, ClanHome> homeMap,
                   Map<StatisticType, Integer> statistics) {
         this.tag = tag;
         this.displayName = displayName;
-        this.owner = owner;
+		this.tagDecoration = tagDecoration;
+		this.owner = owner;
         this.memberMap = memberMap;
         this.homeMap = homeMap;
         this.statistics = statistics;
@@ -85,7 +88,12 @@ public final class DraftClanImpl implements DraftClan {
         return this.owner;
     }
 
-    @Override
+	@Override
+	public @NotNull CombinedDecoration tagDecoration() {
+		return this.tagDecoration;
+	}
+
+	@Override
     public @NotNull @Unmodifiable Collection<? extends ClanMember> members() {
         return this.memberMap.values();
     }
@@ -135,6 +143,8 @@ public final class DraftClanImpl implements DraftClan {
         private String tag;
         private ClanMember owner;
         private Component displayName;
+
+		private CombinedDecoration decoration = CombinedDecoration.EMPTY;
         private final Map<UUID, ClanMember> members = new HashMap<>();
         private final Map<String, ClanHome> homes = new HashMap<>();
         private final Map<StatisticType, Integer> statistics = new HashMap<>();
@@ -159,7 +169,13 @@ public final class DraftClanImpl implements DraftClan {
             return this;
         }
 
-        @Override
+		@Override
+		public @NotNull Builder tagDecoration(CombinedDecoration decoration) {
+			this.decoration = decoration;
+			return this;
+		}
+
+		@Override
         public @NotNull Builder addMember(@NotNull ClanMember member) {
             this.members.put(member.uniqueId(), member);
             return this;
@@ -238,6 +254,7 @@ public final class DraftClanImpl implements DraftClan {
             return new DraftClanImpl(
                     Objects.requireNonNull(tag),
                     Objects.requireNonNull(displayName),
+					decoration,
                     Objects.requireNonNull(owner),
                     Map.copyOf(members),
                     Map.copyOf(homes),
@@ -259,7 +276,13 @@ public final class DraftClanImpl implements DraftClan {
                 return this;
             }
 
-            @Override
+			@Override
+			public ClanEdition decoration(@NotNull CombinedDecoration decoration) {
+				BuilderImpl.this.tagDecoration(decoration);
+				return this;
+			}
+
+			@Override
             public ClanEdition setStatistic(@NotNull StatisticType type, int value) {
                 BuilderImpl.this.statistic(type, value);
                 return this;

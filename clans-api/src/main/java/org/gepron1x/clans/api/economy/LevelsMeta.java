@@ -36,6 +36,12 @@ public interface LevelsMeta {
 
 		int shields();
 
+		int colors();
+
+		int gradients();
+
+		int symbols();
+
 	}
 
 	

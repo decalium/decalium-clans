@@ -32,6 +32,9 @@ public interface DisplayNameFormat {
     @ConfKey("allowed-tag-characters")
     Pattern allowedTagCharacters();
 
+	@DefaultString("[a-z0-9]{3,8}")
+	Pattern tagRegex();
+
     @DefaultInteger(3)
     @ConfKey("min-tag-size")
     int minTagSize();

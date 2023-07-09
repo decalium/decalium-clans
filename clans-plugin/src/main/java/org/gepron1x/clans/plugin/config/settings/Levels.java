@@ -63,9 +63,18 @@ public interface Levels extends LevelsMeta {
 		 @DefaultInteger(3)
 		 int shields();
 
+		 @Override
+		 @DefaultInteger(1)
+		 int colors();
 
+		 @Override
+		 @DefaultInteger(5)
+		 int gradients();
 
-     }
+		 @Override
+		 @DefaultInteger(5)
+		 int symbols();
+	 }
 
      @ConfKey("per-level")
      @SubSection PerLevel perLevel();

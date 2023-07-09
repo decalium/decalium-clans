@@ -54,6 +54,10 @@ public interface ClansConfig {
     @ConfComments("How often should we update statistics? Format is 2d3h31m1s.")
     Duration statisticUpdatePeriod();
 
+	@SubSection
+	@ConfComments("Decorations to use on clan tag")
+	Decorations decorations();
+
 
     @DefaultString("<gray>Not in clan")
     @ConfKey("not-clan-placeholder")

@@ -22,6 +22,7 @@ import net.kyori.adventure.text.Component;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
+import org.gepron1x.clans.api.decoration.CombinedDecoration;
 import org.gepron1x.clans.api.edition.home.HomeEdition;
 import org.gepron1x.clans.api.edition.member.MemberEdition;
 import org.gepron1x.clans.api.statistic.StatisticType;
@@ -39,6 +40,8 @@ public interface ClanEdition extends Edition<DraftClan> {
     default Class<DraftClan> getTarget() { return DraftClan.class; }
 
     ClanEdition rename(@NotNull Component displayName);
+
+	ClanEdition decoration(@NotNull CombinedDecoration decoration);
 
     ClanEdition setStatistic(@NotNull StatisticType type, int value);
 

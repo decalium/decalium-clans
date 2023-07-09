@@ -68,7 +68,7 @@ public final class SqlClanStorage implements ClanStorage {
     @Language("SQL")
     private static final String SELECT_USER_CLAN = "SELECT * FROM clans_simple WHERE `clan_id`=(SELECT `clan_id` FROM `members` WHERE `uuid`=?)";
     @Language("SQL")
-    private static final String INSERT_CLAN = "INSERT IGNORE INTO clans(`tag`, `owner`, `display_name`) VALUES (?, ?, ?)";
+    private static final String INSERT_CLAN = "INSERT IGNORE INTO clans(`tag`, `owner`, `display_name`, `decoration`) VALUES (?, ?, ?, ?)";
 
     @Language("SQL")
     private static final String DELETE_CLAN = "DELETE FROM clans WHERE id=?";
@@ -144,6 +144,7 @@ public final class SqlClanStorage implements ClanStorage {
                     .bind(0, draftClan.tag())
                     .bind(1, draftClan.owner().uniqueId())
                     .bind(2, draftClan.displayName())
+					.bind(3, draftClan.tagDecoration())
                     .executeAndReturnGeneratedKeys("id").mapTo(Integer.class).findFirst();
             if(optionalId.isEmpty()) {
                 handle.rollback();

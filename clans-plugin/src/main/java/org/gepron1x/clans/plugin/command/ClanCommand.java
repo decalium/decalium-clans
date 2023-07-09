@@ -20,7 +20,6 @@ package org.gepron1x.clans.plugin.command;
 
 import cloud.commandframework.Command;
 import cloud.commandframework.CommandManager;
-import cloud.commandframework.arguments.flags.CommandFlag;
 import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.meta.CommandMeta;
@@ -75,10 +74,7 @@ public class ClanCommand extends AbstractClanCommand {
 
         manager.command(builder.literal("create").meta(CommandMeta.DESCRIPTION, descriptions.create())
                 .permission("clans.create")
-                .flag(CommandFlag.newBuilder("tag")
-                        .withArgument(StringArgument.of("tag")).withAliases("t"))
-                .argument(ComponentArgument.<CommandSender>builder("display_name").mode(StringArgument.StringMode.GREEDY_FLAG_YIELDING)
-                        .serializer(clansConfig.userComponentFormat()))
+                .argument(StringArgument.of("tag", StringArgument.StringMode.GREEDY))
                 .handler(this::createClan)
         );
 
@@ -120,13 +116,17 @@ public class ClanCommand extends AbstractClanCommand {
     private void createClan(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
 
-        Component displayName = context.get("display_name");
-        String tag = context.flags().get("tag");
-        if(tag == null) tag = clansConfig.displayNameFormat().formatTag(displayName);
+        String tag = context.get("tag");
         if(tag.length() < clansConfig.displayNameFormat().minTagSize()) {
             player.sendMessage(this.messages.commands().creation().invalidTag());
 			return;
         }
+
+		if(!clansConfig.displayNameFormat().tagRegex().matcher(tag).matches()) {
+			player.sendMessage(this.messages.commands().creation().invalidTag());
+			return;
+		}
+
         UUID uuid = player.getUniqueId();
 
         ClanMember member = builderFactory.memberBuilder()
@@ -136,14 +136,13 @@ public class ClanCommand extends AbstractClanCommand {
 
         DraftClan clan = builderFactory.draftClanBuilder()
                 .tag(tag)
-                .displayName(displayName)
+                .displayName(Component.text(tag))
                 .owner(member)
                 .build();
 
-        String finalTag = tag;
         users.userFor(player).create(clan).thenAcceptSync(result -> {
             if(result.isSuccess()) {
-                player.sendMessage(messages.commands().creation().success().with("tag", finalTag).with("name", displayName));
+                player.sendMessage(messages.commands().creation().success().with("tag", tag).with("name", tag));
             } else {
                 player.sendMessage(switch (result.status()) {
                     case MEMBERS_IN_OTHER_CLANS -> messages.alreadyInClan();
