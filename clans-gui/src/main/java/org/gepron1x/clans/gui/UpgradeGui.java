@@ -56,7 +56,7 @@ public final class UpgradeGui implements GuiLike {
 			if(level <= clanLevel) material = Material.LIME_DYE;
 			else if(clanLevel + 1 == level) material = Material.LIGHT_BLUE_DYE;
 
-			var builder = ItemBuilder.create(material).name("<#DBFDFF>Уровень <#63FFE8><level>").with("level", level).space();
+			var builder = ItemBuilder.create(material).name("<#DBFDFF>Уровень <#63FFE8><level>").with("level", level);
 
 			List<String> abilities = new ArrayList<>();
 			if(levels.allowAt().wars() == level) abilities.add("Клановым войнам");
@@ -64,8 +64,12 @@ public final class UpgradeGui implements GuiLike {
 			if(levels.allowAt().shields() == level) abilities.add("Щитам");
 			if(levels.allowAt().regionEffects() == level) abilities.add("Клановым Эффектам");
 			if(levels.allowAt().homes() == level) abilities.add("Клановым телепортам");
+			if(levels.allowAt().colors() == level) abilities.add("Декорациям (Цвет)");
+			if(levels.allowAt().gradients() == level) abilities.add("Декорациям (Градиенты)");
+			if(levels.allowAt().symbols() == level) abilities.add("Декорациям (Титулы)");
 			if(!abilities.isEmpty()) {
-				builder.lore("<#7CD8D8>Откроет доступ к:").lore(new DescriptionLoreApplicable(LoreApplicable.text(abilities).color(Colors.POSITIVE)));
+				builder.space().lore("<#7CD8D8>Откроет доступ к:")
+						.lore(new DescriptionLoreApplicable(LoreApplicable.text(abilities).color(Colors.POSITIVE)));
 			}
 
 			List<String> limits = new ArrayList<>();
