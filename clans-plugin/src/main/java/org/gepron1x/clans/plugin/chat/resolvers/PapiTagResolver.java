@@ -32,38 +32,36 @@ import org.jetbrains.annotations.Nullable;
 
 public final class PapiTagResolver implements TagResolver {
 
-    private final OfflinePlayer player;
+	private final OfflinePlayer player;
 
-    public PapiTagResolver(@Nullable OfflinePlayer player) {
+	public PapiTagResolver(@Nullable OfflinePlayer player) {
 
-        this.player = player;
-    }
-
-
+		this.player = player;
+	}
 
 
-    private boolean isPlaceholder(String name) {
-       return name.equals("papi");
-    }
+	private boolean isPlaceholder(String name) {
+		return name.equals("papi");
+	}
 
-    @Override
-    public @Nullable Tag resolve(@NotNull String name, @NotNull ArgumentQueue arguments, @NotNull Context ctx) throws ParsingException {
-        String str = arguments.popOr("Define the placeholder you wanna to use.").value();
-        String percents = "%" + str + "%";
-        String result = PlaceholderAPI.setPlaceholders(this.player, percents);
-        if(result.equals(percents)) return null;
-        Component component;
-        if(result.indexOf(LegacyComponentSerializer.SECTION_CHAR) != -1) {
-            component = LegacyComponentSerializer.legacyAmpersand().deserialize(result);
-        } else {
-            component = Component.text(result);
-        }
+	@Override
+	public @Nullable Tag resolve(@NotNull String name, @NotNull ArgumentQueue arguments, @NotNull Context ctx) throws ParsingException {
+		String str = arguments.popOr("Define the placeholder you wanna to use.").value();
+		String percents = "%" + str + "%";
+		String result = PlaceholderAPI.setPlaceholders(this.player, percents);
+		if (result.equals(percents)) return null;
+		Component component;
+		if (result.indexOf(LegacyComponentSerializer.SECTION_CHAR) != -1) {
+			component = LegacyComponentSerializer.legacyAmpersand().deserialize(result);
+		} else {
+			component = Component.text(result);
+		}
 
-        return Tag.inserting(component);
-    }
+		return Tag.inserting(component);
+	}
 
-    @Override
-    public boolean has(@NotNull String name) {
-        return isPlaceholder(name);
-    }
+	@Override
+	public boolean has(@NotNull String name) {
+		return isPlaceholder(name);
+	}
 }

@@ -33,24 +33,24 @@ import java.util.concurrent.TimeUnit;
 
 public final class TimeFormatSerializer implements ValueSerialiser<TimeFormat> {
 
-    @Override
-    public Class<TimeFormat> getTargetClass() {
-        return TimeFormat.class;
-    }
+	@Override
+	public Class<TimeFormat> getTargetClass() {
+		return TimeFormat.class;
+	}
 
-    @Override
-    public TimeFormat deserialise(FlexibleType flexibleType) throws BadValueException {
-        Map<TimeUnit, String> map = flexibleType.getMap((key, value) -> Map.entry(key.getEnum(TimeUnit.class), value.getString()));
-        SortedMap<TimeUnit, String> sorted = new TreeMap<>(Comparator.reverseOrder());
-        sorted.putAll(map);
-        return new BaseTimeFormat(sorted);
-    }
+	@Override
+	public TimeFormat deserialise(FlexibleType flexibleType) throws BadValueException {
+		Map<TimeUnit, String> map = flexibleType.getMap((key, value) -> Map.entry(key.getEnum(TimeUnit.class), value.getString()));
+		SortedMap<TimeUnit, String> sorted = new TreeMap<>(Comparator.reverseOrder());
+		sorted.putAll(map);
+		return new BaseTimeFormat(sorted);
+	}
 
-    @Override
-    public Object serialise(TimeFormat value, Decomposer decomposer) {
-        if(value instanceof BaseTimeFormat format) {
-            return decomposer.decomposeMap(TimeUnit.class, String.class, format.units());
-        }
-        return Map.of();
-    }
+	@Override
+	public Object serialise(TimeFormat value, Decomposer decomposer) {
+		if (value instanceof BaseTimeFormat format) {
+			return decomposer.decomposeMap(TimeUnit.class, String.class, format.units());
+		}
+		return Map.of();
+	}
 }

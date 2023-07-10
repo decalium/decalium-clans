@@ -25,18 +25,18 @@ import java.util.Map;
 import java.util.OptionalInt;
 
 public interface StatisticHolder {
-    default OptionalInt statistic(@NotNull StatisticType type) {
-        Integer integer = statistics().get(type);
-        return integer == null ? OptionalInt.empty() : OptionalInt.of(integer);
-    }
+	default OptionalInt statistic(@NotNull StatisticType type) {
+		Integer integer = statistics().get(type);
+		return integer == null ? OptionalInt.empty() : OptionalInt.of(integer);
+	}
 
-    default int statisticOr(@NotNull StatisticType type, int fallback) {
-        return statistic(type).orElse(fallback);
-    }
+	default int statisticOr(@NotNull StatisticType type, int fallback) {
+		return statistic(type).orElse(fallback);
+	}
 
 
-    @NotNull
-    @Unmodifiable
-    Map<StatisticType, Integer> statistics();
+	@NotNull
+	@Unmodifiable
+	Map<StatisticType, Integer> statistics();
 }
 

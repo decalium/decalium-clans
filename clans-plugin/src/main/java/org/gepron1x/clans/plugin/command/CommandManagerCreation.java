@@ -44,75 +44,74 @@ import java.util.function.UnaryOperator;
 
 public final class CommandManagerCreation {
 
-    private final Plugin plugin;
-    private final CachingClanRepository repository;
-    private final RoleRegistry roleRegistry;
-    private final MessagesConfig messages;
+	private final Plugin plugin;
+	private final CachingClanRepository repository;
+	private final RoleRegistry roleRegistry;
+	private final MessagesConfig messages;
 
-    public CommandManagerCreation(Plugin plugin, CachingClanRepository repository, RoleRegistry roleRegistry, MessagesConfig messages) {
+	public CommandManagerCreation(Plugin plugin, CachingClanRepository repository, RoleRegistry roleRegistry, MessagesConfig messages) {
 
-        this.plugin = plugin;
-        this.repository = repository;
-        this.roleRegistry = roleRegistry;
-        this.messages = messages;
-    }
+		this.plugin = plugin;
+		this.repository = repository;
+		this.roleRegistry = roleRegistry;
+		this.messages = messages;
+	}
 
 
-    public PaperCommandManager<CommandSender> create() throws Exception {
-        PaperCommandManager<CommandSender> manager = new PaperCommandManager<>(
-                plugin,
-                CommandExecutionCoordinator.simpleCoordinator(),
-                UnaryOperator.identity(), UnaryOperator.identity()
-        );
+	public PaperCommandManager<CommandSender> create() throws Exception {
+		PaperCommandManager<CommandSender> manager = new PaperCommandManager<>(
+				plugin,
+				CommandExecutionCoordinator.simpleCoordinator(),
+				UnaryOperator.identity(), UnaryOperator.identity()
+		);
 
-        registerParsers(manager);
-        exceptionHandlers(manager);
-        manager.registerBrigadier();
-        manager.setSetting(CommandManager.ManagerSettings.OVERRIDE_EXISTING_COMMANDS, true);
+		registerParsers(manager);
+		exceptionHandlers(manager);
+		manager.registerBrigadier();
+		manager.setSetting(CommandManager.ManagerSettings.OVERRIDE_EXISTING_COMMANDS, true);
 
-        return manager;
-    }
+		return manager;
+	}
 
-    private void registerParsers(CommandManager<CommandSender> manager) {
-        ParserRegistry<CommandSender> parserRegistry = manager.parserRegistry();
-        parserRegistry.registerParserSupplier(TypeToken.get(ClanRole.class), params ->
-            new MessagingParser<>(new ClanRoleParser<>(roleRegistry), messages.commands().member().role().roleNotFound())
-        );
-        parserRegistry.registerParserSupplier(TypeToken.get(ClanMember.class), params ->
-            new MessagingParser<>(new MemberParser(repository, plugin.getServer()), messages.commands().member().notAMember())
-        );
-        parserRegistry.registerParserSupplier(TypeToken.get(ClanHome.class), params ->
-                new MessagingParser<>(new HomeParser(repository), messages.commands().home().homeNotFound())
-        );
-        parserRegistry.registerParserSupplier(TypeToken.get(ClanReference.class), params ->
-            new MessagingParser<>(new ClanReferenceParser(repository), messages.noOnlinePlayers())
-        );
-    }
+	private void registerParsers(CommandManager<CommandSender> manager) {
+		ParserRegistry<CommandSender> parserRegistry = manager.parserRegistry();
+		parserRegistry.registerParserSupplier(TypeToken.get(ClanRole.class), params ->
+				new MessagingParser<>(new ClanRoleParser<>(roleRegistry), messages.commands().member().role().roleNotFound())
+		);
+		parserRegistry.registerParserSupplier(TypeToken.get(ClanMember.class), params ->
+				new MessagingParser<>(new MemberParser(repository, plugin.getServer()), messages.commands().member().notAMember())
+		);
+		parserRegistry.registerParserSupplier(TypeToken.get(ClanHome.class), params ->
+				new MessagingParser<>(new HomeParser(repository), messages.commands().home().homeNotFound())
+		);
+		parserRegistry.registerParserSupplier(TypeToken.get(ClanReference.class), params ->
+				new MessagingParser<>(new ClanReferenceParser(repository), messages.noOnlinePlayers())
+		);
+	}
 
-    private void exceptionHandlers(CommandManager<CommandSender> manager) {
-        manager.registerExceptionHandler(NoPermissionException.class, (sender, ex) -> {
-            this.messages.noPermission().send(sender);
-        });
-        manager.registerExceptionHandler(InvalidSyntaxException.class, (sender, ex) -> {
-            this.messages.commands().invalidSyntax().withMiniMessage("syntax", ex.getCorrectSyntax().replace("|", "<gray>, </gray>")).send(sender);
-        });
+	private void exceptionHandlers(CommandManager<CommandSender> manager) {
+		manager.registerExceptionHandler(NoPermissionException.class, (sender, ex) -> {
+			this.messages.noPermission().send(sender);
+		});
+		manager.registerExceptionHandler(InvalidSyntaxException.class, (sender, ex) -> {
+			this.messages.commands().invalidSyntax().withMiniMessage("syntax", ex.getCorrectSyntax().replace("|", "<gray>, </gray>")).send(sender);
+		});
 
-        manager.registerExceptionHandler(ArgumentParseException.class, (sender, ex) -> {
-            Throwable exception = ex.getCause();
-            if(exception instanceof DescribingException e) {
-                e.send(sender);
-            }
-            else {
-                messages.commands().invalidArgument().withMiniMessage("message", ex.getMessage()).send(sender);
-            }
-        });
+		manager.registerExceptionHandler(ArgumentParseException.class, (sender, ex) -> {
+			Throwable exception = ex.getCause();
+			if (exception instanceof DescribingException e) {
+				e.send(sender);
+			} else {
+				messages.commands().invalidArgument().withMiniMessage("message", ex.getMessage()).send(sender);
+			}
+		});
 
-        manager.registerExceptionHandler(InvalidCommandSenderException.class, (sender, ex) -> {
-            if(ex.getRequiredSender().equals(Player.class)) {
-                messages.commands().onlyPlayersCanDoThis().send(sender);
-            } else {
-                sender.sendMessage("Only senders with type " + ex.getRequiredSender().getSimpleName() + " can do this.");
-            }
-        });
-    }
+		manager.registerExceptionHandler(InvalidCommandSenderException.class, (sender, ex) -> {
+			if (ex.getRequiredSender().equals(Player.class)) {
+				messages.commands().onlyPlayersCanDoThis().send(sender);
+			} else {
+				sender.sendMessage("Only senders with type " + ex.getRequiredSender().getSimpleName() + " can do this.");
+			}
+		});
+	}
 }

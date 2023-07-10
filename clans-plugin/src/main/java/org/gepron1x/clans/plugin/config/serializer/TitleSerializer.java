@@ -32,52 +32,53 @@ import java.util.regex.Pattern;
 
 public final class TitleSerializer implements ValueSerialiser<Title> {
 
-    private static final Splitter SPLITTER = Splitter.on(Pattern.compile(", ?"));
+	private static final Splitter SPLITTER = Splitter.on(Pattern.compile(", ?"));
 
-    private final byte MILLIS_PER_TICK = 50;
+	private final byte MILLIS_PER_TICK = 50;
 
-    private static final String TITLE = "title", SUBTITLE = "subtitle", TIMES = "times";
-    @Override
-    public Class<Title> getTargetClass() {
-        return Title.class;
-    }
+	private static final String TITLE = "title", SUBTITLE = "subtitle", TIMES = "times";
 
-    @Override
-    public Title deserialise(FlexibleType flexibleType) throws BadValueException {
-        Map<String, FlexibleType> map = flexibleType.getMap((key, value) -> Map.entry(key.getString(), value));
-        Component title = map.get(TITLE).getObject(Component.class);
-        Component subtitle = map.get(SUBTITLE).getObject(Component.class);
-        FlexibleType timesRaw = map.get(TIMES);
-        Title.Times times = timesRaw == null ? Title.DEFAULT_TIMES : parseTimes(timesRaw.getString());
-        return Title.title(title, subtitle, times);
-    }
+	@Override
+	public Class<Title> getTargetClass() {
+		return Title.class;
+	}
 
-    private Title.Times parseTimes(String times) {
-        @SuppressWarnings("UnstableApiUsage")
-        List<Duration> durations = SPLITTER.splitToStream(times)
-                .map(s -> Duration.ofMillis(Long.parseLong(s) * MILLIS_PER_TICK))
-                .toList();
+	@Override
+	public Title deserialise(FlexibleType flexibleType) throws BadValueException {
+		Map<String, FlexibleType> map = flexibleType.getMap((key, value) -> Map.entry(key.getString(), value));
+		Component title = map.get(TITLE).getObject(Component.class);
+		Component subtitle = map.get(SUBTITLE).getObject(Component.class);
+		FlexibleType timesRaw = map.get(TIMES);
+		Title.Times times = timesRaw == null ? Title.DEFAULT_TIMES : parseTimes(timesRaw.getString());
+		return Title.title(title, subtitle, times);
+	}
 
-        return Title.Times.times(durations.get(0), durations.get(1), durations.get(2));
-    }
+	private Title.Times parseTimes(String times) {
+		@SuppressWarnings("UnstableApiUsage")
+		List<Duration> durations = SPLITTER.splitToStream(times)
+				.map(s -> Duration.ofMillis(Long.parseLong(s) * MILLIS_PER_TICK))
+				.toList();
 
-    private String serialiseTimes(Title.Times times) {
-        StringJoiner joiner = new StringJoiner(", ");
-        for(Duration duration : Arrays.asList(times.fadeIn(), times.stay(), times.fadeOut())) {
-            joiner.add(String.valueOf((int) duration.toMillis() / MILLIS_PER_TICK));
-        }
-        return joiner.toString();
-    }
+		return Title.Times.times(durations.get(0), durations.get(1), durations.get(2));
+	}
 
-    @Override
-    public Map<String, Object> serialise(Title value, Decomposer decomposer) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put(TITLE, decomposer.decompose(Component.class, value.title()));
-        map.put(SUBTITLE, decomposer.decompose(Component.class, value.subtitle()));
-        Title.Times times = value.times();
-        if(times != null && !Title.DEFAULT_TIMES.equals(times)) {
-            map.put(TIMES, serialiseTimes(times));
-        }
-        return map;
-    }
+	private String serialiseTimes(Title.Times times) {
+		StringJoiner joiner = new StringJoiner(", ");
+		for (Duration duration : Arrays.asList(times.fadeIn(), times.stay(), times.fadeOut())) {
+			joiner.add(String.valueOf((int) duration.toMillis() / MILLIS_PER_TICK));
+		}
+		return joiner.toString();
+	}
+
+	@Override
+	public Map<String, Object> serialise(Title value, Decomposer decomposer) {
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put(TITLE, decomposer.decompose(Component.class, value.title()));
+		map.put(SUBTITLE, decomposer.decompose(Component.class, value.subtitle()));
+		Title.Times times = value.times();
+		if (times != null && !Title.DEFAULT_TIMES.equals(times)) {
+			map.put(TIMES, serialiseTimes(times));
+		}
+		return map;
+	}
 }

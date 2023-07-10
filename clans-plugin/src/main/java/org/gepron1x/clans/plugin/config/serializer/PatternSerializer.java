@@ -26,23 +26,23 @@ import space.arim.dazzleconf.serialiser.ValueSerialiser;
 import java.util.regex.Pattern;
 
 public final class PatternSerializer implements ValueSerialiser<Pattern> {
-    @Override
-    public Class<Pattern> getTargetClass() {
-        return Pattern.class;
-    }
+	@Override
+	public Class<Pattern> getTargetClass() {
+		return Pattern.class;
+	}
 
-    @Override
-    public Pattern deserialise(FlexibleType flexibleType) throws BadValueException {
-        try {
-            return Pattern.compile(flexibleType.getString());
-        } catch (IllegalArgumentException e) {
-            throw flexibleType.badValueExceptionBuilder().cause(e).message("Invalid pattern syntax. Try it on https://regex101.com/ first.").build();
-        }
+	@Override
+	public Pattern deserialise(FlexibleType flexibleType) throws BadValueException {
+		try {
+			return Pattern.compile(flexibleType.getString());
+		} catch (IllegalArgumentException e) {
+			throw flexibleType.badValueExceptionBuilder().cause(e).message("Invalid pattern syntax. Try it on https://regex101.com/ first.").build();
+		}
 
-    }
+	}
 
-    @Override
-    public Object serialise(Pattern value, Decomposer decomposer) {
-        return value.toString();
-    }
+	@Override
+	public Object serialise(Pattern value, Decomposer decomposer) {
+		return value.toString();
+	}
 }

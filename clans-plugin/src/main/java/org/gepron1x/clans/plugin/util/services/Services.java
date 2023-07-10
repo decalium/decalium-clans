@@ -24,13 +24,13 @@ import java.util.Optional;
 
 public interface Services {
 
-    <T> void register(Class<T> clazz, T service, ServicePriority priority);
+	<T> void register(Class<T> clazz, T service, ServicePriority priority);
 
-    default <T> void register(Class<T> clazz, T service) {
-        register(clazz, service, ServicePriority.Normal);
-    }
+	default <T> void register(Class<T> clazz, T service) {
+		register(clazz, service, ServicePriority.Normal);
+	}
 
-    void unregister(Object o);
+	void unregister(Object o);
 
-    <T> Optional<T> get(Class<T> clazz);
+	<T> Optional<T> get(Class<T> clazz);
 }

@@ -27,17 +27,17 @@ import java.util.Objects;
 
 public final class SoundAction implements Action.NoResolver {
 
-    private final Sound sound;
+	private final Sound sound;
 
-    public SoundAction(Sound sound) {
+	public SoundAction(Sound sound) {
 
-        this.sound = sound;
-    }
+		this.sound = sound;
+	}
 
-    @Override
-    public void send(Audience audience) {
-        audience.playSound(sound);
-    }
+	@Override
+	public void send(Audience audience) {
+		audience.playSound(sound);
+	}
 
 	@Override
 	public boolean equals(Object o) {

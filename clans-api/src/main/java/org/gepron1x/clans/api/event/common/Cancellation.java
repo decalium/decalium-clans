@@ -21,19 +21,20 @@ package org.gepron1x.clans.api.event.common;
 import org.bukkit.event.Cancellable;
 
 public final class Cancellation implements Cancellable {
-    private boolean cancel;
+	private boolean cancel;
 
-    public Cancellation(boolean cancel) {
+	public Cancellation(boolean cancel) {
 
-        this.cancel = cancel;
-    }
-    @Override
-    public boolean isCancelled() {
-        return cancel;
-    }
+		this.cancel = cancel;
+	}
 
-    @Override
-    public void setCancelled(boolean b) {
-        this.cancel = b;
-    }
+	@Override
+	public boolean isCancelled() {
+		return cancel;
+	}
+
+	@Override
+	public void setCancelled(boolean b) {
+		this.cancel = b;
+	}
 }

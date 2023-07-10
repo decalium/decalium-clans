@@ -24,12 +24,12 @@ import org.gepron1x.clans.plugin.cache.ClanCache;
 import org.gepron1x.clans.plugin.config.settings.ClansConfig;
 
 public record PlaceholderAPIHook(Server server, ClansConfig config,
-                                 ClanCache cache,
-                                 LegacyComponentSerializer legacy) {
+								 ClanCache cache,
+								 LegacyComponentSerializer legacy) {
 
 
-    public void register() {
-        new ClansExpansion(server, config, cache, legacy).register();
-    }
+	public void register() {
+		new ClansExpansion(server, config, cache, legacy).register();
+	}
 
 }

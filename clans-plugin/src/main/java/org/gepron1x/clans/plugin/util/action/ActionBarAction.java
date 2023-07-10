@@ -30,16 +30,17 @@ import java.util.Optional;
 
 public final class ActionBarAction implements Action {
 
-    private final TextMessage actionBar;
+	private final TextMessage actionBar;
 
-    public ActionBarAction(TextMessage actionBar) {
+	public ActionBarAction(TextMessage actionBar) {
 
-        this.actionBar = actionBar;
-    }
-    @Override
-    public void send(Audience audience, TagResolver resolver) {
-        audience.sendActionBar(actionBar.with(resolver));
-    }
+		this.actionBar = actionBar;
+	}
+
+	@Override
+	public void send(Audience audience, TagResolver resolver) {
+		audience.sendActionBar(actionBar.with(resolver));
+	}
 
 
 	@Override

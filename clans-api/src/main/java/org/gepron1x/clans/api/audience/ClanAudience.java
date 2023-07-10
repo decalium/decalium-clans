@@ -33,45 +33,45 @@ import java.util.Objects;
 public final class ClanAudience implements ForwardingAudience {
 
 
-    private final DraftClan clan;
-    private final Server server;
+	private final DraftClan clan;
+	private final Server server;
 
-    public ClanAudience(@NotNull DraftClan clan, @NotNull Server server) {
-        this.clan = clan;
-        this.server = server;
-    }
+	public ClanAudience(@NotNull DraftClan clan, @NotNull Server server) {
+		this.clan = clan;
+		this.server = server;
+	}
 
 
-    @Override
-    public @NotNull Iterable<? extends Audience> audiences() {
-        return new ClanOnlinePlayers(this.clan, this.server);
-    }
+	@Override
+	public @NotNull Iterable<? extends Audience> audiences() {
+		return new ClanOnlinePlayers(this.clan, this.server);
+	}
 
-    @Override
-    public @NotNull Pointers pointers() {
-        return Pointers.builder()
-                .withStatic(Identity.DISPLAY_NAME, this.clan.displayName())
-                .withStatic(Identity.NAME, this.clan.tag()).build();
-    }
+	@Override
+	public @NotNull Pointers pointers() {
+		return Pointers.builder()
+				.withStatic(Identity.DISPLAY_NAME, this.clan.displayName())
+				.withStatic(Identity.NAME, this.clan.tag()).build();
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ClanAudience that = (ClanAudience) o;
-        return clan.equals(that.clan) && server.equals(that.server);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		ClanAudience that = (ClanAudience) o;
+		return clan.equals(that.clan) && server.equals(that.server);
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(clan, server);
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(clan, server);
+	}
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("clan", clan)
-                .add("server", server)
-                .toString();
-    }
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("clan", clan)
+				.add("server", server)
+				.toString();
+	}
 }

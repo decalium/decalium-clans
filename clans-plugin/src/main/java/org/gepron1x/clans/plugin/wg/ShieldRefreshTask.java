@@ -42,28 +42,29 @@ public final class ShieldRefreshTask extends BukkitRunnable {
 	private final AsyncLoadingCache<ClanReference, Optional<Clan>> clanCache;
 
 
-
 	public ShieldRefreshTask(GlobalRegions regions, RegionContainer container, Configs configs) {
 		this.regions = regions;
 		this.container = container;
 		this.configs = configs;
 		this.clanCache = Caffeine.newBuilder().expireAfterWrite(Duration.ofMinutes(2)).buildAsync((c, e) -> c.clan());
 	}
-    @Override
-    public void run() {
-       for(ClanRegions regions : regions.listRegions()) for (ClanRegion region : regions) {
-		   var protectedRegion = new ProtectedRegionOf(container, region);
-		   if(region.shield().expired() &&
-				   protectedRegion.region().map(r -> r.getFlag(WgExtension.SHIELD_ACTIVE)).orElse(false)) {
-			   region.removeShield();
-		   }
-		   clanCache.get(region.clan()).thenAccept(o -> {
-			   o.ifPresent(clan -> {
-					new RegionHologram(region, clan, configs).update();
-			   });
-		   });
-	   }
-    }
+
+	@Override
+	public void run() {
+		for (ClanRegions regions : regions.listRegions())
+			for (ClanRegion region : regions) {
+				var protectedRegion = new ProtectedRegionOf(container, region);
+				if (region.shield().expired() &&
+						protectedRegion.region().map(r -> r.getFlag(WgExtension.SHIELD_ACTIVE)).orElse(false)) {
+					region.removeShield();
+				}
+				clanCache.get(region.clan()).thenAccept(o -> {
+					o.ifPresent(clan -> {
+						new RegionHologram(region, clan, configs).update();
+					});
+				});
+			}
+	}
 
 
 }

@@ -20,6 +20,7 @@ public final class Conversation implements Listener {
 
 
 	private final Plugin plugin;
+
 	public Conversation(Plugin plugin) {
 
 		this.plugin = plugin;
@@ -59,6 +60,6 @@ public final class Conversation implements Listener {
 
 	private void cancel(UUID uuid) {
 		var future = conversations.remove(uuid);
-		if(future != null) future.cancel(true);
+		if (future != null) future.cancel(true);
 	}
 }

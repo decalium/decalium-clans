@@ -33,49 +33,48 @@ import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 public interface DecaliumClansApi extends ClanBuilderFactory {
 
-    @NotNull Users users();
+	@NotNull Users users();
 
-    @NotNull CachingClanRepository repository();
+	@NotNull CachingClanRepository repository();
 
-    @NotNull GlobalRegions regions();
+	@NotNull GlobalRegions regions();
 
-    @NotNull FactoryOfTheFuture futuresFactory();
+	@NotNull FactoryOfTheFuture futuresFactory();
 
 
-    @NotNull ClanBuilderFactory builderFactory();
+	@NotNull ClanBuilderFactory builderFactory();
 
-    @NotNull RoleRegistry roleRegistry();
+	@NotNull RoleRegistry roleRegistry();
 
-    @NotNull Wars wars();
+	@NotNull Wars wars();
 
 	@NotNull Prices prices();
 
 	@NotNull LevelsMeta levels();
 
 
+	// im lazy
+	@Override
+	@NotNull
+	default DraftClan.Builder draftClanBuilder() {
+		return builderFactory().draftClanBuilder();
+	}
 
-   // im lazy
-    @Override
-    @NotNull
-    default DraftClan.Builder draftClanBuilder() {
-        return builderFactory().draftClanBuilder();
-    }
+	@Override
+	@NotNull
+	default ClanMember.Builder memberBuilder() {
+		return builderFactory().memberBuilder();
+	}
 
-    @Override
-    @NotNull
-    default ClanMember.Builder memberBuilder() {
-        return builderFactory().memberBuilder();
-    }
+	@Override
+	@NotNull
+	default ClanHome.Builder homeBuilder() {
+		return builderFactory().homeBuilder();
+	}
 
-    @Override
-    @NotNull
-    default ClanHome.Builder homeBuilder() {
-        return builderFactory().homeBuilder();
-    }
-
-    @Override
-    @NotNull
-    default ClanRole.Builder roleBuilder() {
-        return builderFactory().roleBuilder();
-    }
+	@Override
+	@NotNull
+	default ClanRole.Builder roleBuilder() {
+		return builderFactory().roleBuilder();
+	}
 }

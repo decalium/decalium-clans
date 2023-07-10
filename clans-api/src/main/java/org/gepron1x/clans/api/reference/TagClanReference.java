@@ -28,42 +28,43 @@ import java.util.Objects;
 import java.util.Optional;
 
 public final class TagClanReference implements ClanReference {
-    private final CachingClanRepository repository;
-    private final String tag;
+	private final CachingClanRepository repository;
+	private final String tag;
 
-    public TagClanReference(CachingClanRepository repository, String tag) {
+	public TagClanReference(CachingClanRepository repository, String tag) {
 
-        this.repository = repository;
-        this.tag = tag;
-    }
-    @Override
-    public @NotNull CentralisedFuture<Optional<Clan>> clan() {
-        return this.repository.requestClan(this.tag);
-    }
+		this.repository = repository;
+		this.tag = tag;
+	}
 
-    @Override
-    public Optional<Clan> cached() {
-        return this.repository.clanIfCached(tag);
-    }
+	@Override
+	public @NotNull CentralisedFuture<Optional<Clan>> clan() {
+		return this.repository.requestClan(this.tag);
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TagClanReference that = (TagClanReference) o;
-        return tag.equals(that.tag);
-    }
+	@Override
+	public Optional<Clan> cached() {
+		return this.repository.clanIfCached(tag);
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(repository, tag);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		TagClanReference that = (TagClanReference) o;
+		return tag.equals(that.tag);
+	}
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("repository", repository)
-                .add("tag", tag)
-                .toString();
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(repository, tag);
+	}
+
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("repository", repository)
+				.add("tag", tag)
+				.toString();
+	}
 }

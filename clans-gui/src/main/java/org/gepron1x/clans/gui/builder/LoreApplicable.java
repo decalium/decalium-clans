@@ -44,7 +44,7 @@ public interface LoreApplicable {
 
 	static LoreApplicable text(List<String> lines) {
 		return r -> lines.stream().map(s -> {
-			if(s.isBlank()) return Component.space();
+			if (s.isBlank()) return Component.space();
 			return DecaliumClansGui.MINI_MESSAGE.deserialize(s, r);
 		}).toList();
 	}
@@ -56,9 +56,10 @@ public interface LoreApplicable {
 	static LoreApplicable components(Component... text) {
 		return components(List.of(text));
 	}
+
 	static LoreApplicable spaces(int count) {
 		var list = new ArrayList<Component>(count);
-		for(int i = 0; i < count; i++) list.add(Component.space());
+		for (int i = 0; i < count; i++) list.add(Component.space());
 		return r -> list;
 	}
 
@@ -88,12 +89,10 @@ public interface LoreApplicable {
 
 	default LoreApplicable noItalic() {
 		return map(c -> {
-			if(c.hasDecoration(TextDecoration.ITALIC)) return c.decoration(TextDecoration.ITALIC, false);
+			if (c.hasDecoration(TextDecoration.ITALIC)) return c.decoration(TextDecoration.ITALIC, false);
 			return c;
 		});
 	}
-
-
 
 
 }

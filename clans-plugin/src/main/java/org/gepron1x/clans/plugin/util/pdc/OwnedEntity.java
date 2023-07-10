@@ -29,26 +29,26 @@ import java.util.UUID;
 
 public final class OwnedEntity {
 
-    private static final JavaPlugin plugin = JavaPlugin.getPlugin(DecaliumClansPlugin.class); // what a shame
-    private static final String key = plugin.getName() + "_owner_entity";
+	private static final JavaPlugin plugin = JavaPlugin.getPlugin(DecaliumClansPlugin.class); // what a shame
+	private static final String key = plugin.getName() + "_owner_entity";
 
-    private final Entity entity;
+	private final Entity entity;
 
-    public OwnedEntity(Entity entity) {
-        this.entity = entity;
-    }
+	public OwnedEntity(Entity entity) {
+		this.entity = entity;
+	}
 
-    public Optional<UUID> owner() {
-        for(MetadataValue value : this.entity.getMetadata(key)) {
-            if(!plugin.equals(value.getOwningPlugin())) continue;
-            UUID uuid = (UUID) value.value();
-            if(uuid == null) continue;
-            return Optional.of(uuid);
-        }
-        return Optional.empty();
-    }
+	public Optional<UUID> owner() {
+		for (MetadataValue value : this.entity.getMetadata(key)) {
+			if (!plugin.equals(value.getOwningPlugin())) continue;
+			UUID uuid = (UUID) value.value();
+			if (uuid == null) continue;
+			return Optional.of(uuid);
+		}
+		return Optional.empty();
+	}
 
-    public void owner(UUID owner) {
-        this.entity.setMetadata(key, new FixedMetadataValue(plugin, owner));
-    }
+	public void owner(UUID owner) {
+		this.entity.setMetadata(key, new FixedMetadataValue(plugin, owner));
+	}
 }

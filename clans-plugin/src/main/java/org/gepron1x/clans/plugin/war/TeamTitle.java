@@ -30,37 +30,38 @@ import java.util.Objects;
 
 public final class TeamTitle implements ComponentLike {
 
-    private final Team team;
-    private final MessagesConfig messages;
+	private final Team team;
+	private final MessagesConfig messages;
 
-    public TeamTitle(Team team, MessagesConfig messages) {
+	public TeamTitle(Team team, MessagesConfig messages) {
 
-        this.team = team;
-        this.messages = messages;
-    }
-    @Override
-    public @NotNull Component asComponent() {
-        return messages.war().bossBarFormat().with(ClanTagResolver.clan(team.clan().orElseThrow()))
-                .with("alive", team.alive().size()).with("members", team.members().size()).asComponent();
-    }
+		this.team = team;
+		this.messages = messages;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TeamTitle teamTitle = (TeamTitle) o;
-        return team.equals(teamTitle.team) && messages.equals(teamTitle.messages);
-    }
+	@Override
+	public @NotNull Component asComponent() {
+		return messages.war().bossBarFormat().with(ClanTagResolver.clan(team.clan().orElseThrow()))
+				.with("alive", team.alive().size()).with("members", team.members().size()).asComponent();
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(team, messages);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		TeamTitle teamTitle = (TeamTitle) o;
+		return team.equals(teamTitle.team) && messages.equals(teamTitle.messages);
+	}
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("team", team)
-                .toString();
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(team, messages);
+	}
+
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("team", team)
+				.toString();
+	}
 }

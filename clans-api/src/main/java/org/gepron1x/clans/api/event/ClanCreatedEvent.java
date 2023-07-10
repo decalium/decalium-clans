@@ -25,19 +25,19 @@ import org.jetbrains.annotations.NotNull;
 
 public final class ClanCreatedEvent extends AbstractClanEvent {
 
-    private static final HandlerList handlers = new HandlerList();
+	private static final HandlerList handlers = new HandlerList();
 
 
-    public ClanCreatedEvent(Clan clan) {
-        super(clan);
-    }
+	public ClanCreatedEvent(Clan clan) {
+		super(clan);
+	}
 
-    @Override
-    public @NotNull HandlerList getHandlers() {
-        return handlers;
-    }
+	@Override
+	public @NotNull HandlerList getHandlers() {
+		return handlers;
+	}
 
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
 }

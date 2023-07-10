@@ -29,18 +29,19 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface ClanRepository {
-    @NotNull CentralisedFuture<ClanCreationResult> createClan(@NotNull DraftClan draftClan);
+	@NotNull CentralisedFuture<ClanCreationResult> createClan(@NotNull DraftClan draftClan);
 
-    @NotNull CentralisedFuture<Boolean> removeClan(@NotNull Clan clan);
+	@NotNull CentralisedFuture<Boolean> removeClan(@NotNull Clan clan);
 
 
-    @NotNull CentralisedFuture<Optional<Clan>> requestClan(@NotNull String tag);
-    @NotNull CentralisedFuture<Optional<Clan>> requestUserClan(@NotNull UUID uuid);
+	@NotNull CentralisedFuture<Optional<Clan>> requestClan(@NotNull String tag);
 
-    default CentralisedFuture<Optional<Clan>> requestUserClan(@NotNull OfflinePlayer player) {
-        return requestUserClan(player.getUniqueId());
-    }
+	@NotNull CentralisedFuture<Optional<Clan>> requestUserClan(@NotNull UUID uuid);
 
-    @NotNull CentralisedFuture<Set<? extends Clan>> clans();
+	default CentralisedFuture<Optional<Clan>> requestUserClan(@NotNull OfflinePlayer player) {
+		return requestUserClan(player.getUniqueId());
+	}
+
+	@NotNull CentralisedFuture<Set<? extends Clan>> clans();
 
 }

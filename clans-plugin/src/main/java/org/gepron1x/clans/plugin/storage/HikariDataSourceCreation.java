@@ -27,54 +27,54 @@ import java.nio.file.Path;
 import java.text.MessageFormat;
 
 public final class HikariDataSourceCreation {
-    private final Plugin plugin;
-    private final ClansConfig clansConfig;
+	private final Plugin plugin;
+	private final ClansConfig clansConfig;
 
-    public HikariDataSourceCreation(Plugin plugin, ClansConfig clansConfig) {
-        this.plugin = plugin;
-        this.clansConfig = clansConfig;
-    }
+	public HikariDataSourceCreation(Plugin plugin, ClansConfig clansConfig) {
+		this.plugin = plugin;
+		this.clansConfig = clansConfig;
+	}
 
-    public HikariDataSource create() {
-        HikariConfig config = new HikariConfig();
-        setupConnection(config);
-        setupPooling(config);
-        return new HikariDataSource(config);
-    }
+	public HikariDataSource create() {
+		HikariConfig config = new HikariConfig();
+		setupConnection(config);
+		setupPooling(config);
+		return new HikariDataSource(config);
+	}
 
 
-    private void setupConnection(HikariConfig config) {
-        StorageType type = clansConfig.storage().type();
-        ClansConfig.Storage.AuthDetails details = clansConfig.storage().authDetails();
+	private void setupConnection(HikariConfig config) {
+		StorageType type = clansConfig.storage().type();
+		ClansConfig.Storage.AuthDetails details = clansConfig.storage().authDetails();
 
-        String url, username, password;
+		String url, username, password;
 
-        if(type == StorageType.MYSQL) {
-            url = MessageFormat.format("jdbc:mysql://{0}/{1}?useSSL={2}", details.host(), details.database(), details.useSSL());
-            username = details.username();
-            password = details.password();
-        } else if(type == StorageType.H2) {
-            Path path = plugin.getDataFolder().toPath().resolve("clans");
-            url = MessageFormat.format("jdbc:h2:file:./{0};mode=MySQL", path);
-            username = "sa";
-            password = "";
-        } else {
-            throw new UnsupportedOperationException("postrges/other databases are not supported yet.");
-        }
-        config.setDriverClassName(type.driverClassName());
-        config.setJdbcUrl(url);
-        config.setUsername(username);
-        config.setPassword(password);
-    }
+		if (type == StorageType.MYSQL) {
+			url = MessageFormat.format("jdbc:mysql://{0}/{1}?useSSL={2}", details.host(), details.database(), details.useSSL());
+			username = details.username();
+			password = details.password();
+		} else if (type == StorageType.H2) {
+			Path path = plugin.getDataFolder().toPath().resolve("clans");
+			url = MessageFormat.format("jdbc:h2:file:./{0};mode=MySQL", path);
+			username = "sa";
+			password = "";
+		} else {
+			throw new UnsupportedOperationException("postrges/other databases are not supported yet.");
+		}
+		config.setDriverClassName(type.driverClassName());
+		config.setJdbcUrl(url);
+		config.setUsername(username);
+		config.setPassword(password);
+	}
 
-    private void setupPooling(HikariConfig hikariConfig) {
-        ClansConfig.Storage.HikariPoolSettings poolSettings = clansConfig.storage().hikariPool();
+	private void setupPooling(HikariConfig hikariConfig) {
+		ClansConfig.Storage.HikariPoolSettings poolSettings = clansConfig.storage().hikariPool();
 
-        hikariConfig.setPoolName(poolSettings.poolName());
-        hikariConfig.setMaximumPoolSize(poolSettings.maxPoolSize());
-        hikariConfig.setMinimumIdle(poolSettings.maximumIdle());
-        hikariConfig.setMaxLifetime(poolSettings.maxLifeTime());
-        hikariConfig.setConnectionTimeout(poolSettings.connectionTimeout());
-        hikariConfig.setInitializationFailTimeout(-1);
-    }
+		hikariConfig.setPoolName(poolSettings.poolName());
+		hikariConfig.setMaximumPoolSize(poolSettings.maxPoolSize());
+		hikariConfig.setMinimumIdle(poolSettings.maximumIdle());
+		hikariConfig.setMaxLifetime(poolSettings.maxLifeTime());
+		hikariConfig.setConnectionTimeout(poolSettings.connectionTimeout());
+		hikariConfig.setInitializationFailTimeout(-1);
+	}
 }

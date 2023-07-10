@@ -28,28 +28,28 @@ import static space.arim.dazzleconf.annote.ConfDefault.DefaultInteger;
 import static space.arim.dazzleconf.annote.ConfDefault.DefaultString;
 
 public interface DisplayNameFormat {
-    @DefaultString("[a-zA-Z0-9а-яА-Я]")
-    @ConfKey("allowed-tag-characters")
-    Pattern allowedTagCharacters();
+	@DefaultString("[a-zA-Z0-9а-яА-Я]")
+	@ConfKey("allowed-tag-characters")
+	Pattern allowedTagCharacters();
 
 	@DefaultString("[a-z0-9]{3,8}")
 	Pattern tagRegex();
 
-    @DefaultInteger(3)
-    @ConfKey("min-tag-size")
-    int minTagSize();
+	@DefaultInteger(3)
+	@ConfKey("min-tag-size")
+	int minTagSize();
 
-    default String formatTag(Component component) {
-        String text = PlainTextComponentSerializer.plainText().serialize(component);
-        text = text.replace(' ', '_');
-        Pattern allowedChars = allowedTagCharacters();
-        StringBuilder builder = new StringBuilder();
-        for(char c : text.toCharArray()) {
-            if(allowedChars.matcher(String.valueOf(c)).matches()) {
-                builder.append(c);
-            }
-        }
-        return builder.substring(0, Math.min(builder.length(), 16));
-    }
+	default String formatTag(Component component) {
+		String text = PlainTextComponentSerializer.plainText().serialize(component);
+		text = text.replace(' ', '_');
+		Pattern allowedChars = allowedTagCharacters();
+		StringBuilder builder = new StringBuilder();
+		for (char c : text.toCharArray()) {
+			if (allowedChars.matcher(String.valueOf(c)).matches()) {
+				builder.append(c);
+			}
+		}
+		return builder.substring(0, Math.min(builder.length(), 16));
+	}
 
 }

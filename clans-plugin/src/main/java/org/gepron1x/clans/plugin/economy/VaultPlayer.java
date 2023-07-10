@@ -19,9 +19,9 @@
 package org.gepron1x.clans.plugin.economy;
 
 public interface VaultPlayer {
-    double balance();
+	double balance();
 
-    boolean has(double amount);
+	boolean has(double amount);
 
-    void withdraw(double amount);
+	void withdraw(double amount);
 }

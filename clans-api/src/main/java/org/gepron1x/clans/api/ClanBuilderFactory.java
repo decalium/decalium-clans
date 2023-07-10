@@ -26,11 +26,11 @@ import org.jetbrains.annotations.NotNull;
 
 public interface ClanBuilderFactory {
 
-    @NotNull DraftClan.Builder draftClanBuilder();
+	@NotNull DraftClan.Builder draftClanBuilder();
 
-    @NotNull ClanMember.Builder memberBuilder();
+	@NotNull ClanMember.Builder memberBuilder();
 
-    @NotNull ClanHome.Builder homeBuilder();
+	@NotNull ClanHome.Builder homeBuilder();
 
-    @NotNull ClanRole.Builder roleBuilder();
+	@NotNull ClanRole.Builder roleBuilder();
 }

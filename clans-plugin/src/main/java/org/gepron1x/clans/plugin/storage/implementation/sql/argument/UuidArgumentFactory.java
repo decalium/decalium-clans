@@ -28,12 +28,12 @@ import java.util.UUID;
 
 public final class UuidArgumentFactory extends AbstractArgumentFactory<UUID> {
 
-    public UuidArgumentFactory() {
-        super(Types.BINARY);
-    }
+	public UuidArgumentFactory() {
+		super(Types.BINARY);
+	}
 
-    @Override
-    protected Argument build(UUID value, ConfigRegistry config) {
-        return (position, statement, ctx) -> statement.setBytes(position, UUIDUtil.toByteArray(value));
-    }
+	@Override
+	protected Argument build(UUID value, ConfigRegistry config) {
+		return (position, statement, ctx) -> statement.setBytes(position, UUIDUtil.toByteArray(value));
+	}
 }

@@ -25,7 +25,7 @@ import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
 
 
 public final class AnnouncingClanRepository extends AdaptingClanRepository {
-    public AnnouncingClanRepository(ClanRepository repository, Server server, MessagesConfig messages) {
-        super(repository, clan -> new AnnouncingClan(clan, messages, server));
-    }
+	public AnnouncingClanRepository(ClanRepository repository, Server server, MessagesConfig messages) {
+		super(repository, clan -> new AnnouncingClan(clan, messages, server));
+	}
 }

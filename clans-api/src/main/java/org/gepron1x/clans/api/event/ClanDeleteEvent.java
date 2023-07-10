@@ -28,26 +28,26 @@ import org.jetbrains.annotations.NotNull;
 public final class ClanDeleteEvent extends AbstractClanEvent implements AbstractCancellable {
 
 
-    private static final HandlerList handlers = new HandlerList();
+	private static final HandlerList handlers = new HandlerList();
 
-    private final Cancellation cancellation;
+	private final Cancellation cancellation;
 
-    public ClanDeleteEvent(Clan clan) {
-        super(clan);
-        cancellation = new Cancellation(false);
-    }
+	public ClanDeleteEvent(Clan clan) {
+		super(clan);
+		cancellation = new Cancellation(false);
+	}
 
-    @Override
-    public @NotNull HandlerList getHandlers() {
-        return handlers;
-    }
+	@Override
+	public @NotNull HandlerList getHandlers() {
+		return handlers;
+	}
 
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
 
-    @Override
-    public Cancellation cancellation() {
-        return cancellation;
-    }
+	@Override
+	public Cancellation cancellation() {
+		return cancellation;
+	}
 }

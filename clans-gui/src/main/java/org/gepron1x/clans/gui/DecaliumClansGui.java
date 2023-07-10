@@ -37,41 +37,42 @@ public final class DecaliumClansGui extends JavaPlugin {
 	public static final MiniMessage MINI_MESSAGE = MiniMessage.builder()
 			.postProcessor(c -> {
 				var result = c;
-				if(!result.hasDecoration(TextDecoration.ITALIC)) result = result.decoration(TextDecoration.ITALIC, false);
+				if (!result.hasDecoration(TextDecoration.ITALIC))
+					result = result.decoration(TextDecoration.ITALIC, false);
 				return result;
 			})
 			.editTags(builder -> {
-			builder.resolver(new DecaliumColorResolver());
-	}).build();
+				builder.resolver(new DecaliumColorResolver());
+			}).build();
 
 	public static TextMessage message(String value) {
 		return TextMessage.message(value, MINI_MESSAGE);
 	}
 
-    @Override
-    public void onDisable() {
-        DecaliumCustomItems.get().getItemRegistry().removeItem(ClanRegionItem.HOME_ITEM);
-    }
+	@Override
+	public void onDisable() {
+		DecaliumCustomItems.get().getItemRegistry().removeItem(ClanRegionItem.HOME_ITEM);
+	}
 
-    @Override
-    public void onEnable() {
+	@Override
+	public void onEnable() {
 		CustomBlockData.registerListener(this);
 
-        DecaliumClansApi api = new PluginServices(this).get(DecaliumClansApi.class).orElseThrow();
+		DecaliumClansApi api = new PluginServices(this).get(DecaliumClansApi.class).orElseThrow();
 		DecaliumClansPlugin clansPlugin = JavaPlugin.getPlugin(DecaliumClansPlugin.class);
-        var commandManager = clansPlugin.commandManager();
+		var commandManager = clansPlugin.commandManager();
 
 		DecaliumCustomItems.get().getItemRegistry().registerItem(new ClanRegionItem(this, api, clansPlugin.messages()).build());
-        commandManager.command(commandManager.commandBuilder("clan").literal("gui").senderType(Player.class)
-                .permission("clans.gui").argument(PlayerArgument.optional("player"))
-                .handler(ctx -> {
-                    Player player = (Player) ctx.getOrSupplyDefault("player", ctx::getSender);
+		commandManager.command(commandManager.commandBuilder("clan").literal("gui").senderType(Player.class)
+				.permission("clans.gui").argument(PlayerArgument.optional("player"))
+				.handler(ctx -> {
+					Player player = (Player) ctx.getOrSupplyDefault("player", ctx::getSender);
 					Player viewer = (Player) ctx.getSender();
 					api.users().userFor(player).clan().ifPresent(clan -> {
 						new ClanGui(getServer(), clan, api.users().userFor(viewer), api).asGui().show(viewer);
 					});
-                })
-        );
+				})
+		);
 		commandManager.command(commandManager.commandBuilder("clan").senderType(Player.class).permission("clans.gui").handler(ctx -> {
 			Player sender = (Player) ctx.getSender();
 			ClanUser user = api.users().userFor(sender);
@@ -79,5 +80,5 @@ public final class DecaliumClansGui extends JavaPlugin {
 					.orElseGet(() -> new ClanCreationGui(user, api).asGui()).show(sender);
 		}));
 
-    }
+	}
 }

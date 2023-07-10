@@ -36,103 +36,103 @@ import java.util.function.Consumer;
 
 public interface EmptyClanEdition extends ClanEdition {
 
-    @Override
-    default ClanEdition rename(@NotNull Component displayName) {
-        return this;
-    }
+	@Override
+	default ClanEdition rename(@NotNull Component displayName) {
+		return this;
+	}
 
 	@Override
 	default ClanEdition decoration(@NotNull CombinedDecoration decoration) {
 		return this;
 	}
 
-    @Override
-    default ClanEdition setStatistic(@NotNull StatisticType type, int value) {
-        return this;
-    }
+	@Override
+	default ClanEdition setStatistic(@NotNull StatisticType type, int value) {
+		return this;
+	}
 
-    @Override
-    default ClanEdition owner(@NotNull ClanMember owner) {
-        return this;
-    }
+	@Override
+	default ClanEdition owner(@NotNull ClanMember owner) {
+		return this;
+	}
 
-    @Override
-    default ClanEdition addStatistics(@NotNull Map<StatisticType, Integer> statistics) {
-        return this;
-    }
+	@Override
+	default ClanEdition addStatistics(@NotNull Map<StatisticType, Integer> statistics) {
+		return this;
+	}
 
-    @Override
-    default ClanEdition incrementStatistic(@NotNull StatisticType type) {
-        return this;
-    }
+	@Override
+	default ClanEdition incrementStatistic(@NotNull StatisticType type) {
+		return this;
+	}
 
-    @Override
-    default ClanEdition removeStatistic(@NotNull StatisticType type) {
-        return this;
-    }
+	@Override
+	default ClanEdition removeStatistic(@NotNull StatisticType type) {
+		return this;
+	}
 
-    @Override
-    default ClanEdition addMember(@NotNull ClanMember member) {
-        return this;
-    }
+	@Override
+	default ClanEdition addMember(@NotNull ClanMember member) {
+		return this;
+	}
 
 
-    @Override
-    default ClanEdition removeMember(@NotNull ClanMember member) {
-        return this;
-    }
+	@Override
+	default ClanEdition removeMember(@NotNull ClanMember member) {
+		return this;
+	}
 
-    @Override
-    default ClanEdition editMember(@NotNull UUID uuid, @NotNull Consumer<MemberEdition> consumer) {
-        return this;
-    }
+	@Override
+	default ClanEdition editMember(@NotNull UUID uuid, @NotNull Consumer<MemberEdition> consumer) {
+		return this;
+	}
 
-    @Override
-    default ClanEdition addHome(@NotNull ClanHome home) {
-        return this;
-    }
+	@Override
+	default ClanEdition addHome(@NotNull ClanHome home) {
+		return this;
+	}
 
-    @Override
-    default ClanEdition removeHome(@NotNull ClanHome home) {
-        return this;
-    }
+	@Override
+	default ClanEdition removeHome(@NotNull ClanHome home) {
+		return this;
+	}
 
-    @Override
-    default ClanEdition editHome(@NotNull String name, @NotNull Consumer<HomeEdition> consumer) {
-        return this;
-    }
+	@Override
+	default ClanEdition editHome(@NotNull String name, @NotNull Consumer<HomeEdition> consumer) {
+		return this;
+	}
 
-    interface EmptyHomeEdition extends HomeEdition {
-        @Override
-        default HomeEdition setIcon(@NotNull ItemStack icon) {
-            return this;
-        }
+	interface EmptyHomeEdition extends HomeEdition {
+		@Override
+		default HomeEdition setIcon(@NotNull ItemStack icon) {
+			return this;
+		}
 
-        @Override
-        default HomeEdition move(@NotNull Location location) {
-            return this;
-        }
+		@Override
+		default HomeEdition move(@NotNull Location location) {
+			return this;
+		}
 
-        @Override
-        default HomeEdition rename(@NotNull Component displayName) {
-            return this;
-        }
+		@Override
+		default HomeEdition rename(@NotNull Component displayName) {
+			return this;
+		}
 
-        @Override
-        default HomeEdition upgrade() {
-            return this;
-        }
+		@Override
+		default HomeEdition upgrade() {
+			return this;
+		}
 
-        @Override
-        default HomeEdition downgrade() {
-            return this;
-        }
-    }
+		@Override
+		default HomeEdition downgrade() {
+			return this;
+		}
+	}
 
-    interface EmptyMemberEdition extends MemberEdition {
-        @Override
-        default MemberEdition appoint(@NotNull ClanRole role) {
-            return this;
-        }
-    }
+	interface EmptyMemberEdition extends MemberEdition {
+		@Override
+		default MemberEdition appoint(@NotNull ClanRole role) {
+			return this;
+		}
+	}
 }

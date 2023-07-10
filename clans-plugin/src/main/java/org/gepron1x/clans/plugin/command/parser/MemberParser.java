@@ -36,58 +36,58 @@ import java.util.*;
 
 public final class MemberParser implements ArgumentParser<CommandSender, ClanMember> {
 
-    public static final Caption UNKNOWN_MEMBER = Caption.of("unknown.member");
+	public static final Caption UNKNOWN_MEMBER = Caption.of("unknown.member");
 
-    private final CachingClanRepository repository;
-    private final Server server;
+	private final CachingClanRepository repository;
+	private final Server server;
 
-    public MemberParser(CachingClanRepository repository, Server server) {
+	public MemberParser(CachingClanRepository repository, Server server) {
 
-        this.repository = repository;
-        this.server = server;
-    }
+		this.repository = repository;
+		this.server = server;
+	}
 
-    @Override
-    public @NonNull ArgumentParseResult<@NonNull ClanMember> parse(@NonNull CommandContext<@NonNull CommandSender> commandContext, @NonNull Queue<@NonNull String> inputQueue) {
-        String name = Objects.requireNonNull(inputQueue.peek());
-        OfflinePlayer player = server.getOfflinePlayerIfCached(name);
-        if(player == null) return ArgumentParseResult.failure(new NoMemberFoundException(commandContext, name));
-        return clan(commandContext.getSender()).flatMap(clan -> clan.member(player)).map(member -> {
-            inputQueue.remove();
-            return ArgumentParseResult.success(member);
-                }).orElseGet(() -> ArgumentParseResult.failure(new NoMemberFoundException(commandContext, name)));
-    }
+	@Override
+	public @NonNull ArgumentParseResult<@NonNull ClanMember> parse(@NonNull CommandContext<@NonNull CommandSender> commandContext, @NonNull Queue<@NonNull String> inputQueue) {
+		String name = Objects.requireNonNull(inputQueue.peek());
+		OfflinePlayer player = server.getOfflinePlayerIfCached(name);
+		if (player == null) return ArgumentParseResult.failure(new NoMemberFoundException(commandContext, name));
+		return clan(commandContext.getSender()).flatMap(clan -> clan.member(player)).map(member -> {
+			inputQueue.remove();
+			return ArgumentParseResult.success(member);
+		}).orElseGet(() -> ArgumentParseResult.failure(new NoMemberFoundException(commandContext, name)));
+	}
 
-    @Override
-    public @NonNull List<@NonNull String> suggestions(@NonNull CommandContext<CommandSender> commandContext, @NonNull String input) {
-        return clan(commandContext.getSender()).map(clan ->
-                clan.members().stream()
-                .map(m -> m.asOffline(server))
-                .map(OfflinePlayer::getName)
-                .filter(Objects::nonNull).toList()
-        ).orElse(Collections.emptyList());
-    }
+	@Override
+	public @NonNull List<@NonNull String> suggestions(@NonNull CommandContext<CommandSender> commandContext, @NonNull String input) {
+		return clan(commandContext.getSender()).map(clan ->
+				clan.members().stream()
+						.map(m -> m.asOffline(server))
+						.map(OfflinePlayer::getName)
+						.filter(Objects::nonNull).toList()
+		).orElse(Collections.emptyList());
+	}
 
-    public Optional<Clan> clan(CommandSender sender) {
-        return new ClanOfSender(this.repository, sender).clan();
-    }
+	public Optional<Clan> clan(CommandSender sender) {
+		return new ClanOfSender(this.repository, sender).clan();
+	}
 
-    @Override
-    public int getRequestedArgumentCount() {
-        return 1;
-    }
+	@Override
+	public int getRequestedArgumentCount() {
+		return 1;
+	}
 
-    public static class NoMemberFoundException extends ParserException {
+	public static class NoMemberFoundException extends ParserException {
 
-        private final String name;
+		private final String name;
 
-        protected NoMemberFoundException(@NonNull CommandContext<?> context, String name) {
-            super(ClanRoleParser.class, context, UNKNOWN_MEMBER, CaptionVariable.of("name", name));
-            this.name = name;
-        }
+		protected NoMemberFoundException(@NonNull CommandContext<?> context, String name) {
+			super(ClanRoleParser.class, context, UNKNOWN_MEMBER, CaptionVariable.of("name", name));
+			this.name = name;
+		}
 
-        public String getName() {
-            return name;
-        }
-    }
+		public String getName() {
+			return name;
+		}
+	}
 }

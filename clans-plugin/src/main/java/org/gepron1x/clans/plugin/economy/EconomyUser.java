@@ -32,17 +32,17 @@ import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 import java.util.Optional;
 
 public final class EconomyUser implements ClanUser {
-    private final ClanUser user;
-    private final VaultPlayer player;
-    private final PricesConfig prices;
-    private final FactoryOfTheFuture futuresFactory;
+	private final ClanUser user;
+	private final VaultPlayer player;
+	private final PricesConfig prices;
+	private final FactoryOfTheFuture futuresFactory;
 
-    public EconomyUser(ClanUser user, VaultPlayer player, PricesConfig prices, FactoryOfTheFuture futuresFactory) {
-        this.user = user;
-        this.player = player;
-        this.prices = prices;
-        this.futuresFactory = futuresFactory;
-    }
+	public EconomyUser(ClanUser user, VaultPlayer player, PricesConfig prices, FactoryOfTheFuture futuresFactory) {
+		this.user = user;
+		this.player = player;
+		this.prices = prices;
+		this.futuresFactory = futuresFactory;
+	}
 
 
 	@Override
@@ -51,9 +51,9 @@ public final class EconomyUser implements ClanUser {
 	}
 
 	@Override
-    public Optional<Clan> clan() {
-        return user.clan().map(clan -> new EconomyClan(clan, prices, player, futuresFactory));
-    }
+	public Optional<Clan> clan() {
+		return user.clan().map(clan -> new EconomyClan(clan, prices, player, futuresFactory));
+	}
 
 	@Override
 	public Optional<ClanMember> member() {
@@ -61,19 +61,19 @@ public final class EconomyUser implements ClanUser {
 	}
 
 	@Override
-    public CentralisedFuture<ClanCreationResult> create(DraftClan draft) {
-        if(!player.has(prices.clanCreation())) {
+	public CentralisedFuture<ClanCreationResult> create(DraftClan draft) {
+		if (!player.has(prices.clanCreation())) {
 			return futuresFactory.failedFuture(new NotEnoughMoneyException(
-					prices.notEnoughMoney().with("amount", prices.clanCreation()),
-					prices.clanCreation(), player.balance()
+							prices.notEnoughMoney().with("amount", prices.clanCreation()),
+							prices.clanCreation(), player.balance()
 					)
 			);
 		}
-        return user.create(draft);
-    }
+		return user.create(draft);
+	}
 
-    @Override
-    public CentralisedFuture<Boolean> delete() {
-        return user.delete();
-    }
+	@Override
+	public CentralisedFuture<Boolean> delete() {
+		return user.delete();
+	}
 }

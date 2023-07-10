@@ -26,9 +26,9 @@ import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 public record VaultHook(Users users, Services services, PricesConfig prices, FactoryOfTheFuture futuresFactory) {
 
-    public Users hook() {
-        return services.get(Economy.class).<Users>map(economy -> {
-                    return new EconomyUsers(users, economy, prices, futuresFactory);
-                }).orElse(users);
-    }
+	public Users hook() {
+		return services.get(Economy.class).<Users>map(economy -> {
+			return new EconomyUsers(users, economy, prices, futuresFactory);
+		}).orElse(users);
+	}
 }

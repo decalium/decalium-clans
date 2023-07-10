@@ -50,162 +50,160 @@ import java.util.UUID;
 public class ClanCommand extends AbstractClanCommand {
 
 
+	private final RoleRegistry roleRegistry;
+	private final ClanBuilderFactory builderFactory;
+
+	public ClanCommand(@NotNull Logger logger, CachingClanRepository repository, @NotNull Users users,
+					   @NotNull Configs configs,
+					   @NotNull FactoryOfTheFuture futuresFactory,
+					   @NotNull ClanBuilderFactory builderFactory,
+					   @NotNull RoleRegistry roleRegistry) {
+
+		super(logger, repository, users, configs, futuresFactory);
+		this.builderFactory = builderFactory;
+		this.roleRegistry = roleRegistry;
+	}
+
+	@Override
+	public void register(CommandManager<CommandSender> manager) {
+
+		Command.Builder<CommandSender> builder = manager.commandBuilder("clan").senderType(Player.class);
+
+		HelpCommandConfig.Messages.Description descriptions = messages.help().messages().descriptions();
+
+		manager.command(builder.literal("create").meta(CommandMeta.DESCRIPTION, descriptions.create())
+				.permission("clans.create")
+				.argument(StringArgument.of("tag", StringArgument.StringMode.GREEDY))
+				.handler(this::createClan)
+		);
+
+		manager.command(builder.literal("delete").meta(CommandMeta.DESCRIPTION, descriptions.delete())
+				.permission(Permission.of("clans.delete"))
+				.handler(clanExecutionHandler(
+								new PermissiveClanExecutionHandler(this::deleteClan, ClanPermission.DISBAND, this.messages)
+						)
+				)
+		);
+
+		manager.command(builder.literal("rename").meta(CommandMeta.DESCRIPTION, descriptions.rename())
+				.permission(Permission.of("clans.rename"))
+				.argument(ComponentArgument.greedy("display_name", clansConfig.userComponentFormat()))
+				.handler(
+						clanExecutionHandler(
+								new PermissiveClanExecutionHandler(this::rename, ClanPermission.SET_DISPLAY_NAME, this.messages)
+						)
+				)
+		);
+
+		manager.command(builder.literal("member").literal("list").meta(CommandMeta.DESCRIPTION, descriptions.member().list())
+				.permission(Permission.of("clans.member.list"))
+				.handler(clanExecutionHandler(this::listMembers)));
+
+		manager.command(builder.literal("info", "myclan").meta(CommandMeta.DESCRIPTION, descriptions.info())
+				.permission(Permission.of("clans.info"))
+				.handler(clanExecutionHandler(this::myClan)));
+
+		manager.command(builder.literal("leave").meta(CommandMeta.DESCRIPTION, descriptions.leave())
+				.permission(Permission.of("clans.leave"))
+				.handler(clanExecutionHandler(this::leaveClan)));
+
+		manager.command(builder.literal("upgrade").meta(CommandMeta.DESCRIPTION, descriptions.upgrade()).permission("clans.upgrade")
+				.handler(clanExecutionHandler(this::upgradeClan)));
+	}
 
 
-    private final RoleRegistry roleRegistry;
-    private final ClanBuilderFactory builderFactory;
+	private void createClan(CommandContext<CommandSender> context) {
+		Player player = (Player) context.getSender();
 
-    public ClanCommand(@NotNull Logger logger, CachingClanRepository repository, @NotNull Users users,
-                       @NotNull Configs configs,
-                       @NotNull FactoryOfTheFuture futuresFactory,
-                       @NotNull ClanBuilderFactory builderFactory,
-                       @NotNull RoleRegistry roleRegistry) {
-
-        super(logger, repository, users, configs, futuresFactory);
-        this.builderFactory = builderFactory;
-        this.roleRegistry = roleRegistry;
-    }
-    @Override
-    public void register(CommandManager<CommandSender> manager) {
-
-        Command.Builder<CommandSender> builder = manager.commandBuilder("clan").senderType(Player.class);
-
-        HelpCommandConfig.Messages.Description descriptions = messages.help().messages().descriptions();
-
-        manager.command(builder.literal("create").meta(CommandMeta.DESCRIPTION, descriptions.create())
-                .permission("clans.create")
-                .argument(StringArgument.of("tag", StringArgument.StringMode.GREEDY))
-                .handler(this::createClan)
-        );
-
-        manager.command(builder.literal("delete").meta(CommandMeta.DESCRIPTION, descriptions.delete())
-                .permission(Permission.of("clans.delete"))
-                .handler(clanExecutionHandler(
-                                new PermissiveClanExecutionHandler(this::deleteClan, ClanPermission.DISBAND, this.messages)
-                                )
-                )
-        );
-
-        manager.command(builder.literal("rename").meta(CommandMeta.DESCRIPTION, descriptions.rename())
-                .permission(Permission.of("clans.rename"))
-                .argument(ComponentArgument.greedy("display_name", clansConfig.userComponentFormat()))
-                .handler(
-                        clanExecutionHandler(
-                                new PermissiveClanExecutionHandler(this::rename, ClanPermission.SET_DISPLAY_NAME, this.messages)
-                        )
-                )
-        );
-
-        manager.command(builder.literal("member").literal("list").meta(CommandMeta.DESCRIPTION, descriptions.member().list())
-                .permission(Permission.of("clans.member.list"))
-                .handler(clanExecutionHandler(this::listMembers)));
-
-        manager.command(builder.literal("info", "myclan").meta(CommandMeta.DESCRIPTION, descriptions.info())
-                .permission(Permission.of("clans.info"))
-                .handler(clanExecutionHandler(this::myClan)));
-
-        manager.command(builder.literal("leave").meta(CommandMeta.DESCRIPTION, descriptions.leave())
-                .permission(Permission.of("clans.leave"))
-                .handler(clanExecutionHandler(this::leaveClan)));
-
-        manager.command(builder.literal("upgrade").meta(CommandMeta.DESCRIPTION, descriptions.upgrade()).permission("clans.upgrade")
-                .handler(clanExecutionHandler(this::upgradeClan)));
-    }
-
-
-    private void createClan(CommandContext<CommandSender> context) {
-        Player player = (Player) context.getSender();
-
-        String tag = context.get("tag");
-        if(tag.length() < clansConfig.displayNameFormat().minTagSize()) {
-            this.messages.commands().creation().invalidTag().send(player);
-			return;
-        }
-
-		if(!clansConfig.displayNameFormat().tagRegex().matcher(tag).matches()) {
+		String tag = context.get("tag");
+		if (tag.length() < clansConfig.displayNameFormat().minTagSize()) {
 			this.messages.commands().creation().invalidTag().send(player);
 			return;
 		}
 
-        UUID uuid = player.getUniqueId();
+		if (!clansConfig.displayNameFormat().tagRegex().matcher(tag).matches()) {
+			this.messages.commands().creation().invalidTag().send(player);
+			return;
+		}
 
-        ClanMember member = builderFactory.memberBuilder()
-                .uuid(uuid)
-                .role(roleRegistry.ownerRole())
-                .build();
+		UUID uuid = player.getUniqueId();
 
-        DraftClan clan = builderFactory.draftClanBuilder()
-                .tag(tag)
-                .displayName(Component.text(tag))
-                .owner(member)
-                .build();
+		ClanMember member = builderFactory.memberBuilder()
+				.uuid(uuid)
+				.role(roleRegistry.ownerRole())
+				.build();
 
-        users.userFor(player).create(clan).thenAcceptSync(result -> {
-            if(result.isSuccess()) {
-                messages.commands().creation().success().with("tag", tag).with("name", tag).send(player);
-            } else {
+		DraftClan clan = builderFactory.draftClanBuilder()
+				.tag(tag)
+				.displayName(Component.text(tag))
+				.owner(member)
+				.build();
+
+		users.userFor(player).create(clan).thenAcceptSync(result -> {
+			if (result.isSuccess()) {
+				messages.commands().creation().success().with("tag", tag).with("name", tag).send(player);
+			} else {
 				(switch (result.status()) {
-                    case MEMBERS_IN_OTHER_CLANS -> messages.alreadyInClan();
-                    case ALREADY_EXISTS -> messages.commands().creation().clanWithTagAlreadyExists();
-                    default -> throw new IllegalStateException("Unexpected value: " + result.status());
-                }).send(player);
-            }
-        }).exceptionally(exceptionHandler(player));
+					case MEMBERS_IN_OTHER_CLANS -> messages.alreadyInClan();
+					case ALREADY_EXISTS -> messages.commands().creation().clanWithTagAlreadyExists();
+					default -> throw new IllegalStateException("Unexpected value: " + result.status());
+				}).send(player);
+			}
+		}).exceptionally(exceptionHandler(player));
 
-    }
+	}
 
-    private void rename(CommandContext<CommandSender> context) {
-        Player player = (Player) context.getSender();
-        Clan clan = context.get(ClanExecutionHandler.CLAN);
-        Component displayName = context.get("display_name");
-        clan.edit(edition -> edition.rename(displayName))
-                .thenAccept(c -> this.messages.commands().displayNameSet().with("name", displayName).send(player))
-                .exceptionally(exceptionHandler(player));
-    }
-
-    private void myClan(CommandContext<CommandSender> context) {
-        Player player = (Player) context.getSender();
-        Clan clan = context.get(ClanExecutionHandler.CLAN);
-        this.messages.commands().infoFormat().with("clan", ClanTagResolver.clan(clan)).send(player);
-    }
-
-    private void listMembers(CommandContext<CommandSender> context) {
-        Player player = (Player) context.getSender();
-        Clan clan = context.get(ClanExecutionHandler.CLAN);
-       for(ClanMember member : clan.members()) {
-           player.sendMessage(TextMessage.message("<role> <member>")
-                   .with("role", member.role())
-                   .with("member", member));
-       }
-    }
-
-
-
-    private void leaveClan(CommandContext<CommandSender> context) {
-        Player player = (Player) context.getSender();
-        Clan clan = context.get(ClanExecutionHandler.CLAN);
-        if(clan.owner().uniqueId().equals(player.getUniqueId())) {
-            this.messages.commands().ownerCannotLeave().send(player);
-            return;
-        }
-        clan.edit(edition -> edition.removeMember(context.get(ClanExecutionHandler.CLAN_MEMBER))).thenAccept(c -> {
-            this.messages.commands().left().send(player);
-        }).exceptionally(exceptionHandler(player));
-    }
-
-    private void deleteClan(CommandContext<CommandSender> context) {
-        Player player = (Player) context.getSender();
-        Clan clan = context.get(ClanExecutionHandler.CLAN);
-        clanRepository.removeClan(clan).thenAcceptSync(success -> {
-            if(success) this.messages.commands().deletion().success().send(player);
-        }).exceptionally(exceptionHandler(player));
-    }
-
-
-    private void upgradeClan(CommandContext<CommandSender> context) {
-        Player player = (Player) context.getSender();
-        Clan clan = context.get(ClanExecutionHandler.CLAN);
-        clan.edit(ClanEdition::upgrade).thenAccept(c -> this.messages.level().upgraded().with("level", c.level()).send(player))
+	private void rename(CommandContext<CommandSender> context) {
+		Player player = (Player) context.getSender();
+		Clan clan = context.get(ClanExecutionHandler.CLAN);
+		Component displayName = context.get("display_name");
+		clan.edit(edition -> edition.rename(displayName))
+				.thenAccept(c -> this.messages.commands().displayNameSet().with("name", displayName).send(player))
 				.exceptionally(exceptionHandler(player));
-    }
+	}
+
+	private void myClan(CommandContext<CommandSender> context) {
+		Player player = (Player) context.getSender();
+		Clan clan = context.get(ClanExecutionHandler.CLAN);
+		this.messages.commands().infoFormat().with("clan", ClanTagResolver.clan(clan)).send(player);
+	}
+
+	private void listMembers(CommandContext<CommandSender> context) {
+		Player player = (Player) context.getSender();
+		Clan clan = context.get(ClanExecutionHandler.CLAN);
+		for (ClanMember member : clan.members()) {
+			player.sendMessage(TextMessage.message("<role> <member>")
+					.with("role", member.role())
+					.with("member", member));
+		}
+	}
+
+
+	private void leaveClan(CommandContext<CommandSender> context) {
+		Player player = (Player) context.getSender();
+		Clan clan = context.get(ClanExecutionHandler.CLAN);
+		if (clan.owner().uniqueId().equals(player.getUniqueId())) {
+			this.messages.commands().ownerCannotLeave().send(player);
+			return;
+		}
+		clan.edit(edition -> edition.removeMember(context.get(ClanExecutionHandler.CLAN_MEMBER))).thenAccept(c -> {
+			this.messages.commands().left().send(player);
+		}).exceptionally(exceptionHandler(player));
+	}
+
+	private void deleteClan(CommandContext<CommandSender> context) {
+		Player player = (Player) context.getSender();
+		Clan clan = context.get(ClanExecutionHandler.CLAN);
+		clanRepository.removeClan(clan).thenAcceptSync(success -> {
+			if (success) this.messages.commands().deletion().success().send(player);
+		}).exceptionally(exceptionHandler(player));
+	}
+
+
+	private void upgradeClan(CommandContext<CommandSender> context) {
+		Player player = (Player) context.getSender();
+		Clan clan = context.get(ClanExecutionHandler.CLAN);
+		clan.edit(ClanEdition::upgrade).thenAccept(c -> this.messages.level().upgraded().with("level", c.level()).send(player))
+				.exceptionally(exceptionHandler(player));
+	}
 }

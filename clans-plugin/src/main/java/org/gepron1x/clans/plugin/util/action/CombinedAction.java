@@ -34,21 +34,22 @@ public final class CombinedAction implements Action {
 
 	private final Iterable<? extends Action> actions;
 
-    public CombinedAction(Iterable<? extends Action> actions) {
+	public CombinedAction(Iterable<? extends Action> actions) {
 
-        this.actions = actions;
-    }
-    @Override
-    public void send(Audience audience, TagResolver resolver) {
-        for(Action action : actions) action.send(audience, resolver);
-    }
+		this.actions = actions;
+	}
+
+	@Override
+	public void send(Audience audience, TagResolver resolver) {
+		for (Action action : actions) action.send(audience, resolver);
+	}
 
 	@Override
 	public Optional<Component> text(TagResolver resolver) {
 		List<Component> list = new ArrayList<>();
-		for(Action action : actions) action.text(resolver).ifPresent(list::add);
-		if(list.size() == 0) return Optional.empty();
-		if(list.size() == 1) return Optional.of(list.get(0));
+		for (Action action : actions) action.text(resolver).ifPresent(list::add);
+		if (list.size() == 0) return Optional.empty();
+		if (list.size() == 1) return Optional.of(list.get(0));
 		return Optional.of(Component.join(JoinConfiguration.newlines(), list));
 	}
 

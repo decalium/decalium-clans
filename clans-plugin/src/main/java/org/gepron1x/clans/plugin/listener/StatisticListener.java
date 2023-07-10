@@ -41,71 +41,67 @@ import java.util.stream.Collectors;
 
 public final class StatisticListener implements Listener {
 
-    private final CachingClanRepository repository;
-    private final Plugin plugin;
-    private final FactoryOfTheFuture futuresFactory;
-    private final ClansConfig config;
-    private final Table<String, StatisticType, Integer> statisticsTable = HashBasedTable.create();
+	private final CachingClanRepository repository;
+	private final Plugin plugin;
+	private final FactoryOfTheFuture futuresFactory;
+	private final ClansConfig config;
+	private final Table<String, StatisticType, Integer> statisticsTable = HashBasedTable.create();
 
-    public StatisticListener(CachingClanRepository repository, Plugin plugin, FactoryOfTheFuture futuresFactory, ClansConfig config) {
-        this.repository = repository;
-        this.plugin = plugin;
-        this.futuresFactory = futuresFactory;
-        this.config = config;
-    }
-
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onDeath(PlayerDeathEvent event) {
-        Entity entity = event.getEntity();
-        if(entity.getType() != EntityType.PLAYER) return;
-        incrementStatistic(entity.getUniqueId(), StatisticType.DEATHS);
-        Player killer = event.getEntity().getKiller();
-        if(killer == null || killer.equals(entity)) return;
-        this.incrementStatistic(killer.getUniqueId(), StatisticType.KILLS);
-
-    }
+	public StatisticListener(CachingClanRepository repository, Plugin plugin, FactoryOfTheFuture futuresFactory, ClansConfig config) {
+		this.repository = repository;
+		this.plugin = plugin;
+		this.futuresFactory = futuresFactory;
+		this.config = config;
+	}
 
 
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+	public void onDeath(PlayerDeathEvent event) {
+		Entity entity = event.getEntity();
+		if (entity.getType() != EntityType.PLAYER) return;
+		incrementStatistic(entity.getUniqueId(), StatisticType.DEATHS);
+		Player killer = event.getEntity().getKiller();
+		if (killer == null || killer.equals(entity)) return;
+		this.incrementStatistic(killer.getUniqueId(), StatisticType.KILLS);
 
-    private void incrementStatistic(UUID uuid, final StatisticType type) {
-        repository.userClanIfCached(uuid).map(Clan::tag).ifPresent(tag -> {
-            Integer value = statisticsTable.get(tag, type);
-            if(value == null) value = 0;
-            value += 1;
-            statisticsTable.put(tag, type, value);
-        });
-    }
-
-
-    public void start() {
-        long ticks = new DurationTicks(config.statisticUpdatePeriod()).getAsLong();
-        plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
-            if(statisticsTable.isEmpty()) return;
-            plugin.getSLF4JLogger().info("Started updating statistics.");
-            Map<String, Map<StatisticType, Integer>> map = statisticsTable.rowMap();
-            futuresFactory.allOf(map.entrySet().stream().map(entry -> {
-                Map<StatisticType, Integer> copy = Map.copyOf(entry.getValue());
-                return this.repository.requestClan(entry.getKey()).thenCompose(opt -> {
-                    if(opt.isEmpty()) return futuresFactory.completedFuture(null);
-                    Clan clan = opt.get();
-                    return clan.edit(edition -> {
-                        edition.addStatistics(copy);
-                    });
-                });
-
-            }).collect(Collectors.toList())).thenAcceptSync(ignored -> {
-                statisticsTable.clear();
-                plugin.getSLF4JLogger().info("Statistic updated sucessfully.");
-            }).exceptionally(t -> {
-                plugin.getSLF4JLogger().error("Exception caught during statistic update.", t);
-                return null;
-            });
-        }, ticks, ticks);
-    }
+	}
 
 
+	private void incrementStatistic(UUID uuid, final StatisticType type) {
+		repository.userClanIfCached(uuid).map(Clan::tag).ifPresent(tag -> {
+			Integer value = statisticsTable.get(tag, type);
+			if (value == null) value = 0;
+			value += 1;
+			statisticsTable.put(tag, type, value);
+		});
+	}
 
+
+	public void start() {
+		long ticks = new DurationTicks(config.statisticUpdatePeriod()).getAsLong();
+		plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
+			if (statisticsTable.isEmpty()) return;
+			plugin.getSLF4JLogger().info("Started updating statistics.");
+			Map<String, Map<StatisticType, Integer>> map = statisticsTable.rowMap();
+			futuresFactory.allOf(map.entrySet().stream().map(entry -> {
+				Map<StatisticType, Integer> copy = Map.copyOf(entry.getValue());
+				return this.repository.requestClan(entry.getKey()).thenCompose(opt -> {
+					if (opt.isEmpty()) return futuresFactory.completedFuture(null);
+					Clan clan = opt.get();
+					return clan.edit(edition -> {
+						edition.addStatistics(copy);
+					});
+				});
+
+			}).collect(Collectors.toList())).thenAcceptSync(ignored -> {
+				statisticsTable.clear();
+				plugin.getSLF4JLogger().info("Statistic updated sucessfully.");
+			}).exceptionally(t -> {
+				plugin.getSLF4JLogger().error("Exception caught during statistic update.", t);
+				return null;
+			});
+		}, ticks, ticks);
+	}
 
 
 }

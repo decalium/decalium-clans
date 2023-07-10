@@ -23,7 +23,8 @@ public final class SqlRegionStorage implements RegionStorage {
 	private final CachingClanRepository repository;
 	private final SqlQueue queue;
 
-	private record TagAndId(String tag, int id) {}
+	private record TagAndId(String tag, int id) {
+	}
 
 	public SqlRegionStorage(Jdbi jdbi, CachingClanRepository repository, SqlQueue queue) {
 
@@ -50,7 +51,7 @@ public final class SqlRegionStorage implements RegionStorage {
 					handle.createQuery("SELECT MAX(`id`) AS max_id FROM `regions`").map((r, ctx) -> r.getInt(1)).findFirst().orElse(1)
 			);
 			Map<Integer, ClanRegions> clanRegions = new LinkedHashMap<>();
-			for(var entry : regionMap.entrySet()) {
+			for (var entry : regionMap.entrySet()) {
 				ClanReference reference = new TagClanReference(repository, entry.getKey().tag);
 				clanRegions.put(entry.getKey().id,
 						new SqlClanRegions(new ClanRegionsImpl(entry.getValue(), reference, idCounter),

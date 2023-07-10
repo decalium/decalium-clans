@@ -27,14 +27,19 @@ import org.jetbrains.annotations.NotNull;
 
 public interface HomeEdition extends Edition<ClanHome> {
 
-    @Override
-    @NotNull
-    default Class<ClanHome> getTarget() { return ClanHome.class; }
+	@Override
+	@NotNull
+	default Class<ClanHome> getTarget() {
+		return ClanHome.class;
+	}
 
-    HomeEdition setIcon(@NotNull ItemStack icon);
-    HomeEdition move(@NotNull Location location);
-    HomeEdition rename(@NotNull Component displayName);
+	HomeEdition setIcon(@NotNull ItemStack icon);
 
-    HomeEdition upgrade();
-    HomeEdition downgrade();
+	HomeEdition move(@NotNull Location location);
+
+	HomeEdition rename(@NotNull Component displayName);
+
+	HomeEdition upgrade();
+
+	HomeEdition downgrade();
 }

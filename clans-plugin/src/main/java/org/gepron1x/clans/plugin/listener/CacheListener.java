@@ -28,20 +28,22 @@ import org.jetbrains.annotations.NotNull;
 public class CacheListener implements Listener {
 
 
-    private final UserCaching userCaching;
+	private final UserCaching userCaching;
 
-    public CacheListener(@NotNull UserCaching userCaching) {
+	public CacheListener(@NotNull UserCaching userCaching) {
 
-        this.userCaching = userCaching;
-    }
-    @EventHandler
-    public void onJoin(AsyncPlayerPreLoginEvent event) {
-        userCaching.cacheUser(event.getUniqueId());
+		this.userCaching = userCaching;
+	}
 
-    }
-    @EventHandler
-    public void onLeave(PlayerQuitEvent event) {
-        userCaching.remove(event.getPlayer().getUniqueId());
-    }
+	@EventHandler
+	public void onJoin(AsyncPlayerPreLoginEvent event) {
+		userCaching.cacheUser(event.getUniqueId());
+
+	}
+
+	@EventHandler
+	public void onLeave(PlayerQuitEvent event) {
+		userCaching.remove(event.getPlayer().getUniqueId());
+	}
 
 }

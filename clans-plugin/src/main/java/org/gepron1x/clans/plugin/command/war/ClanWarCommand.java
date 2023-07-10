@@ -56,137 +56,137 @@ import java.util.List;
 import java.util.Map;
 
 public final class ClanWarCommand extends AbstractClanCommand {
-    private final Wars wars;
+	private final Wars wars;
 
-    private static final CloudKey<ClanWarRequest> REQUEST = SimpleCloudKey.of("decaliumclans_request", TypeToken.get(ClanWarRequest.class));
-    private final Table<String, String, ClanWarRequest> requestMap = HashBasedTable.create();
+	private static final CloudKey<ClanWarRequest> REQUEST = SimpleCloudKey.of("decaliumclans_request", TypeToken.get(ClanWarRequest.class));
+	private final Table<String, String, ClanWarRequest> requestMap = HashBasedTable.create();
 
-    public ClanWarCommand(Logger logger,
-                          CachingClanRepository clanRepository,
-                          Users users,
-                          Configs configs,
-                          FactoryOfTheFuture futuresFactory,
-                          Wars wars
-                          ) {
-        super(logger, clanRepository, users, configs, futuresFactory);
-        this.wars = wars;
-    }
+	public ClanWarCommand(Logger logger,
+						  CachingClanRepository clanRepository,
+						  Users users,
+						  Configs configs,
+						  FactoryOfTheFuture futuresFactory,
+						  Wars wars
+	) {
+		super(logger, clanRepository, users, configs, futuresFactory);
+		this.wars = wars;
+	}
 
-    @Override
-    public void register(CommandManager<CommandSender> manager) {
-        HelpCommandConfig.Messages.Description.War descriptions = messages.help().messages().descriptions().war();
-        Command.Builder<CommandSender> builder = manager.commandBuilder("clan").literal("war").senderType(Player.class);
+	@Override
+	public void register(CommandManager<CommandSender> manager) {
+		HelpCommandConfig.Messages.Description.War descriptions = messages.help().messages().descriptions().war();
+		Command.Builder<CommandSender> builder = manager.commandBuilder("clan").literal("war").senderType(Player.class);
 
-        manager.command(builder.literal("request").meta(CommandMeta.DESCRIPTION, descriptions.request())
-                .permission(Permission.of("clans.war.request"))
-                .argument(manager.argumentBuilder(ClanReference.class, "clan"))
-                .handler(
-                        clanExecutionHandler(
-                                permissionRequired(this::requestWar, ClanPermission.SEND_WAR_REQUEST)
-                        )
-                )
-        );
+		manager.command(builder.literal("request").meta(CommandMeta.DESCRIPTION, descriptions.request())
+				.permission(Permission.of("clans.war.request"))
+				.argument(manager.argumentBuilder(ClanReference.class, "clan"))
+				.handler(
+						clanExecutionHandler(
+								permissionRequired(this::requestWar, ClanPermission.SEND_WAR_REQUEST)
+						)
+				)
+		);
 
-        manager.command(builder.literal("accept").meta(CommandMeta.DESCRIPTION, descriptions.accept())
-                .permission(Permission.of("clans.war.accept"))
-                .argument(StringArgument.<CommandSender>newBuilder("tag").withSuggestionsProvider(this::requestsCompletion))
-                .handler(
-                        clanExecutionHandler(
-                                permissionRequired(requireRequest(this::acceptWar), ClanPermission.ACCEPT_WAR)
-                        )
-                )
-        );
+		manager.command(builder.literal("accept").meta(CommandMeta.DESCRIPTION, descriptions.accept())
+				.permission(Permission.of("clans.war.accept"))
+				.argument(StringArgument.<CommandSender>newBuilder("tag").withSuggestionsProvider(this::requestsCompletion))
+				.handler(
+						clanExecutionHandler(
+								permissionRequired(requireRequest(this::acceptWar), ClanPermission.ACCEPT_WAR)
+						)
+				)
+		);
 
-        manager.command(builder.literal("decline").meta(CommandMeta.DESCRIPTION, descriptions.decline())
-                .permission(Permission.of("clans.war.decline"))
-                .argument(StringArgument.<CommandSender>newBuilder("tag").withSuggestionsProvider(this::requestsCompletion))
-                .handler(clanExecutionHandler(permissionRequired(requireRequest(this::declineWar), ClanPermission.ACCEPT_WAR)))
-        );
-
-
-    }
+		manager.command(builder.literal("decline").meta(CommandMeta.DESCRIPTION, descriptions.decline())
+				.permission(Permission.of("clans.war.decline"))
+				.argument(StringArgument.<CommandSender>newBuilder("tag").withSuggestionsProvider(this::requestsCompletion))
+				.handler(clanExecutionHandler(permissionRequired(requireRequest(this::declineWar), ClanPermission.ACCEPT_WAR)))
+		);
 
 
-    private void requestWar(CommandContext<CommandSender> context) {
-        Player player = (Player) context.getSender();
-        Clan clan = context.get(ClanExecutionHandler.CLAN);
-        ClanReference enacted = new TagClanReference(this.clanRepository, clan.tag());
+	}
 
-        ClanReference victim = context.get("clan");
 
-        if(victim.cached().isEmpty()) {
-            this.messages.noOnlinePlayers().send(player);
-            return;
-        }
-        if(victim.equals(enacted)) {
-            this.messages.cannotDoActionOnYourSelf().send(player);
-            return;
-        }
+	private void requestWar(CommandContext<CommandSender> context) {
+		Player player = (Player) context.getSender();
+		Clan clan = context.get(ClanExecutionHandler.CLAN);
+		ClanReference enacted = new TagClanReference(this.clanRepository, clan.tag());
 
-        victim.cached().map(Clan::members).ifPresent(members -> {
-            TagResolver resolver = ClanTagResolver.prefixed(clan);
-            for(ClanMember member : members) {
-                member.asPlayer(player.getServer()).ifPresent(p -> {
-                    this.messages.commands().wars().requestMessage().with(resolver).send(p);
-                    if(member.hasPermission(ClanPermission.ACCEPT_WAR)) {
-                        this.messages.commands().wars().acceptMessage().with(resolver).withMiniMessage("tag", clan.tag()).send(p);
-                    }
-                });
-            }
-        });
+		ClanReference victim = context.get("clan");
 
-        this.messages.commands().wars().requestSent().send(player);
+		if (victim.cached().isEmpty()) {
+			this.messages.noOnlinePlayers().send(player);
+			return;
+		}
+		if (victim.equals(enacted)) {
+			this.messages.cannotDoActionOnYourSelf().send(player);
+			return;
+		}
 
-        ClanWarRequest request = new ClanWarRequest(wars, enacted, victim);
-        this.requestMap.put(victim.cached().map(Clan::tag).orElseThrow(), clan.tag(), request);
+		victim.cached().map(Clan::members).ifPresent(members -> {
+			TagResolver resolver = ClanTagResolver.prefixed(clan);
+			for (ClanMember member : members) {
+				member.asPlayer(player.getServer()).ifPresent(p -> {
+					this.messages.commands().wars().requestMessage().with(resolver).send(p);
+					if (member.hasPermission(ClanPermission.ACCEPT_WAR)) {
+						this.messages.commands().wars().acceptMessage().with(resolver).withMiniMessage("tag", clan.tag()).send(p);
+					}
+				});
+			}
+		});
 
-    }
+		this.messages.commands().wars().requestSent().send(player);
 
-    private void acceptWar(CommandContext<CommandSender> context) {
-        Player player = (Player) context.getSender();
-        ClanWarRequest request = context.get(REQUEST);
-        Clan actor = request.actor().orElseThrow();
-        Clan victim = request.victim().orElseThrow();
-        request.accept();
+		ClanWarRequest request = new ClanWarRequest(wars, enacted, victim);
+		this.requestMap.put(victim.cached().map(Clan::tag).orElseThrow(), clan.tag(), request);
+
+	}
+
+	private void acceptWar(CommandContext<CommandSender> context) {
+		Player player = (Player) context.getSender();
+		ClanWarRequest request = context.get(REQUEST);
+		Clan actor = request.actor().orElseThrow();
+		Clan victim = request.victim().orElseThrow();
+		request.accept();
 		this.messages.commands().wars().accepted().with("clan", ClanTagResolver.clan(actor)).send(player);
 		this.messages.commands().wars().victimAccepted().with(ClanTagResolver.prefixed(victim))
 				.send(new ClanAudience(actor, player.getServer()));
 
 
-    }
+	}
 
-    private void declineWar(CommandContext<CommandSender> context) {
-        CommandSender sender = context.getSender();
-        ClanWarRequest request = context.get(REQUEST);
-        Clan actor = request.actor().orElseThrow();
-        Clan victim = request.victim().orElseThrow();
-        this.messages.commands().wars().declined().with(ClanTagResolver.prefixed(actor)).send(sender);
+	private void declineWar(CommandContext<CommandSender> context) {
+		CommandSender sender = context.getSender();
+		ClanWarRequest request = context.get(REQUEST);
+		Clan actor = request.actor().orElseThrow();
+		Clan victim = request.victim().orElseThrow();
+		this.messages.commands().wars().declined().with(ClanTagResolver.prefixed(actor)).send(sender);
 		this.messages.commands().wars().victimDeclined().with(ClanTagResolver.prefixed(victim))
 				.send(new ClanAudience(actor, sender.getServer()));
-    }
+	}
 
-    private CommandExecutionHandler<CommandSender> requireRequest(CommandExecutionHandler<CommandSender> delegate) {
-        return ctx -> {
-            String tag = ctx.get("tag");
-            Clan clan = ctx.get(ClanExecutionHandler.CLAN);
-            ClanWarRequest request = this.requestMap.get(clan.tag(), tag);
-            if(request == null || request.actor().cached().isEmpty()) {
-                this.messages.commands().wars().noRequests().with("tag", tag).send(ctx.getSender());
-                return;
-            }
-            ctx.store(REQUEST, request);
-            delegate.execute(ctx);
-            requestMap.remove(clan.tag(), tag);
-        };
-    }
+	private CommandExecutionHandler<CommandSender> requireRequest(CommandExecutionHandler<CommandSender> delegate) {
+		return ctx -> {
+			String tag = ctx.get("tag");
+			Clan clan = ctx.get(ClanExecutionHandler.CLAN);
+			ClanWarRequest request = this.requestMap.get(clan.tag(), tag);
+			if (request == null || request.actor().cached().isEmpty()) {
+				this.messages.commands().wars().noRequests().with("tag", tag).send(ctx.getSender());
+				return;
+			}
+			ctx.store(REQUEST, request);
+			delegate.execute(ctx);
+			requestMap.remove(clan.tag(), tag);
+		};
+	}
 
-    private List<String> requestsCompletion(CommandContext<CommandSender> context, String s) {
-        return new ClanOfSender(this.clanRepository, context.getSender()).clan()
-                .map(Clan::tag)
-                .map(requestMap::row)
-                .map(Map::keySet).map(List::copyOf)
-                .orElseGet(Collections::emptyList);
-    }
+	private List<String> requestsCompletion(CommandContext<CommandSender> context, String s) {
+		return new ClanOfSender(this.clanRepository, context.getSender()).clan()
+				.map(Clan::tag)
+				.map(requestMap::row)
+				.map(Map::keySet).map(List::copyOf)
+				.orElseGet(Collections::emptyList);
+	}
 
 
 }

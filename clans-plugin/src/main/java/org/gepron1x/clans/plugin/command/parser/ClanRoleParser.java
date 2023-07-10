@@ -36,41 +36,42 @@ import java.util.stream.Collectors;
 
 public final class ClanRoleParser<C> implements ArgumentParser<C, ClanRole> {
 
-    public static final Caption UNKNOWN_ROLE = Caption.of("unknown.role");
+	public static final Caption UNKNOWN_ROLE = Caption.of("unknown.role");
 
 
-    private final RoleRegistry roleRegistry;
+	private final RoleRegistry roleRegistry;
 
-    public ClanRoleParser(@NonNull RoleRegistry roleRegistry) {
+	public ClanRoleParser(@NonNull RoleRegistry roleRegistry) {
 
-        this.roleRegistry = roleRegistry;
-    }
-
-
-    @Override
-    public @NonNull ArgumentParseResult<@NonNull ClanRole> parse(@NonNull CommandContext<@NonNull C> commandContext, @NonNull Queue<@NonNull String> inputQueue) {
-
-        String name = inputQueue.peek();
-        if(name == null) return ArgumentParseResult.failure(new NoInputProvidedException(ClanRoleParser.class, commandContext));
-        inputQueue.remove();
-
-        return roleRegistry.value(name).map(ArgumentParseResult::success).orElseGet(() -> ArgumentParseResult.failure(new UnknownRoleException(commandContext, name)));
-
-    }
-
-    @Override
-    public @NonNull List<@NonNull String> suggestions(@NonNull CommandContext<C> commandContext, @NonNull String input) {
-
-        return roleRegistry.values().stream()
-                .map(ClanRole::name)
-                .collect(Collectors.toList());
-    }
+		this.roleRegistry = roleRegistry;
+	}
 
 
-    public static class UnknownRoleException extends ParserException {
+	@Override
+	public @NonNull ArgumentParseResult<@NonNull ClanRole> parse(@NonNull CommandContext<@NonNull C> commandContext, @NonNull Queue<@NonNull String> inputQueue) {
 
-        protected UnknownRoleException(@NonNull CommandContext<?> context, String input) {
-            super(ClanRoleParser.class, context, UNKNOWN_ROLE, CaptionVariable.of("role", input));
-        }
-    }
+		String name = inputQueue.peek();
+		if (name == null)
+			return ArgumentParseResult.failure(new NoInputProvidedException(ClanRoleParser.class, commandContext));
+		inputQueue.remove();
+
+		return roleRegistry.value(name).map(ArgumentParseResult::success).orElseGet(() -> ArgumentParseResult.failure(new UnknownRoleException(commandContext, name)));
+
+	}
+
+	@Override
+	public @NonNull List<@NonNull String> suggestions(@NonNull CommandContext<C> commandContext, @NonNull String input) {
+
+		return roleRegistry.values().stream()
+				.map(ClanRole::name)
+				.collect(Collectors.toList());
+	}
+
+
+	public static class UnknownRoleException extends ParserException {
+
+		protected UnknownRoleException(@NonNull CommandContext<?> context, String input) {
+			super(ClanRoleParser.class, context, UNKNOWN_ROLE, CaptionVariable.of("role", input));
+		}
+	}
 }

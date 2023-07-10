@@ -23,6 +23,7 @@ import net.kyori.adventure.key.Key;
 import java.util.Optional;
 
 public interface ChatUser {
-    Optional<Key> currentChannelKey();
-    void currentChannelKey(Key key);
+	Optional<Key> currentChannelKey();
+
+	void currentChannelKey(Key key);
 }

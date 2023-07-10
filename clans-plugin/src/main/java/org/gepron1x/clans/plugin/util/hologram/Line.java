@@ -37,7 +37,7 @@ public record Line(double height, TextMessage content) {
 		@Override
 		public Object serialise(Line value, Decomposer decomposer) {
 			Map<String, Object> map = new LinkedHashMap<>();
-			if(value.hasHeight()) map.put("height", value.height);
+			if (value.hasHeight()) map.put("height", value.height);
 			map.put("content", decomposer.decompose(TextMessage.class, value.content));
 			return map;
 		}

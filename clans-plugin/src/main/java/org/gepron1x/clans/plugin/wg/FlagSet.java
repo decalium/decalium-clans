@@ -24,9 +24,9 @@ import java.util.Map;
 
 public interface FlagSet {
 
-    void apply(ProtectedRegion region);
+	void apply(ProtectedRegion region);
 
-    void clear(ProtectedRegion region);
+	void clear(ProtectedRegion region);
 
-    Map<String, ?> serialize();
+	Map<String, ?> serialize();
 }

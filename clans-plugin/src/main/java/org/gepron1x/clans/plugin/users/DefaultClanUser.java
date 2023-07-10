@@ -33,15 +33,15 @@ import java.util.UUID;
 
 public final class DefaultClanUser implements ClanUser {
 
-    private final CachingClanRepository repository;
+	private final CachingClanRepository repository;
 	private final GlobalRegions regions;
 	private final UUID uuid;
 
-    public DefaultClanUser(CachingClanRepository repository, GlobalRegions regions, UUID uuid) {
-        this.repository = repository;
+	public DefaultClanUser(CachingClanRepository repository, GlobalRegions regions, UUID uuid) {
+		this.repository = repository;
 		this.regions = regions;
 		this.uuid = uuid;
-    }
+	}
 
 	@Override
 	public Optional<ClanRegions> regions() {
@@ -49,9 +49,9 @@ public final class DefaultClanUser implements ClanUser {
 	}
 
 	@Override
-    public Optional<Clan> clan() {
-        return repository.userClanIfCached(uuid);
-    }
+	public Optional<Clan> clan() {
+		return repository.userClanIfCached(uuid);
+	}
 
 	@Override
 	public Optional<ClanMember> member() {
@@ -59,12 +59,12 @@ public final class DefaultClanUser implements ClanUser {
 	}
 
 	@Override
-    public CentralisedFuture<ClanCreationResult> create(DraftClan draft) {
-        return this.repository.createClan(draft);
-    }
+	public CentralisedFuture<ClanCreationResult> create(DraftClan draft) {
+		return this.repository.createClan(draft);
+	}
 
-    @Override
-    public CentralisedFuture<Boolean> delete() {
-        return repository.removeClan(clan().orElseThrow());
-    }
+	@Override
+	public CentralisedFuture<Boolean> delete() {
+		return repository.removeClan(clan().orElseThrow());
+	}
 }

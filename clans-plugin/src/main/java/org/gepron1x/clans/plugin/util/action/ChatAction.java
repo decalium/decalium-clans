@@ -30,15 +30,16 @@ import java.util.Optional;
 
 public final class ChatAction implements Action {
 
-    private final TextMessage message;
+	private final TextMessage message;
 
-    public ChatAction(TextMessage message) {
-        this.message = message;
-    }
-    @Override
-    public void send(Audience audience, TagResolver resolver) {
-        audience.sendMessage(message.with(resolver));
-    }
+	public ChatAction(TextMessage message) {
+		this.message = message;
+	}
+
+	@Override
+	public void send(Audience audience, TagResolver resolver) {
+		audience.sendMessage(message.with(resolver));
+	}
 
 	@Override
 	public Optional<Component> text(TagResolver resolver) {

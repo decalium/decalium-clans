@@ -22,5 +22,5 @@ import org.jdbi.v3.core.Handle;
 
 public interface Savable {
 
-    int execute(Handle handle);
+	int execute(Handle handle);
 }

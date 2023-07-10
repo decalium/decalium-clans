@@ -36,37 +36,38 @@ import java.util.Queue;
 
 public final class HomeParser implements ArgumentParser<CommandSender, ClanHome> {
 
-    private final CachingClanRepository repository;
+	private final CachingClanRepository repository;
 
-    public HomeParser(CachingClanRepository repository) {
+	public HomeParser(CachingClanRepository repository) {
 
-        this.repository = repository;
-    }
-    @Override
-    public @NonNull ArgumentParseResult<@NonNull ClanHome> parse(@NonNull CommandContext<@NonNull CommandSender> commandContext, @NonNull Queue<@NonNull String> inputQueue) {
-        String name = Objects.requireNonNull(inputQueue.peek());
-        inputQueue.remove();
-        return new ClanOfSender(this.repository, commandContext.getSender()).clan()
-                .flatMap(clan -> clan.home(name)).map(ArgumentParseResult::success)
-                .orElseGet(() -> ArgumentParseResult.failure(new HomeNotFoundException(commandContext, name)));
-    }
+		this.repository = repository;
+	}
 
-    @Override
-    public @NonNull List<@NonNull String> suggestions(@NonNull CommandContext<CommandSender> commandContext, @NonNull String input) {
-        return new ClanOfSender(this.repository, commandContext.getSender()).clan()
-                .map(clan -> clan.homes().stream().map(ClanHome::name).toList())
-                .orElse(Collections.emptyList());
-    }
+	@Override
+	public @NonNull ArgumentParseResult<@NonNull ClanHome> parse(@NonNull CommandContext<@NonNull CommandSender> commandContext, @NonNull Queue<@NonNull String> inputQueue) {
+		String name = Objects.requireNonNull(inputQueue.peek());
+		inputQueue.remove();
+		return new ClanOfSender(this.repository, commandContext.getSender()).clan()
+				.flatMap(clan -> clan.home(name)).map(ArgumentParseResult::success)
+				.orElseGet(() -> ArgumentParseResult.failure(new HomeNotFoundException(commandContext, name)));
+	}
 
-    @Override
-    public int getRequestedArgumentCount() {
-        return 1;
-    }
+	@Override
+	public @NonNull List<@NonNull String> suggestions(@NonNull CommandContext<CommandSender> commandContext, @NonNull String input) {
+		return new ClanOfSender(this.repository, commandContext.getSender()).clan()
+				.map(clan -> clan.homes().stream().map(ClanHome::name).toList())
+				.orElse(Collections.emptyList());
+	}
 
-    public static final class HomeNotFoundException extends ParserException {
+	@Override
+	public int getRequestedArgumentCount() {
+		return 1;
+	}
 
-        private HomeNotFoundException(@NonNull CommandContext<?> context, String name) {
-            super(HomeParser.class, context, Caption.of("home.not.found"), CaptionVariable.of("name", name));
-        }
-    }
+	public static final class HomeNotFoundException extends ParserException {
+
+		private HomeNotFoundException(@NonNull CommandContext<?> context, String name) {
+			super(HomeParser.class, context, Caption.of("home.not.found"), CaptionVariable.of("name", name));
+		}
+	}
 }

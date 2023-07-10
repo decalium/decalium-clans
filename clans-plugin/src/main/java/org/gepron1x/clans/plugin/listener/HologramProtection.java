@@ -27,25 +27,25 @@ import org.bukkit.plugin.Plugin;
 
 public final class HologramProtection implements Listener {
 
-    private final Plugin plugin;
+	private final Plugin plugin;
 
-    private final NamespacedKey key;
+	private final NamespacedKey key;
 
-    public HologramProtection(Plugin plugin) {
+	public HologramProtection(Plugin plugin) {
 
-        this.plugin = plugin;
-        key = new NamespacedKey(plugin, "protect_from_death");
-    }
+		this.plugin = plugin;
+		key = new NamespacedKey(plugin, "protect_from_death");
+	}
 
-    public void register() {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
-    }
+	public void register() {
+		plugin.getServer().getPluginManager().registerEvents(this, plugin);
+	}
 
-    @EventHandler
-    public void on(EntityDeathEvent event) {
-        if(event.getEntity().getPersistentDataContainer().has(key, PersistentDataType.BYTE)) {
-            event.setCancelled(true);
-            plugin.getLogger().info("Protected entity death detected! Denying!");
-        }
-    }
+	@EventHandler
+	public void on(EntityDeathEvent event) {
+		if (event.getEntity().getPersistentDataContainer().has(key, PersistentDataType.BYTE)) {
+			event.setCancelled(true);
+			plugin.getLogger().info("Protected entity death detected! Denying!");
+		}
+	}
 }

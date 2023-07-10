@@ -33,20 +33,20 @@ import java.util.function.Supplier;
 
 public final class BukkitFactoryOfTheFuture implements FactoryOfTheFuture {
 
-    private final Executor mainThreadExecutor;
-    private final ExecutorService asyncThreadExecutor;
+	private final Executor mainThreadExecutor;
+	private final ExecutorService asyncThreadExecutor;
 
-   	public static BukkitFactoryOfTheFuture plugin(@NotNull Plugin plugin, ExecutorService asyncThreadExecutor) {
-		   Server server = plugin.getServer();
-		   BukkitScheduler scheduler = server.getScheduler();
-		   return new BukkitFactoryOfTheFuture(r -> {
-			   if(server.isPrimaryThread()) r.run();
-			   else scheduler.runTask(plugin, r);
-		   }, asyncThreadExecutor);
+	public static BukkitFactoryOfTheFuture plugin(@NotNull Plugin plugin, ExecutorService asyncThreadExecutor) {
+		Server server = plugin.getServer();
+		BukkitScheduler scheduler = server.getScheduler();
+		return new BukkitFactoryOfTheFuture(r -> {
+			if (server.isPrimaryThread()) r.run();
+			else scheduler.runTask(plugin, r);
+		}, asyncThreadExecutor);
 	}
 
 	public static BukkitFactoryOfTheFuture fixedThreadPool(@NotNull Plugin plugin, int threadCount) {
-		   return plugin(plugin, Executors.newFixedThreadPool(threadCount));
+		return plugin(plugin, Executors.newFixedThreadPool(threadCount));
 	}
 
 	public BukkitFactoryOfTheFuture(Executor mainThreadExecutor, ExecutorService asyncThreadExecutor) {
@@ -54,127 +54,126 @@ public final class BukkitFactoryOfTheFuture implements FactoryOfTheFuture {
 		this.asyncThreadExecutor = asyncThreadExecutor;
 	}
 
-    @Override
-    public void execute(Runnable command) {
-        this.asyncThreadExecutor.execute(command);
+	@Override
+	public void execute(Runnable command) {
+		this.asyncThreadExecutor.execute(command);
 
-    }
-
-    @Override
-    public void executeSync(Runnable command) {
-        this.mainThreadExecutor.execute(command);
-
-    }
-
-    @Override
-    public CentralisedFuture<?> runAsync(Runnable command) {
-        return supplyAsync(() -> {
-            command.run();
-            return null;
-        });
-    }
-
-    @Override
-    public CentralisedFuture<?> runAsync(Runnable command, Executor executor) {
-        return supplyAsync(() -> {
-            command.run();
-            return null;
-        }, executor);
-    }
-
-    @Override
-    public CentralisedFuture<?> runSync(Runnable command) {
-        return supplySync(() -> {
-            command.run();
-            return null;
-        });
-    }
-
-    @Override
-    public <T> CentralisedFuture<T> supplyAsync(Supplier<T> supplier) {
-        return supplyAsync(supplier, asyncThreadExecutor);
-    }
-
-    @Override
-    public <T> CentralisedFuture<T> supplyAsync(Supplier<T> supplier, Executor executor) {
-        return this.<T>newIncompleteFuture().completeAsync(supplier, executor);
-    }
-
-    @Override
-    public <T> CentralisedFuture<T> supplySync(Supplier<T> supplier) {
-        return this.<T>newIncompleteFuture().completeSync(supplier);
-    }
-
-    @Override
-    public <T> CentralisedFuture<T> completedFuture(T value) {
-        CentralisedFuture<T> result = newIncompleteFuture();
-        result.complete(value);
-        return result;
-    }
-
-    @Override
-    public <T> ReactionStage<T> completedStage(T value) {
-        return completedFuture(value).minimalCompletionStage();
-    }
-
-    @Override
-    public <T> CentralisedFuture<T> failedFuture(Throwable ex) {
-        CentralisedFuture<T> result = newIncompleteFuture();
-        result.completeExceptionally(ex);
-        return result;
-    }
-
-    @Override
-    public <T> ReactionStage<T> failedStage(Throwable ex) {
-        return this.<T>failedFuture(ex).minimalCompletionStage();
-    }
-
-    @Override
-    public <T> CentralisedFuture<T> newIncompleteFuture() {
-        return new BaseCentralisedFuture<>(mainThreadExecutor::execute);
-    }
-
-    @Override
-    public <T> CentralisedFuture<T> copyFuture(CompletableFuture<T> completableFuture) {
-        return copyStage0(completableFuture);
-    }
-
-    @Override
-    public <T> ReactionStage<T> copyStage(CompletionStage<T> completionStage) {
-        return copyStage0(completionStage);
-    }
-
-    private <T> CentralisedFuture<T> copyStage0(CompletionStage<T> completionStage) {
-        CentralisedFuture<T> copy = newIncompleteFuture();
-        // Implicit null check
-        completionStage.whenComplete((val, ex) -> {
-            if (ex == null) {
-                copy.complete(val);
-            } else {
-                copy.completeExceptionally(ex);
-            }
-        });
-        return copy;
-    }
-
-    @Override
-    public CentralisedFuture<?> allOf(CentralisedFuture<?>... futures) {
-        if (futures.length == 0) { // Null check
-            return completedFuture(null);
-        }
-        return copyFuture(CompletableFuture.allOf(futures));
-    }
-
-    @Override
-    public <T> CentralisedFuture<?> allOf(Collection<? extends CentralisedFuture<T>> centralisedFutures) {
-        return allOf(centralisedFutures.toArray(CentralisedFuture[]::new));
-    }
-
-	public void shutdownAndTerminate() throws InterruptedException {
-		   asyncThreadExecutor.shutdown();
-		   asyncThreadExecutor.awaitTermination(5L, TimeUnit.SECONDS);
 	}
 
+	@Override
+	public void executeSync(Runnable command) {
+		this.mainThreadExecutor.execute(command);
+
+	}
+
+	@Override
+	public CentralisedFuture<?> runAsync(Runnable command) {
+		return supplyAsync(() -> {
+			command.run();
+			return null;
+		});
+	}
+
+	@Override
+	public CentralisedFuture<?> runAsync(Runnable command, Executor executor) {
+		return supplyAsync(() -> {
+			command.run();
+			return null;
+		}, executor);
+	}
+
+	@Override
+	public CentralisedFuture<?> runSync(Runnable command) {
+		return supplySync(() -> {
+			command.run();
+			return null;
+		});
+	}
+
+	@Override
+	public <T> CentralisedFuture<T> supplyAsync(Supplier<T> supplier) {
+		return supplyAsync(supplier, asyncThreadExecutor);
+	}
+
+	@Override
+	public <T> CentralisedFuture<T> supplyAsync(Supplier<T> supplier, Executor executor) {
+		return this.<T>newIncompleteFuture().completeAsync(supplier, executor);
+	}
+
+	@Override
+	public <T> CentralisedFuture<T> supplySync(Supplier<T> supplier) {
+		return this.<T>newIncompleteFuture().completeSync(supplier);
+	}
+
+	@Override
+	public <T> CentralisedFuture<T> completedFuture(T value) {
+		CentralisedFuture<T> result = newIncompleteFuture();
+		result.complete(value);
+		return result;
+	}
+
+	@Override
+	public <T> ReactionStage<T> completedStage(T value) {
+		return completedFuture(value).minimalCompletionStage();
+	}
+
+	@Override
+	public <T> CentralisedFuture<T> failedFuture(Throwable ex) {
+		CentralisedFuture<T> result = newIncompleteFuture();
+		result.completeExceptionally(ex);
+		return result;
+	}
+
+	@Override
+	public <T> ReactionStage<T> failedStage(Throwable ex) {
+		return this.<T>failedFuture(ex).minimalCompletionStage();
+	}
+
+	@Override
+	public <T> CentralisedFuture<T> newIncompleteFuture() {
+		return new BaseCentralisedFuture<>(mainThreadExecutor::execute);
+	}
+
+	@Override
+	public <T> CentralisedFuture<T> copyFuture(CompletableFuture<T> completableFuture) {
+		return copyStage0(completableFuture);
+	}
+
+	@Override
+	public <T> ReactionStage<T> copyStage(CompletionStage<T> completionStage) {
+		return copyStage0(completionStage);
+	}
+
+	private <T> CentralisedFuture<T> copyStage0(CompletionStage<T> completionStage) {
+		CentralisedFuture<T> copy = newIncompleteFuture();
+		// Implicit null check
+		completionStage.whenComplete((val, ex) -> {
+			if (ex == null) {
+				copy.complete(val);
+			} else {
+				copy.completeExceptionally(ex);
+			}
+		});
+		return copy;
+	}
+
+	@Override
+	public CentralisedFuture<?> allOf(CentralisedFuture<?>... futures) {
+		if (futures.length == 0) { // Null check
+			return completedFuture(null);
+		}
+		return copyFuture(CompletableFuture.allOf(futures));
+	}
+
+	@Override
+	public <T> CentralisedFuture<?> allOf(Collection<? extends CentralisedFuture<T>> centralisedFutures) {
+		return allOf(centralisedFutures.toArray(CentralisedFuture[]::new));
+	}
+
+	public void shutdownAndTerminate() throws InterruptedException {
+		asyncThreadExecutor.shutdown();
+		asyncThreadExecutor.awaitTermination(5L, TimeUnit.SECONDS);
+	}
 
 
 }

@@ -26,15 +26,16 @@ import org.gepron1x.clans.api.user.Users;
 
 public final class DefaultUsers implements Users {
 
-    private final CachingClanRepository repository;
+	private final CachingClanRepository repository;
 	private final GlobalRegions regions;
 
 	public DefaultUsers(CachingClanRepository repository, GlobalRegions regions) {
-        this.repository = repository;
+		this.repository = repository;
 		this.regions = regions;
 	}
-    @Override
-    public ClanUser userFor(Player player) {
-        return new DefaultClanUser(repository, regions, player.getUniqueId());
-    }
+
+	@Override
+	public ClanUser userFor(Player player) {
+		return new DefaultClanUser(repository, regions, player.getUniqueId());
+	}
 }

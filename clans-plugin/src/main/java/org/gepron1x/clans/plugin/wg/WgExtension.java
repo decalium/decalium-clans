@@ -31,39 +31,39 @@ import java.util.List;
 
 public final class WgExtension {
 
-    public static final StringFlag CLAN = new StringFlag("clan");
-    public static final StringFlag HOME_NAME = new StringFlag("clan-home-name");
+	public static final StringFlag CLAN = new StringFlag("clan");
+	public static final StringFlag HOME_NAME = new StringFlag("clan-home-name");
 
 	public static final IntegerFlag REGION_ID = new IntegerFlag("clan-region-id");
 
-    public static final BooleanFlag SHIELD_ACTIVE = new BooleanFlag("clan-shield-active");
-    private final Configs configs;
-    private final CachingClanRepository repository;
+	public static final BooleanFlag SHIELD_ACTIVE = new BooleanFlag("clan-shield-active");
+	private final Configs configs;
+	private final CachingClanRepository repository;
 	private final GlobalRegions regions;
 	private final WgRepositoryImpl.AsyncRegionStorage storage;
 
 	public WgExtension(CachingClanRepository repository, Configs configs, GlobalRegions regions, WgRepositoryImpl.AsyncRegionStorage storage) {
-        this.configs = configs;
-        this.repository = repository;
+		this.configs = configs;
+		this.repository = repository;
 		this.regions = regions;
 		this.storage = storage;
 	}
 
 
-    public CachingClanRepository make() {
-        return new WgRepositoryImpl(this.repository, configs, WorldGuard.getInstance(), regions, storage);
-    }
+	public CachingClanRepository make() {
+		return new WgRepositoryImpl(this.repository, configs, WorldGuard.getInstance(), regions, storage);
+	}
 
-    public static void registerFlags() {
-        List.of(CLAN, HOME_NAME, SHIELD_ACTIVE, REGION_ID).forEach(WorldGuard.getInstance().getFlagRegistry()::register);
-    }
+	public static void registerFlags() {
+		List.of(CLAN, HOME_NAME, SHIELD_ACTIVE, REGION_ID).forEach(WorldGuard.getInstance().getFlagRegistry()::register);
+	}
 
 	public static String regionName(ClanRegion region) {
 		return regionName(region.id());
 	}
 
 	public static String regionName(int id) {
-		return "clans_region_"+id;
+		return "clans_region_" + id;
 	}
 
 }

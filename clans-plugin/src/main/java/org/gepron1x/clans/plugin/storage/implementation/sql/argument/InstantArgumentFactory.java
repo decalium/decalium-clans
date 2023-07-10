@@ -27,17 +27,17 @@ import java.sql.Types;
 import java.time.Instant;
 
 public final class InstantArgumentFactory extends AbstractArgumentFactory<Instant> {
-    /**
-     * Constructs an {@link ArgumentFactory} for type {@code T}.
-     *
-     * @param sqlType the {@link Types} constant to use when the argument value is {@code null}.
-     */
-    public InstantArgumentFactory() {
-        super(Types.TIMESTAMP);
-    }
+	/**
+	 * Constructs an {@link ArgumentFactory} for type {@code T}.
+	 *
+	 * @param sqlType the {@link Types} constant to use when the argument value is {@code null}.
+	 */
+	public InstantArgumentFactory() {
+		super(Types.TIMESTAMP);
+	}
 
-    @Override
-    protected Argument build(Instant value, ConfigRegistry config) {
-        return (pos, statement, ctx) -> statement.setTimestamp(pos, Timestamp.from(value));
-    }
+	@Override
+	protected Argument build(Instant value, ConfigRegistry config) {
+		return (pos, statement, ctx) -> statement.setTimestamp(pos, Timestamp.from(value));
+	}
 }

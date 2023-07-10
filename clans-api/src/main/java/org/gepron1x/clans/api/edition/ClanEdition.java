@@ -35,53 +35,57 @@ import java.util.function.Consumer;
 
 public interface ClanEdition extends Edition<DraftClan> {
 
-    @Override
-    @NotNull
-    default Class<DraftClan> getTarget() { return DraftClan.class; }
+	@Override
+	@NotNull
+	default Class<DraftClan> getTarget() {
+		return DraftClan.class;
+	}
 
-    ClanEdition rename(@NotNull Component displayName);
+	ClanEdition rename(@NotNull Component displayName);
 
 	ClanEdition decoration(@NotNull CombinedDecoration decoration);
 
-    ClanEdition setStatistic(@NotNull StatisticType type, int value);
+	ClanEdition setStatistic(@NotNull StatisticType type, int value);
 
-    ClanEdition owner(@NotNull ClanMember owner);
+	ClanEdition owner(@NotNull ClanMember owner);
 
-    default ClanEdition setStatistics(@NotNull Map<StatisticType, Integer> statistics) {
-        statistics.forEach(this::setStatistic);
-        return this;
-    }
+	default ClanEdition setStatistics(@NotNull Map<StatisticType, Integer> statistics) {
+		statistics.forEach(this::setStatistic);
+		return this;
+	}
 
-    default ClanEdition upgrade() {
-        return incrementStatistic(StatisticType.LEVEL);
-    }
-
-
-    ClanEdition addStatistics(@NotNull Map<StatisticType, Integer> statistics);
-
-    ClanEdition incrementStatistic(@NotNull StatisticType type);
-    ClanEdition removeStatistic(@NotNull StatisticType type);
-
-    ClanEdition addMember(@NotNull ClanMember member);
-
-    default ClanEdition addMembers(@NotNull Collection<ClanMember> members) {
-        members.forEach(this::addMember);
-        return this;
-    }
-    ClanEdition removeMember(@NotNull ClanMember member);
-    ClanEdition editMember(@NotNull UUID uuid, @NotNull Consumer<MemberEdition> consumer);
-
-    ClanEdition addHome(@NotNull ClanHome home);
-
-    default ClanEdition addHomes(@NotNull Collection<ClanHome> homes) {
-        homes.forEach(this::addHome);
-        return this;
-    }
-    ClanEdition removeHome(@NotNull ClanHome home);
-    ClanEdition editHome(@NotNull String name, @NotNull Consumer<HomeEdition> consumer);
+	default ClanEdition upgrade() {
+		return incrementStatistic(StatisticType.LEVEL);
+	}
 
 
+	ClanEdition addStatistics(@NotNull Map<StatisticType, Integer> statistics);
 
+	ClanEdition incrementStatistic(@NotNull StatisticType type);
+
+	ClanEdition removeStatistic(@NotNull StatisticType type);
+
+	ClanEdition addMember(@NotNull ClanMember member);
+
+	default ClanEdition addMembers(@NotNull Collection<ClanMember> members) {
+		members.forEach(this::addMember);
+		return this;
+	}
+
+	ClanEdition removeMember(@NotNull ClanMember member);
+
+	ClanEdition editMember(@NotNull UUID uuid, @NotNull Consumer<MemberEdition> consumer);
+
+	ClanEdition addHome(@NotNull ClanHome home);
+
+	default ClanEdition addHomes(@NotNull Collection<ClanHome> homes) {
+		homes.forEach(this::addHome);
+		return this;
+	}
+
+	ClanEdition removeHome(@NotNull ClanHome home);
+
+	ClanEdition editHome(@NotNull String name, @NotNull Consumer<HomeEdition> consumer);
 
 
 }

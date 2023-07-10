@@ -32,38 +32,39 @@ import java.util.Queue;
 
 public final class MessagingParser<C extends Audience, T> implements ArgumentParser<C, T> {
 
-    private final ArgumentParser<C, T> argumentParser;
-    private final Message fail;
+	private final ArgumentParser<C, T> argumentParser;
+	private final Message fail;
 
-    public MessagingParser(ArgumentParser<C, T> argumentParser, Message fail) {
+	public MessagingParser(ArgumentParser<C, T> argumentParser, Message fail) {
 
-        this.argumentParser = argumentParser;
-        this.fail = fail;
-    }
-    @Override
-    public @NonNull ArgumentParseResult<@NonNull T> parse(@NonNull CommandContext<@NonNull C> commandContext, @NonNull Queue<@NonNull String> inputQueue) {
-        ArgumentParseResult<T> result = this.argumentParser.parse(commandContext, inputQueue);
-        return result.mapFailure(throwable -> {
-            if(throwable instanceof ParserException ex) {
-                return new DescribingException(fail.with(new CaptionTagResolver(ex)));
-            } else {
-                return throwable;
-            }
-        });
-    }
+		this.argumentParser = argumentParser;
+		this.fail = fail;
+	}
 
-    @Override
-    public @NonNull List<@NonNull String> suggestions(@NonNull CommandContext<C> commandContext, @NonNull String input) {
-        return this.argumentParser.suggestions(commandContext, input);
-    }
+	@Override
+	public @NonNull ArgumentParseResult<@NonNull T> parse(@NonNull CommandContext<@NonNull C> commandContext, @NonNull Queue<@NonNull String> inputQueue) {
+		ArgumentParseResult<T> result = this.argumentParser.parse(commandContext, inputQueue);
+		return result.mapFailure(throwable -> {
+			if (throwable instanceof ParserException ex) {
+				return new DescribingException(fail.with(new CaptionTagResolver(ex)));
+			} else {
+				return throwable;
+			}
+		});
+	}
 
-    @Override
-    public boolean isContextFree() {
-        return this.argumentParser.isContextFree();
-    }
+	@Override
+	public @NonNull List<@NonNull String> suggestions(@NonNull CommandContext<C> commandContext, @NonNull String input) {
+		return this.argumentParser.suggestions(commandContext, input);
+	}
 
-    @Override
-    public int getRequestedArgumentCount() {
-        return this.argumentParser.getRequestedArgumentCount();
-    }
+	@Override
+	public boolean isContextFree() {
+		return this.argumentParser.isContextFree();
+	}
+
+	@Override
+	public int getRequestedArgumentCount() {
+		return this.argumentParser.getRequestedArgumentCount();
+	}
 }

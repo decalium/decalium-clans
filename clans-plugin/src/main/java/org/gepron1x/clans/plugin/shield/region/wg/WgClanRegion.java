@@ -28,6 +28,7 @@ public final class WgClanRegion implements ClanRegion {
 		this.container = container;
 		this.configs = configs;
 	}
+
 	@Override
 	public int id() {
 		return region.id();

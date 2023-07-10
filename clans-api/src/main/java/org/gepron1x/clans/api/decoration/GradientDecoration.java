@@ -8,7 +8,6 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 public record GradientDecoration(TextColor first, TextColor second) implements Decoration {
 
 
-
 	@Override
 	public Component apply(Component component) {
 		return MiniMessage.miniMessage().deserialize("<gradient:<first>:<second>><component></gradient>",

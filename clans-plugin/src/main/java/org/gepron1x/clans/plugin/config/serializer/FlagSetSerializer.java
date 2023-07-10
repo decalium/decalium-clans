@@ -32,27 +32,28 @@ import space.arim.dazzleconf.serialiser.ValueSerialiser;
 import java.util.Map;
 
 public final class FlagSetSerializer implements ValueSerialiser<FlagSet> {
-    @Override
-    public Class<FlagSet> getTargetClass() {
-        return FlagSet.class;
-    }
+	@Override
+	public Class<FlagSet> getTargetClass() {
+		return FlagSet.class;
+	}
 
-    @Override
-    public FlagSet deserialise(FlexibleType flexibleType) throws BadValueException {
+	@Override
+	public FlagSet deserialise(FlexibleType flexibleType) throws BadValueException {
 		return new FlagSetImpl(flexibleType.getMap((key, value) -> {
 			Flag<?> flag = WorldGuard.getInstance().getFlagRegistry().get(key.getString());
-			if(flag == null) throw flexibleType.badValueExceptionBuilder().message("Unknown flag" + key.getString()).build();
+			if (flag == null)
+				throw flexibleType.badValueExceptionBuilder().message("Unknown flag" + key.getString()).build();
 			try {
 				Object o = flag.parseInput(FlagContext.create().setInput(value.getString()).build());
 				return Map.entry(flag, o);
 			} catch (InvalidFlagFormat e) {
-				throw flexibleType.badValueExceptionBuilder().cause(e).message("Failed to parse flag input for "+key.getString()).build();
+				throw flexibleType.badValueExceptionBuilder().cause(e).message("Failed to parse flag input for " + key.getString()).build();
 			}
 		}));
-    }
+	}
 
-    @Override
-    public Object serialise(FlagSet value, Decomposer decomposer) {
-        return value.serialize();
-    }
+	@Override
+	public Object serialise(FlagSet value, Decomposer decomposer) {
+		return value.serialize();
+	}
 }

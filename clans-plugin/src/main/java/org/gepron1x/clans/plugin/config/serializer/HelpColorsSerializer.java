@@ -29,35 +29,35 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public final class HelpColorsSerializer implements ValueSerialiser<MinecraftHelp.HelpColors> {
-    private static final String PRIMARY = "primary", HIGHLIGHT = "highlight",
-            ALTERNATE_HIGHLIGHT = "alternate-highlight", TEXT = "text", ACCENT = "accent";
+	private static final String PRIMARY = "primary", HIGHLIGHT = "highlight",
+			ALTERNATE_HIGHLIGHT = "alternate-highlight", TEXT = "text", ACCENT = "accent";
 
-    @Override
-    public Class<MinecraftHelp.HelpColors> getTargetClass() {
-        return MinecraftHelp.HelpColors.class;
-    }
+	@Override
+	public Class<MinecraftHelp.HelpColors> getTargetClass() {
+		return MinecraftHelp.HelpColors.class;
+	}
 
-    @Override
-    public MinecraftHelp.HelpColors deserialise(FlexibleType flexibleType) throws BadValueException {
-        Map<String, TextColor> map = flexibleType.getMap((key, value) -> Map.entry(key.getString(), value.getObject(TextColor.class)));
-        MinecraftHelp.HelpColors defaultColors = MinecraftHelp.DEFAULT_HELP_COLORS;
-        return MinecraftHelp.HelpColors.of(
-                map.getOrDefault(PRIMARY, defaultColors.primary()),
-                map.getOrDefault(HIGHLIGHT, defaultColors.highlight()),
-                map.getOrDefault(ALTERNATE_HIGHLIGHT, defaultColors.alternateHighlight()),
-                map.getOrDefault(TEXT, defaultColors.text()),
-                map.getOrDefault(ACCENT, defaultColors.accent())
-        );
-    }
+	@Override
+	public MinecraftHelp.HelpColors deserialise(FlexibleType flexibleType) throws BadValueException {
+		Map<String, TextColor> map = flexibleType.getMap((key, value) -> Map.entry(key.getString(), value.getObject(TextColor.class)));
+		MinecraftHelp.HelpColors defaultColors = MinecraftHelp.DEFAULT_HELP_COLORS;
+		return MinecraftHelp.HelpColors.of(
+				map.getOrDefault(PRIMARY, defaultColors.primary()),
+				map.getOrDefault(HIGHLIGHT, defaultColors.highlight()),
+				map.getOrDefault(ALTERNATE_HIGHLIGHT, defaultColors.alternateHighlight()),
+				map.getOrDefault(TEXT, defaultColors.text()),
+				map.getOrDefault(ACCENT, defaultColors.accent())
+		);
+	}
 
-    @Override
-    public Object serialise(MinecraftHelp.HelpColors value, Decomposer decomposer) {
-        Map<String, Object> map = new LinkedHashMap<>(5);
-        map.put(PRIMARY, decomposer.decompose(TextColor.class, value.primary()));
-        map.put(HIGHLIGHT, decomposer.decompose(TextColor.class, value.highlight()));
-        map.put(ALTERNATE_HIGHLIGHT, decomposer.decompose(TextColor.class, value.alternateHighlight()));
-        map.put(TEXT, decomposer.decompose(TextColor.class, value.text()));
-        map.put(ACCENT, decomposer.decompose(TextColor.class, value.accent()));
-        return map;
-    }
+	@Override
+	public Object serialise(MinecraftHelp.HelpColors value, Decomposer decomposer) {
+		Map<String, Object> map = new LinkedHashMap<>(5);
+		map.put(PRIMARY, decomposer.decompose(TextColor.class, value.primary()));
+		map.put(HIGHLIGHT, decomposer.decompose(TextColor.class, value.highlight()));
+		map.put(ALTERNATE_HIGHLIGHT, decomposer.decompose(TextColor.class, value.alternateHighlight()));
+		map.put(TEXT, decomposer.decompose(TextColor.class, value.text()));
+		map.put(ACCENT, decomposer.decompose(TextColor.class, value.accent()));
+		return map;
+	}
 }

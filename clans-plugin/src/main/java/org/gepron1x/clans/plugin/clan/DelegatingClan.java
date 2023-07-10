@@ -34,13 +34,13 @@ import java.util.UUID;
 public interface DelegatingClan extends DraftClan {
 
 
-    DraftClan delegate();
+	DraftClan delegate();
 
-    @Override
-    @NotNull
-    default String tag() {
-        return delegate().tag();
-    }
+	@Override
+	@NotNull
+	default String tag() {
+		return delegate().tag();
+	}
 
 	@Override
 	@NotNull
@@ -48,41 +48,42 @@ public interface DelegatingClan extends DraftClan {
 		return delegate().tagDecoration();
 	}
 
-    @Override
-    default @NotNull Component displayName() {
-        return delegate().displayName();
-    }
+	@Override
+	default @NotNull Component displayName() {
+		return delegate().displayName();
+	}
 
-    @Override
-    default @NotNull ClanMember owner() {
-        return delegate().owner();
-    }
+	@Override
+	default @NotNull ClanMember owner() {
+		return delegate().owner();
+	}
 
-    @Override
-    default @NotNull @Unmodifiable Map<UUID, ? extends ClanMember> memberMap() {
-        return delegate().memberMap();
-    }
+	@Override
+	default @NotNull @Unmodifiable Map<UUID, ? extends ClanMember> memberMap() {
+		return delegate().memberMap();
+	}
 
-    @Override
-    default @NotNull @Unmodifiable Map<String, ? extends ClanHome> homeMap() {
-        return delegate().homeMap();
-    }
+	@Override
+	default @NotNull @Unmodifiable Map<String, ? extends ClanHome> homeMap() {
+		return delegate().homeMap();
+	}
 
-    @Override
-    @NotNull
-    default DraftClan.Builder toBuilder() {
-        return delegate().toBuilder();
-    }
+	@Override
+	@NotNull
+	default DraftClan.Builder toBuilder() {
+		return delegate().toBuilder();
+	}
 
-    @Override
-    default OptionalInt statistic(@NotNull StatisticType type) {
-        return delegate().statistic(type);
-    }
+	@Override
+	default OptionalInt statistic(@NotNull StatisticType type) {
+		return delegate().statistic(type);
+	}
 
-    @Override
-    @NotNull @Unmodifiable
-    default Map<StatisticType, Integer> statistics() {
-        return delegate().statistics();
-    }
+	@Override
+	@NotNull
+	@Unmodifiable
+	default Map<StatisticType, Integer> statistics() {
+		return delegate().statistics();
+	}
 
 }

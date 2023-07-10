@@ -34,6 +34,7 @@ public final class ConfirmationGui implements GuiLike {
 		return new ConfirmationGui(title, onConfirm.andThen(e -> e.getWhoClicked().openInventory(event.getInventory())),
 				() -> event.getWhoClicked().openInventory(event.getInventory()));
 	}
+
 	@Override
 	public Gui asGui() {
 		HopperGui gui = new HopperGui(ComponentHolder.of(title));

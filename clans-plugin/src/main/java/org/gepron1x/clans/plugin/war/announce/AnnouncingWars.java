@@ -22,98 +22,98 @@ import java.util.Optional;
 import java.util.Set;
 
 public final class AnnouncingWars implements Wars {
-    private final Wars wars;
-    private final MessagesConfig messages;
+	private final Wars wars;
+	private final MessagesConfig messages;
 
-    public AnnouncingWars(Wars wars, MessagesConfig messages) {
+	public AnnouncingWars(Wars wars, MessagesConfig messages) {
 
-        this.wars = wars;
-        this.messages = messages;
-    }
+		this.wars = wars;
+		this.messages = messages;
+	}
 
-    @Override
-    public void start(War war) {
-        this.wars.start(war);
-    }
+	@Override
+	public void start(War war) {
+		this.wars.start(war);
+	}
 
-    @Override
-    public War create(Team first, Team second) {
-        BossBar firstBossBar = teamBossBar(first, BossBar.Color.BLUE);
-        BossBar secondBossBar = teamBossBar(second, BossBar.Color.RED);
-        War war = this.wars.create(new AnnouncingTeam(first, firstBossBar, messages), new AnnouncingTeam(second, secondBossBar, messages));
-        Clan firstClan = first.clan().orElseThrow();
-        Clan secondClan = second.clan().orElseThrow();
-        Title title = Title.title(this.messages.war().preparationTitle()
-                .with("first", ClanTagResolver.clan(firstClan))
-                .with("second", ClanTagResolver.clan(secondClan)).asComponent(), Component.empty());
+	@Override
+	public War create(Team first, Team second) {
+		BossBar firstBossBar = teamBossBar(first, BossBar.Color.BLUE);
+		BossBar secondBossBar = teamBossBar(second, BossBar.Color.RED);
+		War war = this.wars.create(new AnnouncingTeam(first, firstBossBar, messages), new AnnouncingTeam(second, secondBossBar, messages));
+		Clan firstClan = first.clan().orElseThrow();
+		Clan secondClan = second.clan().orElseThrow();
+		Title title = Title.title(this.messages.war().preparationTitle()
+				.with("first", ClanTagResolver.clan(firstClan))
+				.with("second", ClanTagResolver.clan(secondClan)).asComponent(), Component.empty());
 
-        Audience warAudience = new WarAudience(war);
-        warAudience.showTitle(title);
-        first.showBossBar(firstBossBar);
-        first.showBossBar(secondBossBar);
-        second.showBossBar(secondBossBar);
-        second.showBossBar(firstBossBar);
+		Audience warAudience = new WarAudience(war);
+		warAudience.showTitle(title);
+		first.showBossBar(firstBossBar);
+		first.showBossBar(secondBossBar);
+		second.showBossBar(secondBossBar);
+		second.showBossBar(firstBossBar);
 
-        return new AnnouncingWar(war, new BossBars(Set.of(firstBossBar, secondBossBar)), messages);
-    }
+		return new AnnouncingWar(war, new BossBars(Set.of(firstBossBar, secondBossBar)), messages);
+	}
 
-    private BossBar teamBossBar(Team team, BossBar.Color color) {
-        return BossBar.bossBar(
-                new TeamTitle(team, this.messages),
-                1,
-                color,
-                BossBar.Overlay.NOTCHED_6
-        );
-    }
+	private BossBar teamBossBar(Team team, BossBar.Color color) {
+		return BossBar.bossBar(
+				new TeamTitle(team, this.messages),
+				1,
+				color,
+				BossBar.Overlay.NOTCHED_6
+		);
+	}
 
-    @Override
-    public Team createTeam(ClanReference ref) {
-        return this.wars.createTeam(ref);
-    }
+	@Override
+	public Team createTeam(ClanReference ref) {
+		return this.wars.createTeam(ref);
+	}
 
 
-    @Override
-    public Optional<War> currentWar(Player player) {
-        return this.wars.currentWar(player);
-    }
+	@Override
+	public Optional<War> currentWar(Player player) {
+		return this.wars.currentWar(player);
+	}
 
-    @Override
-    public Collection<War> currentWars() {
-        return this.wars.currentWars();
-    }
+	@Override
+	public Collection<War> currentWars() {
+		return this.wars.currentWars();
+	}
 
-    @Override
-    public void onDeath(Player player) {
-        this.wars.onDeath(player);
-    }
+	@Override
+	public void onDeath(Player player) {
+		this.wars.onDeath(player);
+	}
 
-    @Override
-    public void end(War war) {
-        this.wars.end(war);
-    }
+	@Override
+	public void end(War war) {
+		this.wars.end(war);
+	}
 
-    @Override
-    public void cleanEnded() {
-        this.wars.cleanEnded();
-    }
+	@Override
+	public void cleanEnded() {
+		this.wars.cleanEnded();
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AnnouncingWars that = (AnnouncingWars) o;
-        return wars.equals(that.wars) && messages.equals(that.messages);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		AnnouncingWars that = (AnnouncingWars) o;
+		return wars.equals(that.wars) && messages.equals(that.messages);
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(wars, messages);
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(wars, messages);
+	}
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("wars", wars)
-                .toString();
-    }
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("wars", wars)
+				.toString();
+	}
 }

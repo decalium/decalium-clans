@@ -22,5 +22,5 @@ import java.time.Duration;
 
 public interface TimeFormat {
 
-    String format(Duration duration);
+	String format(Duration duration);
 }

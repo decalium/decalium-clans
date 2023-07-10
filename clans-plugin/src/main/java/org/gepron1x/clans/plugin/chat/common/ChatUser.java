@@ -26,15 +26,15 @@ import java.util.UUID;
 
 public interface ChatUser {
 
-    UUID uuid();
+	UUID uuid();
 
-    String name();
+	String name();
 
-    Component renderName();
+	Component renderName();
 
-    boolean hasPermission(String permission);
+	boolean hasPermission(String permission);
 
-    Optional<Key> currentChannel();
+	Optional<Key> currentChannel();
 
-    void currentChannel(Key key);
+	void currentChannel(Key key);
 }

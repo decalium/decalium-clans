@@ -25,49 +25,49 @@ import org.bukkit.entity.Player;
 import java.util.Objects;
 
 public final class VaultPlayerImpl implements VaultPlayer {
-    private final Player player;
-    private final Economy economy;
+	private final Player player;
+	private final Economy economy;
 
-    public VaultPlayerImpl(Player player, Economy economy) {
+	public VaultPlayerImpl(Player player, Economy economy) {
 
-        this.player = player;
-        this.economy = economy;
-    }
+		this.player = player;
+		this.economy = economy;
+	}
 
-    @Override
-    public double balance() {
-        return economy.getBalance(player);
-    }
+	@Override
+	public double balance() {
+		return economy.getBalance(player);
+	}
 
-    @Override
-    public boolean has(double amount) {
-        if(player.hasPermission("clans.economy.ignore")) return true;
-        return economy.has(player, amount);
-    }
+	@Override
+	public boolean has(double amount) {
+		if (player.hasPermission("clans.economy.ignore")) return true;
+		return economy.has(player, amount);
+	}
 
-    @Override
-    public void withdraw(double amount) {
-        if(player.hasPermission("clans.economy.ignore")) return;
-        economy.withdrawPlayer(player, amount);
-    }
+	@Override
+	public void withdraw(double amount) {
+		if (player.hasPermission("clans.economy.ignore")) return;
+		economy.withdrawPlayer(player, amount);
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        VaultPlayerImpl that = (VaultPlayerImpl) o;
-        return player.equals(that.player);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		VaultPlayerImpl that = (VaultPlayerImpl) o;
+		return player.equals(that.player);
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(player);
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(player);
+	}
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("player", player)
-                .toString();
-    }
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("player", player)
+				.toString();
+	}
 }

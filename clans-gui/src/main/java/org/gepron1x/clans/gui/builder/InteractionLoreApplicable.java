@@ -15,13 +15,14 @@ public final class InteractionLoreApplicable implements LoreApplicable {
 		this.applicable = applicable;
 		this.color = color;
 	}
+
 	@Override
 	public List<Component> lore(TagResolver resolver) {
 		List<Component> lines = applicable.lore(resolver);
-		if(lines.size() == 0) return List.of();
+		if (lines.size() == 0) return List.of();
 		List<Component> lore = new ArrayList<>(lines.size());
 		lore.add(Component.text().content("⇄ ").append(lines.get(0)).color(color).build());
-		for(int i = 1; i < lines.size(); i++) lore.add(lines.get(i).color(color));
+		for (int i = 1; i < lines.size(); i++) lore.add(lines.get(i).color(color));
 		return lore;
 	}
 

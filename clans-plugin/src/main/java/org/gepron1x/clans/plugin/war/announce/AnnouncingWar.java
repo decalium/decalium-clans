@@ -16,78 +16,78 @@ import java.util.Objects;
 
 public final class AnnouncingWar implements War {
 
-    private final War war;
-    private final BossBars bars;
-    private final MessagesConfig messages;
+	private final War war;
+	private final BossBars bars;
+	private final MessagesConfig messages;
 
-    public AnnouncingWar(War war, BossBars bars, MessagesConfig messages) {
+	public AnnouncingWar(War war, BossBars bars, MessagesConfig messages) {
 
-        this.war = war;
-        this.bars = bars;
-        this.messages = messages;
-    }
+		this.war = war;
+		this.bars = bars;
+		this.messages = messages;
+	}
 
-    @Override
-    public Team enemy(Team team) {
-        return this.war.enemy(team);
-    }
+	@Override
+	public Team enemy(Team team) {
+		return this.war.enemy(team);
+	}
 
-    @Override
-    public Collection<Team> teams() {
-        return this.war.teams();
-    }
+	@Override
+	public Collection<Team> teams() {
+		return this.war.teams();
+	}
 
-    @Override
-    public boolean onPlayerDeath(Player player) {
-        if(!this.war.onPlayerDeath(player)) return false;
-        player.getWorld().strikeLightningEffect(player.getLocation());
-        Audience audience = new WarAudience(this.war);
-        this.messages.war().playerDied().with("member", player.displayName()).send(audience);
-		if(player.getKiller() != null && team(player.getKiller()).isPresent()) {
+	@Override
+	public boolean onPlayerDeath(Player player) {
+		if (!this.war.onPlayerDeath(player)) return false;
+		player.getWorld().strikeLightningEffect(player.getLocation());
+		Audience audience = new WarAudience(this.war);
+		this.messages.war().playerDied().with("member", player.displayName()).send(audience);
+		if (player.getKiller() != null && team(player.getKiller()).isPresent()) {
 			Title title = Title.title(Component.empty(), this.messages.war().playerDiedSubTitle()
 					.with("killer", player.getKiller().displayName())
 					.with("victim", player.displayName()).asComponent());
 			audience.showTitle(title);
 		}
 
-        return true;
-    }
+		return true;
+	}
 
-    @Override
-    public boolean teamWon() {
-        return this.war.teamWon();
-    }
+	@Override
+	public boolean teamWon() {
+		return this.war.teamWon();
+	}
 
-    @Override
-    public void finish() {
-        this.war.finish();
-        Audience audience = new WarAudience(this.war);
-        bars.hide(audience);
-        this.war.teams().stream().filter(Team::isAlive).findFirst()
-                .flatMap(team -> team.clan().cached()).ifPresent(clan -> {
-                    this.messages.war().win().with(ClanTagResolver.prefixed(clan)).send(audience);
-                });
-    }
+	@Override
+	public void finish() {
+		this.war.finish();
+		Audience audience = new WarAudience(this.war);
+		bars.hide(audience);
+		this.war.teams().stream().filter(Team::isAlive).findFirst()
+				.flatMap(team -> team.clan().cached()).ifPresent(clan -> {
+					this.messages.war().win().with(ClanTagResolver.prefixed(clan)).send(audience);
+				});
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AnnouncingWar that = (AnnouncingWar) o;
-        return war.equals(that.war) && messages.equals(that.messages);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		AnnouncingWar that = (AnnouncingWar) o;
+		return war.equals(that.war) && messages.equals(that.messages);
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(war, messages);
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(war, messages);
+	}
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("war", war)
-                .toString();
-    }
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("war", war)
+				.toString();
+	}
 
 
 }

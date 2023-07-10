@@ -28,26 +28,27 @@ import java.util.Collections;
 
 public final class SavableMembers implements Savable {
 
-    private static final String INSERT_MEMBERS = "INSERT IGNORE INTO members (clan_id, uuid, role, joined) VALUES (?, ?, ?, ?)";
+	private static final String INSERT_MEMBERS = "INSERT IGNORE INTO members (clan_id, uuid, role, joined) VALUES (?, ?, ?, ?)";
 
-    private final int clanId;
-    private final Collection<? extends ClanMember> members;
+	private final int clanId;
+	private final Collection<? extends ClanMember> members;
 
-    public SavableMembers(int clanId, Collection<? extends ClanMember> members) {
-        this.clanId = clanId;
-        this.members = members;
-    }
+	public SavableMembers(int clanId, Collection<? extends ClanMember> members) {
+		this.clanId = clanId;
+		this.members = members;
+	}
 
 
-    public SavableMembers(int clanId, ClanMember member) {
-        this(clanId, Collections.singleton(member));
-    }
-    @Override
-    public int execute(Handle handle) {
-        PreparedBatch batch = handle.prepareBatch(INSERT_MEMBERS);
-        for(ClanMember member : this.members) {
-            batch.add(this.clanId, member.uniqueId(), member.role(), member.joined());
-        }
-        return Arrays.stream(batch.execute()).sum();
-    }
+	public SavableMembers(int clanId, ClanMember member) {
+		this(clanId, Collections.singleton(member));
+	}
+
+	@Override
+	public int execute(Handle handle) {
+		PreparedBatch batch = handle.prepareBatch(INSERT_MEMBERS);
+		for (ClanMember member : this.members) {
+			batch.add(this.clanId, member.uniqueId(), member.role(), member.joined());
+		}
+		return Arrays.stream(batch.execute()).sum();
+	}
 }

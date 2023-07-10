@@ -27,12 +27,12 @@ import java.sql.Types;
 
 
 public final class StatisticTypeArgumentFactory extends AbstractArgumentFactory<StatisticType> {
-     StatisticTypeArgumentFactory() {
-        super(Types.VARCHAR);
-    }
+	StatisticTypeArgumentFactory() {
+		super(Types.VARCHAR);
+	}
 
-    @Override
-    protected Argument build(StatisticType value, ConfigRegistry config) {
-        return (position, statement, ctx) -> statement.setString(position, value.name());
-    }
+	@Override
+	protected Argument build(StatisticType value, ConfigRegistry config) {
+		return (position, statement, ctx) -> statement.setString(position, value.name());
+	}
 }

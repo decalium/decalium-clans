@@ -51,7 +51,7 @@ public final class CombinedDecoration implements Decoration {
 		return Optional.ofNullable(color);
 	}
 
- 	public Optional<GradientDecoration> gradient() {
+	public Optional<GradientDecoration> gradient() {
 		return Optional.ofNullable(gradient);
 	}
 
@@ -61,9 +61,9 @@ public final class CombinedDecoration implements Decoration {
 
 	@Override
 	public Component apply(Component component) {
-		if(symbol != null) component = symbol.apply(component);
-		if(color != null) component = color.apply(component);
-		if(gradient != null) component = gradient.apply(component);
+		if (symbol != null) component = symbol.apply(component);
+		if (color != null) component = color.apply(component);
+		if (gradient != null) component = gradient.apply(component);
 		return component;
 	}
 

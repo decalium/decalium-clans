@@ -24,27 +24,28 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PlaceholdersTest {
-    private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("[%]([^%]+)[%]");
-    public static void main(String[] args) {
-        System.out.println(new PapiPreprocessor().apply("%test%"));
-    }
+	private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("[%]([^%]+)[%]");
 
-    public static final class PapiPreprocessor implements UnaryOperator<String> {
-        @Override
-        public String apply(String s) {
-            Matcher matcher = PLACEHOLDER_PATTERN.matcher(s);
-            StringBuilder builder = new StringBuilder();
-            while(matcher.find()) {
-                String match = matcher.group();
-                matcher.appendReplacement(builder, placeholder(match));
-            }
-            matcher.appendTail(builder);
-            return builder.toString();
-        }
+	public static void main(String[] args) {
+		System.out.println(new PapiPreprocessor().apply("%test%"));
+	}
+
+	public static final class PapiPreprocessor implements UnaryOperator<String> {
+		@Override
+		public String apply(String s) {
+			Matcher matcher = PLACEHOLDER_PATTERN.matcher(s);
+			StringBuilder builder = new StringBuilder();
+			while (matcher.find()) {
+				String match = matcher.group();
+				matcher.appendReplacement(builder, placeholder(match));
+			}
+			matcher.appendTail(builder);
+			return builder.toString();
+		}
 
 
-        private String placeholder(String placeholder) {
-            return "<papi:'" + placeholder.substring(1, placeholder.length() - 1) + "'>";
-        }
-    }
+		private String placeholder(String placeholder) {
+			return "<papi:'" + placeholder.substring(1, placeholder.length() - 1) + "'>";
+		}
+	}
 }

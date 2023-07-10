@@ -15,6 +15,7 @@ public final class BooleanStateResolver implements TagResolver {
 		this.name = name;
 		this.is = is;
 	}
+
 	@Override
 	public @NotNull Tag resolve(@NotNull String name, @NotNull ArgumentQueue arguments, @NotNull Context ctx) throws ParsingException {
 		Tag trueValue = Tag.preProcessParsed(arguments.popOr("True value not present").value());

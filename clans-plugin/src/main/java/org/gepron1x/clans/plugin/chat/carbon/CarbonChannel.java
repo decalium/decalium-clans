@@ -41,95 +41,96 @@ import java.util.stream.Collectors;
 
 public final class CarbonChannel implements ChatChannel {
 
-    private final Channel channel;
-    private final Server server;
-    private final ComponentLike message;
-    private final String command;
-    private final String permission;
+	private final Channel channel;
+	private final Server server;
+	private final ComponentLike message;
+	private final String command;
+	private final String permission;
 
-    public CarbonChannel(Channel channel, Server server, ComponentLike message, String command, String permission) {
+	public CarbonChannel(Channel channel, Server server, ComponentLike message, String command, String permission) {
 
-        this.channel = channel;
-        this.server = server;
-        this.message = message;
-        this.command = command;
-        this.permission = permission;
-    }
+		this.channel = channel;
+		this.server = server;
+		this.message = message;
+		this.command = command;
+		this.permission = permission;
+	}
 
-    private Optional<Player> player(CarbonPlayer player) {
-        return Optional.ofNullable(server.getPlayer(player.uuid()));
-    }
+	private Optional<Player> player(CarbonPlayer player) {
+		return Optional.ofNullable(server.getPlayer(player.uuid()));
+	}
 
-    private ChannelPermissionResult result(CarbonPlayer player) {
-        return ChannelPermissionResult.allowedIf(message.asComponent(), () -> {
-            return player(player).map(this.channel::usePermitted).orElse(false);
-        });
-    }
-    @Override
-    public ChannelPermissionResult speechPermitted(CarbonPlayer carbonPlayer) {
-        return result(carbonPlayer);
-    }
+	private ChannelPermissionResult result(CarbonPlayer player) {
+		return ChannelPermissionResult.allowedIf(message.asComponent(), () -> {
+			return player(player).map(this.channel::usePermitted).orElse(false);
+		});
+	}
 
-    @Override
-    public ChannelPermissionResult hearingPermitted(CarbonPlayer player) {
-        return result(player);
-    }
+	@Override
+	public ChannelPermissionResult speechPermitted(CarbonPlayer carbonPlayer) {
+		return result(carbonPlayer);
+	}
 
-    @Override
-    public List<Audience> recipients(CarbonPlayer sender) {
-        Set<? extends Audience> audiences = player(sender).map(this.channel::recipients).orElse(Collections.emptySet());
-        return List.copyOf(audiences);
-    }
+	@Override
+	public ChannelPermissionResult hearingPermitted(CarbonPlayer player) {
+		return result(player);
+	}
 
-    @Override
-    public Set<CarbonPlayer> filterRecipients(CarbonPlayer sender, Set<CarbonPlayer> recipients) {
-        return player(sender).map(player -> {
-            Set<Player> players = recipients.stream().map(this::player)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get).collect(Collectors.toSet());
-            return recipients.stream().filter(carbonPlayer -> player(carbonPlayer).map(players::contains).orElse(false))
-                    .collect(Collectors.toUnmodifiableSet());
-        }).orElse(Collections.emptySet());
-    }
+	@Override
+	public List<Audience> recipients(CarbonPlayer sender) {
+		Set<? extends Audience> audiences = player(sender).map(this.channel::recipients).orElse(Collections.emptySet());
+		return List.copyOf(audiences);
+	}
 
-    @Override
-    public @Nullable String quickPrefix() {
-        return this.channel.prefix();
-    }
+	@Override
+	public Set<CarbonPlayer> filterRecipients(CarbonPlayer sender, Set<CarbonPlayer> recipients) {
+		return player(sender).map(player -> {
+			Set<Player> players = recipients.stream().map(this::player)
+					.filter(Optional::isPresent)
+					.map(Optional::get).collect(Collectors.toSet());
+			return recipients.stream().filter(carbonPlayer -> player(carbonPlayer).map(players::contains).orElse(false))
+					.collect(Collectors.toUnmodifiableSet());
+		}).orElse(Collections.emptySet());
+	}
 
-    @Override
-    public boolean shouldRegisterCommands() {
-        return true;
-    }
+	@Override
+	public @Nullable String quickPrefix() {
+		return this.channel.prefix();
+	}
 
-    @Override
-    public String commandName() {
-        return command;
-    }
+	@Override
+	public boolean shouldRegisterCommands() {
+		return true;
+	}
 
-    @Override
-    public List<String> commandAliases() {
-        return List.of();
-    }
+	@Override
+	public String commandName() {
+		return command;
+	}
 
-    @Override
-    public @MonotonicNonNull String permission() {
-        return permission;
-    }
+	@Override
+	public List<String> commandAliases() {
+		return List.of();
+	}
 
-    @Override
-    public double radius() {
-        return -1;
-    }
+	@Override
+	public @MonotonicNonNull String permission() {
+		return permission;
+	}
 
-    @Override
-    public @NotNull RenderedMessage render(CarbonPlayer sender, Audience recipient, Component message, Component originalMessage) {
-        Player player = player(sender).orElseThrow();
-        return new RenderedMessage(this.channel.render(player, recipient, message, originalMessage), MessageType.CHAT);
-    }
+	@Override
+	public double radius() {
+		return -1;
+	}
 
-    @Override
-    public @NotNull Key key() {
-        return channel.key();
-    }
+	@Override
+	public @NotNull RenderedMessage render(CarbonPlayer sender, Audience recipient, Component message, Component originalMessage) {
+		Player player = player(sender).orElseThrow();
+		return new RenderedMessage(this.channel.render(player, recipient, message, originalMessage), MessageType.CHAT);
+	}
+
+	@Override
+	public @NotNull Key key() {
+		return channel.key();
+	}
 }

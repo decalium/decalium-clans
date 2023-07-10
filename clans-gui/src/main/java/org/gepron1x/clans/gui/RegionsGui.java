@@ -49,7 +49,7 @@ public final class RegionsGui implements GuiLike {
 				.description("Защитите постройки и базы вашего клана от нападений!").space()
 				.interaction(Colors.POSITIVE, "Нажмите, чтобы приобрести за <price>!").with("price", clans.prices().region())
 				.consumer(e -> {
-					if(!player.has(clans.prices().region())) {
+					if (!player.has(clans.prices().region())) {
 						new ErrorItem(e, Component.text("Недостаточно средств!", Colors.NEGATIVE)).show();
 						return;
 					}
@@ -79,7 +79,7 @@ public final class RegionsGui implements GuiLike {
 		ChestGui gui = new PaginatedGui<>(regions, region -> {
 			Location location = region.location();
 			Component worldName = worlds.get(location.getWorld().getName());
-			if(worldName == null) worldName = Component.text(location.getWorld().getName());
+			if (worldName == null) worldName = Component.text(location.getWorld().getName());
 			return ItemBuilder.create(Material.CAMPFIRE).name("<#FDA624>Клановый регион")
 					.description("Щит<gray>: <shield_active:'<#92FF25>Активен':'<#fb2727>Не активен'>",
 							"Мир<gray>: <#42C4FB><world>", "Координаты (X, Z)<gray>:<#42C4FB> <x> <z>").with("world", worldName)

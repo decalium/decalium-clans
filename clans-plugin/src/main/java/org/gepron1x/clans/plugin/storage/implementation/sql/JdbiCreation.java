@@ -26,36 +26,36 @@ import javax.sql.DataSource;
 
 public final class JdbiCreation {
 
-    private DataSource dataSource;
+	private final DataSource dataSource;
 
-    public JdbiCreation(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
+	public JdbiCreation(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
 
-    public Jdbi create() {
-        Jdbi jdbi = Jdbi.create(dataSource);
-        registerArguments(jdbi);
-        registerColumnMappers(jdbi);
-        return jdbi;
-    }
+	public Jdbi create() {
+		Jdbi jdbi = Jdbi.create(dataSource);
+		registerArguments(jdbi);
+		registerColumnMappers(jdbi);
+		return jdbi;
+	}
 
-    private void registerColumnMappers(Jdbi jdbi) {
-        jdbi.registerColumnMapper(ColumnMappers.STATISTIC_TYPE)
-                .registerColumnMapper(ColumnMappers.COMPONENT)
-                .registerColumnMapper(ColumnMappers.UUID)
-                .registerColumnMapper(ColumnMappers.ITEM_STACK)
+	private void registerColumnMappers(Jdbi jdbi) {
+		jdbi.registerColumnMapper(ColumnMappers.STATISTIC_TYPE)
+				.registerColumnMapper(ColumnMappers.COMPONENT)
+				.registerColumnMapper(ColumnMappers.UUID)
+				.registerColumnMapper(ColumnMappers.ITEM_STACK)
 				.registerColumnMapper(ColumnMappers.WORLD)
 				.registerColumnMapper(ColumnMappers.DECORATION)
-                .registerColumnMapper(ColumnMappers.INSTANT);
-    }
+				.registerColumnMapper(ColumnMappers.INSTANT);
+	}
 
-    private void registerArguments(Jdbi jdbi) {
-        jdbi.registerArgument(Arguments.COMPONENT)
-                .registerArgument(Arguments.STATISTIC_TYPE)
-                .registerArgument(Arguments.CLAN_ROLE)
-                .registerArgument(Arguments.UUID)
-                .registerArgument(Arguments.ITEM_STACK)
+	private void registerArguments(Jdbi jdbi) {
+		jdbi.registerArgument(Arguments.COMPONENT)
+				.registerArgument(Arguments.STATISTIC_TYPE)
+				.registerArgument(Arguments.CLAN_ROLE)
+				.registerArgument(Arguments.UUID)
+				.registerArgument(Arguments.ITEM_STACK)
 				.registerArgument(Arguments.DECORATION)
-                .registerArgument(Arguments.INSTANT);
-    }
+				.registerArgument(Arguments.INSTANT);
+	}
 }

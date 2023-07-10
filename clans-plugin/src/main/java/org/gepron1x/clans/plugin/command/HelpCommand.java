@@ -26,18 +26,19 @@ import org.bukkit.command.CommandSender;
 
 public final class HelpCommand implements AbstractCommand {
 
-    private final MinecraftHelp<CommandSender> help;
+	private final MinecraftHelp<CommandSender> help;
 
-    public HelpCommand(MinecraftHelp<CommandSender> help) {
-        this.help = help;
-    }
-    @Override
-    public void register(CommandManager<CommandSender> manager) {
-        manager.command(manager.commandBuilder("clan").literal("help", "usage").argument(IntegerArgument.of("page")));
-    }
+	public HelpCommand(MinecraftHelp<CommandSender> help) {
+		this.help = help;
+	}
 
-    private void help(CommandContext<CommandSender> context) {
-        help.queryCommands(context.getRawInputJoined(), context.getSender());
+	@Override
+	public void register(CommandManager<CommandSender> manager) {
+		manager.command(manager.commandBuilder("clan").literal("help", "usage").argument(IntegerArgument.of("page")));
+	}
 
-    }
+	private void help(CommandContext<CommandSender> context) {
+		help.queryCommands(context.getRawInputJoined(), context.getSender());
+
+	}
 }

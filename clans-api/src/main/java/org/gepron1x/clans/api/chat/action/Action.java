@@ -26,9 +26,10 @@ import java.util.Optional;
 
 public interface Action {
 
-    Action EMPTY = (audience, resolver) -> {};
+	Action EMPTY = (audience, resolver) -> {
+	};
 
-    void send(Audience audience, TagResolver resolver);
+	void send(Audience audience, TagResolver resolver);
 
 	default Optional<Component> text(TagResolver resolver) {
 		return Optional.empty();
@@ -39,17 +40,16 @@ public interface Action {
 	}
 
 
+	default void send(Audience audience, TagResolver... resolvers) {
+		send(audience, TagResolver.resolver(resolvers));
+	}
 
-    default void send(Audience audience, TagResolver... resolvers) {
-        send(audience, TagResolver.resolver(resolvers));
-    }
+	interface NoResolver extends Action {
+		void send(Audience audience);
 
-    interface NoResolver extends Action {
-        void send(Audience audience);
-
-        @Override
-        default void send(Audience audience, TagResolver resolver) {
-            send(audience);
-        }
-    }
+		@Override
+		default void send(Audience audience, TagResolver resolver) {
+			send(audience);
+		}
+	}
 }

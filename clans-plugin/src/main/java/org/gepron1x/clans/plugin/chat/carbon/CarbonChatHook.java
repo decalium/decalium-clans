@@ -28,12 +28,12 @@ import org.jetbrains.annotations.NotNull;
 
 public record CarbonChatHook(@NotNull Server server, @NotNull ClanCache cache, @NotNull Configs configs) {
 
-    public void register() {
-        CarbonChat carbon = CarbonChatProvider.carbonChat();
-        ClanChatChannel chatChannel = new ClanChatChannel(server, cache, configs);
-        ChannelRegistry registry = carbon.channelRegistry();
-        boolean exists = registry.get(chatChannel.key()) != null;
-        carbon.channelRegistry().register(chatChannel.key(), chatChannel);
-        if(!exists) carbon.channelRegistry().registerChannelCommands(chatChannel);
-    }
+	public void register() {
+		CarbonChat carbon = CarbonChatProvider.carbonChat();
+		ClanChatChannel chatChannel = new ClanChatChannel(server, cache, configs);
+		ChannelRegistry registry = carbon.channelRegistry();
+		boolean exists = registry.get(chatChannel.key()) != null;
+		carbon.channelRegistry().register(chatChannel.key(), chatChannel);
+		if (!exists) carbon.channelRegistry().registerChannelCommands(chatChannel);
+	}
 }

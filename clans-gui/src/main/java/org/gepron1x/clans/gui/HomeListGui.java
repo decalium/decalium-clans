@@ -46,6 +46,7 @@ public final class HomeListGui implements GuiLike {
 		this.server = server;
 		this.clan = clan;
 	}
+
 	@Override
 	public Gui asGui() {
 		ChestGui gui = new PaginatedGui<>(clan.homes(), clanHome -> {
@@ -61,9 +62,9 @@ public final class HomeListGui implements GuiLike {
 				).map(m -> m.with("home", resolver).asComponent()).toList());
 			});
 			return new GuiItem(item, event -> {
-				if(event.isLeftClick()) event.getWhoClicked().teleportAsync(clanHome.location()).exceptionally(t -> {
+				if (event.isLeftClick()) event.getWhoClicked().teleportAsync(clanHome.location()).exceptionally(t -> {
 					t.printStackTrace();
-					 return null;
+					return null;
 				});
 			});
 		}).asGui();

@@ -27,26 +27,26 @@ import org.jetbrains.annotations.NotNull;
 import java.util.UUID;
 
 public final class SqlMemberEdition implements MemberEdition {
-    @Language("SQL")
-    private static final String UPDATE_ROLE = "UPDATE `members` SET `role`=? WHERE `uuid`=? AND `clan_id`=?";
-    private final Handle handle;
-    private final int clanId;
-    private final UUID memberId;
+	@Language("SQL")
+	private static final String UPDATE_ROLE = "UPDATE `members` SET `role`=? WHERE `uuid`=? AND `clan_id`=?";
+	private final Handle handle;
+	private final int clanId;
+	private final UUID memberId;
 
-    public SqlMemberEdition(@NotNull Handle handle, int clanId, @NotNull UUID memberId) {
+	public SqlMemberEdition(@NotNull Handle handle, int clanId, @NotNull UUID memberId) {
 
-        this.handle = handle;
-        this.clanId = clanId;
-        this.memberId = memberId;
-    }
+		this.handle = handle;
+		this.clanId = clanId;
+		this.memberId = memberId;
+	}
 
-    @Override
-    public MemberEdition appoint(@NotNull ClanRole role) {
-        handle.createUpdate(UPDATE_ROLE)
-                .bind(1, memberId)
-                .bind(2, clanId)
-                .bind(0, role)
-                .execute();
-        return this;
-    }
+	@Override
+	public MemberEdition appoint(@NotNull ClanRole role) {
+		handle.createUpdate(UPDATE_ROLE)
+				.bind(1, memberId)
+				.bind(2, clanId)
+				.bind(0, role)
+				.execute();
+		return this;
+	}
 }

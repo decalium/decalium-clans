@@ -34,24 +34,25 @@ import java.util.UUID;
 
 public final class ClanHomeBuilderMapper extends PrefixedRowMapper<ClanHome.Builder> {
 
-    private static final String NAME = "name", CREATOR = "creator", DISPLAY_NAME = "display_name", ICON = "icon", LEVEL = "level";
-    private final ClanBuilderFactory builderFactory;
+	private static final String NAME = "name", CREATOR = "creator", DISPLAY_NAME = "display_name", ICON = "icon", LEVEL = "level";
+	private final ClanBuilderFactory builderFactory;
 
-    public ClanHomeBuilderMapper(@NotNull ClanBuilderFactory builderFactory, @Nullable String prefix) {
-        super(prefix);
-        this.builderFactory = builderFactory;
+	public ClanHomeBuilderMapper(@NotNull ClanBuilderFactory builderFactory, @Nullable String prefix) {
+		super(prefix);
+		this.builderFactory = builderFactory;
 
-    }
-    @Override
-    public ClanHome.Builder map(ResultSet rs, StatementContext ctx) throws SQLException {
-        ColumnMapper<ItemStack> itemStackMapper = ctx.findColumnMapperFor(ItemStack.class).orElseThrow();
-        ColumnMapper<Component> componentMapper = ctx.findColumnMapperFor(Component.class).orElseThrow();
-        ColumnMapper<UUID> uuidMapper = ctx.findColumnMapperFor(UUID.class).orElseThrow();
+	}
 
-        return builderFactory.homeBuilder()
-                .name(rs.getString(prefixed(NAME)))
-                .creator(uuidMapper.map(rs, prefixed(CREATOR), ctx))
-                .displayName(componentMapper.map(rs, prefixed(DISPLAY_NAME), ctx))
-                .icon(itemStackMapper.map(rs, prefixed(ICON), ctx)).level(rs.getInt(prefixed(LEVEL)));
-    }
+	@Override
+	public ClanHome.Builder map(ResultSet rs, StatementContext ctx) throws SQLException {
+		ColumnMapper<ItemStack> itemStackMapper = ctx.findColumnMapperFor(ItemStack.class).orElseThrow();
+		ColumnMapper<Component> componentMapper = ctx.findColumnMapperFor(Component.class).orElseThrow();
+		ColumnMapper<UUID> uuidMapper = ctx.findColumnMapperFor(UUID.class).orElseThrow();
+
+		return builderFactory.homeBuilder()
+				.name(rs.getString(prefixed(NAME)))
+				.creator(uuidMapper.map(rs, prefixed(CREATOR), ctx))
+				.displayName(componentMapper.map(rs, prefixed(DISPLAY_NAME), ctx))
+				.icon(itemStackMapper.map(rs, prefixed(ICON), ctx)).level(rs.getInt(prefixed(LEVEL)));
+	}
 }

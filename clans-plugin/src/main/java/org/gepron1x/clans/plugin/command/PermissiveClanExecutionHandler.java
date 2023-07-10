@@ -28,23 +28,24 @@ import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
 
 public class PermissiveClanExecutionHandler implements CommandExecutionHandler<CommandSender> {
 
-    private final CommandExecutionHandler<CommandSender> delegate;
-    private final ClanPermission permission;
-    private final MessagesConfig messages;
+	private final CommandExecutionHandler<CommandSender> delegate;
+	private final ClanPermission permission;
+	private final MessagesConfig messages;
 
-    public PermissiveClanExecutionHandler(CommandExecutionHandler<CommandSender> delegate, ClanPermission permission, MessagesConfig messages) {
+	public PermissiveClanExecutionHandler(CommandExecutionHandler<CommandSender> delegate, ClanPermission permission, MessagesConfig messages) {
 
-        this.delegate = delegate;
-        this.permission = permission;
-        this.messages = messages;
-    }
-    @Override
-    public void execute(@NonNull CommandContext<CommandSender> commandContext) {
-        ClanMember member = commandContext.get(ClanExecutionHandler.CLAN_MEMBER);
-        if(!member.hasPermission(permission)) {
+		this.delegate = delegate;
+		this.permission = permission;
+		this.messages = messages;
+	}
+
+	@Override
+	public void execute(@NonNull CommandContext<CommandSender> commandContext) {
+		ClanMember member = commandContext.get(ClanExecutionHandler.CLAN_MEMBER);
+		if (!member.hasPermission(permission)) {
 			messages.noClanPermission().send(commandContext.getSender());
-            return;
-        }
-        delegate.execute(commandContext);
-    }
+			return;
+		}
+		delegate.execute(commandContext);
+	}
 }

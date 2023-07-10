@@ -28,24 +28,24 @@ import space.arim.dazzleconf.serialiser.ValueSerialiser;
 
 public final class TextMessageSerializer implements ValueSerialiser<TextMessage> {
 
-    private final MiniMessage miniMessage;
+	private final MiniMessage miniMessage;
 
-    public TextMessageSerializer(@NotNull MiniMessage miniMessage) {
-        this.miniMessage = miniMessage;
-    }
+	public TextMessageSerializer(@NotNull MiniMessage miniMessage) {
+		this.miniMessage = miniMessage;
+	}
 
-    @Override
-    public Class<TextMessage> getTargetClass() {
-        return TextMessage.class;
-    }
+	@Override
+	public Class<TextMessage> getTargetClass() {
+		return TextMessage.class;
+	}
 
-    @Override
-    public TextMessage deserialise(FlexibleType flexibleType) throws BadValueException {
-        return TextMessage.message(flexibleType.getString(), miniMessage);
-    }
+	@Override
+	public TextMessage deserialise(FlexibleType flexibleType) throws BadValueException {
+		return TextMessage.message(flexibleType.getString(), miniMessage);
+	}
 
-    @Override
-    public String serialise(TextMessage value, Decomposer decomposer) {
-        return value.value();
-    }
+	@Override
+	public String serialise(TextMessage value, Decomposer decomposer) {
+		return value.value();
+	}
 }

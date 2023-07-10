@@ -25,21 +25,21 @@ import org.gepron1x.clans.api.util.player.PlayerReference;
 
 public final class SkullOf {
 
-    private final PlayerReference reference;
+	private final PlayerReference reference;
 
-    public SkullOf(PlayerReference reference) {
+	public SkullOf(PlayerReference reference) {
 
 
-        this.reference = reference;
-    }
+		this.reference = reference;
+	}
 
-    public ItemStack itemStack() {
-        ItemStack stack = new ItemStack(Material.PLAYER_HEAD);
-        stack.editMeta(SkullMeta.class, meta -> {
-            meta.setPlayerProfile(reference.profile());
-        });
-        return stack;
-    }
+	public ItemStack itemStack() {
+		ItemStack stack = new ItemStack(Material.PLAYER_HEAD);
+		stack.editMeta(SkullMeta.class, meta -> {
+			meta.setPlayerProfile(reference.profile());
+		});
+		return stack;
+	}
 
 
 }

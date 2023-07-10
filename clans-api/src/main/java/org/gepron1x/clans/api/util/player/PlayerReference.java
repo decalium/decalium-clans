@@ -30,28 +30,28 @@ import java.util.function.Consumer;
 public interface PlayerReference extends GroupAudience.Single {
 
 
-    static PlayerReference reference(Player player) {
-        return new UuidPlayerReference(player.getServer(), player.getUniqueId());
-    }
+	static PlayerReference reference(Player player) {
+		return new UuidPlayerReference(player.getServer(), player.getUniqueId());
+	}
 
-    boolean ifOnline(Consumer<Player> consumer);
+	boolean ifOnline(Consumer<Player> consumer);
 
-    Optional<Player> player();
+	Optional<Player> player();
 
-    default boolean online() {
-        return player().isPresent();
-    }
+	default boolean online() {
+		return player().isPresent();
+	}
 
-    default Player orElseThrow() {
-        return player().orElseThrow();
-    }
+	default Player orElseThrow() {
+		return player().orElseThrow();
+	}
 
-    PlayerProfile profile();
+	PlayerProfile profile();
 
 
-
-    @Override
-    @NotNull default Audience audience() {
-        return player().isEmpty() ? Audience.empty() : player().orElseThrow();
-    }
+	@Override
+	@NotNull
+	default Audience audience() {
+		return player().isEmpty() ? Audience.empty() : player().orElseThrow();
+	}
 }

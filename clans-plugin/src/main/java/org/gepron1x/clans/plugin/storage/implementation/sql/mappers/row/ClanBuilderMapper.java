@@ -32,23 +32,23 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public final class ClanBuilderMapper extends PrefixedRowMapper<DraftClan.Builder> {
-    private static final String ID = "id", TAG = "tag", OWNER = "owner", DISPLAY_NAME = "display_name", DECORATION = "decoration";
-    private final ClanBuilderFactory builderFactory;
+	private static final String ID = "id", TAG = "tag", OWNER = "owner", DISPLAY_NAME = "display_name", DECORATION = "decoration";
+	private final ClanBuilderFactory builderFactory;
 
 
-    public ClanBuilderMapper(@Nullable String prefix, @NotNull ClanBuilderFactory builderFactory) {
-        super(prefix);
-        this.builderFactory = builderFactory;
-    }
+	public ClanBuilderMapper(@Nullable String prefix, @NotNull ClanBuilderFactory builderFactory) {
+		super(prefix);
+		this.builderFactory = builderFactory;
+	}
 
 
-    @Override
-    public DraftClan.Builder map(ResultSet rs, StatementContext ctx) throws SQLException {
-        ColumnMapper<Component> componentMapper = ctx.findColumnMapperFor(Component.class).orElseThrow();
+	@Override
+	public DraftClan.Builder map(ResultSet rs, StatementContext ctx) throws SQLException {
+		ColumnMapper<Component> componentMapper = ctx.findColumnMapperFor(Component.class).orElseThrow();
 		ColumnMapper<CombinedDecoration> decorationMapper = ctx.findColumnMapperFor(CombinedDecoration.class).orElseThrow();
-        return builderFactory.draftClanBuilder()
-                .tag(rs.getString(prefixed(TAG)))
-                .displayName(componentMapper.map(rs, prefixed(DISPLAY_NAME), ctx))
+		return builderFactory.draftClanBuilder()
+				.tag(rs.getString(prefixed(TAG)))
+				.displayName(componentMapper.map(rs, prefixed(DISPLAY_NAME), ctx))
 				.tagDecoration(decorationMapper.map(rs, prefixed(DECORATION), ctx));
-    }
+	}
 }

@@ -35,57 +35,58 @@ import java.util.function.Consumer;
 
 public final class EconomyClan implements Clan, DelegatingClan {
 
-    private final Clan clan;
-    private final PricesConfig prices;
-    private final VaultPlayer player;
-    private final FactoryOfTheFuture futuresFactory;
+	private final Clan clan;
+	private final PricesConfig prices;
+	private final VaultPlayer player;
+	private final FactoryOfTheFuture futuresFactory;
 
-    public EconomyClan(Clan clan, PricesConfig prices, VaultPlayer player, FactoryOfTheFuture futuresFactory) {
+	public EconomyClan(Clan clan, PricesConfig prices, VaultPlayer player, FactoryOfTheFuture futuresFactory) {
 
-        this.clan = clan;
-        this.prices = prices;
-        this.player = player;
-        this.futuresFactory = futuresFactory;
-    }
-    @Override
-    public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
-        AtomicDouble cost = new AtomicDouble(0);
-        transaction.accept(new EconomyEdition(cost, prices, clan));
-        if(!player.has(cost.get())) {
-            return futuresFactory.failedFuture(new NotEnoughMoneyException(prices.notEnoughMoney().with("price", cost.get()), cost.get(), player.balance()));
-        }
-        player.withdraw(cost.get());
-        return clan.edit(transaction).thenApply(c -> new EconomyClan(clan, prices, player, futuresFactory));
-    }
+		this.clan = clan;
+		this.prices = prices;
+		this.player = player;
+		this.futuresFactory = futuresFactory;
+	}
 
-    @Override
-    public int id() {
-        return clan.id();
-    }
+	@Override
+	public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
+		AtomicDouble cost = new AtomicDouble(0);
+		transaction.accept(new EconomyEdition(cost, prices, clan));
+		if (!player.has(cost.get())) {
+			return futuresFactory.failedFuture(new NotEnoughMoneyException(prices.notEnoughMoney().with("price", cost.get()), cost.get(), player.balance()));
+		}
+		player.withdraw(cost.get());
+		return clan.edit(transaction).thenApply(c -> new EconomyClan(clan, prices, player, futuresFactory));
+	}
 
-    @Override
-    public DraftClan delegate() {
-        return this.clan;
-    }
+	@Override
+	public int id() {
+		return clan.id();
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        EconomyClan that = (EconomyClan) o;
-        return clan.equals(that.clan) && player.equals(that.player);
-    }
+	@Override
+	public DraftClan delegate() {
+		return this.clan;
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(clan, player);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		EconomyClan that = (EconomyClan) o;
+		return clan.equals(that.clan) && player.equals(that.player);
+	}
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("clan", clan)
-                .add("player", player)
-                .toString();
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(clan, player);
+	}
+
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("clan", clan)
+				.add("player", player)
+				.toString();
+	}
 }

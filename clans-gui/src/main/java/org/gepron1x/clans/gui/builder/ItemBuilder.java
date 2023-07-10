@@ -47,11 +47,13 @@ public final class ItemBuilder implements Formatted<ItemBuilder> {
 	private static final Component DESCRIPTION_SPACE = Component.text("│", NamedTextColor.GRAY);
 	private static final Component DESCRIPTION_END = Component.text("└─", NamedTextColor.GRAY);
 
-	private TagResolver.Builder resolver;
+	private final TagResolver.Builder resolver;
 	private String displayName;
 
-	private Consumer<InventoryClickEvent> consumer = e -> {};
-	private List<LoreApplicable> lore = new ArrayList<>();
+	private Consumer<InventoryClickEvent> consumer = e -> {
+	};
+	private final List<LoreApplicable> lore = new ArrayList<>();
+
 	private static Component parse(String s, TagResolver resolver) {
 		return DecaliumClansGui.MINI_MESSAGE.deserialize(s, resolver).colorIfAbsent(NamedTextColor.WHITE);
 	}
@@ -90,7 +92,7 @@ public final class ItemBuilder implements Formatted<ItemBuilder> {
 	}
 
 	public static ItemBuilder skullFromId(String id) {
-		String url = "http://textures.minecraft.net/texture/"+id;
+		String url = "http://textures.minecraft.net/texture/" + id;
 		JsonObject skin = new JsonObject();
 		skin.addProperty("url", url);
 		JsonObject textures = new JsonObject();
@@ -148,6 +150,7 @@ public final class ItemBuilder implements Formatted<ItemBuilder> {
 	public ItemBuilder menuInteraction(TextColor color) {
 		return interaction(color, "Нажмите, чтобы перейти в меню");
 	}
+
 	public ItemBuilder menuInteraction() {
 		return menuInteraction(Colors.POSITIVE);
 	}
@@ -189,7 +192,7 @@ public final class ItemBuilder implements Formatted<ItemBuilder> {
 	}
 
 	private static Component cleanItalic(Component component) {
-		if(component.hasDecoration(TextDecoration.ITALIC)) return component;
+		if (component.hasDecoration(TextDecoration.ITALIC)) return component;
 		return component.decoration(TextDecoration.ITALIC, false);
 	}
 
@@ -207,6 +210,7 @@ public final class ItemBuilder implements Formatted<ItemBuilder> {
 	}
 
 	public GuiItem guiItem() {
-		return guiItem(e -> {});
+		return guiItem(e -> {
+		});
 	}
 }

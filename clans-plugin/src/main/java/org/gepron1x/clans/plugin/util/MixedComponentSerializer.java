@@ -26,22 +26,23 @@ import org.jetbrains.annotations.NotNull;
 
 public final class MixedComponentSerializer implements ComponentSerializer<Component, Component, String> {
 
-    private final MiniMessage miniMessage;
-    private final LegacyComponentSerializer legacySerializer;
+	private final MiniMessage miniMessage;
+	private final LegacyComponentSerializer legacySerializer;
 
-    public MixedComponentSerializer(MiniMessage miniMessage, LegacyComponentSerializer legacySerializer) {
+	public MixedComponentSerializer(MiniMessage miniMessage, LegacyComponentSerializer legacySerializer) {
 
-        this.miniMessage = miniMessage;
-        this.legacySerializer = legacySerializer;
-    }
-    @Override
-    public @NotNull Component deserialize(@NotNull String input) {
-        input = miniMessage.serialize(legacySerializer.deserialize(input)).replace("\\<", "<");
-        return miniMessage.deserialize(input);
-    }
+		this.miniMessage = miniMessage;
+		this.legacySerializer = legacySerializer;
+	}
 
-    @Override
-    public @NotNull String serialize(@NotNull Component component) {
-        return miniMessage.serialize(component);
-    }
+	@Override
+	public @NotNull Component deserialize(@NotNull String input) {
+		input = miniMessage.serialize(legacySerializer.deserialize(input)).replace("\\<", "<");
+		return miniMessage.deserialize(input);
+	}
+
+	@Override
+	public @NotNull String serialize(@NotNull Component component) {
+		return miniMessage.serialize(component);
+	}
 }

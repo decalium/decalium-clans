@@ -49,25 +49,25 @@ public final class UpgradeGui implements GuiLike {
 	private void fillLevels(Gui gui, StaticPane pane) {
 		LevelsMeta levels = clans.levels();
 		int clanLevel = viewer.clan().orElseThrow().level();
-		for(int i = 0; i < 5; i++) {
+		for (int i = 0; i < 5; i++) {
 			int level = i + 1;
 
 			Material material = Material.GRAY_DYE;
-			if(level <= clanLevel) material = Material.LIME_DYE;
-			else if(clanLevel + 1 == level) material = Material.LIGHT_BLUE_DYE;
+			if (level <= clanLevel) material = Material.LIME_DYE;
+			else if (clanLevel + 1 == level) material = Material.LIGHT_BLUE_DYE;
 
 			var builder = ItemBuilder.create(material).name("<#DBFDFF>Уровень <#63FFE8><level>").with("level", level);
 
 			List<String> abilities = new ArrayList<>();
-			if(levels.allowAt().wars() == level) abilities.add("Клановым войнам");
-			if(levels.allowAt().regions() == level) abilities.add("Регионам");
-			if(levels.allowAt().shields() == level) abilities.add("Щитам");
-			if(levels.allowAt().regionEffects() == level) abilities.add("Клановым Эффектам");
-			if(levels.allowAt().homes() == level) abilities.add("Клановым телепортам");
-			if(levels.allowAt().colors() == level) abilities.add("Декорациям (Цвет)");
-			if(levels.allowAt().gradients() == level) abilities.add("Декорациям (Градиенты)");
-			if(levels.allowAt().symbols() == level) abilities.add("Декорациям (Титулы)");
-			if(!abilities.isEmpty()) {
+			if (levels.allowAt().wars() == level) abilities.add("Клановым войнам");
+			if (levels.allowAt().regions() == level) abilities.add("Регионам");
+			if (levels.allowAt().shields() == level) abilities.add("Щитам");
+			if (levels.allowAt().regionEffects() == level) abilities.add("Клановым Эффектам");
+			if (levels.allowAt().homes() == level) abilities.add("Клановым телепортам");
+			if (levels.allowAt().colors() == level) abilities.add("Декорациям (Цвет)");
+			if (levels.allowAt().gradients() == level) abilities.add("Декорациям (Градиенты)");
+			if (levels.allowAt().symbols() == level) abilities.add("Декорациям (Титулы)");
+			if (!abilities.isEmpty()) {
 				builder.space().lore("<#7CD8D8>Откроет доступ к:")
 						.lore(new DescriptionLoreApplicable(LoreApplicable.text(abilities).color(Colors.POSITIVE)));
 			}
@@ -75,12 +75,13 @@ public final class UpgradeGui implements GuiLike {
 			List<String> limits = new ArrayList<>();
 			LevelsMeta.PerLevel perLevel = levels.forLevel(level);
 			limits.add("<#DBFDFF>Макс. Участников<gray>: <#63FFE8><members>");
-			if(level >= levels.allowAt().regions()) limits.add("<#DBFDFF>Макс. Регионов<gray>: <#63FFE8><regions>");
-			if(level >= levels.allowAt().homes()) limits.add("<#DBFDFF>Макс. Точек телепортации<gray>: <#63FFE8><homes>");
+			if (level >= levels.allowAt().regions()) limits.add("<#DBFDFF>Макс. Регионов<gray>: <#63FFE8><regions>");
+			if (level >= levels.allowAt().homes())
+				limits.add("<#DBFDFF>Макс. Точек телепортации<gray>: <#63FFE8><homes>");
 			builder.space().description(limits).with("members", perLevel.slots())
 					.with("regions", perLevel.regions())
 					.with("homes", perLevel.homes());
-			if(clanLevel + 1 == level) {
+			if (clanLevel + 1 == level) {
 				builder.space().interaction(Colors.POSITIVE, "Нажмите, чтобы прокачать клан за <price> монет")
 						.with("price", clans.prices().clanUpgrade(clanLevel + 1));
 				builder.consumer(e -> {
@@ -96,6 +97,7 @@ public final class UpgradeGui implements GuiLike {
 			pane.addItem(builder.guiItem(), i, 0);
 		}
 	}
+
 	private void handleDescribingException(DescribingException ex, InventoryClickEvent event) {
 		new ErrorItem(event, ex).show();
 	}

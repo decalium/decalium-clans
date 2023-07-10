@@ -42,7 +42,6 @@ public final class WgClanRegions implements ClanRegions {
 	}
 
 
-
 	@Override
 	public Collection<ClanRegion> regions() {
 		return regions.regions().stream().map(r -> new WgClanRegion(r, container, configs)).collect(Collectors.toUnmodifiableList());
@@ -71,7 +70,7 @@ public final class WgClanRegions implements ClanRegions {
 	@Override
 	public ClanRegion create(Location location) {
 		var dummy = RegionCreation.create("dummy", location, configs.config().homes().homeRegionRadius());
-		if(checkIntersecting(dummy, location)) throw new RegionOverlapsException();
+		if (checkIntersecting(dummy, location)) throw new RegionOverlapsException();
 
 		ClanRegion r = regions.create(location);
 		ProtectedRegion region = new RegionCreation(configs, r).create();
@@ -97,9 +96,10 @@ public final class WgClanRegions implements ClanRegions {
 	}
 
 	public void updateRegions() {
-		for(ClanRegion region : regions.regions()) {
+		for (ClanRegion region : regions.regions()) {
 			var regionOf = new ProtectedRegionOf(container, region);
-			regionOf.region().ifPresentOrElse(r -> {}, () -> {
+			regionOf.region().ifPresentOrElse(r -> {
+			}, () -> {
 				regionOf.regionManager().ifPresent(manager -> manager.addRegion(new RegionCreation(configs, region).create()));
 				RegionBlock.set(region.location().getBlock(), region.id());
 			});

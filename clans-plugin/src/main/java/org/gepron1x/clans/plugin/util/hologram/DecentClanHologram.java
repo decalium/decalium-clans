@@ -23,6 +23,7 @@ public class DecentClanHologram implements ClanHologram {
 
 		this.hologram = hologram;
 	}
+
 	@Override
 	public void teleport(Location location) {
 		DHAPI.moveHologram(hologram, location);
@@ -65,7 +66,6 @@ public class DecentClanHologram implements ClanHologram {
 	}
 
 
-
 	@Override
 	public Location location() {
 		return hologram.getLocation();
@@ -73,7 +73,7 @@ public class DecentClanHologram implements ClanHologram {
 
 	public static DecentClanHologram createIfAbsent(String name, Location location) {
 		Hologram hologram = DHAPI.getHologram(name);
-		if(hologram != null) {
+		if (hologram != null) {
 			DHAPI.moveHologram(hologram, location);
 		} else {
 			hologram = DHAPI.createHologram(name, location);

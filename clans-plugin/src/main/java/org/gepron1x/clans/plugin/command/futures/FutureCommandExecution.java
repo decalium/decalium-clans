@@ -23,5 +23,5 @@ import space.arim.omnibus.util.concurrent.CentralisedFuture;
 
 @FunctionalInterface
 public interface FutureCommandExecution<S> {
-    CentralisedFuture<?> execute(CommandContext<S> context);
+	CentralisedFuture<?> execute(CommandContext<S> context);
 }

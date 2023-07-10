@@ -35,39 +35,40 @@ import java.util.concurrent.TimeUnit;
 import static java.util.concurrent.TimeUnit.*;
 
 public class DurationSerializer implements ValueSerialiser<Duration> {
-    private final DurationParser parser;
-    private static final List<TimeUnit> UNITS = List.of(DAYS, HOURS, MINUTES, SECONDS);;
-    private static final ImmutableBiMap<Character, TimeUnit> UNIT_CHARACTERS = ImmutableBiMap.copyOf(
-            new MapOf<>(unit -> unit.name().toLowerCase(Locale.ROOT).charAt(0), UNITS).create()
-    );
+	private final DurationParser parser;
+	private static final List<TimeUnit> UNITS = List.of(DAYS, HOURS, MINUTES, SECONDS);
+	private static final ImmutableBiMap<Character, TimeUnit> UNIT_CHARACTERS = ImmutableBiMap.copyOf(
+			new MapOf<>(unit -> unit.name().toLowerCase(Locale.ROOT).charAt(0), UNITS).create()
+	);
 
-    public DurationSerializer() {
-        parser = new DurationParser(UNIT_CHARACTERS);
-    }
-    @Override
-    public Class<Duration> getTargetClass() {
-        return Duration.class;
-    }
+	public DurationSerializer() {
+		parser = new DurationParser(UNIT_CHARACTERS);
+	}
 
-    @Override
-    public Duration deserialise(FlexibleType flexibleType) throws BadValueException {
-        try {
-            return Duration.ofSeconds(parser.parseToSeconds(flexibleType.getString()));
-        } catch (ParseException e) {
-            throw flexibleType.badValueExceptionBuilder().message("invalid duration syntax!").cause(e).build();
-        }
-    }
+	@Override
+	public Class<Duration> getTargetClass() {
+		return Duration.class;
+	}
 
-    @Override
-    public String serialise(Duration duration, Decomposer decomposer) {
-		if(duration.isZero()) return 0 + "s";
-        StringBuilder sb = new StringBuilder();
-        long seconds = duration.toSeconds();
-        for(TimeUnit unit : UNITS) {
-            long value = unit.convert(seconds, SECONDS);
-            if(value > 0) sb.append(value).append(UNIT_CHARACTERS.inverse().get(unit));
-            seconds = seconds - unit.toSeconds(value); // Duration.ofSeconds(duration.getSeconds() - unit.toSeconds(value));
-        }
-        return sb.toString();
-    }
+	@Override
+	public Duration deserialise(FlexibleType flexibleType) throws BadValueException {
+		try {
+			return Duration.ofSeconds(parser.parseToSeconds(flexibleType.getString()));
+		} catch (ParseException e) {
+			throw flexibleType.badValueExceptionBuilder().message("invalid duration syntax!").cause(e).build();
+		}
+	}
+
+	@Override
+	public String serialise(Duration duration, Decomposer decomposer) {
+		if (duration.isZero()) return 0 + "s";
+		StringBuilder sb = new StringBuilder();
+		long seconds = duration.toSeconds();
+		for (TimeUnit unit : UNITS) {
+			long value = unit.convert(seconds, SECONDS);
+			if (value > 0) sb.append(value).append(UNIT_CHARACTERS.inverse().get(unit));
+			seconds = seconds - unit.toSeconds(value); // Duration.ofSeconds(duration.getSeconds() - unit.toSeconds(value));
+		}
+		return sb.toString();
+	}
 }

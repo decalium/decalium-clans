@@ -25,20 +25,20 @@ import java.util.Set;
 
 public record StatisticType(@NotNull String name) {
 
-    public static StatisticType KILLS = new StatisticType("kills");
-    public static StatisticType DEATHS = new StatisticType("deaths");
-    public static StatisticType CLAN_WAR_WINS = new StatisticType("clan_war_wins");
-    public static StatisticType CLAN_WAR_LOSES = new StatisticType("clan_war_loses");
+	public static StatisticType KILLS = new StatisticType("kills");
+	public static StatisticType DEATHS = new StatisticType("deaths");
+	public static StatisticType CLAN_WAR_WINS = new StatisticType("clan_war_wins");
+	public static StatisticType CLAN_WAR_LOSES = new StatisticType("clan_war_loses");
 
-    public static StatisticType LEVEL = new StatisticType("level");
+	public static StatisticType LEVEL = new StatisticType("level");
 
-    private static final Index<String, StatisticType> NAMES = Index.create(StatisticType::name, KILLS, DEATHS, CLAN_WAR_WINS, CLAN_WAR_LOSES, LEVEL);
+	private static final Index<String, StatisticType> NAMES = Index.create(StatisticType::name, KILLS, DEATHS, CLAN_WAR_WINS, CLAN_WAR_LOSES, LEVEL);
 
-    public static Index<String, StatisticType> registry() {
-        return NAMES;
-    }
+	public static Index<String, StatisticType> registry() {
+		return NAMES;
+	}
 
-    public static Set<StatisticType> all() {
-        return NAMES.values();
-    }
+	public static Set<StatisticType> all() {
+		return NAMES.values();
+	}
 }

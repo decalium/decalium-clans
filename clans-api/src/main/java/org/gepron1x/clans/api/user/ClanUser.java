@@ -38,15 +38,15 @@ public interface ClanUser {
 		return member().map(member -> member.hasPermission(permission)).orElse(false);
 	}
 
-    Optional<ClanRegions> regions();
+	Optional<ClanRegions> regions();
 
-    Optional<Clan> clan();
+	Optional<Clan> clan();
 
 	Optional<ClanMember> member();
-    
-    CentralisedFuture<ClanCreationResult> create(DraftClan draft);
 
-    CentralisedFuture<Boolean> delete();
+	CentralisedFuture<ClanCreationResult> create(DraftClan draft);
+
+	CentralisedFuture<Boolean> delete();
 
 
 }

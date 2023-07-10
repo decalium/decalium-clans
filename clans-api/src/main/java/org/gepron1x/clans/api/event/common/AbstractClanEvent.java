@@ -22,15 +22,15 @@ import org.bukkit.event.Event;
 import org.gepron1x.clans.api.clan.Clan;
 
 public abstract class AbstractClanEvent extends Event implements ClanEvent {
-    private final Clan clan;
+	private final Clan clan;
 
-    public AbstractClanEvent(Clan clan) {
+	public AbstractClanEvent(Clan clan) {
 
-        this.clan = clan;
-    }
+		this.clan = clan;
+	}
 
-    @Override
-    public Clan clan() {
-        return clan;
-    }
+	@Override
+	public Clan clan() {
+		return clan;
+	}
 }

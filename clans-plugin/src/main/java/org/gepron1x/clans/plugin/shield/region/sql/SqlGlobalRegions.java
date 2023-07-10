@@ -24,7 +24,6 @@ public final class SqlGlobalRegions implements GlobalRegions {
 	private final CachingClanRepository repository;
 
 
-
 	public SqlGlobalRegions(Map<Integer, ClanRegions> regions, SqlQueue queue, AtomicInteger idCounter, CachingClanRepository repository) {
 
 		this.regions = regions;
@@ -48,7 +47,7 @@ public final class SqlGlobalRegions implements GlobalRegions {
 
 	@Override
 	public void remove(int id) {
-		for(ClanRegions regions : regions.values()) {
+		for (ClanRegions regions : regions.values()) {
 			regions.region(id).ifPresent(regions::remove);
 		}
 		queue.add(handle -> handle.execute("DELETE FROM `regions` WHERE `id`=?", id));

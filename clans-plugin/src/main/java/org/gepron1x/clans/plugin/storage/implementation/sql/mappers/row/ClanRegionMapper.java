@@ -35,10 +35,9 @@ import java.sql.Timestamp;
 public final class ClanRegionMapper implements RowMapper<ClanRegion> {
 
 
-
-
 	public ClanRegionMapper() {
 	}
+
 	@Override
 	public ClanRegion map(ResultSet rs, StatementContext ctx) throws SQLException {
 		Location location = new Location(

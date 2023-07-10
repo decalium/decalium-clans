@@ -26,20 +26,21 @@ import org.gepron1x.clans.plugin.config.settings.PricesConfig;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 public final class EconomyUsers implements Users {
-    private final Users users;
-    private final Economy economy;
-    private final PricesConfig prices;
-    private final FactoryOfTheFuture futuresFactory;
+	private final Users users;
+	private final Economy economy;
+	private final PricesConfig prices;
+	private final FactoryOfTheFuture futuresFactory;
 
-    public EconomyUsers(Users users, Economy economy, PricesConfig prices, FactoryOfTheFuture futuresFactory) {
-        this.users = users;
+	public EconomyUsers(Users users, Economy economy, PricesConfig prices, FactoryOfTheFuture futuresFactory) {
+		this.users = users;
 
-        this.economy = economy;
-        this.prices = prices;
-        this.futuresFactory = futuresFactory;
-    }
-    @Override
-    public ClanUser userFor(Player player) {
-        return new EconomyUser(users.userFor(player), new VaultPlayerImpl(player, economy), prices, futuresFactory);
-    }
+		this.economy = economy;
+		this.prices = prices;
+		this.futuresFactory = futuresFactory;
+	}
+
+	@Override
+	public ClanUser userFor(Player player) {
+		return new EconomyUser(users.userFor(player), new VaultPlayerImpl(player, economy), prices, futuresFactory);
+	}
 }

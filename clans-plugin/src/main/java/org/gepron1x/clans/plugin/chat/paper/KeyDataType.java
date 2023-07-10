@@ -25,24 +25,25 @@ import org.jetbrains.annotations.NotNull;
 
 public final class KeyDataType implements PersistentDataType<String, Key> {
 
-    public static final KeyDataType KEY = new KeyDataType();
-    @Override
-    public @NotNull Class<String> getPrimitiveType() {
-        return String.class;
-    }
+	public static final KeyDataType KEY = new KeyDataType();
 
-    @Override
-    public @NotNull Class<Key> getComplexType() {
-        return Key.class;
-    }
+	@Override
+	public @NotNull Class<String> getPrimitiveType() {
+		return String.class;
+	}
 
-    @Override
-    public @NotNull String toPrimitive(@NotNull Key key, @NotNull PersistentDataAdapterContext persistentDataAdapterContext) {
-        return key.asString();
-    }
+	@Override
+	public @NotNull Class<Key> getComplexType() {
+		return Key.class;
+	}
 
-    @Override
-    public @NotNull Key fromPrimitive(@NotNull String s, @NotNull PersistentDataAdapterContext persistentDataAdapterContext) {
-        return Key.key(s);
-    }
+	@Override
+	public @NotNull String toPrimitive(@NotNull Key key, @NotNull PersistentDataAdapterContext persistentDataAdapterContext) {
+		return key.asString();
+	}
+
+	@Override
+	public @NotNull Key fromPrimitive(@NotNull String s, @NotNull PersistentDataAdapterContext persistentDataAdapterContext) {
+		return Key.key(s);
+	}
 }

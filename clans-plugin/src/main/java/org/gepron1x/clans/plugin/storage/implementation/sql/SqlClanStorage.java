@@ -57,157 +57,156 @@ import java.util.stream.Stream;
 
 public final class SqlClanStorage implements ClanStorage {
 
-    @Language("SQL")
-    private static final String SELECT_CLANS = "SELECT * FROM clans_simple";
+	@Language("SQL")
+	private static final String SELECT_CLANS = "SELECT * FROM clans_simple";
 
-    @Language("SQL")
-    private static final String SELECT_CLAN_WITH_ID = "SELECT * FROM clans_simple WHERE`clan_id`=?";
+	@Language("SQL")
+	private static final String SELECT_CLAN_WITH_ID = "SELECT * FROM clans_simple WHERE`clan_id`=?";
 
-    @Language("SQL")
-    private static final String SELECT_CLAN_WITH_TAG = "SELECT * FROM clans_simple WHERE `clan_tag`=?";
-    @Language("SQL")
-    private static final String SELECT_USER_CLAN = "SELECT * FROM clans_simple WHERE `clan_id`=(SELECT `clan_id` FROM `members` WHERE `uuid`=?)";
-    @Language("SQL")
-    private static final String INSERT_CLAN = "INSERT IGNORE INTO clans(`tag`, `owner`, `display_name`, `decoration`) VALUES (?, ?, ?, ?)";
+	@Language("SQL")
+	private static final String SELECT_CLAN_WITH_TAG = "SELECT * FROM clans_simple WHERE `clan_tag`=?";
+	@Language("SQL")
+	private static final String SELECT_USER_CLAN = "SELECT * FROM clans_simple WHERE `clan_id`=(SELECT `clan_id` FROM `members` WHERE `uuid`=?)";
+	@Language("SQL")
+	private static final String INSERT_CLAN = "INSERT IGNORE INTO clans(`tag`, `owner`, `display_name`, `decoration`) VALUES (?, ?, ?, ?)";
 
-    @Language("SQL")
-    private static final String DELETE_CLAN = "DELETE FROM clans WHERE id=?";
-
-
-    private final Jdbi jdbi;
-    private final HikariDataSource dataSource;
-    private final StorageType type;
-    private final ClanBuilderFactory builderFactory;
-    private final RoleRegistry roleRegistry;
-    private final Plugin plugin;
+	@Language("SQL")
+	private static final String DELETE_CLAN = "DELETE FROM clans WHERE id=?";
 
 
-    public SqlClanStorage(@NotNull Plugin plugin,
-                          @NotNull Jdbi jdbi,
-                          @NotNull HikariDataSource dataSource,
-                          @NotNull StorageType type,
-                          @NotNull ClanBuilderFactory builderFactory,
-                          @NotNull RoleRegistry roleRegistry) {
-        this.plugin = plugin;
-        this.jdbi = jdbi;
-        this.dataSource = dataSource;
-        this.type = type;
-        this.builderFactory = builderFactory;
-        this.roleRegistry = roleRegistry;
-    }
+	private final Jdbi jdbi;
+	private final HikariDataSource dataSource;
+	private final StorageType type;
+	private final ClanBuilderFactory builderFactory;
+	private final RoleRegistry roleRegistry;
+	private final Plugin plugin;
 
-    @Override
-    public void initialize() {
-        Flyway flyway = Flyway.configure(plugin.getClass().getClassLoader())
-                .dataSource(dataSource).baselineVersion("0")
-                .locations("classpath:db/migration")
-                .baselineOnMigrate(true)
-                .validateOnMigrate(true).load();
-        flyway.repair();
-        flyway.migrate();
-    }
 
-    @Override
-    public void shutdown() {
-        jdbi.useHandle(type::disable);
-        dataSource.close();
+	public SqlClanStorage(@NotNull Plugin plugin,
+						  @NotNull Jdbi jdbi,
+						  @NotNull HikariDataSource dataSource,
+						  @NotNull StorageType type,
+						  @NotNull ClanBuilderFactory builderFactory,
+						  @NotNull RoleRegistry roleRegistry) {
+		this.plugin = plugin;
+		this.jdbi = jdbi;
+		this.dataSource = dataSource;
+		this.type = type;
+		this.builderFactory = builderFactory;
+		this.roleRegistry = roleRegistry;
+	}
 
-    }
+	@Override
+	public void initialize() {
+		Flyway flyway = Flyway.configure(plugin.getClass().getClassLoader())
+				.dataSource(dataSource).baselineVersion("0")
+				.locations("classpath:db/migration")
+				.baselineOnMigrate(true)
+				.validateOnMigrate(true).load();
+		flyway.repair();
+		flyway.migrate();
+	}
 
-    @Override
-    public @Nullable IdentifiedDraftClan loadClan(@NotNull String tag) {
-        return jdbi.withHandle(handle -> collectClans(handle.createQuery(SELECT_CLAN_WITH_TAG).bind(0, tag))
-                .findFirst().orElse(null));
-    }
+	@Override
+	public void shutdown() {
+		jdbi.useHandle(type::disable);
+		dataSource.close();
 
-    @Override
-    public @Nullable IdentifiedDraftClan loadClan(int id) {
-        return jdbi.withHandle(handle -> collectClans(handle.createQuery(SELECT_CLAN_WITH_ID).bind(0, id)))
-                .findFirst().orElse(null);
-    }
+	}
 
-    @Override
-    public @Nullable IdentifiedDraftClan loadUserClan(@NotNull UUID uuid) {
-        return jdbi.withHandle(handle -> collectClans(handle.createQuery(SELECT_USER_CLAN).bind(0, uuid)))
-                .findFirst().orElse(null);
-    }
+	@Override
+	public @Nullable IdentifiedDraftClan loadClan(@NotNull String tag) {
+		return jdbi.withHandle(handle -> collectClans(handle.createQuery(SELECT_CLAN_WITH_TAG).bind(0, tag))
+				.findFirst().orElse(null));
+	}
 
-    @Override
-    public @NotNull Set<IdentifiedDraftClanImpl> loadClans() {
-        return jdbi.withHandle(handle -> collectClans(handle.createQuery(SELECT_CLANS))).collect(Collectors.toSet());
-    }
+	@Override
+	public @Nullable IdentifiedDraftClan loadClan(int id) {
+		return jdbi.withHandle(handle -> collectClans(handle.createQuery(SELECT_CLAN_WITH_ID).bind(0, id)))
+				.findFirst().orElse(null);
+	}
 
-    @Override
-    public SaveResult saveClan(@NotNull DraftClan draftClan) {
-        return jdbi.inTransaction(handle -> {
-            Optional<Integer> optionalId = handle.createUpdate(INSERT_CLAN)
-                    .bind(0, draftClan.tag())
-                    .bind(1, draftClan.owner().uniqueId())
-                    .bind(2, draftClan.displayName())
+	@Override
+	public @Nullable IdentifiedDraftClan loadUserClan(@NotNull UUID uuid) {
+		return jdbi.withHandle(handle -> collectClans(handle.createQuery(SELECT_USER_CLAN).bind(0, uuid)))
+				.findFirst().orElse(null);
+	}
+
+	@Override
+	public @NotNull Set<IdentifiedDraftClanImpl> loadClans() {
+		return jdbi.withHandle(handle -> collectClans(handle.createQuery(SELECT_CLANS))).collect(Collectors.toSet());
+	}
+
+	@Override
+	public SaveResult saveClan(@NotNull DraftClan draftClan) {
+		return jdbi.inTransaction(handle -> {
+			Optional<Integer> optionalId = handle.createUpdate(INSERT_CLAN)
+					.bind(0, draftClan.tag())
+					.bind(1, draftClan.owner().uniqueId())
+					.bind(2, draftClan.displayName())
 					.bind(3, draftClan.tagDecoration())
-                    .executeAndReturnGeneratedKeys("id").mapTo(Integer.class).findFirst();
-            if(optionalId.isEmpty()) {
-                handle.rollback();
-                return SaveResult.ALREADY_EXISTS;
-            }
-            int id = optionalId.get();
+					.executeAndReturnGeneratedKeys("id").mapTo(Integer.class).findFirst();
+			if (optionalId.isEmpty()) {
+				handle.rollback();
+				return SaveResult.ALREADY_EXISTS;
+			}
+			int id = optionalId.get();
 
-            int updates = new SavableMembers(id, draftClan.members()).execute(handle); // some members weren't added; those are already in other clans;
+			int updates = new SavableMembers(id, draftClan.members()).execute(handle); // some members weren't added; those are already in other clans;
 
-            if(updates != draftClan.members().size()) {
-                handle.rollback();
-                return SaveResult.MEMBERS_IN_OTHER_CLANS;
-            }
+			if (updates != draftClan.members().size()) {
+				handle.rollback();
+				return SaveResult.MEMBERS_IN_OTHER_CLANS;
+			}
 
-            new SavableHomes(id, draftClan.homes()).execute(handle);
-            new SavableStatistics(id, draftClan.statistics()).execute(handle);
-            return SaveResult.success(id);
-        });
-    }
+			new SavableHomes(id, draftClan.homes()).execute(handle);
+			new SavableStatistics(id, draftClan.statistics()).execute(handle);
+			return SaveResult.success(id);
+		});
+	}
 
-    @Override
-    public void applyEdition(int id, @NotNull Consumer<ClanEdition> consumer) {
-        jdbi.useHandle(handle -> consumer.accept(new SqlClanEdition(handle, id)));
-    }
-
-
-    @Override
-    public boolean removeClan(int id) {
-        return jdbi.inTransaction(handle -> handle.createUpdate(DELETE_CLAN).bind(0, id).execute() != 0);
-    }
+	@Override
+	public void applyEdition(int id, @NotNull Consumer<ClanEdition> consumer) {
+		jdbi.useHandle(handle -> consumer.accept(new SqlClanEdition(handle, id)));
+	}
 
 
+	@Override
+	public boolean removeClan(int id) {
+		return jdbi.inTransaction(handle -> handle.createUpdate(DELETE_CLAN).bind(0, id).execute() != 0);
+	}
 
-    private Stream<IdentifiedDraftClanImpl> collectClans(Query query) {
-        return query.registerRowMapper(DraftClan.Builder.class, new ClanBuilderMapper("clan", builderFactory))
-                .registerRowMapper(ClanMember.class, new MemberMapper(builderFactory, roleRegistry, "member"))
-                .registerRowMapper(ClanHome.Builder.class, new ClanHomeBuilderMapper(builderFactory, "home"))
-                .registerRowMapper(Location.class, new LocationMapper(plugin.getServer(), "location"))
-                .reduceRows(new LinkedHashMap<Integer, DraftClan.Builder>(), (map, rowView) -> {
-                    DraftClan.Builder builder = map.computeIfAbsent(
-                            rowView.getColumn("clan_id", Integer.class),
-                            clanTag -> rowView.getRow(DraftClan.Builder.class));
-                    UUID owner = rowView.getColumn("clan_owner", UUID.class);
 
-                    if (rowView.getColumn("member_uuid", byte[].class) != null) {
-                        ClanMember member = rowView.getRow(ClanMember.class);
-                        if(member.uniqueId().equals(owner)) {
-                            builder.owner(member);
-                        } else {
-                            builder.addMember(rowView.getRow(ClanMember.class));
-                        }
-                    }
+	private Stream<IdentifiedDraftClanImpl> collectClans(Query query) {
+		return query.registerRowMapper(DraftClan.Builder.class, new ClanBuilderMapper("clan", builderFactory))
+				.registerRowMapper(ClanMember.class, new MemberMapper(builderFactory, roleRegistry, "member"))
+				.registerRowMapper(ClanHome.Builder.class, new ClanHomeBuilderMapper(builderFactory, "home"))
+				.registerRowMapper(Location.class, new LocationMapper(plugin.getServer(), "location"))
+				.reduceRows(new LinkedHashMap<Integer, DraftClan.Builder>(), (map, rowView) -> {
+					DraftClan.Builder builder = map.computeIfAbsent(
+							rowView.getColumn("clan_id", Integer.class),
+							clanTag -> rowView.getRow(DraftClan.Builder.class));
+					UUID owner = rowView.getColumn("clan_owner", UUID.class);
 
-                    if (rowView.getColumn("home_name", String.class) != null) {
-                        builder.addHome(rowView.getRow(ClanHome.Builder.class).location(rowView.getRow(Location.class)).build());
-                    }
-                    String statType = rowView.getColumn("statistic_type", String.class);
+					if (rowView.getColumn("member_uuid", byte[].class) != null) {
+						ClanMember member = rowView.getRow(ClanMember.class);
+						if (member.uniqueId().equals(owner)) {
+							builder.owner(member);
+						} else {
+							builder.addMember(rowView.getRow(ClanMember.class));
+						}
+					}
 
-                    if(statType != null) {
-                        builder.statistic(new StatisticType(statType), rowView.getColumn("statistic_value", Integer.class));
-                    }
-                    return map;
-                }).entrySet().stream().map(entry -> new IdentifiedDraftClanImpl(entry.getKey(), entry.getValue().build()));
-    }
+					if (rowView.getColumn("home_name", String.class) != null) {
+						builder.addHome(rowView.getRow(ClanHome.Builder.class).location(rowView.getRow(Location.class)).build());
+					}
+					String statType = rowView.getColumn("statistic_type", String.class);
+
+					if (statType != null) {
+						builder.statistic(new StatisticType(statType), rowView.getColumn("statistic_value", Integer.class));
+					}
+					return map;
+				}).entrySet().stream().map(entry -> new IdentifiedDraftClanImpl(entry.getKey(), entry.getValue().build()));
+	}
 
 }

@@ -31,43 +31,43 @@ import java.util.function.Consumer;
 
 public final class EconomyEdition implements EmptyClanEdition {
 
-    private final AtomicDouble cost;
-    private final PricesConfig prices;
-    private final Clan clan;
+	private final AtomicDouble cost;
+	private final PricesConfig prices;
+	private final Clan clan;
 
-    public EconomyEdition(AtomicDouble cost, PricesConfig prices, Clan clan) {
+	public EconomyEdition(AtomicDouble cost, PricesConfig prices, Clan clan) {
 
-        this.cost = cost;
-        this.prices = prices;
-        this.clan = clan;
-    }
+		this.cost = cost;
+		this.prices = prices;
+		this.clan = clan;
+	}
 
-    @Override
-    public ClanEdition addHome(@NotNull ClanHome home) {
-        return pay(prices.homeCreation());
-    }
+	@Override
+	public ClanEdition addHome(@NotNull ClanHome home) {
+		return pay(prices.homeCreation());
+	}
 
 	@Override
 	public ClanEdition upgrade() {
 		return pay(prices.clanUpgrade(clan.level() + 1));
 	}
 
-    @Override
-    public ClanEdition editHome(@NotNull String name, @NotNull Consumer<HomeEdition> consumer) {
-        consumer.accept(new EconomyHomeEdition());
-        return this;
-    }
+	@Override
+	public ClanEdition editHome(@NotNull String name, @NotNull Consumer<HomeEdition> consumer) {
+		consumer.accept(new EconomyHomeEdition());
+		return this;
+	}
 
-    public ClanEdition pay(double amount) {
-        this.cost.addAndGet(amount);
-        return this;
-    }
+	public ClanEdition pay(double amount) {
+		this.cost.addAndGet(amount);
+		return this;
+	}
 
-    private static final class EconomyHomeEdition implements EmptyHomeEdition {
+	private static final class EconomyHomeEdition implements EmptyHomeEdition {
 
-        @Override
-        public HomeEdition upgrade() {
-            return this;
-        }
-    }
+		@Override
+		public HomeEdition upgrade() {
+			return this;
+		}
+	}
 }

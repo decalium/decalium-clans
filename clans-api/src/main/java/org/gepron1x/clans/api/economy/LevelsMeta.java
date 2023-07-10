@@ -6,8 +6,7 @@ import java.time.Duration;
 
 public interface LevelsMeta {
 
-	
-	
+
 	int maxLevel();
 
 	AllowAt allowAt();
@@ -21,17 +20,16 @@ public interface LevelsMeta {
 
 	interface AllowAt {
 
-		
+
 		int wars();
 
-		
+
 		int regions();
 
-		
+
 		int homes();
 
-		
-		
+
 		int regionEffects();
 
 		int shields();
@@ -44,19 +42,18 @@ public interface LevelsMeta {
 
 	}
 
-	
-	
 
 	interface PerLevel {
 
-		
+
 		int slots();
 
-		
+
 		int homes();
 
-		
+
 		int regions();
+
 		Duration shieldDuration();
 	}
 }

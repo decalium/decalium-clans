@@ -29,26 +29,27 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 public final class BaseTimeFormat implements TimeFormat {
 
-    private final SortedMap<TimeUnit, String> units;
+	private final SortedMap<TimeUnit, String> units;
 
-    public BaseTimeFormat(SortedMap<TimeUnit, String> units) {
+	public BaseTimeFormat(SortedMap<TimeUnit, String> units) {
 
-        this.units = units;
-    }
-    @Override
-    public String format(Duration duration) {
-        long seconds = duration.toSeconds();
-        if(seconds == 0) return "0" + units.getOrDefault(units.lastKey(), "");
-        StringBuilder sb = new StringBuilder();
-        for(Map.Entry<TimeUnit, String> entry : units.entrySet()) {
-            long value = entry.getKey().convert(seconds, SECONDS);
-            if(value > 0) sb.append(value).append(entry.getValue());
-            seconds = seconds - entry.getKey().toSeconds(value); // Duration.ofSeconds(duration.getSeconds() - unit.toSeconds(value));
-        }
-        return sb.toString();
-    }
+		this.units = units;
+	}
 
-    public Map<TimeUnit, String> units() {
-        return units;
-    }
+	@Override
+	public String format(Duration duration) {
+		long seconds = duration.toSeconds();
+		if (seconds == 0) return "0" + units.getOrDefault(units.lastKey(), "");
+		StringBuilder sb = new StringBuilder();
+		for (Map.Entry<TimeUnit, String> entry : units.entrySet()) {
+			long value = entry.getKey().convert(seconds, SECONDS);
+			if (value > 0) sb.append(value).append(entry.getValue());
+			seconds = seconds - entry.getKey().toSeconds(value); // Duration.ofSeconds(duration.getSeconds() - unit.toSeconds(value));
+		}
+		return sb.toString();
+	}
+
+	public Map<TimeUnit, String> units() {
+		return units;
+	}
 }

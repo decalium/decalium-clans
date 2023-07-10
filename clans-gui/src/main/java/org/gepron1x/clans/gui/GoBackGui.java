@@ -20,6 +20,7 @@ public final class GoBackGui implements GuiLike {
 		this.slot = slot;
 		this.toGo = toGo;
 	}
+
 	@Override
 	public Gui asGui() {
 		StaticPane pane = new StaticPane(slot, 1, 1);

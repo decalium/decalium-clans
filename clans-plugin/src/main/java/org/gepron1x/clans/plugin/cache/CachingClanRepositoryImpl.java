@@ -36,67 +36,66 @@ import java.util.UUID;
 public final class CachingClanRepositoryImpl extends AdaptingClanRepository implements CachingClanRepository {
 
 
-    private final FactoryOfTheFuture futuresFactory;
-    private final ClanRepository repository;
-    private final ClanCache cache;
+	private final FactoryOfTheFuture futuresFactory;
+	private final ClanRepository repository;
+	private final ClanCache cache;
 
-    public CachingClanRepositoryImpl(ClanRepository repository, FactoryOfTheFuture futuresFactory, ClanCache cache) {
-        super(repository, clan -> new CachingClan(clan, cache, futuresFactory));
-        this.futuresFactory = futuresFactory;
-        this.repository = repository;
-        this.cache = cache;
-    }
-
-
-
-    @Override
-    public @NotNull CentralisedFuture<ClanCreationResult> createClan(@NotNull DraftClan draftClan) {
-        if(cache.isCached(draftClan.tag())) return futuresFactory.completedFuture(ClanCreationResult.alreadyExists());
-        return repository.createClan(draftClan).thenApply(result -> {
-            result.ifSuccess(clan -> cache.cacheClan(new CachingClan(clan, cache, futuresFactory)));
-            return result;
-        });
-    }
-
-    @Override
-    public @NotNull CentralisedFuture<Boolean> removeClan(@NotNull Clan clan) {
-        return this.repository.removeClan(clan).thenApply(bool -> {
-            if(bool) cache.removeClan(clan.tag());
-            return bool;
-        });
-    }
-
-    @Override
-    public @NotNull CentralisedFuture<Optional<Clan>> requestClan(@NotNull String tag) {
-        Clan clan = cache.getClan(tag);
-        if(clan != null) {
-            return this.futuresFactory.completedFuture(Optional.of(clan));
-        }
-        return super.requestClan(tag);
-    }
-
-    @Override
-    public @NotNull CentralisedFuture<Optional<Clan>> requestUserClan(@NotNull UUID uuid) {
-        Clan clan = cache.getUserClan(uuid);
-        if(clan != null) return this.futuresFactory.completedFuture(Optional.of(clan));
-        return super.requestUserClan(uuid);
-    }
+	public CachingClanRepositoryImpl(ClanRepository repository, FactoryOfTheFuture futuresFactory, ClanCache cache) {
+		super(repository, clan -> new CachingClan(clan, cache, futuresFactory));
+		this.futuresFactory = futuresFactory;
+		this.repository = repository;
+		this.cache = cache;
+	}
 
 
-    @Override
-    public Optional<Clan> userClanIfCached(@NotNull UUID uuid) {
-        return Optional.ofNullable(cache.getUserClan(uuid));
-    }
+	@Override
+	public @NotNull CentralisedFuture<ClanCreationResult> createClan(@NotNull DraftClan draftClan) {
+		if (cache.isCached(draftClan.tag())) return futuresFactory.completedFuture(ClanCreationResult.alreadyExists());
+		return repository.createClan(draftClan).thenApply(result -> {
+			result.ifSuccess(clan -> cache.cacheClan(new CachingClan(clan, cache, futuresFactory)));
+			return result;
+		});
+	}
 
-    @Override
-    public Optional<Clan> clanIfCached(@NotNull String tag) {
-        return Optional.ofNullable(cache.getClan(tag));
-    }
+	@Override
+	public @NotNull CentralisedFuture<Boolean> removeClan(@NotNull Clan clan) {
+		return this.repository.removeClan(clan).thenApply(bool -> {
+			if (bool) cache.removeClan(clan.tag());
+			return bool;
+		});
+	}
 
-    @Override
-    public @UnmodifiableView Collection<Clan> cachedClans() {
-        return cache.getClans();
-    }
+	@Override
+	public @NotNull CentralisedFuture<Optional<Clan>> requestClan(@NotNull String tag) {
+		Clan clan = cache.getClan(tag);
+		if (clan != null) {
+			return this.futuresFactory.completedFuture(Optional.of(clan));
+		}
+		return super.requestClan(tag);
+	}
+
+	@Override
+	public @NotNull CentralisedFuture<Optional<Clan>> requestUserClan(@NotNull UUID uuid) {
+		Clan clan = cache.getUserClan(uuid);
+		if (clan != null) return this.futuresFactory.completedFuture(Optional.of(clan));
+		return super.requestUserClan(uuid);
+	}
+
+
+	@Override
+	public Optional<Clan> userClanIfCached(@NotNull UUID uuid) {
+		return Optional.ofNullable(cache.getUserClan(uuid));
+	}
+
+	@Override
+	public Optional<Clan> clanIfCached(@NotNull String tag) {
+		return Optional.ofNullable(cache.getClan(tag));
+	}
+
+	@Override
+	public @UnmodifiableView Collection<Clan> cachedClans() {
+		return cache.getClans();
+	}
 
 
 }

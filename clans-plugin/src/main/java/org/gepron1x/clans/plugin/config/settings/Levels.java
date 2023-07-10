@@ -29,95 +29,96 @@ import static space.arim.dazzleconf.annote.ConfDefault.*;
 
 public interface Levels extends LevelsMeta {
 
-    @DefaultBoolean(true)
-    boolean enabled();
+	@DefaultBoolean(true)
+	boolean enabled();
 
 	@Override
-    @DefaultInteger(10)
-    @ConfKey("max-level")
-    int maxLevel();
+	@DefaultInteger(10)
+	@ConfKey("max-level")
+	int maxLevel();
 
 	@Override
-    @ConfKey("allow-at")
-    @SubSection AllowAt allowAt();
+	@ConfKey("allow-at")
+	@SubSection AllowAt allowAt();
 
-     interface AllowAt extends LevelsMeta.AllowAt {
-
-		 @Override
-         @DefaultInteger(1)
-         int wars();
-
-		 @Override
-         @DefaultInteger(3)
-         int regions();
-
-		 @Override
-		 @DefaultInteger(5)
-		 int homes();
-		 @Override
-		 @DefaultInteger(4)
-		 @ConfKey("region-effects")
-		 int regionEffects();
-
-		 @Override
-		 @DefaultInteger(3)
-		 int shields();
-
-		 @Override
-		 @DefaultInteger(1)
-		 int colors();
-
-		 @Override
-		 @DefaultInteger(5)
-		 int gradients();
-
-		 @Override
-		 @DefaultInteger(5)
-		 int symbols();
-	 }
-
-     @ConfKey("per-level")
-     @SubSection PerLevel perLevel();
-
-    interface PerLevel extends LevelsMeta.PerLevel {
-		@Override
-        @DefaultInteger(5)
-        int slots();
+	interface AllowAt extends LevelsMeta.AllowAt {
 
 		@Override
-        @DefaultInteger(1)
-        int homes();
+		@DefaultInteger(1)
+		int wars();
+
+		@Override
+		@DefaultInteger(3)
+		int regions();
+
+		@Override
+		@DefaultInteger(5)
+		int homes();
+
+		@Override
+		@DefaultInteger(4)
+		@ConfKey("region-effects")
+		int regionEffects();
+
+		@Override
+		@DefaultInteger(3)
+		int shields();
+
+		@Override
+		@DefaultInteger(1)
+		int colors();
+
+		@Override
+		@DefaultInteger(5)
+		int gradients();
+
+		@Override
+		@DefaultInteger(5)
+		int symbols();
+	}
+
+	@ConfKey("per-level")
+	@SubSection PerLevel perLevel();
+
+	interface PerLevel extends LevelsMeta.PerLevel {
+		@Override
+		@DefaultInteger(5)
+		int slots();
+
+		@Override
+		@DefaultInteger(1)
+		int homes();
 
 		@Override
 		@DefaultInteger(1)
 		int regions();
 
 		@Override
-        @ConfKey("shield-duration")
-        @DefaultString("2h")
-        Duration shieldDuration();
-    }
+		@ConfKey("shield-duration")
+		@DefaultString("2h")
+		Duration shieldDuration();
+	}
 
-    class AlgebraicPerLevel implements PerLevel {
+	class AlgebraicPerLevel implements PerLevel {
 
-        private final PerLevel per;
-        private final int level;
+		private final PerLevel per;
+		private final int level;
 
-        public AlgebraicPerLevel(PerLevel per, int level) {
+		public AlgebraicPerLevel(PerLevel per, int level) {
 
-            this.per = per;
-            this.level = level;
-        }
+			this.per = per;
+			this.level = level;
+		}
 
-        @Override
-        public int slots() {
-            return per.slots() * level;
-        }
+		@Override
+		public int slots() {
+			return per.slots() * level;
+		}
 
-        @Override
-        public int homes() {
-            return per.slots() * level;
-        }
+		@Override
+		public int homes() {
+			return per.slots() * level;
+		}
 
 		@Override
 		public int regions() {
@@ -125,21 +126,22 @@ public interface Levels extends LevelsMeta {
 		}
 
 		@Override
-        public Duration shieldDuration() {
-            return per.shieldDuration().multipliedBy(level);
-        }
+		public Duration shieldDuration() {
+			return per.shieldDuration().multipliedBy(level);
+		}
 
-    }
+	}
 
-    @DefaultMap({})
-    Map<Integer, @SubSection PerLevel> individual();
+	@DefaultMap({})
+	Map<Integer, @SubSection PerLevel> individual();
+
 	@Override
-    default PerLevel forLevel(int level) {
-        PerLevel per = individual().get(level);
-        if(per != null) return per;
-        return new AlgebraicPerLevel(perLevel(), level);
+	default PerLevel forLevel(int level) {
+		PerLevel per = individual().get(level);
+		if (per != null) return per;
+		return new AlgebraicPerLevel(perLevel(), level);
 
-    }
+	}
 
 
 }

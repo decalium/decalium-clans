@@ -34,56 +34,56 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public class WgClan implements DelegatingClan, Clan {
-    private final Clan delegate;
-    private final Configs configs;
+	private final Clan delegate;
+	private final Configs configs;
 	private final RegionContainer container;
 	private final ClanRegions regions;
 
 	public WgClan(Clan delegate, Configs configs, RegionContainer container, ClanRegions regions) {
-        this.delegate = delegate;
-        this.configs = configs;
+		this.delegate = delegate;
+		this.configs = configs;
 		this.container = container;
 		this.regions = regions;
 	}
 
 
-    @Override
-    public DraftClan delegate() {
-        return this.delegate;
-    }
+	@Override
+	public DraftClan delegate() {
+		return this.delegate;
+	}
 
 
-    @Override
-    public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
+	@Override
+	public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
 		return this.delegate.edit(transaction).thenApply(clan -> {
 			transaction.accept(new PostClanEdition(new WgRegionSet(container, regions)));
 			return new WgClan(clan, configs, container, regions);
 		});
-    }
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        WgClan wgClan = (WgClan) o;
-        return delegate.equals(wgClan.delegate) && configs.equals(wgClan.configs);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		WgClan wgClan = (WgClan) o;
+		return delegate.equals(wgClan.delegate) && configs.equals(wgClan.configs);
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(delegate, configs);
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(delegate, configs);
+	}
 
-    @Override
-    public int id() {
-        return this.delegate.id();
-    }
+	@Override
+	public int id() {
+		return this.delegate.id();
+	}
 
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("delegate", delegate)
-                .toString();
-    }
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("delegate", delegate)
+				.toString();
+	}
 }

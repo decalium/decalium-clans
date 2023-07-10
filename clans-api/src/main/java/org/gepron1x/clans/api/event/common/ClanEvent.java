@@ -22,6 +22,6 @@ import org.gepron1x.clans.api.clan.Clan;
 
 public interface ClanEvent extends DraftClanEvent {
 
-    @Override
-    Clan clan();
+	@Override
+	Clan clan();
 }

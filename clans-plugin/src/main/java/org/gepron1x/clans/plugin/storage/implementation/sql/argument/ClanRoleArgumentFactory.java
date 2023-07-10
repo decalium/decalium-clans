@@ -27,12 +27,12 @@ import java.sql.Types;
 
 public final class ClanRoleArgumentFactory extends AbstractArgumentFactory<ClanRole> {
 
-    ClanRoleArgumentFactory() {
-        super(Types.VARCHAR);
-    }
+	ClanRoleArgumentFactory() {
+		super(Types.VARCHAR);
+	}
 
-    @Override
-    protected Argument build(ClanRole value, ConfigRegistry config) {
-        return (position, statement, ctx) -> statement.setString(position, value.name());
-    }
+	@Override
+	protected Argument build(ClanRole value, ConfigRegistry config) {
+		return (position, statement, ctx) -> statement.setString(position, value.name());
+	}
 }

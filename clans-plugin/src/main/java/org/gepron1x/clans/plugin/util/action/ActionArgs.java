@@ -27,59 +27,59 @@ import java.util.List;
 import java.util.Optional;
 
 final class ActionArgs {
-    private final List<String> values;
+	private final List<String> values;
 
-    final static class Arg {
-        private final String value;
+	final static class Arg {
+		private final String value;
 
-        public Arg(String value) {
-            this.value = value;
-        }
-
-
-        public String asString() {
-            return value;
-        }
-
-        public int asInteger() {
-            return Integer.parseInt(value);
-        }
-
-        public float asFloat() {
-            return Float.parseFloat(value);
-        }
-
-        public double asDouble() {
-            return Double.parseDouble(value);
-        }
-
-        public Key asKey() {
-            return Key.key(value);
-        }
-
-        public Duration asDuration() {
-            return Duration.ofMillis(asInteger() * 50L);
-        }
-        public TextMessage asMessage(MiniMessage miniMessage) {
-            return TextMessage.message(value, miniMessage);
-        }
-    }
-
-    public ActionArgs(List<String> values) {
-
-        this.values = values;
-    }
+		public Arg(String value) {
+			this.value = value;
+		}
 
 
-    public Optional<Arg> arg(int index) {
-        if(values.size() <= index) return Optional.empty();
-        return Optional.of(new Arg(values.get(index)));
-    }
+		public String asString() {
+			return value;
+		}
 
-    public Arg requireArg(int index) {
-        return arg(index).orElseThrow();
-    }
+		public int asInteger() {
+			return Integer.parseInt(value);
+		}
 
+		public float asFloat() {
+			return Float.parseFloat(value);
+		}
+
+		public double asDouble() {
+			return Double.parseDouble(value);
+		}
+
+		public Key asKey() {
+			return Key.key(value);
+		}
+
+		public Duration asDuration() {
+			return Duration.ofMillis(asInteger() * 50L);
+		}
+
+		public TextMessage asMessage(MiniMessage miniMessage) {
+			return TextMessage.message(value, miniMessage);
+		}
+	}
+
+	public ActionArgs(List<String> values) {
+
+		this.values = values;
+	}
+
+
+	public Optional<Arg> arg(int index) {
+		if (values.size() <= index) return Optional.empty();
+		return Optional.of(new Arg(values.get(index)));
+	}
+
+	public Arg requireArg(int index) {
+		return arg(index).orElseThrow();
+	}
 
 
 }

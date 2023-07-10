@@ -22,5 +22,5 @@ import cloud.commandframework.CommandManager;
 import org.bukkit.command.CommandSender;
 
 public interface AbstractCommand {
-    void register(CommandManager<CommandSender> commandManager);
+	void register(CommandManager<CommandSender> commandManager);
 }

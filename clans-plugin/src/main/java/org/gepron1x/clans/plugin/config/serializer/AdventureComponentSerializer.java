@@ -27,24 +27,25 @@ import space.arim.dazzleconf.serialiser.ValueSerialiser;
 
 public final class AdventureComponentSerializer implements ValueSerialiser<Component> {
 
-    private final ComponentSerializer<Component, ? extends Component, String> componentSerializer;
+	private final ComponentSerializer<Component, ? extends Component, String> componentSerializer;
 
-    public AdventureComponentSerializer(ComponentSerializer<Component, ? extends Component, String> componentSerializer) {
+	public AdventureComponentSerializer(ComponentSerializer<Component, ? extends Component, String> componentSerializer) {
 
-        this.componentSerializer = componentSerializer;
-    }
-    @Override
-    public Class<Component> getTargetClass() {
-        return Component.class;
-    }
+		this.componentSerializer = componentSerializer;
+	}
 
-    @Override
-    public Component deserialise(FlexibleType flexibleType) throws BadValueException {
-        return componentSerializer.deserialize(flexibleType.getString());
-    }
+	@Override
+	public Class<Component> getTargetClass() {
+		return Component.class;
+	}
 
-    @Override
-    public String serialise(Component value, Decomposer decomposer) {
-        return componentSerializer.serialize(value);
-    }
+	@Override
+	public Component deserialise(FlexibleType flexibleType) throws BadValueException {
+		return componentSerializer.deserialize(flexibleType.getString());
+	}
+
+	@Override
+	public String serialise(Component value, Decomposer decomposer) {
+		return componentSerializer.serialize(value);
+	}
 }

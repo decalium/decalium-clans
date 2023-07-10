@@ -36,6 +36,7 @@ public final class AsyncJdbiImpl implements AsyncJdbi {
 		this.futures = futures;
 		this.jdbi = jdbi;
 	}
+
 	@Override
 	public <R, X extends Exception> CentralisedFuture<R> withHandle(HandleCallback<R, X> callback) {
 		return futures.supplyAsync(sneaky(() -> jdbi.withHandle(callback)));
@@ -60,7 +61,7 @@ public final class AsyncJdbiImpl implements AsyncJdbi {
 	}
 
 
-	private interface FailableSupplier<T, X extends Exception> extends Supplier<T>  {
+	private interface FailableSupplier<T, X extends Exception> extends Supplier<T> {
 
 		@Override
 		default T get() {
@@ -74,6 +75,7 @@ public final class AsyncJdbiImpl implements AsyncJdbi {
 
 		T getUnchecked() throws X;
 	}
+
 	private static <T, X extends Exception> Supplier<T> sneaky(FailableSupplier<T, X> supplier) {
 		return supplier;
 	}

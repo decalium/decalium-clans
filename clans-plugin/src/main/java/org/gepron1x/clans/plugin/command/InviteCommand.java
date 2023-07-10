@@ -49,146 +49,146 @@ import java.util.*;
 
 public class InviteCommand extends AbstractClanCommand {
 
-    private final ClanBuilderFactory builderFactory;
-    private final RoleRegistry roleRegistry;
+	private final ClanBuilderFactory builderFactory;
+	private final RoleRegistry roleRegistry;
 
-    private record Invitation(@NotNull UUID sender, @NotNull UUID receiver) {}
+	private record Invitation(@NotNull UUID sender, @NotNull UUID receiver) {
+	}
 
-    private final Table<UUID, String, Invitation> invitations = HashBasedTable.create();
-
-
-    public InviteCommand(@NotNull Logger logger, @NotNull CachingClanRepository clanRepository, Users users,
-                         @NotNull Configs configs,
-                         @NotNull FactoryOfTheFuture futuresFactory,
-                         @NotNull ClanBuilderFactory builderFactory,
-                         @NotNull RoleRegistry roleRegistry)
-    {
-        super(logger, clanRepository, users, configs, futuresFactory);
-        this.builderFactory = builderFactory;
-        this.roleRegistry = roleRegistry;
-    }
-
-    @Override
-    public void register(CommandManager<CommandSender> manager) {
-        Command.Builder<CommandSender> builder = manager.commandBuilder("clan").senderType(Player.class);
-
-        HelpCommandConfig.Messages.Description descriptions = messages.help().messages().descriptions();
+	private final Table<UUID, String, Invitation> invitations = HashBasedTable.create();
 
 
-        manager.command(builder.literal("invite").meta(CommandMeta.DESCRIPTION, descriptions.invite())
-                .permission(Permission.of("clans.invite"))
-                .argument(SinglePlayerSelectorArgument.of("receiver"))
-                .handler(
-                        clanExecutionHandler(
-                                new PermissiveClanExecutionHandler(this::invite, ClanPermission.INVITE, this.messages)
-                        )
-                )
-        );
+	public InviteCommand(@NotNull Logger logger, @NotNull CachingClanRepository clanRepository, Users users,
+						 @NotNull Configs configs,
+						 @NotNull FactoryOfTheFuture futuresFactory,
+						 @NotNull ClanBuilderFactory builderFactory,
+						 @NotNull RoleRegistry roleRegistry) {
+		super(logger, clanRepository, users, configs, futuresFactory);
+		this.builderFactory = builderFactory;
+		this.roleRegistry = roleRegistry;
+	}
 
-        manager.command(builder.literal("accept").meta(CommandMeta.DESCRIPTION, descriptions.accept())
-                .permission(Permission.of("clans.invite.accept"))
-                .argument(StringArgument.<CommandSender>newBuilder("sender_name")
-                        .withSuggestionsProvider(this::invitationCompletion))
-                .handler(this::acceptInvite)
-        );
+	@Override
+	public void register(CommandManager<CommandSender> manager) {
+		Command.Builder<CommandSender> builder = manager.commandBuilder("clan").senderType(Player.class);
 
-        manager.command(builder.literal("decline").meta(CommandMeta.DESCRIPTION, descriptions.decline())
-                .permission(Permission.of("clans.invite.decline"))
-                .argument(StringArgument.<CommandSender>newBuilder("sender_name").withSuggestionsProvider(this::invitationCompletion))
-                .handler(this::declineInvite)
-        );
-
-    }
+		HelpCommandConfig.Messages.Description descriptions = messages.help().messages().descriptions();
 
 
-    private void invite(CommandContext<CommandSender> context) {
-        Player player = (Player) context.getSender();
-        Player receiver = context.<SinglePlayerSelector>get("receiver").getPlayer();
-        if (receiver == null) {
-            return;
-        }
+		manager.command(builder.literal("invite").meta(CommandMeta.DESCRIPTION, descriptions.invite())
+				.permission(Permission.of("clans.invite"))
+				.argument(SinglePlayerSelectorArgument.of("receiver"))
+				.handler(
+						clanExecutionHandler(
+								new PermissiveClanExecutionHandler(this::invite, ClanPermission.INVITE, this.messages)
+						)
+				)
+		);
 
-        Clan clan = context.get(ClanExecutionHandler.CLAN);
-        Levels.PerLevel perLevel = clansConfig.levels().forLevel(clan.level());
-        if(clan.members().size() >= perLevel.slots()) {
-            this.messages.level().tooManyMembers().with("slots", perLevel.slots()).send(player);
-            return;
-        }
+		manager.command(builder.literal("accept").meta(CommandMeta.DESCRIPTION, descriptions.accept())
+				.permission(Permission.of("clans.invite.accept"))
+				.argument(StringArgument.<CommandSender>newBuilder("sender_name")
+						.withSuggestionsProvider(this::invitationCompletion))
+				.handler(this::acceptInvite)
+		);
 
-        this.clanRepository.requestUserClan(receiver.getUniqueId()).thenAcceptSync(opt -> {
-            if (opt.isPresent()) {
-                messages.playerIsAlreadyInClan().with("player", receiver.displayName()).send(player);
-                return;
-            }
-            invitations.put(receiver.getUniqueId(), player.getName(),
-                    new Invitation(player.getUniqueId(), receiver.getUniqueId()));
-            messages.commands().invitation().invitationSent().with("receiver", receiver.displayName()).send(player);
+		manager.command(builder.literal("decline").meta(CommandMeta.DESCRIPTION, descriptions.decline())
+				.permission(Permission.of("clans.invite.decline"))
+				.argument(StringArgument.<CommandSender>newBuilder("sender_name").withSuggestionsProvider(this::invitationCompletion))
+				.handler(this::declineInvite)
+		);
 
-            messages.commands().invitation().invitationMessage()
-                    .withMiniMessage("sender", player.getName())
-                    .with("clan_display_name", clan.displayName()).send(receiver);
+	}
 
-        }).exceptionally(exceptionHandler(player));
 
-    }
+	private void invite(CommandContext<CommandSender> context) {
+		Player player = (Player) context.getSender();
+		Player receiver = context.<SinglePlayerSelector>get("receiver").getPlayer();
+		if (receiver == null) {
+			return;
+		}
 
-    private void acceptInvite(CommandContext<CommandSender> context) {
-        Player player = (Player) context.getSender();
-        String name = context.get("sender_name");
-        Invitation invitation = checkInvitation(player, name);
-        if (invitation == null) return;
-        invitations.row(player.getUniqueId()).clear();
-        ClanMember member = builderFactory.memberBuilder().uuid(invitation.receiver()).role(roleRegistry.defaultRole()).build();
-        Player senderPlayer = player.getServer().getPlayer(invitation.sender());
-        this.clanRepository.requestUserClan(invitation.sender())
-                .thenComposeSync(clan -> {
-                    if (clan.isEmpty()) {
-                        messages.commands().invitation().clanGotDeleted().send(player);
-                        return futuresFactory.completedFuture(false);
-                    }
-                    return clan.get().edit(edition -> edition.addMember(member)).thenApply(c -> true);
-                }).thenAcceptSync(bool -> {
-                    if (!bool) return;
-                    if (senderPlayer != null) {
-                        messages.commands().invitation().playerAccepted().with("receiver", player.displayName()).send(senderPlayer);
-                    }
-                }).exceptionally(exceptionHandler(player));
-    }
+		Clan clan = context.get(ClanExecutionHandler.CLAN);
+		Levels.PerLevel perLevel = clansConfig.levels().forLevel(clan.level());
+		if (clan.members().size() >= perLevel.slots()) {
+			this.messages.level().tooManyMembers().with("slots", perLevel.slots()).send(player);
+			return;
+		}
 
-    private void declineInvite(CommandContext<CommandSender> context) {
-        Player player = (Player) context.getSender();
-        String name = context.get("sender_name");
-        Invitation invitation = checkInvitation(player, name);
-        if (invitation == null) return;
+		this.clanRepository.requestUserClan(receiver.getUniqueId()).thenAcceptSync(opt -> {
+			if (opt.isPresent()) {
+				messages.playerIsAlreadyInClan().with("player", receiver.displayName()).send(player);
+				return;
+			}
+			invitations.put(receiver.getUniqueId(), player.getName(),
+					new Invitation(player.getUniqueId(), receiver.getUniqueId()));
+			messages.commands().invitation().invitationSent().with("receiver", receiver.displayName()).send(player);
 
-        Player senderPlayer = player.getServer().getPlayer(invitation.sender());
+			messages.commands().invitation().invitationMessage()
+					.withMiniMessage("sender", player.getName())
+					.with("clan_display_name", clan.displayName()).send(receiver);
 
-        messages.commands().invitation().declined().send(player);
-        if (senderPlayer != null) {
-            messages.commands().invitation().playerDeclined().with("receiver", player.displayName()).send(senderPlayer);
-        }
+		}).exceptionally(exceptionHandler(player));
 
-        invitations.remove(player.getUniqueId(), name);
+	}
 
-    }
+	private void acceptInvite(CommandContext<CommandSender> context) {
+		Player player = (Player) context.getSender();
+		String name = context.get("sender_name");
+		Invitation invitation = checkInvitation(player, name);
+		if (invitation == null) return;
+		invitations.row(player.getUniqueId()).clear();
+		ClanMember member = builderFactory.memberBuilder().uuid(invitation.receiver()).role(roleRegistry.defaultRole()).build();
+		Player senderPlayer = player.getServer().getPlayer(invitation.sender());
+		this.clanRepository.requestUserClan(invitation.sender())
+				.thenComposeSync(clan -> {
+					if (clan.isEmpty()) {
+						messages.commands().invitation().clanGotDeleted().send(player);
+						return futuresFactory.completedFuture(false);
+					}
+					return clan.get().edit(edition -> edition.addMember(member)).thenApply(c -> true);
+				}).thenAcceptSync(bool -> {
+					if (!bool) return;
+					if (senderPlayer != null) {
+						messages.commands().invitation().playerAccepted().with("receiver", player.displayName()).send(senderPlayer);
+					}
+				}).exceptionally(exceptionHandler(player));
+	}
 
-    @Nullable
-    private Invitation checkInvitation(Player player, String name) {
-        Invitation invitation = invitations.get(player.getUniqueId(), name);
-        if (invitation == null) {
-            messages.commands().invitation().noInvitations().with("player", name).send(player);
-        }
-        return invitation;
-    }
+	private void declineInvite(CommandContext<CommandSender> context) {
+		Player player = (Player) context.getSender();
+		String name = context.get("sender_name");
+		Invitation invitation = checkInvitation(player, name);
+		if (invitation == null) return;
 
-    private List<String> invitationCompletion(CommandContext<CommandSender> ctx, String s) {
-        return Optional.of(ctx.getSender())
-                .filter(Player.class::isInstance)
-                .map(Player.class::cast)
-                .map(Player::getUniqueId)
-                .map(invitations::row).map(Map::keySet)
-                .map(List::copyOf).orElse(Collections.emptyList());
+		Player senderPlayer = player.getServer().getPlayer(invitation.sender());
 
-    }
+		messages.commands().invitation().declined().send(player);
+		if (senderPlayer != null) {
+			messages.commands().invitation().playerDeclined().with("receiver", player.displayName()).send(senderPlayer);
+		}
+
+		invitations.remove(player.getUniqueId(), name);
+
+	}
+
+	@Nullable
+	private Invitation checkInvitation(Player player, String name) {
+		Invitation invitation = invitations.get(player.getUniqueId(), name);
+		if (invitation == null) {
+			messages.commands().invitation().noInvitations().with("player", name).send(player);
+		}
+		return invitation;
+	}
+
+	private List<String> invitationCompletion(CommandContext<CommandSender> ctx, String s) {
+		return Optional.of(ctx.getSender())
+				.filter(Player.class::isInstance)
+				.map(Player.class::cast)
+				.map(Player::getUniqueId)
+				.map(invitations::row).map(Map::keySet)
+				.map(List::copyOf).orElse(Collections.emptyList());
+
+	}
 
 }

@@ -2,6 +2,7 @@ package org.gepron1x.clans.gui;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -29,7 +30,7 @@ public final class ErrorItem {
 
 	public ItemStack item() {
 		ItemStack item = new ItemStack(Material.BARRIER);
-		item.editMeta(meta -> meta.displayName(message.asComponent()));
+		item.editMeta(meta -> meta.displayName(message.asComponent().decoration(TextDecoration.ITALIC, false)));
 		return item;
 	}
 

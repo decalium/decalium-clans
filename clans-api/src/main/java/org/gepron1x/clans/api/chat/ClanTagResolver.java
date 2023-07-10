@@ -36,74 +36,75 @@ import java.util.Set;
 
 public record ClanTagResolver(@NotNull DraftClan clan) implements TagResolver {
 
-    public static ClanTagResolver clan(@NotNull DraftClan clan) {
-        return new ClanTagResolver(clan);
-    }
+	public static ClanTagResolver clan(@NotNull DraftClan clan) {
+		return new ClanTagResolver(clan);
+	}
 
-    public static TagResolver prefixed(@NotNull DraftClan clan, String prefix) {
-        return PrefixedTagResolver.prefixed(clan(clan), prefix);
-    }
+	public static TagResolver prefixed(@NotNull DraftClan clan, String prefix) {
+		return PrefixedTagResolver.prefixed(clan(clan), prefix);
+	}
 
-    public static TagResolver prefixed(@NotNull DraftClan clan) {
-        return prefixed(clan, "clan");
-    }
+	public static TagResolver prefixed(@NotNull DraftClan clan) {
+		return prefixed(clan, "clan");
+	}
 
-    private static final String TAG = "tag";
-    private static final String DISPLAY_NAME = "display_name";
-    private static final String MEMBERS_SIZE = "members_size";
-    private static final String HOMES_SIZE = "homes_size";
+	private static final String TAG = "tag";
+	private static final String DISPLAY_NAME = "display_name";
+	private static final String MEMBERS_SIZE = "members_size";
+	private static final String HOMES_SIZE = "homes_size";
 
-    private static final String STATISTIC = "statistic_";
+	private static final String STATISTIC = "statistic_";
 
 	private static final String LEVEL = "level";
-    private static final String MEMBER = "member";
-    private static final String MEMBERS = MEMBER + "s";
-    private static final String OWNER = "owner_";
+	private static final String MEMBER = "member";
+	private static final String MEMBERS = MEMBER + "s";
+	private static final String OWNER = "owner_";
 
-    private static final Set<String> KEYS = Set.of(TAG, DISPLAY_NAME, MEMBERS_SIZE, HOMES_SIZE, STATISTIC, LEVEL, MEMBER, MEMBERS, OWNER);
+	private static final Set<String> KEYS = Set.of(TAG, DISPLAY_NAME, MEMBERS_SIZE, HOMES_SIZE, STATISTIC, LEVEL, MEMBER, MEMBERS, OWNER);
 
 
-    @Override
-    public @Nullable Tag resolve(@NotNull String name, @NotNull ArgumentQueue arguments, @NotNull Context ctx) throws ParsingException {
-        Component component = switch (name) {
-            case TAG -> Component.text(clan.tag());
-            case DISPLAY_NAME -> clan.displayName();
-            case MEMBERS_SIZE -> Component.text(clan.members().size());
-            case HOMES_SIZE -> Component.text(clan.homes().size());
-            case MEMBERS -> clan.members().stream().map(member -> member.renderName(Bukkit.getServer())).collect(Component.toComponent(Component.newline()));
+	@Override
+	public @Nullable Tag resolve(@NotNull String name, @NotNull ArgumentQueue arguments, @NotNull Context ctx) throws ParsingException {
+		Component component = switch (name) {
+			case TAG -> Component.text(clan.tag());
+			case DISPLAY_NAME -> clan.displayName();
+			case MEMBERS_SIZE -> Component.text(clan.members().size());
+			case HOMES_SIZE -> Component.text(clan.homes().size());
+			case MEMBERS ->
+					clan.members().stream().map(member -> member.renderName(Bukkit.getServer())).collect(Component.toComponent(Component.newline()));
 			case LEVEL -> Component.text(clan.level());
-            default -> null;
-        };
+			default -> null;
+		};
 
-        if(name.equals(MEMBER)) {
-            String playerName = arguments.popOr("Player name required.").value();
-            String tag = arguments.popOr("Value type required").value();
-            return Optional.ofNullable(Bukkit.getOfflinePlayerIfCached(playerName))
-                    .flatMap(clan::member).map(ClanMemberTagResolver::new)
-                    .map(resolver -> resolver.resolve(tag))
-                    .orElse(null);
-        }
+		if (name.equals(MEMBER)) {
+			String playerName = arguments.popOr("Player name required.").value();
+			String tag = arguments.popOr("Value type required").value();
+			return Optional.ofNullable(Bukkit.getOfflinePlayerIfCached(playerName))
+					.flatMap(clan::member).map(ClanMemberTagResolver::new)
+					.map(resolver -> resolver.resolve(tag))
+					.orElse(null);
+		}
 
-        if(component != null) return Tag.selfClosingInserting(component);
+		if (component != null) return Tag.selfClosingInserting(component);
 
-        if(name.startsWith(STATISTIC)) {
-            StatisticType type = new StatisticType(name.substring(STATISTIC.length()));
-            int value = clan.statisticOr(type, 0);
-            return Tag.selfClosingInserting(Component.text(value));
-        }
+		if (name.startsWith(STATISTIC)) {
+			StatisticType type = new StatisticType(name.substring(STATISTIC.length()));
+			int value = clan.statisticOr(type, 0);
+			return Tag.selfClosingInserting(Component.text(value));
+		}
 
-        if(name.startsWith(OWNER)) {
-            ClanMember member = clan.owner();
-            return PrefixedTagResolver.prefixed(new ClanMemberTagResolver(member), "owner").resolve(name, arguments, ctx);
-        }
-        return null;
-    }
+		if (name.startsWith(OWNER)) {
+			ClanMember member = clan.owner();
+			return PrefixedTagResolver.prefixed(new ClanMemberTagResolver(member), "owner").resolve(name, arguments, ctx);
+		}
+		return null;
+	}
 
-    @Override
-    public boolean has(@NotNull String name) {
-        for(String key : KEYS) {
-            if(name.startsWith(key)) return true;
-        }
-        return false;
-    }
+	@Override
+	public boolean has(@NotNull String name) {
+		for (String key : KEYS) {
+			if (name.startsWith(key)) return true;
+		}
+		return false;
+	}
 }

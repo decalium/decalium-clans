@@ -24,56 +24,56 @@ import java.time.Instant;
 
 public interface Shield {
 
-    Instant started();
+	Instant started();
 
-    Instant end();
+	Instant end();
 
-    default Duration length() {
-        return Duration.between(started(), end());
-    }
+	default Duration length() {
+		return Duration.between(started(), end());
+	}
 
-    default Duration left() {
-        Duration left = Duration.between(Instant.now(), end());
-        if(left.isNegative()) return Duration.ZERO;
-        return left;
-    }
+	default Duration left() {
+		Duration left = Duration.between(Instant.now(), end());
+		if (left.isNegative()) return Duration.ZERO;
+		return left;
+	}
 
-    default boolean expired() {
-        return Instant.now().isAfter(end());
-    }
+	default boolean expired() {
+		return Instant.now().isAfter(end());
+	}
 
 	default boolean active() {
 		return !expired();
 	}
 
 
-    Shield NONE = new Shield() {
+	Shield NONE = new Shield() {
 
-        @Override
-        public Instant started() {
-            return Instant.MIN;
-        }
+		@Override
+		public Instant started() {
+			return Instant.MIN;
+		}
 
-        @Override
-        public Instant end() {
-            return Instant.MIN;
-        }
+		@Override
+		public Instant end() {
+			return Instant.MIN;
+		}
 
-        @Override
-        public Duration length() {
-            return Duration.ZERO;
-        }
+		@Override
+		public Duration length() {
+			return Duration.ZERO;
+		}
 
-        @Override
-        public Duration left() {
-            return Duration.ZERO;
-        }
+		@Override
+		public Duration left() {
+			return Duration.ZERO;
+		}
 
-        @Override
-        public boolean expired() {
-            return true;
-        }
+		@Override
+		public boolean expired() {
+			return true;
+		}
 
 
-    };
+	};
 }

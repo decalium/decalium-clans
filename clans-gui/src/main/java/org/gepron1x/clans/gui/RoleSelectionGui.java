@@ -36,6 +36,7 @@ public final class RoleSelectionGui implements GuiLike {
 		this.member = member;
 		this.clansApi = clansApi;
 	}
+
 	@Override
 	public Gui asGui() {
 		HopperGui gui = new HopperGui(ComponentHolder.of(Component.text("Выбор роли ").append(member)));
@@ -47,7 +48,7 @@ public final class RoleSelectionGui implements GuiLike {
 		pane.setOnClick(e -> e.setCancelled(true));
 		Iterator<Material> materials = Iterators.forArray(Material.MUSIC_DISC_11, Material.MUSIC_DISC_WAIT);
 		int i = 0;
-		for(var role : List.of(defaultRole, helperRole)) {
+		for (var role : List.of(defaultRole, helperRole)) {
 			var builder = forRole(role, materials.next());
 			pane.addItem(builder.guiItem(), i, 0);
 			i += 2;
@@ -82,11 +83,10 @@ public final class RoleSelectionGui implements GuiLike {
 			meta.displayName(role.displayName().decoration(TextDecoration.ITALIC, false));
 			meta.addItemFlags(ItemFlag.values());
 		});
-		if(role.equals(member.role())) {
+		if (role.equals(member.role())) {
 			builder.space().lore("<#42C4FB>Выбрано");
 			builder.edit(meta -> meta.addEnchant(Enchantment.ARROW_INFINITE, 1, true));
-		}
-		else {
+		} else {
 			builder.space().interaction(Colors.POSITIVE, "Нажмите, чтобы выбрать!").consumer(e -> {
 				e.getWhoClicked().closeInventory();
 				new ConfirmationGui(Component.text("Вы уверены?"), confirmEvent -> {

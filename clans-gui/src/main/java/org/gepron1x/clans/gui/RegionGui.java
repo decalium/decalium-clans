@@ -48,6 +48,7 @@ public class RegionGui implements GuiLike {
 		this.region = region;
 		this.plugin = plugin;
 	}
+
 	@Override
 	public Gui asGui() {
 		Clan clan = user.clan().orElseThrow();
@@ -76,7 +77,7 @@ public class RegionGui implements GuiLike {
 		pane.addItem(ItemBuilder.create(Material.POTION).guiItem(), 4, 0);
 		gui.getSlotsComponent().addPane(pane);
 		gui.setOnClose(e -> {
-			if(refreshTask != null) refreshTask.cancel();
+			if (refreshTask != null) refreshTask.cancel();
 		});
 		return gui;
 	}
@@ -86,17 +87,17 @@ public class RegionGui implements GuiLike {
 				.edit(this::editShieldMeta).edit(meta -> meta.addItemFlags(ItemFlag.HIDE_ENCHANTS));
 		GuiItem item = shield.guiItem();
 		item.setAction(e -> {
-			if(region.shield().expired()) {
+			if (region.shield().expired()) {
 				try {
 					region.addShield(clans.levels().forLevel(user.clan().orElseThrow()).shieldDuration());
 					item.getItem().editMeta(this::editShieldMeta);
 					startRefresh(item.getItem(), gui);
-				} catch(NotEnoughMoneyException ex) {
+				} catch (NotEnoughMoneyException ex) {
 					new ErrorItem(e, ex).show();
 				}
 			}
 		});
-		if(region.shield().active()) startRefresh(item.getItem(), gui);
+		if (region.shield().active()) startRefresh(item.getItem(), gui);
 		return item;
 	}
 
@@ -104,7 +105,7 @@ public class RegionGui implements GuiLike {
 		meta.displayName(DecaliumClansGui.message("<#DBFDFF>\uD83D\uDEE1 Щит: <active:'<#92FF25>Активен':'<#fb2727>Не активен'>")
 				.booleanState("active", region.shield().active()).asComponent());
 
-		if(region.shield().active()) {
+		if (region.shield().active()) {
 			updateTimer(meta);
 			meta.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 1, true);
 		} else {
@@ -121,7 +122,7 @@ public class RegionGui implements GuiLike {
 
 	private void startRefresh(ItemStack item, Gui gui) {
 		refreshTask = plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
-			if(region.shield().active()) {
+			if (region.shield().active()) {
 				item.editMeta(this::updateTimer);
 			} else {
 				item.editMeta(this::editShieldMeta);

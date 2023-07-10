@@ -41,212 +41,214 @@ import java.util.List;
 import java.util.Map;
 
 import static space.arim.dazzleconf.annote.ConfDefault.*;
+
 @ConfHeader({"Welcome to the decalium clans config.", "Use /clan reload to reload the configuration."})
 public interface ClansConfig {
 
-    @DefaultBoolean(false)
-    @ConfComments("Should we take money for actions?")
-    @ConfKey("enable-economy-hook")
-    boolean enableEconomy();
+	@DefaultBoolean(false)
+	@ConfComments("Should we take money for actions?")
+	@ConfKey("enable-economy-hook")
+	boolean enableEconomy();
 
-    @DefaultString("2m")
-    @ConfKey("statistic-update-period")
-    @ConfComments("How often should we update statistics? Format is 2d3h31m1s.")
-    Duration statisticUpdatePeriod();
+	@DefaultString("2m")
+	@ConfKey("statistic-update-period")
+	@ConfComments("How often should we update statistics? Format is 2d3h31m1s.")
+	Duration statisticUpdatePeriod();
 
 	@SubSection
 	@ConfComments("Decorations to use on clan tag")
 	Decorations decorations();
 
 
-    @DefaultString("<gray>Not in clan")
-    @ConfKey("not-clan-placeholder")
-    @ConfComments("What should we display instead of placeholders, if player is not in the clan?")
-    Component noClanPlaceholder();
+	@DefaultString("<gray>Not in clan")
+	@ConfKey("not-clan-placeholder")
+	@ConfComments("What should we display instead of placeholders, if player is not in the clan?")
+	Component noClanPlaceholder();
 
-    @DefaultString("MINI_MESSAGE")
-    @ConfKey("user-component-format")
-    @ConfComments("What format should we use for user input? MINI_MESSAGE - MiniMessage, LEGACY - legacy color codes (&a, &b, &c) or MIXED (both, minimessage and legacy)")
-    UserComponentSerializer userComponentFormat();
+	@DefaultString("MINI_MESSAGE")
+	@ConfKey("user-component-format")
+	@ConfComments("What format should we use for user input? MINI_MESSAGE - MiniMessage, LEGACY - legacy color codes (&a, &b, &c) or MIXED (both, minimessage and legacy)")
+	UserComponentSerializer userComponentFormat();
 
-    @ConfKey("display-names")
-    @ConfComments("Display name format.")
-    @SubSection DisplayNameFormat displayNameFormat();
+	@ConfKey("display-names")
+	@ConfComments("Display name format.")
+	@SubSection DisplayNameFormat displayNameFormat();
 
-    @ConfKey("time-format")
-    @DefaultMap({"DAYS", "д", "HOURS", "ч", "MINUTES", "м", "SECONDS", "с"})
-    TimeFormat timeFormat();
+	@ConfKey("time-format")
+	@DefaultMap({"DAYS", "д", "HOURS", "ч", "MINUTES", "м", "SECONDS", "с"})
+	TimeFormat timeFormat();
 
-    @ConfKey("roles")
-    @SubSection
-    @ConfComments({"Roles.", "Every role has name, display name, weight, and list of permissions.", "If you wish to give all permissions to the role, use *."})
-    Roles roles();
-    interface Roles {
+	@ConfKey("roles")
+	@SubSection
+	@ConfComments({"Roles.", "Every role has name, display name, weight, and list of permissions.", "If you wish to give all permissions to the role, use *."})
+	Roles roles();
 
-        @ConfKey("default-role")
-        @DefaultObject("defaultRoleDefault")
-        @ConfComments("Default member role. Will be given to all joined members.")
-        ClanRole defaultRole();
+	interface Roles {
 
-        @ConfKey("owner-role")
-        @DefaultObject("ownerRoleDefault")
-        @ConfComments("Owner member role. Given to owner, usually should have highest weight and all permissions.")
-        ClanRole ownerRole();
+		@ConfKey("default-role")
+		@DefaultObject("defaultRoleDefault")
+		@ConfComments("Default member role. Will be given to all joined members.")
+		ClanRole defaultRole();
 
-        @ConfKey("other-roles")
-        @DefaultObject("otherRolesDefault")
-        List<ClanRole> otherRoles();
+		@ConfKey("owner-role")
+		@DefaultObject("ownerRoleDefault")
+		@ConfComments("Owner member role. Given to owner, usually should have highest weight and all permissions.")
+		ClanRole ownerRole();
 
-        static ClanRole defaultRoleDefault() {
-            return ClanRoleImpl.builder()
-                    .name("default")
-                    .displayName(Component.text("Участник", NamedTextColor.GRAY))
-                    .emptyPermissions()
-                    .weight(1)
-                    .build();
-        }
+		@ConfKey("other-roles")
+		@DefaultObject("otherRolesDefault")
+		List<ClanRole> otherRoles();
 
-        static ClanRole ownerRoleDefault() {
-            return ClanRoleImpl.builder()
-                    .name("owner")
-                    .displayName(Component.text("Владелец", NamedTextColor.RED))
-                    .permissions(ClanPermission.all())
-                    .weight(10)
-                    .build();
-        }
+		static ClanRole defaultRoleDefault() {
+			return ClanRoleImpl.builder()
+					.name("default")
+					.displayName(Component.text("Участник", NamedTextColor.GRAY))
+					.emptyPermissions()
+					.weight(1)
+					.build();
+		}
 
-        static List<ClanRole> otherRolesDefault() {
-            return List.of(
-                    ClanRoleImpl.builder()
-                            .name("moderator")
-                            .displayName(Component.text("Модератор", NamedTextColor.AQUA))
-                            .permissions(ClanPermission.INVITE, ClanPermission.KICK,
-                                    ClanPermission.ADD_HOME, ClanPermission.REMOVE_HOME, ClanPermission.SET_ROLE, ClanPermission.ACCEPT_WAR)
-                            .weight(8)
-                            .build()
-            );
-        }
+		static ClanRole ownerRoleDefault() {
+			return ClanRoleImpl.builder()
+					.name("owner")
+					.displayName(Component.text("Владелец", NamedTextColor.RED))
+					.permissions(ClanPermission.all())
+					.weight(10)
+					.build();
+		}
 
-
-    }
-
-    @SubSection Levels levels();
-
-    @SubSection Homes homes();
+		static List<ClanRole> otherRolesDefault() {
+			return List.of(
+					ClanRoleImpl.builder()
+							.name("moderator")
+							.displayName(Component.text("Модератор", NamedTextColor.AQUA))
+							.permissions(ClanPermission.INVITE, ClanPermission.KICK,
+									ClanPermission.ADD_HOME, ClanPermission.REMOVE_HOME, ClanPermission.SET_ROLE, ClanPermission.ACCEPT_WAR)
+							.weight(8)
+							.build()
+			);
+		}
 
 
-    interface Homes {
+	}
 
-        @ConfKey("max-homes-per-clan")
-        @DefaultInteger(10)
-        @ConfComments("Clan home limit.")
-        int maxHomes();
+	@SubSection Levels levels();
 
-        @ConfKey("max-home-display-name")
-        @DefaultInteger(20)
-        @ConfComments("Maximum display name size.")
-        int maxHomeDisplayNameSize();
+	@SubSection Homes homes();
 
-        @ConfKey("home-region-radius")
-        @DefaultDouble(30.0)
-        @ConfComments("Default protection radius of clan homes.")
-        double homeRegionRadius();
 
-        @ConfKey("level-region-scale")
-        @DefaultDouble(0.25)
-        @ConfComments("How much should we scale the region size on home upgrades?")
-        double levelRegionScale();
+	interface Homes {
 
-        @ConfKey("worldguard-flags")
-        @DefaultMap({"pvp", "DENY"})
-        FlagSet worldGuardFlags();
-        @ConfKey("hologram-format")
-        @DefaultString("Home <home_name>")
-        @ConfComments("Hologram format.")
+		@ConfKey("max-homes-per-clan")
+		@DefaultInteger(10)
+		@ConfComments("Clan home limit.")
+		int maxHomes();
+
+		@ConfKey("max-home-display-name")
+		@DefaultInteger(20)
+		@ConfComments("Maximum display name size.")
+		int maxHomeDisplayNameSize();
+
+		@ConfKey("home-region-radius")
+		@DefaultDouble(30.0)
+		@ConfComments("Default protection radius of clan homes.")
+		double homeRegionRadius();
+
+		@ConfKey("level-region-scale")
+		@DefaultDouble(0.25)
+		@ConfComments("How much should we scale the region size on home upgrades?")
+		double levelRegionScale();
+
+		@ConfKey("worldguard-flags")
+		@DefaultMap({"pvp", "DENY"})
+		FlagSet worldGuardFlags();
+
+		@ConfKey("hologram-format")
+		@DefaultString("Home <home_name>")
+		@ConfComments("Hologram format.")
 		TextMessage hologramFormat();
 
 
-    }
+	}
 
-    @SubSection
-    @ConfKey("storage")
-    @ConfComments("Storage options. At the moment only H2 and MYSQL are supported.")
-    Storage storage();
+	@SubSection
+	@ConfKey("storage")
+	@ConfComments("Storage options. At the moment only H2 and MYSQL are supported.")
+	Storage storage();
 
-    interface Storage {
-        @ConfKey("type")
-        @DefaultString("H2")
-        @ConfComments("Type of the database. H2 or MYSQL")
-        StorageType type();
-
-
-        @ConfKey("auth-details")
-        @ConfComments("Auth Details. Used only with MySQL storage type.")
-        @SubSection AuthDetails authDetails();
-
-        @ConfKey("hikari-pool")
-        @ConfComments("Hikari Connection pool settings. Don't touch that if you don't know what are you doing.")
-        @SubSection HikariPoolSettings hikariPool();
+	interface Storage {
+		@ConfKey("type")
+		@DefaultString("H2")
+		@ConfComments("Type of the database. H2 or MYSQL")
+		StorageType type();
 
 
+		@ConfKey("auth-details")
+		@ConfComments("Auth Details. Used only with MySQL storage type.")
+		@SubSection AuthDetails authDetails();
+
+		@ConfKey("hikari-pool")
+		@ConfComments("Hikari Connection pool settings. Don't touch that if you don't know what are you doing.")
+		@SubSection HikariPoolSettings hikariPool();
 
 
-        interface AuthDetails {
+		interface AuthDetails {
 
-            @ConfKey("host")
-            @DefaultString("127.0.0.1:3306")
-            String host();
+			@ConfKey("host")
+			@DefaultString("127.0.0.1:3306")
+			String host();
 
-            @ConfKey("username")
-            @DefaultString("root")
-            String username();
+			@ConfKey("username")
+			@DefaultString("root")
+			String username();
 
-            @ConfKey("password")
-            @DefaultString("pass")
-            String password();
+			@ConfKey("password")
+			@DefaultString("pass")
+			String password();
 
-            @ConfKey("database")
-            @DefaultString("clans")
-            String database();
+			@ConfKey("database")
+			@DefaultString("clans")
+			String database();
 
-            @ConfKey("use-ssl")
-            @DefaultBoolean(false)
-            boolean useSSL();
-        }
-
-
-        interface HikariPoolSettings {
-
-            @ConfKey("pool-name")
-            @DefaultString("ClansPool")
-            String poolName();
-
-            @ConfKey("max-pool-size")
-            @DefaultInteger(6)
-            int maxPoolSize();
-
-            @ConfKey("maximum-idle")
-            @DefaultInteger(10)
-            int maximumIdle();
-
-            @ConfKey("max-life-time")
-            @DefaultInteger(1800000)
-            int maxLifeTime();
-
-            @ConfKey("connection-timeout")
-            @DefaultInteger(5000)
-            int connectionTimeout();
-        }
+			@ConfKey("use-ssl")
+			@DefaultBoolean(false)
+			boolean useSSL();
+		}
 
 
-    }
-    @ConfComments("Chat settings.")
-    @SubSection Chat chat();
+		interface HikariPoolSettings {
 
-    interface Chat {
-        @ConfKey("format")
-        @ConfComments({"The chat format. Available placeholders:", "<role> - Member's role.", "<member> Member's name.", "<message> - chat message."})
-        @DefaultString("<role> <member> <white>➟ <#cbd4d2><message>")
+			@ConfKey("pool-name")
+			@DefaultString("ClansPool")
+			String poolName();
+
+			@ConfKey("max-pool-size")
+			@DefaultInteger(6)
+			int maxPoolSize();
+
+			@ConfKey("maximum-idle")
+			@DefaultInteger(10)
+			int maximumIdle();
+
+			@ConfKey("max-life-time")
+			@DefaultInteger(1800000)
+			int maxLifeTime();
+
+			@ConfKey("connection-timeout")
+			@DefaultInteger(5000)
+			int connectionTimeout();
+		}
+
+
+	}
+
+	@ConfComments("Chat settings.")
+	@SubSection Chat chat();
+
+	interface Chat {
+		@ConfKey("format")
+		@ConfComments({"The chat format. Available placeholders:", "<role> - Member's role.", "<member> Member's name.", "<message> - chat message."})
+		@DefaultString("<role> <member> <white>➟ <#cbd4d2><message>")
 		TextMessage format();
 
 
@@ -254,36 +256,38 @@ public interface ClansConfig {
 		@DefaultString("Вы не в клане!")
 		TextMessage notInTheClan();
 
-        @ConfKey("prefix")
-        @DefaultString("~")
-        @ConfComments("The chat prefix. If message starts with that, it will be sent to the clan chat channel.")
-        String prefix();
+		@ConfKey("prefix")
+		@DefaultString("~")
+		@ConfComments("The chat prefix. If message starts with that, it will be sent to the clan chat channel.")
+		String prefix();
 
-    }
-    @ConfComments("Clan wars options.")
-    @SubSection Wars wars();
-    interface Wars {
+	}
 
-        @ConfKey("disable-team-damage")
-        @DefaultBoolean(true)
-        @ConfComments("Disables damage between team members.")
-        boolean disableTeamDamage();
+	@ConfComments("Clan wars options.")
+	@SubSection Wars wars();
 
-        @ConfComments("Navigator options")
-        @SubSection Navigation navigation();
+	interface Wars {
+
+		@ConfKey("disable-team-damage")
+		@DefaultBoolean(true)
+		@ConfComments("Disables damage between team members.")
+		boolean disableTeamDamage();
+
+		@ConfComments("Navigator options")
+		@SubSection Navigation navigation();
 
 
-        interface Navigation {
+		interface Navigation {
 
-            @ConfKey("arrows")
-            @ConfComments("Order is N NE E SE S SW W NW")
-            @DefaultString("⬆⬈➡⬊⬇⬋⬅⬉")
-            String arrows();
+			@ConfKey("arrows")
+			@ConfComments("Order is N NE E SE S SW W NW")
+			@DefaultString("⬆⬈➡⬊⬇⬋⬅⬉")
+			String arrows();
 
-            @ConfKey("world-display-names")
-            @ConfComments("How should we call worlds in the navigator?")
-            @DefaultMap({"world", "World", "world_nether", "<red>Nether", "world_the_end", "<yellow>The end"})
-            Map<String, Component> worldDisplayNames();
+			@ConfKey("world-display-names")
+			@ConfComments("How should we call worlds in the navigator?")
+			@DefaultMap({"world", "World", "world_nether", "<red>Nether", "world_the_end", "<yellow>The end"})
+			Map<String, Component> worldDisplayNames();
 
 			@ConfKey("announce-teleports")
 			@ConfComments("Announce teleports if player changed a world")
@@ -292,24 +296,24 @@ public interface ClansConfig {
 
 			default Component worldName(World world) {
 				Component name = worldDisplayNames().get(world.getName());
-				if(name == null) return Component.text(world.getName());
+				if (name == null) return Component.text(world.getName());
 				return name;
 			}
-        }
-    }
+		}
+	}
 
-    @SubSection Shields shields();
+	@SubSection Shields shields();
 
-    interface Shields {
+	interface Shields {
 
-        @DefaultMap({})
-        @ConfKey("shield-flags")
-        FlagSet shieldFlags();
+		@DefaultMap({})
+		@ConfKey("shield-flags")
+		FlagSet shieldFlags();
 
-        @ConfKey("no-shield")
-        @DefaultString("No shield")
-        Component noShield();
-    }
+		@ConfKey("no-shield")
+		@DefaultString("No shield")
+		Component noShield();
+	}
 
 	@SubSection Region region();
 

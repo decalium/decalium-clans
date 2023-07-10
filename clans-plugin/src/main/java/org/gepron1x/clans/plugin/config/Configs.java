@@ -28,47 +28,47 @@ import java.util.Objects;
 public final class Configs {
 
 
-    private final Configuration<ClansConfig> clansConfig;
-    private final Configuration<MessagesConfig> messagesConfig;
+	private final Configuration<ClansConfig> clansConfig;
+	private final Configuration<MessagesConfig> messagesConfig;
 
-    public Configs(Configuration<ClansConfig> clansConfig, Configuration<MessagesConfig> messagesConfig) {
+	public Configs(Configuration<ClansConfig> clansConfig, Configuration<MessagesConfig> messagesConfig) {
 
-        this.clansConfig = clansConfig;
-        this.messagesConfig = messagesConfig;
-    }
+		this.clansConfig = clansConfig;
+		this.messagesConfig = messagesConfig;
+	}
 
-    public void reload() {
-        this.clansConfig.reloadConfig();
-        this.messagesConfig.reloadConfig();
-    }
+	public void reload() {
+		this.clansConfig.reloadConfig();
+		this.messagesConfig.reloadConfig();
+	}
 
-    public ClansConfig config() {
-        return this.clansConfig.data();
-    }
+	public ClansConfig config() {
+		return this.clansConfig.data();
+	}
 
-    public MessagesConfig messages() {
-        return this.messagesConfig.data();
-    }
+	public MessagesConfig messages() {
+		return this.messagesConfig.data();
+	}
 
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Configs configs = (Configs) o;
-        return Objects.equals(clansConfig, configs.clansConfig) && Objects.equals(messagesConfig, configs.messagesConfig);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Configs configs = (Configs) o;
+		return Objects.equals(clansConfig, configs.clansConfig) && Objects.equals(messagesConfig, configs.messagesConfig);
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(clansConfig, messagesConfig);
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(clansConfig, messagesConfig);
+	}
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("clansConfig", clansConfig)
-                .add("messagesConfig", messagesConfig)
-                .toString();
-    }
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("clansConfig", clansConfig)
+				.add("messagesConfig", messagesConfig)
+				.toString();
+	}
 }

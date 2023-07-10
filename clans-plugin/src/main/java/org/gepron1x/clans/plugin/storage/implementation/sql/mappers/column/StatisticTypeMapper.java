@@ -26,8 +26,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public final class StatisticTypeMapper implements ColumnMapper<StatisticType> {
-    @Override
-    public StatisticType map(ResultSet r, int columnNumber, StatementContext ctx) throws SQLException {
-        return new StatisticType(r.getString(columnNumber));
-    }
+	@Override
+	public StatisticType map(ResultSet r, int columnNumber, StatementContext ctx) throws SQLException {
+		return new StatisticType(r.getString(columnNumber));
+	}
 }

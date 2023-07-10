@@ -78,7 +78,7 @@ public final class ClanRegionItem implements BuildableItem.NoConfig, Listener {
 			Block block = event.getBlockPlaced();
 			try {
 				ClanRegion region = regions.create(block.getLocation());
-			} catch(RegionOverlapsException e) {
+			} catch (RegionOverlapsException e) {
 				messages.region().regionOverlaps().send(player);
 				event.setCancelled(true);
 			}
@@ -88,8 +88,6 @@ public final class ClanRegionItem implements BuildableItem.NoConfig, Listener {
 			messages.region().notInClan().send(player);
 		});
 	}
-
-
 
 
 	@EventHandler

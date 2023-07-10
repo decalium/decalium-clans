@@ -28,12 +28,13 @@ public final class BlockProtection implements Listener {
 	}
 
 	public void checkBlock(Cancellable event, Block block) {
-		if(predicate.test(block)) event.setCancelled(true);
+		if (predicate.test(block)) event.setCancelled(true);
 	}
 
 	public <E extends BlockEvent & Cancellable> void checkBlock(E event) {
 		checkBlock(event, event.getBlock());
 	}
+
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void on(BlockBreakEvent event) {
 		checkBlock(event);
@@ -43,10 +44,12 @@ public final class BlockProtection implements Listener {
 	public void on(EntityChangeBlockEvent event) {
 		checkBlock(event, event.getBlock());
 	}
+
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void on(EntityExplodeEvent event) {
 		checkList(event.blockList());
 	}
+
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void on(BlockExplodeEvent event) {
 		checkList(event.blockList());

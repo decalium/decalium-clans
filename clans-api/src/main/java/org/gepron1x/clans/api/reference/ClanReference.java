@@ -28,24 +28,22 @@ import java.util.function.Consumer;
 
 public interface ClanReference {
 
-    default CentralisedFuture<Optional<Clan>> edit(Consumer<ClanEdition> transaction) {
-        CentralisedFuture<Optional<Clan>> clanFuture = clan();
-        return clanFuture.thenCompose(opt -> opt.map(clan -> clan.edit(transaction).thenApply(Optional::of)).orElse(clanFuture));
-    }
+	default CentralisedFuture<Optional<Clan>> edit(Consumer<ClanEdition> transaction) {
+		CentralisedFuture<Optional<Clan>> clanFuture = clan();
+		return clanFuture.thenCompose(opt -> opt.map(clan -> clan.edit(transaction).thenApply(Optional::of)).orElse(clanFuture));
+	}
 
-    @NotNull CentralisedFuture<Optional<Clan>> clan();
+	@NotNull CentralisedFuture<Optional<Clan>> clan();
 
-    Optional<Clan> cached();
+	Optional<Clan> cached();
 
-    default Clan orElseThrow() {
-        return cached().orElseThrow();
-    }
+	default Clan orElseThrow() {
+		return cached().orElseThrow();
+	}
 
 	default void ifPresent(Consumer<Clan> consumer) {
 		cached().ifPresentOrElse(consumer, () -> clan().thenAccept(o -> o.ifPresent(consumer)));
 	}
-
-
 
 
 }

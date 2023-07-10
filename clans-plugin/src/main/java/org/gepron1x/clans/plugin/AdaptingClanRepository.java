@@ -33,42 +33,42 @@ import java.util.stream.Collectors;
 
 public abstract class AdaptingClanRepository implements ClanRepository {
 
-    private final ClanRepository repository;
-    private final Function<Clan, ? extends Clan> mappingFunction;
+	private final ClanRepository repository;
+	private final Function<Clan, ? extends Clan> mappingFunction;
 
-    public AdaptingClanRepository(ClanRepository repository, Function<Clan, ? extends Clan> mappingFunction) {
-        this.repository = repository;
-        this.mappingFunction = mappingFunction;
-    }
+	public AdaptingClanRepository(ClanRepository repository, Function<Clan, ? extends Clan> mappingFunction) {
+		this.repository = repository;
+		this.mappingFunction = mappingFunction;
+	}
 
 
-    @Override
-    public @NotNull CentralisedFuture<ClanCreationResult> createClan(@NotNull DraftClan draftClan) {
-        return this.repository.createClan(draftClan)
-                .thenApply(result ->
-                        new ClanCreationResult(result.isSuccess() ? mappingFunction.apply(result.orElseThrow()) : null, result.status())
-                );
-    }
+	@Override
+	public @NotNull CentralisedFuture<ClanCreationResult> createClan(@NotNull DraftClan draftClan) {
+		return this.repository.createClan(draftClan)
+				.thenApply(result ->
+						new ClanCreationResult(result.isSuccess() ? mappingFunction.apply(result.orElseThrow()) : null, result.status())
+				);
+	}
 
-    @Override
-    public @NotNull CentralisedFuture<Boolean> removeClan(@NotNull Clan clan) {
-        return this.repository.removeClan(clan);
-    }
+	@Override
+	public @NotNull CentralisedFuture<Boolean> removeClan(@NotNull Clan clan) {
+		return this.repository.removeClan(clan);
+	}
 
-    @Override
-    public @NotNull CentralisedFuture<Optional<Clan>> requestClan(@NotNull String tag) {
-        return this.repository.requestClan(tag).thenApply(optional -> optional.map(mappingFunction));
-    }
+	@Override
+	public @NotNull CentralisedFuture<Optional<Clan>> requestClan(@NotNull String tag) {
+		return this.repository.requestClan(tag).thenApply(optional -> optional.map(mappingFunction));
+	}
 
-    @Override
-    public @NotNull CentralisedFuture<Optional<Clan>> requestUserClan(@NotNull UUID uuid) {
-        return this.repository.requestUserClan(uuid).thenApply(optional -> optional.map(mappingFunction));
-    }
+	@Override
+	public @NotNull CentralisedFuture<Optional<Clan>> requestUserClan(@NotNull UUID uuid) {
+		return this.repository.requestUserClan(uuid).thenApply(optional -> optional.map(mappingFunction));
+	}
 
-    @Override
-    public @NotNull CentralisedFuture<Set<? extends Clan>> clans() {
-        return this.repository.clans().thenApply(clans -> clans.stream().map(mappingFunction).collect(Collectors.toUnmodifiableSet()));
-    }
+	@Override
+	public @NotNull CentralisedFuture<Set<? extends Clan>> clans() {
+		return this.repository.clans().thenApply(clans -> clans.stream().map(mappingFunction).collect(Collectors.toUnmodifiableSet()));
+	}
 
 	protected Clan adapt(Clan clan) {
 		return mappingFunction.apply(clan);

@@ -36,30 +36,30 @@ public final class PostClanEdition implements EmptyClanEdition {
 		this.regionSet = regionSet;
 	}
 
-    @Override
-    public ClanEdition addMember(@NotNull ClanMember member) {
+	@Override
+	public ClanEdition addMember(@NotNull ClanMember member) {
 		regionSet.addMember(member.uniqueId());
-        return this;
-    }
+		return this;
+	}
 
-    @Override
-    public ClanEdition removeMember(@NotNull ClanMember member) {
-        regionSet.removeMember(member.uniqueId());
-        return this;
-    }
+	@Override
+	public ClanEdition removeMember(@NotNull ClanMember member) {
+		regionSet.removeMember(member.uniqueId());
+		return this;
+	}
 
-    @Override
-    public ClanEdition editMember(@NotNull UUID uuid, @NotNull Consumer<MemberEdition> consumer) {
-        consumer.accept(new PostMemberEdition());
-        return this;
-    }
+	@Override
+	public ClanEdition editMember(@NotNull UUID uuid, @NotNull Consumer<MemberEdition> consumer) {
+		consumer.accept(new PostMemberEdition());
+		return this;
+	}
 
-    private static class PostMemberEdition implements MemberEdition {
+	private static class PostMemberEdition implements MemberEdition {
 
 
-        @Override
-        public MemberEdition appoint(@NotNull ClanRole role) {
-            return this;
-        }
-    }
+		@Override
+		public MemberEdition appoint(@NotNull ClanRole role) {
+			return this;
+		}
+	}
 }

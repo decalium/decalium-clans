@@ -28,33 +28,33 @@ import org.jetbrains.annotations.NotNull;
 
 public class ClanCreationEvent extends Event implements DraftClanEvent, AbstractCancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+	private static final HandlerList handlers = new HandlerList();
 
-    private final DraftClan draftClan;
-    private final Cancellation cancellation;
+	private final DraftClan draftClan;
+	private final Cancellation cancellation;
 
-    public ClanCreationEvent(DraftClan draftClan) {
+	public ClanCreationEvent(DraftClan draftClan) {
 
-        this.draftClan = draftClan;
-        this.cancellation = new Cancellation(false);
-    }
+		this.draftClan = draftClan;
+		this.cancellation = new Cancellation(false);
+	}
 
-    @Override
-    public @NotNull HandlerList getHandlers() {
-        return handlers;
-    }
+	@Override
+	public @NotNull HandlerList getHandlers() {
+		return handlers;
+	}
 
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
 
-    @Override
-    public DraftClan clan() {
-        return draftClan;
-    }
+	@Override
+	public DraftClan clan() {
+		return draftClan;
+	}
 
-    @Override
-    public Cancellation cancellation() {
-        return cancellation;
-    }
+	@Override
+	public Cancellation cancellation() {
+		return cancellation;
+	}
 }

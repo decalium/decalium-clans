@@ -33,6 +33,7 @@ public class CustomisationGui implements GuiLike {
 		this.clan = clan;
 		this.clans = clans;
 	}
+
 	@Override
 	public Gui asGui() {
 
@@ -44,19 +45,19 @@ public class CustomisationGui implements GuiLike {
 		decorations.setOnClick(e -> e.setCancelled(true));
 		decorations.addItem(new LevelRequiredBuilder(clan, clans.levels().allowAt().colors(), ItemBuilder.create(Material.DRAGON_BREATH)
 				.name("<#fd439c>Цвета")).ifAllowed(builder -> builder.menuInteraction().consumer(e -> {
-				e.getWhoClicked().closeInventory();
-				decorations(config.decorations().colors(), "Выбор цвета").show(e.getWhoClicked());
+			e.getWhoClicked().closeInventory();
+			decorations(config.decorations().colors(), "Выбор цвета").show(e.getWhoClicked());
 		})).guiItem(), 0, 0);
 		decorations.addItem(new LevelRequiredBuilder(clan, clans.levels().allowAt().gradients(), ItemBuilder.create(Material.EXPERIENCE_BOTTLE)
-				.name("<gradient:#42C4FB:#fd439c>Градиенты</gradient>")).ifAllowed(builder -> builder.menuInteraction().consumer(e -> {
+						.name("<gradient:#42C4FB:#fd439c>Градиенты</gradient>")).ifAllowed(builder -> builder.menuInteraction().consumer(e -> {
 					e.getWhoClicked().closeInventory();
 					decorations(config.decorations().gradients(), "Выбор градиента").show(e.getWhoClicked());
 				})).guiItem(), 2, 0
 		);
 		decorations.addItem(new LevelRequiredBuilder(clan, clans.levels().allowAt().symbols(), ItemBuilder.create(Material.NAME_TAG)
 				.name("<#FFD84A>Титулы")).ifAllowed(builder -> builder.menuInteraction().consumer(e -> {
-					e.getWhoClicked().closeInventory();
-					decorations(config.decorations().symbols(), "Выбор титула").show(e.getWhoClicked());
+			e.getWhoClicked().closeInventory();
+			decorations(config.decorations().symbols(), "Выбор титула").show(e.getWhoClicked());
 		})).guiItem(), 4, 0);
 
 		decorations.addItem(ItemBuilder.create(Material.BARRIER).name("<#fb2727>Сбросить декорации").consumer(e -> {
@@ -72,11 +73,8 @@ public class CustomisationGui implements GuiLike {
 	private <T extends Decorations.BaseDecoration> Gui decorations(List<T> decorations, String title) {
 		ChestGui gui = new DecorationSelectionGui<>(decorations, clan).asGui();
 		gui.setTitle(title);
-		return new GoBackGui(gui, Slot.fromXY(6, 3),this).asGui();
+		return new GoBackGui(gui, Slot.fromXY(6, 3), this).asGui();
 	}
-
-
-
 
 
 }

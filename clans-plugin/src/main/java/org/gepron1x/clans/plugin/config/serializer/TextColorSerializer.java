@@ -26,22 +26,23 @@ import space.arim.dazzleconf.serialiser.FlexibleType;
 import space.arim.dazzleconf.serialiser.ValueSerialiser;
 
 public final class TextColorSerializer implements ValueSerialiser<TextColor> {
-    @Override
-    public Class<TextColor> getTargetClass() {
-        return TextColor.class;
-    }
+	@Override
+	public Class<TextColor> getTargetClass() {
+		return TextColor.class;
+	}
 
-    @Override
-    public TextColor deserialise(FlexibleType flexibleType) throws BadValueException {
-        String str = flexibleType.getString();
-        TextColor color = NamedTextColor.NAMES.value(str);
-        if(color != null) return color;
-        if(!str.startsWith("#")) throw flexibleType.badValueExceptionBuilder().message("Invalid text color format").build();
-        return TextColor.fromHexString(str);
-    }
+	@Override
+	public TextColor deserialise(FlexibleType flexibleType) throws BadValueException {
+		String str = flexibleType.getString();
+		TextColor color = NamedTextColor.NAMES.value(str);
+		if (color != null) return color;
+		if (!str.startsWith("#"))
+			throw flexibleType.badValueExceptionBuilder().message("Invalid text color format").build();
+		return TextColor.fromHexString(str);
+	}
 
-    @Override
-    public Object serialise(TextColor value, Decomposer decomposer) {
-        return value.toString();
-    }
+	@Override
+	public Object serialise(TextColor value, Decomposer decomposer) {
+		return value.toString();
+	}
 }

@@ -30,35 +30,35 @@ import org.gepron1x.clans.plugin.chat.common.Channel;
 
 public final class ChatListener implements Listener {
 
-    private final Registry<Key, ? extends Channel> channels;
+	private final Registry<Key, ? extends Channel> channels;
 
-    public ChatListener(Registry<Key, ? extends Channel> channels) {
-        this.channels = channels;
-    }
+	public ChatListener(Registry<Key, ? extends Channel> channels) {
+		this.channels = channels;
+	}
 
-    @EventHandler
-    public void on(AsyncChatEvent event) {
-        Player player = event.getPlayer();
-        Component original = event.originalMessage();
-        if(new PdcChatUser(player).currentChannelKey().flatMap(this.channels::value).map(channel -> {
-            this.useChannel(channel, event);
-            return true;
-        }).orElse(false)) {
-            return;
-        }
-        String originalString = PlainTextComponentSerializer.plainText().serialize(original);
-        for(Channel channel : channels) {
-            if(!originalString.startsWith(channel.prefix())) continue;
-            useChannel(channel, event);
-            break;
-        }
-    }
+	@EventHandler
+	public void on(AsyncChatEvent event) {
+		Player player = event.getPlayer();
+		Component original = event.originalMessage();
+		if (new PdcChatUser(player).currentChannelKey().flatMap(this.channels::value).map(channel -> {
+			this.useChannel(channel, event);
+			return true;
+		}).orElse(false)) {
+			return;
+		}
+		String originalString = PlainTextComponentSerializer.plainText().serialize(original);
+		for (Channel channel : channels) {
+			if (!originalString.startsWith(channel.prefix())) continue;
+			useChannel(channel, event);
+			break;
+		}
+	}
 
-    private void useChannel(Channel channel, AsyncChatEvent event) {
-        Player player = event.getPlayer();
-        if(!channel.usePermitted(player)) return;
-        event.viewers().clear();
-        event.viewers().addAll(channel.recipients(player));
-        event.renderer((sender, message, ogMessage, audience) -> channel.render(sender, audience, message, ogMessage));
-    }
+	private void useChannel(Channel channel, AsyncChatEvent event) {
+		Player player = event.getPlayer();
+		if (!channel.usePermitted(player)) return;
+		event.viewers().clear();
+		event.viewers().addAll(channel.recipients(player));
+		event.renderer((sender, message, ogMessage, audience) -> channel.render(sender, audience, message, ogMessage));
+	}
 }

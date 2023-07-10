@@ -27,8 +27,8 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 public final class UuidMapper implements ColumnMapper<UUID> {
-    @Override
-    public UUID map(ResultSet r, int columnNumber, StatementContext ctx) throws SQLException {
-        return UUIDUtil.fromByteArray(r.getBytes(columnNumber));
-    }
+	@Override
+	public UUID map(ResultSet r, int columnNumber, StatementContext ctx) throws SQLException {
+		return UUIDUtil.fromByteArray(r.getBytes(columnNumber));
+	}
 }

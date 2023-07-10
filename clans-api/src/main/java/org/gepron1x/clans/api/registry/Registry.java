@@ -28,17 +28,17 @@ import java.util.Optional;
 
 public interface Registry<K, V> extends Iterable<V> {
 
-    @NotNull @Unmodifiable Collection<V> values();
+	@NotNull @Unmodifiable Collection<V> values();
 
 
-    Optional<V> value(K key);
+	Optional<V> value(K key);
 
 
-    @NotNull @Unmodifiable  Map<K, V> asMap();
+	@NotNull @Unmodifiable Map<K, V> asMap();
 
-    @NotNull
-    @Override
-    default Iterator<V> iterator() {
-        return values().iterator();
-    }
+	@NotNull
+	@Override
+	default Iterator<V> iterator() {
+		return values().iterator();
+	}
 }

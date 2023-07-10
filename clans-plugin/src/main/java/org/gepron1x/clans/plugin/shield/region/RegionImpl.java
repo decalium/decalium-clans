@@ -25,6 +25,7 @@ public final class RegionImpl implements ClanRegion {
 		this.location = location;
 		this.shield = shield;
 	}
+
 	@Override
 	public int id() {
 		return id;

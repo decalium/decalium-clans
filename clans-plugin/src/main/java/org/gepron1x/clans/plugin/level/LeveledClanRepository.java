@@ -24,7 +24,7 @@ import org.gepron1x.clans.plugin.config.Configs;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 public final class LeveledClanRepository extends AdaptingClanRepository {
-    public LeveledClanRepository(ClanRepository repository, FactoryOfTheFuture futuresFactory, Configs configs) {
-        super(repository, clan -> new LeveledClan(futuresFactory, configs, clan));
-    }
+	public LeveledClanRepository(ClanRepository repository, FactoryOfTheFuture futuresFactory, Configs configs) {
+		super(repository, clan -> new LeveledClan(futuresFactory, configs, clan));
+	}
 }

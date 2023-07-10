@@ -38,39 +38,40 @@ import java.util.Queue;
 public final class ClanReferenceParser implements ArgumentParser<CommandSender, ClanReference> {
 
 
-    private final CachingClanRepository cachingClanRepository;
+	private final CachingClanRepository cachingClanRepository;
 
-    public ClanReferenceParser(CachingClanRepository cachingClanRepository) {
+	public ClanReferenceParser(CachingClanRepository cachingClanRepository) {
 
-        this.cachingClanRepository = cachingClanRepository;
-    }
+		this.cachingClanRepository = cachingClanRepository;
+	}
 
-    @Override
-    public @NonNull ArgumentParseResult<@NonNull ClanReference> parse(@NonNull CommandContext<@NonNull CommandSender> commandContext, @NonNull Queue<@NonNull String> inputQueue) {
-        String value = inputQueue.peek();
-        if(value == null) return ArgumentParseResult.failure(new NoInputProvidedException(ClanReferenceParser.class, commandContext));
-        inputQueue.remove();
-        return cachingClanRepository.clanIfCached(value).<ClanReference>map(clan -> new TagClanReference(cachingClanRepository, value))
-                .map(ArgumentParseResult::success)
-                .orElseGet(() -> ArgumentParseResult.failure(new UnknownClanException(commandContext, value)));
-    }
+	@Override
+	public @NonNull ArgumentParseResult<@NonNull ClanReference> parse(@NonNull CommandContext<@NonNull CommandSender> commandContext, @NonNull Queue<@NonNull String> inputQueue) {
+		String value = inputQueue.peek();
+		if (value == null)
+			return ArgumentParseResult.failure(new NoInputProvidedException(ClanReferenceParser.class, commandContext));
+		inputQueue.remove();
+		return cachingClanRepository.clanIfCached(value).<ClanReference>map(clan -> new TagClanReference(cachingClanRepository, value))
+				.map(ArgumentParseResult::success)
+				.orElseGet(() -> ArgumentParseResult.failure(new UnknownClanException(commandContext, value)));
+	}
 
-    @Override
-    public int getRequestedArgumentCount() {
-        return 1;
-    }
+	@Override
+	public int getRequestedArgumentCount() {
+		return 1;
+	}
 
-    @Override
-    public @NonNull List<@NonNull String> suggestions(@NonNull CommandContext<CommandSender> commandContext, @NonNull String input) {
-        return cachingClanRepository.cachedClans().stream().map(Clan::tag).toList();
-    }
+	@Override
+	public @NonNull List<@NonNull String> suggestions(@NonNull CommandContext<CommandSender> commandContext, @NonNull String input) {
+		return cachingClanRepository.cachedClans().stream().map(Clan::tag).toList();
+	}
 
-    public static class UnknownClanException extends ParserException {
+	public static class UnknownClanException extends ParserException {
 
-        protected UnknownClanException(@NonNull CommandContext<?> context, String tag) {
-            super(ClanReferenceParser.class, context, Caption.of("clans.unknown.clan"), CaptionVariable.of("tag", tag));
-        }
-    }
+		protected UnknownClanException(@NonNull CommandContext<?> context, String tag) {
+			super(ClanReferenceParser.class, context, Caption.of("clans.unknown.clan"), CaptionVariable.of("tag", tag));
+		}
+	}
 
 
 }

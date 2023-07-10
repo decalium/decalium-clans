@@ -27,11 +27,12 @@ import java.util.Collection;
 import java.util.Optional;
 
 public interface RoleRegistry extends Registry<String, ClanRole> {
-    @NotNull ClanRole defaultRole();
-    @NotNull ClanRole ownerRole();
+	@NotNull ClanRole defaultRole();
 
-    Optional<ClanRole> value(@NotNull String name);
+	@NotNull ClanRole ownerRole();
 
-    @NotNull @Unmodifiable Collection<ClanRole> values();
+	Optional<ClanRole> value(@NotNull String name);
+
+	@NotNull @Unmodifiable Collection<ClanRole> values();
 
 }

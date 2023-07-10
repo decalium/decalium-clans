@@ -29,25 +29,26 @@ import java.util.Collection;
 
 public interface Team extends GroupAudience {
 
-    ClanReference clan();
+	ClanReference clan();
 
-    Collection<PlayerReference> members();
+	Collection<PlayerReference> members();
 
-    default boolean isMember(Player player) {
-        for(PlayerReference ref : members()) {
-            if(ref.player().map(p -> p.equals(player)).orElse(false)) return true;
-        }
-        return false;
-    }
+	default boolean isMember(Player player) {
+		for (PlayerReference ref : members()) {
+			if (ref.player().map(p -> p.equals(player)).orElse(false)) return true;
+		}
+		return false;
+	}
 
-    Collection<PlayerReference> alive();
+	Collection<PlayerReference> alive();
 
-    boolean onDeath(Player player);
+	boolean onDeath(Player player);
 
-    boolean isAlive();
+	boolean isAlive();
 
-    @Override
-    @NotNull default Iterable<? extends Audience> audiences() {
-        return this.members();
-    }
+	@Override
+	@NotNull
+	default Iterable<? extends Audience> audiences() {
+		return this.members();
+	}
 }

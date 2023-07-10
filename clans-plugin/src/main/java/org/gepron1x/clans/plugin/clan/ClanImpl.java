@@ -32,59 +32,59 @@ import java.util.function.Consumer;
 
 public final class ClanImpl implements Clan, DelegatingClan {
 
-    private final int id;
-    private final DraftClan draftClan;
-    private transient final ClanStorage storage;
-    private transient final FactoryOfTheFuture futuresFactory;
+	private final int id;
+	private final DraftClan draftClan;
+	private transient final ClanStorage storage;
+	private transient final FactoryOfTheFuture futuresFactory;
 
-    public ClanImpl(int id, DraftClan draftClan, ClanStorage storage, FactoryOfTheFuture futuresFactory) {
+	public ClanImpl(int id, DraftClan draftClan, ClanStorage storage, FactoryOfTheFuture futuresFactory) {
 
-        this.id = id;
-        this.draftClan = draftClan;
-        this.storage = storage;
-        this.futuresFactory = futuresFactory;
-    }
-    @Override
-    public int id() {
-        return id;
-    }
+		this.id = id;
+		this.draftClan = draftClan;
+		this.storage = storage;
+		this.futuresFactory = futuresFactory;
+	}
 
-    @Override
-    public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
-        DraftClan.Builder builder = draftClan.toBuilder();
-        builder.applyEdition(transaction);
-        DraftClan clan = builder.build();
-        return futuresFactory.runAsync(() -> this.storage.applyEdition(this.id, transaction))
-                .thenApply(ignored -> new ClanImpl(this.id, clan, this.storage, this.futuresFactory));
-    }
+	@Override
+	public int id() {
+		return id;
+	}
+
+	@Override
+	public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
+		DraftClan.Builder builder = draftClan.toBuilder();
+		builder.applyEdition(transaction);
+		DraftClan clan = builder.build();
+		return futuresFactory.runAsync(() -> this.storage.applyEdition(this.id, transaction))
+				.thenApply(ignored -> new ClanImpl(this.id, clan, this.storage, this.futuresFactory));
+	}
 
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		ClanImpl clan2 = (ClanImpl) o;
+		return id == clan2.id && draftClan.equals(clan2.draftClan);
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ClanImpl clan2 = (ClanImpl) o;
-        return id == clan2.id && draftClan.equals(clan2.draftClan);
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, draftClan);
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, draftClan);
-    }
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("id", id)
+				.add("draftClan", draftClan)
+				.add("storage", storage)
+				.add("futuresFactory", futuresFactory)
+				.toString();
+	}
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("id", id)
-                .add("draftClan", draftClan)
-                .add("storage", storage)
-                .add("futuresFactory", futuresFactory)
-                .toString();
-    }
-
-    @Override
-    public DraftClan delegate() {
-        return this.draftClan;
-    }
+	@Override
+	public DraftClan delegate() {
+		return this.draftClan;
+	}
 }

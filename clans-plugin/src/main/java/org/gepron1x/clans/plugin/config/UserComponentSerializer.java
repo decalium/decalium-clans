@@ -29,25 +29,25 @@ import org.jetbrains.annotations.NotNull;
 
 public enum UserComponentSerializer implements ComponentSerializer<Component, Component, String> {
 
-    LEGACY(LegacyComponentSerializer.legacyAmpersand()),
-    MINI_MESSAGE(MiniMessage.builder().tags(TagResolver.resolver(StandardTags.color(), StandardTags.decorations(), StandardTags.gradient(), StandardTags.rainbow())).build()),
-    MIXED(new MixedComponentSerializer(MiniMessage.miniMessage(), LegacyComponentSerializer.legacyAmpersand()));
+	LEGACY(LegacyComponentSerializer.legacyAmpersand()),
+	MINI_MESSAGE(MiniMessage.builder().tags(TagResolver.resolver(StandardTags.color(), StandardTags.decorations(), StandardTags.gradient(), StandardTags.rainbow())).build()),
+	MIXED(new MixedComponentSerializer(MiniMessage.miniMessage(), LegacyComponentSerializer.legacyAmpersand()));
 
 
-    private final ComponentSerializer<Component, ? extends Component, String> serializer;
+	private final ComponentSerializer<Component, ? extends Component, String> serializer;
 
-    UserComponentSerializer(ComponentSerializer<Component, ? extends Component, String> serializer) {
-        this.serializer = serializer;
-    }
+	UserComponentSerializer(ComponentSerializer<Component, ? extends Component, String> serializer) {
+		this.serializer = serializer;
+	}
 
-    @NotNull
-    @Override
-    public Component deserialize(@NotNull String input) {
-        return this.serializer.deserialize(input);
-    }
+	@NotNull
+	@Override
+	public Component deserialize(@NotNull String input) {
+		return this.serializer.deserialize(input);
+	}
 
-    @Override
-    public @NotNull String serialize(@NotNull Component component) {
-        return this.serializer.serialize(component);
-    }
+	@Override
+	public @NotNull String serialize(@NotNull Component component) {
+		return this.serializer.serialize(component);
+	}
 }

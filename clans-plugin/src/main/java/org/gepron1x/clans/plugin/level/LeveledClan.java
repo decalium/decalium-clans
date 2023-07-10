@@ -34,52 +34,53 @@ import java.util.function.Consumer;
 
 public final class LeveledClan implements Clan, DelegatingClan {
 
-    private final FactoryOfTheFuture futuresFactory;
-    private final Configs configs;
-    private final Clan clan;
+	private final FactoryOfTheFuture futuresFactory;
+	private final Configs configs;
+	private final Clan clan;
 
-    public LeveledClan(FactoryOfTheFuture futuresFactory, Configs configs, Clan clan) {
-        this.futuresFactory = futuresFactory;
-        this.configs = configs;
-        this.clan = clan;
-    }
-    @Override
-    public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
-        try {
-            transaction.accept(new LeveledEdition(clan, configs.config().levels().forLevel(clan.level()), configs));
-        } catch (DescribingException ex) {
-            return futuresFactory.failedFuture(ex);
-        }
-        return clan.edit(transaction).thenApply(c -> new LeveledClan(futuresFactory, configs, c));
-    }
+	public LeveledClan(FactoryOfTheFuture futuresFactory, Configs configs, Clan clan) {
+		this.futuresFactory = futuresFactory;
+		this.configs = configs;
+		this.clan = clan;
+	}
 
-    @Override
-    public int id() {
-        return clan.id();
-    }
+	@Override
+	public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
+		try {
+			transaction.accept(new LeveledEdition(clan, configs.config().levels().forLevel(clan.level()), configs));
+		} catch (DescribingException ex) {
+			return futuresFactory.failedFuture(ex);
+		}
+		return clan.edit(transaction).thenApply(c -> new LeveledClan(futuresFactory, configs, c));
+	}
 
-    @Override
-    public DraftClan delegate() {
-        return clan;
-    }
+	@Override
+	public int id() {
+		return clan.id();
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        LeveledClan that = (LeveledClan) o;
-        return Objects.equals(clan, that.clan);
-    }
+	@Override
+	public DraftClan delegate() {
+		return clan;
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(configs, clan);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		LeveledClan that = (LeveledClan) o;
+		return Objects.equals(clan, that.clan);
+	}
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("clan", clan)
-                .toString();
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(configs, clan);
+	}
+
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("clan", clan)
+				.toString();
+	}
 }

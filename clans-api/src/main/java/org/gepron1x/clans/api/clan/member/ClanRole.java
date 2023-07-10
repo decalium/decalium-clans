@@ -31,50 +31,51 @@ import java.util.Set;
 
 public interface ClanRole extends Comparable<ClanRole>, Buildable<ClanRole, ClanRole.Builder>, ComponentLike {
 
-    @NotNull String name();
-    @NotNull Component displayName();
-    int weight();
-    @NotNull @Unmodifiable Set<? extends ClanPermission> permissions();
+	@NotNull String name();
 
-    @Override
-    @NotNull
-    default Component asComponent() {
-        return displayName();
-    }
+	@NotNull Component displayName();
 
+	int weight();
 
-    @Override
-    default int compareTo(@NotNull ClanRole clanRole) {
-        return weight() - clanRole.weight();
-    }
+	@NotNull @Unmodifiable Set<? extends ClanPermission> permissions();
 
-    interface Builder extends Buildable.Builder<ClanRole> {
-        @Contract("_ -> this")
-        @NotNull Builder name(@NotNull String name);
-
-        @Contract("_ -> this")
-        @NotNull Builder displayName(@NotNull Component displayName);
-
-        @Contract("_ -> this")
-        @NotNull Builder weight(int weight);
-
-        @Contract("_ -> this")
-        @NotNull Builder permissions(@NotNull Collection<? extends ClanPermission> permissions);
-
-        @Contract("_ -> this")
-        default @NotNull Builder permissions(@NotNull ClanPermission @NotNull... permissions) {
-            return permissions(Arrays.asList(permissions));
-        }
-
-        @Contract("_ -> this")
-        @NotNull Builder addPermission(@NotNull ClanPermission permission);
-
-        @NotNull Builder emptyPermissions();
+	@Override
+	@NotNull
+	default Component asComponent() {
+		return displayName();
+	}
 
 
-    }
+	@Override
+	default int compareTo(@NotNull ClanRole clanRole) {
+		return weight() - clanRole.weight();
+	}
+
+	interface Builder extends Buildable.Builder<ClanRole> {
+		@Contract("_ -> this")
+		@NotNull Builder name(@NotNull String name);
+
+		@Contract("_ -> this")
+		@NotNull Builder displayName(@NotNull Component displayName);
+
+		@Contract("_ -> this")
+		@NotNull Builder weight(int weight);
+
+		@Contract("_ -> this")
+		@NotNull Builder permissions(@NotNull Collection<? extends ClanPermission> permissions);
+
+		@Contract("_ -> this")
+		default @NotNull Builder permissions(@NotNull ClanPermission @NotNull ... permissions) {
+			return permissions(Arrays.asList(permissions));
+		}
+
+		@Contract("_ -> this")
+		@NotNull Builder addPermission(@NotNull ClanPermission permission);
+
+		@NotNull Builder emptyPermissions();
 
 
+	}
 
 
 }

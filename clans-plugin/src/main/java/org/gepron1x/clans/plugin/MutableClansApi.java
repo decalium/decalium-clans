@@ -37,6 +37,7 @@ public final class MutableClansApi implements DecaliumClansApi {
 	public MutableClansApi(DecaliumClansApi api) {
 		this.api = api;
 	}
+
 	@Override
 	public @NotNull Users users() {
 		return this.api.users();

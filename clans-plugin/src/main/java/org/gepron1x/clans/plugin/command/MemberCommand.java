@@ -40,116 +40,113 @@ import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 public class MemberCommand extends AbstractClanCommand {
 
 
-    public MemberCommand(@NotNull Logger logger, CachingClanRepository clanRepository, Users users,
-                         @NotNull Configs configs, @NotNull FactoryOfTheFuture futuresFactory) {
-        super(logger, clanRepository, users, configs, futuresFactory);
-    }
+	public MemberCommand(@NotNull Logger logger, CachingClanRepository clanRepository, Users users,
+						 @NotNull Configs configs, @NotNull FactoryOfTheFuture futuresFactory) {
+		super(logger, clanRepository, users, configs, futuresFactory);
+	}
 
-    @Override
-    public void register(CommandManager<CommandSender> manager) {
+	@Override
+	public void register(CommandManager<CommandSender> manager) {
 
-        HelpCommandConfig.Messages.Description.Member descriptions = messages.help().messages().descriptions().member();
+		HelpCommandConfig.Messages.Description.Member descriptions = messages.help().messages().descriptions().member();
 
-        Command.Builder<CommandSender> builder = manager.commandBuilder("clan").literal("member").senderType(Player.class);
-        manager.command(builder
-                .literal("set")
-                .literal("role").meta(CommandMeta.DESCRIPTION, descriptions.setRole())
-                .permission(Permission.of("clans.member.set.role"))
-                .argument(manager.argumentBuilder(ClanMember.class, "member"))
-                .argument(manager.argumentBuilder(ClanRole.class, "role"))
-                .handler(clanExecutionHandler(
-                        new PermissiveClanExecutionHandler(
-                                this::setRole, ClanPermission.SET_ROLE, this.messages)
-                        )
-                )
-        );
+		Command.Builder<CommandSender> builder = manager.commandBuilder("clan").literal("member").senderType(Player.class);
+		manager.command(builder
+				.literal("set")
+				.literal("role").meta(CommandMeta.DESCRIPTION, descriptions.setRole())
+				.permission(Permission.of("clans.member.set.role"))
+				.argument(manager.argumentBuilder(ClanMember.class, "member"))
+				.argument(manager.argumentBuilder(ClanRole.class, "role"))
+				.handler(clanExecutionHandler(
+								new PermissiveClanExecutionHandler(
+										this::setRole, ClanPermission.SET_ROLE, this.messages)
+						)
+				)
+		);
 
-        manager.command(builder.literal("kick").meta(CommandMeta.DESCRIPTION, descriptions.kick())
-                .permission(Permission.of("clans.member.kick"))
-                .argument(manager.argumentBuilder(ClanMember.class, "member"))
-                .handler(clanExecutionHandler(
-                        new PermissiveClanExecutionHandler(this::kickMember, ClanPermission.SET_ROLE, this.messages))
-                )
-        );
+		manager.command(builder.literal("kick").meta(CommandMeta.DESCRIPTION, descriptions.kick())
+				.permission(Permission.of("clans.member.kick"))
+				.argument(manager.argumentBuilder(ClanMember.class, "member"))
+				.handler(clanExecutionHandler(
+						new PermissiveClanExecutionHandler(this::kickMember, ClanPermission.SET_ROLE, this.messages))
+				)
+		);
 
-        manager.command(builder.literal("set").literal("owner").meta(CommandMeta.DESCRIPTION, descriptions.setOwner())
-                .argument(manager.argumentBuilder(ClanMember.class, "member"))
-                .handler(clanExecutionHandler(this::setOwner))
-        );
+		manager.command(builder.literal("set").literal("owner").meta(CommandMeta.DESCRIPTION, descriptions.setOwner())
+				.argument(manager.argumentBuilder(ClanMember.class, "member"))
+				.handler(clanExecutionHandler(this::setOwner))
+		);
 
-    }
-
-
-    private void setRole(CommandContext<CommandSender> context) {
-        Player player = (Player) context.getSender();
-        ClanMember other = context.get("member");
-        ClanRole role = context.get("role");
-        Clan clan = context.get(ClanExecutionHandler.CLAN);
-        ClanMember member = context.get(ClanExecutionHandler.CLAN_MEMBER);
+	}
 
 
-
-        if(other.equals(member)) {
-            messages.cannotDoActionOnYourSelf().send(player);
-            return;
-        }
-
-        if(other.role().weight() > member.role().weight()) {
-            messages.commands().member().memberHasHigherWeight().with("member", member).send(player);
-            return;
-        }
-
-        if(member.role().weight() <= role.weight()) {
-            messages.commands().member().role().roleHasHigherWeight().with("role", role.displayName()).send(player);
-            return;
-        }
-
-        clan.edit(edition -> edition.editMember(other.uniqueId(), memberEdition -> memberEdition.appoint(role)))
-                .thenAccept(c -> messages.commands().member().role().success().send(player))
-                .exceptionally(exceptionHandler(player));
-
-    }
-
-    private void setOwner(CommandContext<CommandSender> context) {
-        Clan clan = context.get(ClanExecutionHandler.CLAN);
-        ClanMember member = context.get(ClanExecutionHandler.CLAN_MEMBER);
-        Player player = (Player) context.getSender();
-        ClanMember newOwner = context.get("member");
-        if(!clan.owner().equals(member)) {
-            this.messages.commands().member().onlyOwnerCanDoThis().send(player);
-            return;
-        }
-        clan.edit(edition -> {
-            edition.owner(newOwner).editMember(newOwner.uniqueId(), memberEdition -> memberEdition.appoint(member.role()));
-        }).exceptionally(exceptionHandler(player));
-
-    }
+	private void setRole(CommandContext<CommandSender> context) {
+		Player player = (Player) context.getSender();
+		ClanMember other = context.get("member");
+		ClanRole role = context.get("role");
+		Clan clan = context.get(ClanExecutionHandler.CLAN);
+		ClanMember member = context.get(ClanExecutionHandler.CLAN_MEMBER);
 
 
+		if (other.equals(member)) {
+			messages.cannotDoActionOnYourSelf().send(player);
+			return;
+		}
+
+		if (other.role().weight() > member.role().weight()) {
+			messages.commands().member().memberHasHigherWeight().with("member", member).send(player);
+			return;
+		}
+
+		if (member.role().weight() <= role.weight()) {
+			messages.commands().member().role().roleHasHigherWeight().with("role", role.displayName()).send(player);
+			return;
+		}
+
+		clan.edit(edition -> edition.editMember(other.uniqueId(), memberEdition -> memberEdition.appoint(role)))
+				.thenAccept(c -> messages.commands().member().role().success().send(player))
+				.exceptionally(exceptionHandler(player));
+
+	}
+
+	private void setOwner(CommandContext<CommandSender> context) {
+		Clan clan = context.get(ClanExecutionHandler.CLAN);
+		ClanMember member = context.get(ClanExecutionHandler.CLAN_MEMBER);
+		Player player = (Player) context.getSender();
+		ClanMember newOwner = context.get("member");
+		if (!clan.owner().equals(member)) {
+			this.messages.commands().member().onlyOwnerCanDoThis().send(player);
+			return;
+		}
+		clan.edit(edition -> {
+			edition.owner(newOwner).editMember(newOwner.uniqueId(), memberEdition -> memberEdition.appoint(member.role()));
+		}).exceptionally(exceptionHandler(player));
+
+	}
 
 
-    private void kickMember(CommandContext<CommandSender> context) {
-        Player player = (Player) context.getSender();
+	private void kickMember(CommandContext<CommandSender> context) {
+		Player player = (Player) context.getSender();
 
-        Clan clan = context.get(ClanExecutionHandler.CLAN);
-        ClanMember member = context.get(ClanExecutionHandler.CLAN_MEMBER);
+		Clan clan = context.get(ClanExecutionHandler.CLAN);
+		ClanMember member = context.get(ClanExecutionHandler.CLAN_MEMBER);
 
-        ClanMember other = context.get("member");
-        if(other.equals(member)) {
-            messages.cannotDoActionOnYourSelf().send(player);
-            return;
-        }
-
-
-        if (other.role().weight() >= member.role().weight()) {
-            messages.commands().member().memberHasHigherWeight().with("member", member).send(player);
-        }
+		ClanMember other = context.get("member");
+		if (other.equals(member)) {
+			messages.cannotDoActionOnYourSelf().send(player);
+			return;
+		}
 
 
-        clan.edit(clanEdition -> clanEdition.removeMember(other)).thenAccept(newClan -> {
-            messages.commands().member().kick().success().send(player);
-        }).exceptionally(exceptionHandler(player));
-    }
+		if (other.role().weight() >= member.role().weight()) {
+			messages.commands().member().memberHasHigherWeight().with("member", member).send(player);
+		}
+
+
+		clan.edit(clanEdition -> clanEdition.removeMember(other)).thenAccept(newClan -> {
+			messages.commands().member().kick().success().send(player);
+		}).exceptionally(exceptionHandler(player));
+	}
 
 
 }

@@ -33,24 +33,24 @@ import java.util.function.Consumer;
 
 public final class CachingClan implements Clan, DelegatingClan {
 
-    private volatile Clan delegate;
+	private volatile Clan delegate;
 	private final ClanCache cache;
 	private final FactoryOfTheFuture futuresFactory;
 
 	private CentralisedFuture<Clan> currentEdition;
 
-    public CachingClan(Clan delegate, ClanCache cache, FactoryOfTheFuture futuresFactory) {
-        this.delegate = delegate;
+	public CachingClan(Clan delegate, ClanCache cache, FactoryOfTheFuture futuresFactory) {
+		this.delegate = delegate;
 		this.cache = cache;
 		this.currentEdition = futuresFactory.completedFuture(delegate);
 		this.futuresFactory = futuresFactory;
 	}
 
-    @Override
-    public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
-		if(currentEdition.isCompletedExceptionally()) currentEdition = futuresFactory.completedFuture(delegate);
+	@Override
+	public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
+		if (currentEdition.isCompletedExceptionally()) currentEdition = futuresFactory.completedFuture(delegate);
 		this.currentEdition = currentEdition.thenCompose(clan -> clan.edit(transaction));
-        return currentEdition.thenApply(clan -> {
+		return currentEdition.thenApply(clan -> {
 			transaction.accept(new EmptyClanEdition() {
 				@Override
 				public ClanEdition addMember(@NotNull ClanMember member) {
@@ -64,33 +64,33 @@ public final class CachingClan implements Clan, DelegatingClan {
 					return this;
 				}
 			});
-			synchronized(CachingClan.this) {
+			synchronized (CachingClan.this) {
 				this.delegate = clan;
 			}
 			return this;
 		});
-    }
+	}
 
-    @Override
-    public int id() {
-        return delegate.id();
-    }
+	@Override
+	public int id() {
+		return delegate.id();
+	}
 
-    @Override
-    public DraftClan delegate() {
-        return this.delegate;
-    }
+	@Override
+	public DraftClan delegate() {
+		return this.delegate;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CachingClan that = (CachingClan) o;
-        return delegate.equals(that.delegate);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		CachingClan that = (CachingClan) o;
+		return delegate.equals(that.delegate);
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(delegate);
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(delegate);
+	}
 }

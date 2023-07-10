@@ -29,44 +29,44 @@ import java.util.Optional;
 import java.util.UUID;
 
 public final class UuidClanReference implements ClanReference {
-    private final CachingClanRepository repository;
-    private final UUID uniqueId;
+	private final CachingClanRepository repository;
+	private final UUID uniqueId;
 
 
-    public UuidClanReference(CachingClanRepository repository, UUID uniqueId) {
-        this.repository = repository;
-        this.uniqueId = uniqueId;
-    }
+	public UuidClanReference(CachingClanRepository repository, UUID uniqueId) {
+		this.repository = repository;
+		this.uniqueId = uniqueId;
+	}
 
-    @Override
-    public @NotNull CentralisedFuture<Optional<Clan>> clan() {
+	@Override
+	public @NotNull CentralisedFuture<Optional<Clan>> clan() {
 
-        return this.repository.requestUserClan(uniqueId);
-    }
+		return this.repository.requestUserClan(uniqueId);
+	}
 
-    @Override
-    public Optional<Clan> cached() {
-        return this.repository.userClanIfCached(uniqueId);
-    }
+	@Override
+	public Optional<Clan> cached() {
+		return this.repository.userClanIfCached(uniqueId);
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UuidClanReference that = (UuidClanReference) o;
-        return uniqueId.equals(that.uniqueId);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		UuidClanReference that = (UuidClanReference) o;
+		return uniqueId.equals(that.uniqueId);
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(repository, uniqueId);
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(repository, uniqueId);
+	}
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("repository", repository)
-                .add("uniqueId", uniqueId)
-                .toString();
-    }
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("repository", repository)
+				.add("uniqueId", uniqueId)
+				.toString();
+	}
 }

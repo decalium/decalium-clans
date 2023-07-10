@@ -7,35 +7,36 @@ import java.sql.SQLException;
 
 public final class ConnectionPool {
 
-    @FunctionalInterface
-    interface ConnectionConsumer {
-        void accept(Connection connection) throws SQLException;
-    }
-    @FunctionalInterface
-    interface ConnectionFunction<R> {
-        R apply(Connection connection) throws SQLException;
-    }
+	@FunctionalInterface
+	interface ConnectionConsumer {
+		void accept(Connection connection) throws SQLException;
+	}
 
-    private final HikariDataSource dataSource;
+	@FunctionalInterface
+	interface ConnectionFunction<R> {
+		R apply(Connection connection) throws SQLException;
+	}
 
-    public ConnectionPool(HikariDataSource dataSource) {
-        this.dataSource = dataSource;
-    }
+	private final HikariDataSource dataSource;
 
-    public <R> R withConnection(ConnectionFunction<R> function) {
-        try(Connection connection = this.dataSource.getConnection()) {
-            return function.apply(connection);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
+	public ConnectionPool(HikariDataSource dataSource) {
+		this.dataSource = dataSource;
+	}
 
-    public void useConnection(ConnectionConsumer consumer) {
-        withConnection(conn -> {
-            consumer.accept(conn);
-            return null;
-        });
-    }
+	public <R> R withConnection(ConnectionFunction<R> function) {
+		try (Connection connection = this.dataSource.getConnection()) {
+			return function.apply(connection);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void useConnection(ConnectionConsumer consumer) {
+		withConnection(conn -> {
+			consumer.accept(conn);
+			return null;
+		});
+	}
 
 
 }

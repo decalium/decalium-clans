@@ -30,41 +30,42 @@ import java.util.UUID;
 
 public final class CarbonChatUser implements ChatUser {
 
-    private final CarbonPlayer player;
-    private final ChannelRegistry registry;
+	private final CarbonPlayer player;
+	private final ChannelRegistry registry;
 
-    public CarbonChatUser(CarbonPlayer player, ChannelRegistry registry) {
+	public CarbonChatUser(CarbonPlayer player, ChannelRegistry registry) {
 
-        this.player = player;
-        this.registry = registry;
-    }
-    @Override
-    public UUID uuid() {
-        return player.uuid();
-    }
+		this.player = player;
+		this.registry = registry;
+	}
 
-    @Override
-    public String name() {
-        return player.username();
-    }
+	@Override
+	public UUID uuid() {
+		return player.uuid();
+	}
 
-    @Override
-    public Component renderName() {
-        return CarbonPlayer.renderName(player);
-    }
+	@Override
+	public String name() {
+		return player.username();
+	}
 
-    @Override
-    public boolean hasPermission(String permission) {
-        return player.hasPermission(permission);
-    }
+	@Override
+	public Component renderName() {
+		return CarbonPlayer.renderName(player);
+	}
 
-    @Override
-    public Optional<Key> currentChannel() {
-        return Optional.ofNullable(player.selectedChannel()).map(ChatChannel::key);
-    }
+	@Override
+	public boolean hasPermission(String permission) {
+		return player.hasPermission(permission);
+	}
 
-    @Override
-    public void currentChannel(Key key) {
-        player.selectedChannel(registry.get(key));
-    }
+	@Override
+	public Optional<Key> currentChannel() {
+		return Optional.ofNullable(player.selectedChannel()).map(ChatChannel::key);
+	}
+
+	@Override
+	public void currentChannel(Key key) {
+		player.selectedChannel(registry.get(key));
+	}
 }

@@ -30,23 +30,23 @@ import org.gepron1x.clans.plugin.clan.member.ClanRoleImpl;
 import org.jetbrains.annotations.NotNull;
 
 public final class ClanBuilderFactoryImpl implements ClanBuilderFactory {
-    @Override
-    public @NotNull DraftClan.Builder draftClanBuilder() {
-        return DraftClanImpl.builder();
-    }
+	@Override
+	public @NotNull DraftClan.Builder draftClanBuilder() {
+		return DraftClanImpl.builder();
+	}
 
-    @Override
-    public @NotNull ClanMember.Builder memberBuilder() {
-        return ClanMemberImpl.builder();
-    }
+	@Override
+	public @NotNull ClanMember.Builder memberBuilder() {
+		return ClanMemberImpl.builder();
+	}
 
-    @Override
-    public @NotNull ClanHome.Builder homeBuilder() {
-        return ClanHomeImpl.builder();
-    }
+	@Override
+	public @NotNull ClanHome.Builder homeBuilder() {
+		return ClanHomeImpl.builder();
+	}
 
-    @Override
-    public @NotNull ClanRole.Builder roleBuilder() {
-        return ClanRoleImpl.builder();
-    }
+	@Override
+	public @NotNull ClanRole.Builder roleBuilder() {
+		return ClanRoleImpl.builder();
+	}
 }

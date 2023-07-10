@@ -26,21 +26,21 @@ import java.util.Optional;
 
 public interface Wars {
 
-    void start(War war);
+	void start(War war);
 
-    War create(Team first, Team second);
+	War create(Team first, Team second);
 
-    Team createTeam(ClanReference ref);
+	Team createTeam(ClanReference ref);
 
-    Optional<War> currentWar(Player player);
+	Optional<War> currentWar(Player player);
 
-    Collection<War> currentWars();
+	Collection<War> currentWars();
 
-    void onDeath(Player player);
+	void onDeath(Player player);
 
-    void end(War war);
+	void end(War war);
 
-    void cleanEnded();
+	void cleanEnded();
 
 
 }

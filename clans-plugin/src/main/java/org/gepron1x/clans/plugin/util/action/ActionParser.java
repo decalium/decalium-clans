@@ -34,73 +34,72 @@ import java.util.regex.Pattern;
 
 public final class ActionParser {
 
-    private static final Pattern ACTION_PATTERN = Pattern.compile("\\[([a-zA-Z\\d_]+)](.+)");
+	private static final Pattern ACTION_PATTERN = Pattern.compile("\\[([a-zA-Z\\d_]+)](.+)");
 
-    private final MiniMessage miniMessage;
+	private final MiniMessage miniMessage;
 
-    public ActionParser(MiniMessage miniMessage) {
+	public ActionParser(MiniMessage miniMessage) {
 
-        this.miniMessage = miniMessage;
-    }
+		this.miniMessage = miniMessage;
+	}
 
 
-    public Action parseSingle(String value) {
-        Matcher matcher = ACTION_PATTERN.matcher(value);
-        if(!matcher.matches()) {
+	public Action parseSingle(String value) {
+		Matcher matcher = ACTION_PATTERN.matcher(value);
+		if (!matcher.matches()) {
 			return new ParsedAction(new ChatAction(TextMessage.message(value, miniMessage)), value);
 		}
-        String type = matcher.group(1);
+		String type = matcher.group(1);
 		String text = matcher.group(2);
-        ActionArgs args = new ActionArgs(splitQuoted(text));
-        return new ParsedAction(switch(type) {
+		ActionArgs args = new ActionArgs(splitQuoted(text));
+		return new ParsedAction(switch (type) {
 			case "actionbar" -> new ActionBarAction(TextMessage.message(text, miniMessage));
-            case "sound" -> {
-                Key key = args.requireArg(0).asKey();
-                float volume = args.arg(1).map(ActionArgs.Arg::asFloat).orElse(1f);
-                float pitch = args.arg(2).map(ActionArgs.Arg::asFloat).orElse(1f);
-                yield new SoundAction(Sound.sound(key, Sound.Source.AMBIENT, volume, pitch));
-            }
-            case "title" -> {
-                TextMessage title = args.requireArg(0).asMessage(miniMessage);
-                TextMessage subTitle = args.arg(1).map(arg -> arg.asMessage(miniMessage)).orElse(TextMessage.EMPTY);
-                Duration fadeIn = args.arg(2).map(ActionArgs.Arg::asDuration).orElse(Title.DEFAULT_TIMES.fadeIn());
-                Duration stay = args.arg(3).map(ActionArgs.Arg::asDuration).orElse(Title.DEFAULT_TIMES.stay());
-                Duration fadeOut = args.arg(4).map(ActionArgs.Arg::asDuration).orElse(Title.DEFAULT_TIMES.fadeOut());
-                yield new TitleAction(title, subTitle, Title.Times.times(fadeIn, stay, fadeOut));
-            }
-            default -> new ChatAction(TextMessage.message(text, miniMessage));
-        }, value);
-    }
+			case "sound" -> {
+				Key key = args.requireArg(0).asKey();
+				float volume = args.arg(1).map(ActionArgs.Arg::asFloat).orElse(1f);
+				float pitch = args.arg(2).map(ActionArgs.Arg::asFloat).orElse(1f);
+				yield new SoundAction(Sound.sound(key, Sound.Source.MASTER, volume, pitch));
+			}
+			case "title" -> {
+				TextMessage title = args.requireArg(0).asMessage(miniMessage);
+				TextMessage subTitle = args.arg(1).map(arg -> arg.asMessage(miniMessage)).orElse(TextMessage.EMPTY);
+				Duration fadeIn = args.arg(2).map(ActionArgs.Arg::asDuration).orElse(Title.DEFAULT_TIMES.fadeIn());
+				Duration stay = args.arg(3).map(ActionArgs.Arg::asDuration).orElse(Title.DEFAULT_TIMES.stay());
+				Duration fadeOut = args.arg(4).map(ActionArgs.Arg::asDuration).orElse(Title.DEFAULT_TIMES.fadeOut());
+				yield new TitleAction(title, subTitle, Title.Times.times(fadeIn, stay, fadeOut));
+			}
+			default -> new ChatAction(TextMessage.message(text, miniMessage));
+		}, value);
+	}
 
-    public Action parse(Collection<String> values) {
-        if(values.size() == 0) return Action.EMPTY;
-        List<Action> actions = new ArrayList<>(values.size());
-        for(String s : values) actions.add(parseSingle(s));
-        if(actions.size() == 1) return actions.get(0);
-        return new CombinedAction(actions);
-    }
+	public Action parse(Collection<String> values) {
+		if (values.size() == 0) return Action.EMPTY;
+		List<Action> actions = new ArrayList<>(values.size());
+		for (String s : values) actions.add(parseSingle(s));
+		if (actions.size() == 1) return actions.get(0);
+		return new CombinedAction(actions);
+	}
 
-    private List<String> splitQuoted(String input) {
-        List<String> tokens = new ArrayList<>();
-        int startPosition = 0;
-        boolean isInQuotes = false;
-        for (int currentPosition = 0; currentPosition < input.length(); currentPosition++) {
-            if (input.charAt(currentPosition) == '\"' || input.charAt(currentPosition) == '\'') {
-                isInQuotes = !isInQuotes;
-            }
-            else if (input.charAt(currentPosition) == ';' && !isInQuotes) {
-                tokens.add(input.substring(startPosition, currentPosition).strip());
-                startPosition = currentPosition + 1;
-            }
-        }
+	private List<String> splitQuoted(String input) {
+		List<String> tokens = new ArrayList<>();
+		int startPosition = 0;
+		boolean isInQuotes = false;
+		for (int currentPosition = 0; currentPosition < input.length(); currentPosition++) {
+			if (input.charAt(currentPosition) == '\"' || input.charAt(currentPosition) == '\'') {
+				isInQuotes = !isInQuotes;
+			} else if (input.charAt(currentPosition) == ';' && !isInQuotes) {
+				tokens.add(input.substring(startPosition, currentPosition).strip());
+				startPosition = currentPosition + 1;
+			}
+		}
 
-        String lastToken = input.substring(startPosition);
-        if (lastToken.equals(";")) {
-            tokens.add("");
-        } else {
-            tokens.add(lastToken.strip());
-        }
-        return tokens;
-    }
+		String lastToken = input.substring(startPosition);
+		if (lastToken.equals(";")) {
+			tokens.add("");
+		} else {
+			tokens.add(lastToken.strip());
+		}
+		return tokens;
+	}
 
 }

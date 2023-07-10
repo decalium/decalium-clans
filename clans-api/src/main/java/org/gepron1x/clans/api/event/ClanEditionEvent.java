@@ -28,27 +28,27 @@ import java.util.function.Consumer;
 
 public final class ClanEditionEvent extends AbstractClanEvent {
 
-    private static final HandlerList handlers = new HandlerList();
-    private final Consumer<ClanEdition> transaction;
+	private static final HandlerList handlers = new HandlerList();
+	private final Consumer<ClanEdition> transaction;
 
-    public ClanEditionEvent(Clan clan, Consumer<ClanEdition> transaction) {
-        super(clan);
-        this.transaction = transaction;
-    }
+	public ClanEditionEvent(Clan clan, Consumer<ClanEdition> transaction) {
+		super(clan);
+		this.transaction = transaction;
+	}
 
 
-    @Override
-    public @NotNull HandlerList getHandlers() {
-        return handlers;
-    }
+	@Override
+	public @NotNull HandlerList getHandlers() {
+		return handlers;
+	}
 
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
 
-    public Consumer<ClanEdition> transaction() {
-        return transaction;
-    }
+	public Consumer<ClanEdition> transaction() {
+		return transaction;
+	}
 
 
 }

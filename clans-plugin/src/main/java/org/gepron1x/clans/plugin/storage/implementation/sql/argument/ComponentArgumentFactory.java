@@ -28,12 +28,12 @@ import java.sql.Types;
 
 public final class ComponentArgumentFactory extends AbstractArgumentFactory<Component> {
 
-    public ComponentArgumentFactory() {
-        super(Types.VARCHAR);
-    }
+	public ComponentArgumentFactory() {
+		super(Types.VARCHAR);
+	}
 
-    @Override
-    protected Argument build(Component value, ConfigRegistry config) {
-        return (position, statement, ctx) -> statement.setString(position, GsonComponentSerializer.gson().serialize(value));
-    }
+	@Override
+	protected Argument build(Component value, ConfigRegistry config) {
+		return (position, statement, ctx) -> statement.setString(position, GsonComponentSerializer.gson().serialize(value));
+	}
 }

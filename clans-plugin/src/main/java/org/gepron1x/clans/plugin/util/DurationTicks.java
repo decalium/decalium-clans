@@ -23,15 +23,16 @@ import java.util.function.LongSupplier;
 
 public final class DurationTicks implements LongSupplier {
 
-    private static final byte MILLIS_PER_TICK = 50;
+	private static final byte MILLIS_PER_TICK = 50;
 
-    private final Duration duration;
+	private final Duration duration;
 
-    public DurationTicks(Duration duration) {
-        this.duration = duration;
-    }
-    @Override
-    public long getAsLong() {
-        return duration.toMillis() / MILLIS_PER_TICK;
-    }
+	public DurationTicks(Duration duration) {
+		this.duration = duration;
+	}
+
+	@Override
+	public long getAsLong() {
+		return duration.toMillis() / MILLIS_PER_TICK;
+	}
 }

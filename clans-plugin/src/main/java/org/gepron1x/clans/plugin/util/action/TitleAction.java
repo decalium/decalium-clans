@@ -29,20 +29,20 @@ import java.util.Objects;
 
 public final class TitleAction implements Action {
 
-    private final TextMessage title;
-    private final TextMessage subTitle;
-    private final Title.Times times;
+	private final TextMessage title;
+	private final TextMessage subTitle;
+	private final Title.Times times;
 
-    public TitleAction(TextMessage title, TextMessage subTitle, Title.Times times) {
-        this.title = title;
-        this.subTitle = subTitle;
-        this.times = times;
-    }
+	public TitleAction(TextMessage title, TextMessage subTitle, Title.Times times) {
+		this.title = title;
+		this.subTitle = subTitle;
+		this.times = times;
+	}
 
-    @Override
-    public void send(Audience audience, TagResolver resolver) {
-        audience.showTitle(Title.title(title.with(resolver).asComponent(), subTitle.with(resolver).asComponent(), times));
-    }
+	@Override
+	public void send(Audience audience, TagResolver resolver) {
+		audience.showTitle(Title.title(title.with(resolver).asComponent(), subTitle.with(resolver).asComponent(), times));
+	}
 
 	@Override
 	public boolean equals(Object o) {

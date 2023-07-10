@@ -21,5 +21,5 @@ package org.gepron1x.clans.gui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 
 public interface GuiLike {
-    Gui asGui();
+	Gui asGui();
 }

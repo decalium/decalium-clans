@@ -22,5 +22,5 @@ import org.bukkit.entity.Player;
 
 public interface Users {
 
-    ClanUser userFor(Player player);
+	ClanUser userFor(Player player);
 }

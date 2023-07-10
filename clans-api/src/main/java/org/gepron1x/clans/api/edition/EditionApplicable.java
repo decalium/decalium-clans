@@ -22,5 +22,5 @@ import java.util.function.Consumer;
 
 public interface EditionApplicable<T, E extends Edition<T>> {
 
-    void applyEdition(Consumer<E> consumer);
+	void applyEdition(Consumer<E> consumer);
 }

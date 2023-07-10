@@ -30,54 +30,54 @@ import java.util.function.Consumer;
 
 public final class UuidPlayerReference implements PlayerReference {
 
-    private final Server server;
-    private final UUID uniqueId;
+	private final Server server;
+	private final UUID uniqueId;
 
-    public UuidPlayerReference(Server server, UUID uniqueId) {
+	public UuidPlayerReference(Server server, UUID uniqueId) {
 
-        this.server = server;
-        this.uniqueId = uniqueId;
-    }
+		this.server = server;
+		this.uniqueId = uniqueId;
+	}
 
-    @Override
-    public boolean ifOnline(Consumer<Player> consumer) {
-        Optional<Player> opt = player();
-        opt.ifPresent(consumer);
-        return opt.isPresent();
-    }
+	@Override
+	public boolean ifOnline(Consumer<Player> consumer) {
+		Optional<Player> opt = player();
+		opt.ifPresent(consumer);
+		return opt.isPresent();
+	}
 
-    @Override
-    public Optional<Player> player() {
-        return Optional.ofNullable(this.server.getPlayer(this.uniqueId));
-    }
+	@Override
+	public Optional<Player> player() {
+		return Optional.ofNullable(this.server.getPlayer(this.uniqueId));
+	}
 
-    @Override
-    public PlayerProfile profile() {
-        return player().map(Player::getPlayerProfile).orElseGet(() -> {
-            PlayerProfile profile = server.createProfile(this.uniqueId);
-            profile.completeFromCache();
-            return profile;
-        });
-    }
+	@Override
+	public PlayerProfile profile() {
+		return player().map(Player::getPlayerProfile).orElseGet(() -> {
+			PlayerProfile profile = server.createProfile(this.uniqueId);
+			profile.completeFromCache();
+			return profile;
+		});
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UuidPlayerReference that = (UuidPlayerReference) o;
-        return server.equals(that.server) && uniqueId.equals(that.uniqueId);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		UuidPlayerReference that = (UuidPlayerReference) o;
+		return server.equals(that.server) && uniqueId.equals(that.uniqueId);
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(server, uniqueId);
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(server, uniqueId);
+	}
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("server", server)
-                .add("uniqueId", uniqueId)
-                .toString();
-    }
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("server", server)
+				.add("uniqueId", uniqueId)
+				.toString();
+	}
 }

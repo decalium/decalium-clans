@@ -38,21 +38,22 @@ import java.util.UUID;
 public interface ClanMember extends Buildable<ClanMember, ClanMember.Builder>, ComponentLike, Comparable<ClanMember> {
 
 
-    @NotNull UUID uniqueId();
+	@NotNull UUID uniqueId();
 
 	@NotNull Instant joined();
-    @NotNull ClanRole role();
 
-    default boolean hasPermission(@NotNull ClanPermission permission) {
-        return role().permissions().contains(permission);
-    }
+	@NotNull ClanRole role();
 
-    @Contract("_ -> new")
-    @NotNull ClanMember withRole(@NotNull ClanRole role);
+	default boolean hasPermission(@NotNull ClanPermission permission) {
+		return role().permissions().contains(permission);
+	}
 
-    default Optional<Player> asPlayer(@NotNull Server server) {
-        return Optional.ofNullable(server.getPlayer(uniqueId()));
-    }
+	@Contract("_ -> new")
+	@NotNull ClanMember withRole(@NotNull ClanRole role);
+
+	default Optional<Player> asPlayer(@NotNull Server server) {
+		return Optional.ofNullable(server.getPlayer(uniqueId()));
+	}
 
 	@Override
 	default int compareTo(@NotNull ClanMember member) {
@@ -60,36 +61,37 @@ public interface ClanMember extends Buildable<ClanMember, ClanMember.Builder>, C
 	}
 
 	@NotNull
-    default OfflinePlayer asOffline(@NotNull Server server) {
-        return server.getOfflinePlayer(uniqueId());
-    }
+	default OfflinePlayer asOffline(@NotNull Server server) {
+		return server.getOfflinePlayer(uniqueId());
+	}
 
-    default Component renderName(@NotNull Server server) {
-        return new RenderedPlayerName(uniqueId(), server).asComponent();
-    }
+	default Component renderName(@NotNull Server server) {
+		return new RenderedPlayerName(uniqueId(), server).asComponent();
+	}
 
-    @Override
-    @NotNull
-    default Component asComponent() {
-        return renderName(Bukkit.getServer());
-    }
+	@Override
+	@NotNull
+	default Component asComponent() {
+		return renderName(Bukkit.getServer());
+	}
 
-    interface Builder extends Buildable.Builder<ClanMember>, EditionApplicable<ClanMember, MemberEdition> {
-        @Contract("_ -> this")
-        @NotNull Builder uuid(UUID uuid);
+	interface Builder extends Buildable.Builder<ClanMember>, EditionApplicable<ClanMember, MemberEdition> {
+		@Contract("_ -> this")
+		@NotNull Builder uuid(UUID uuid);
 
-        @Contract("_ -> this")
-        @NotNull default Builder player(OfflinePlayer player) {
-            return uuid(player.getUniqueId());
-        }
+		@Contract("_ -> this")
+		@NotNull
+		default Builder player(OfflinePlayer player) {
+			return uuid(player.getUniqueId());
+		}
 
-        @Contract("_ -> this")
-        @NotNull Builder role(@NotNull ClanRole role);
+		@Contract("_ -> this")
+		@NotNull Builder role(@NotNull ClanRole role);
 
 		@Contract("_ -> this")
 		@NotNull Builder joined(Instant date);
 
 
-    }
+	}
 
 }

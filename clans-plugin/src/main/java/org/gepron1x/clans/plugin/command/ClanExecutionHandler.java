@@ -34,31 +34,31 @@ import org.slf4j.Logger;
 
 public final class ClanExecutionHandler implements CommandExecutionHandler<CommandSender> {
 
-    public static final CloudKey<Clan> CLAN = SimpleCloudKey.of("decalium_clan", TypeToken.get(Clan.class));
-    public static final CloudKey<ClanMember> CLAN_MEMBER = SimpleCloudKey.of("decalium_member", TypeToken.get(ClanMember.class));
+	public static final CloudKey<Clan> CLAN = SimpleCloudKey.of("decalium_clan", TypeToken.get(Clan.class));
+	public static final CloudKey<ClanMember> CLAN_MEMBER = SimpleCloudKey.of("decalium_member", TypeToken.get(ClanMember.class));
 
-    private final CommandExecutionHandler<CommandSender> delegate;
-    private final Users users;
-    private final MessagesConfig messages;
-    private final Logger logger;
+	private final CommandExecutionHandler<CommandSender> delegate;
+	private final Users users;
+	private final MessagesConfig messages;
+	private final Logger logger;
 
-    public ClanExecutionHandler(CommandExecutionHandler<CommandSender> delegate,
-                                Users users,
-                                MessagesConfig messages,
-                                Logger logger) {
-        this.delegate = delegate;
-        this.users = users;
-        this.messages = messages;
-        this.logger = logger;
-    }
+	public ClanExecutionHandler(CommandExecutionHandler<CommandSender> delegate,
+								Users users,
+								MessagesConfig messages,
+								Logger logger) {
+		this.delegate = delegate;
+		this.users = users;
+		this.messages = messages;
+		this.logger = logger;
+	}
 
-    @Override
-    public void execute(@NonNull CommandContext<CommandSender> commandContext) {
-        Player player = (Player) commandContext.getSender();
-        users.userFor(player).clan().ifPresentOrElse(clan -> {
-            commandContext.store(CLAN, clan);
-            commandContext.store(CLAN_MEMBER, clan.member(player).orElseThrow());
-            this.delegate.execute(commandContext);
-        }, () -> messages.notInTheClan().send(player));
-    }
+	@Override
+	public void execute(@NonNull CommandContext<CommandSender> commandContext) {
+		Player player = (Player) commandContext.getSender();
+		users.userFor(player).clan().ifPresentOrElse(clan -> {
+			commandContext.store(CLAN, clan);
+			commandContext.store(CLAN_MEMBER, clan.member(player).orElseThrow());
+			this.delegate.execute(commandContext);
+		}, () -> messages.notInTheClan().send(player));
+	}
 }

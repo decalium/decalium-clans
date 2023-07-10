@@ -30,18 +30,16 @@ import java.util.UUID;
 public interface CachingClanRepository extends ClanRepository {
 
 
-    Optional<Clan> userClanIfCached(@NotNull UUID uuid);
+	Optional<Clan> userClanIfCached(@NotNull UUID uuid);
 
-    default Optional<Clan> userClanIfCached(@NotNull OfflinePlayer player) {
-        return userClanIfCached(player.getUniqueId());
-    }
+	default Optional<Clan> userClanIfCached(@NotNull OfflinePlayer player) {
+		return userClanIfCached(player.getUniqueId());
+	}
 
-    Optional<Clan> clanIfCached(@NotNull String tag);
+	Optional<Clan> clanIfCached(@NotNull String tag);
 
-    @UnmodifiableView
-    Collection<Clan> cachedClans();
-
-
+	@UnmodifiableView
+	Collection<Clan> cachedClans();
 
 
 }

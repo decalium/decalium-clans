@@ -51,21 +51,20 @@ public class WgRepositoryImpl extends AdaptingClanRepository implements CachingC
 	private final AsyncRegionStorage regionStorage;
 
 	public WgRepositoryImpl(CachingClanRepository repository, Configs configs, WorldGuard worldGuard, GlobalRegions regions, AsyncRegionStorage regionStorage) {
-        super(repository, clan -> new WgClan(clan, configs,  worldGuard.getPlatform().getRegionContainer(), regions.clanRegions(clan)));
+		super(repository, clan -> new WgClan(clan, configs, worldGuard.getPlatform().getRegionContainer(), regions.clanRegions(clan)));
 		this.clanRepository = repository;
 		this.worldGuard = worldGuard;
 		this.regions = regions;
 		this.regionStorage = regionStorage;
 	}
 
-    @Override
-    public @NotNull CentralisedFuture<Boolean> removeClan(@NotNull Clan clan) {
+	@Override
+	public @NotNull CentralisedFuture<Boolean> removeClan(@NotNull Clan clan) {
 		return regionStorage.saveAsync().thenCompose($ -> super.removeClan(clan)).thenApplySync(bool -> {
 			regions.clanRegions(clan).clear();
-			if(!bool) return false;
-			return true;
+			return bool;
 		});
-    }
+	}
 
 	@Override
 	public Optional<Clan> userClanIfCached(@NotNull UUID uuid) {

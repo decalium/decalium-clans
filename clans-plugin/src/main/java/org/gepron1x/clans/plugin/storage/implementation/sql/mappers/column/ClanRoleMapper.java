@@ -29,14 +29,15 @@ import java.sql.SQLException;
 
 public final class ClanRoleMapper implements ColumnMapper<ClanRole> {
 
-    private final RoleRegistry roleRegistry;
+	private final RoleRegistry roleRegistry;
 
-    public ClanRoleMapper(@NotNull RoleRegistry roleRegistry) {
+	public ClanRoleMapper(@NotNull RoleRegistry roleRegistry) {
 
-        this.roleRegistry = roleRegistry;
-    }
-    @Override
-    public ClanRole map(ResultSet r, int columnNumber, StatementContext ctx) throws SQLException {
-        return roleRegistry.value(r.getString(columnNumber)).orElseThrow();
-    }
+		this.roleRegistry = roleRegistry;
+	}
+
+	@Override
+	public ClanRole map(ResultSet r, int columnNumber, StatementContext ctx) throws SQLException {
+		return roleRegistry.value(r.getString(columnNumber)).orElseThrow();
+	}
 }

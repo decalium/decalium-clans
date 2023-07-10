@@ -25,20 +25,20 @@ import org.slf4j.Logger;
 
 public final class FutureCommandExecutionHandler<S> implements CommandExecutionHandler<S> {
 
-    private final FutureCommandExecution<S> execution;
-    private final Logger logger;
+	private final FutureCommandExecution<S> execution;
+	private final Logger logger;
 
-    public FutureCommandExecutionHandler(FutureCommandExecution<S> execution, Logger logger) {
-        this.execution = execution;
-        this.logger = logger;
-    }
+	public FutureCommandExecutionHandler(FutureCommandExecution<S> execution, Logger logger) {
+		this.execution = execution;
+		this.logger = logger;
+	}
 
-    @Override
-    public void execute(@NonNull CommandContext<S> commandContext) {
-        execution.execute(commandContext).exceptionally(t -> {
-            logger.error("An error occured: ", t);
-            return null;
-        });
+	@Override
+	public void execute(@NonNull CommandContext<S> commandContext) {
+		execution.execute(commandContext).exceptionally(t -> {
+			logger.error("An error occured: ", t);
+			return null;
+		});
 
-    }
+	}
 }

@@ -42,77 +42,66 @@ import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.util.concurrent.CompletionException;
 import java.util.function.Function;
+
 public abstract class AbstractClanCommand implements AbstractCommand {
 
-    public static final CommandMeta.Key<Component> DESCRIPTION = CommandMeta.Key.of(Component.class, "cmd_description");
+	public static final CommandMeta.Key<Component> DESCRIPTION = CommandMeta.Key.of(Component.class, "cmd_description");
 
-    public static final CloudKey<Void> CLAN_REQUIRED = SimpleCloudKey.of("clan_required");
-
-
-    protected final Logger logger;
-    protected final Users users;
-    protected final CachingClanRepository clanRepository;
-    protected final ClansConfig clansConfig;
-    protected final MessagesConfig messages;
-    protected final FactoryOfTheFuture futuresFactory;
-
-    public AbstractClanCommand(Logger logger, CachingClanRepository clanRepository, Users users,
-                               Configs configs,
-                               FactoryOfTheFuture futuresFactory) {
-        this.logger = logger;
-        this.clanRepository = clanRepository;
-        this.users = users;
-        this.clansConfig = configs.config();
-        this.messages = configs.messages();
-        this.futuresFactory = futuresFactory;
-    }
+	public static final CloudKey<Void> CLAN_REQUIRED = SimpleCloudKey.of("clan_required");
 
 
+	protected final Logger logger;
+	protected final Users users;
+	protected final CachingClanRepository clanRepository;
+	protected final ClansConfig clansConfig;
+	protected final MessagesConfig messages;
+	protected final FactoryOfTheFuture futuresFactory;
 
-    public abstract void register(CommandManager<CommandSender> manager);
-
-
-    
-    protected <T> T exceptionHandler(Throwable throwable) {
-        logger.error("A future completed exceptionally: ", throwable);
-        return null;
-    }
-
-    protected <T> Function<Throwable, T> exceptionHandler(Audience sender) {
-        return t -> {
-            if(t instanceof CompletionException completionException && completionException.getCause() instanceof DescribingException ex) {
-                ex.send(sender);
-                return null;
-            }
-            sender.sendMessage(Component.text("Error happened while executing command; see console for more info.", NamedTextColor.RED));
-            return exceptionHandler(t);
-        };
-    }
-
-    protected ClanExecutionHandler clanExecutionHandler(CommandExecutionHandler<CommandSender> delegate) {
-        return new ClanExecutionHandler(delegate, this.users, this.messages, this.logger);
-    }
-
-    protected PermissiveClanExecutionHandler permissionRequired(CommandExecutionHandler<CommandSender> delegate, ClanPermission permission) {
-        return new PermissiveClanExecutionHandler(delegate, permission, this.messages);
-    }
-
-    protected CommandPermission clanRequired() {
-        return PredicatePermission.of(SimpleCloudKey.of("clan_required"), sender -> {
-            if(!(sender instanceof Player player)) return false;
-            return this.users.userFor(player).clan().isPresent();
-        });
-    }
+	public AbstractClanCommand(Logger logger, CachingClanRepository clanRepository, Users users,
+							   Configs configs,
+							   FactoryOfTheFuture futuresFactory) {
+		this.logger = logger;
+		this.clanRepository = clanRepository;
+		this.users = users;
+		this.clansConfig = configs.config();
+		this.messages = configs.messages();
+		this.futuresFactory = futuresFactory;
+	}
 
 
+	public abstract void register(CommandManager<CommandSender> manager);
 
 
+	protected <T> T exceptionHandler(Throwable throwable) {
+		logger.error("A future completed exceptionally: ", throwable);
+		return null;
+	}
 
+	protected <T> Function<Throwable, T> exceptionHandler(Audience sender) {
+		return t -> {
+			if (t instanceof CompletionException completionException && completionException.getCause() instanceof DescribingException ex) {
+				ex.send(sender);
+				return null;
+			}
+			sender.sendMessage(Component.text("Error happened while executing command; see console for more info.", NamedTextColor.RED));
+			return exceptionHandler(t);
+		};
+	}
 
+	protected ClanExecutionHandler clanExecutionHandler(CommandExecutionHandler<CommandSender> delegate) {
+		return new ClanExecutionHandler(delegate, this.users, this.messages, this.logger);
+	}
 
+	protected PermissiveClanExecutionHandler permissionRequired(CommandExecutionHandler<CommandSender> delegate, ClanPermission permission) {
+		return new PermissiveClanExecutionHandler(delegate, permission, this.messages);
+	}
 
-
-
+	protected CommandPermission clanRequired() {
+		return PredicatePermission.of(SimpleCloudKey.of("clan_required"), sender -> {
+			if (!(sender instanceof Player player)) return false;
+			return this.users.userFor(player).clan().isPresent();
+		});
+	}
 
 
 }

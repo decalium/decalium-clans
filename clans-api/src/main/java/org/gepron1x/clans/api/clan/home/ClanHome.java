@@ -31,43 +31,44 @@ import org.jetbrains.annotations.NotNull;
 import java.util.UUID;
 
 public interface ClanHome extends Buildable<ClanHome, ClanHome.Builder>, ComponentLike {
-    @Override
-    @NotNull
-    default Component asComponent() {
-        return displayName();
-    }
+	@Override
+	@NotNull
+	default Component asComponent() {
+		return displayName();
+	}
 
-    @NotNull String name();
-    @NotNull Component displayName();
-    @NotNull UUID creator();
-    @NotNull Location location();
-    @NotNull ItemStack icon();
+	@NotNull String name();
 
-    int level();
+	@NotNull Component displayName();
 
+	@NotNull UUID creator();
 
+	@NotNull Location location();
 
-    interface Builder extends Buildable.Builder<ClanHome>, EditionApplicable<ClanHome, HomeEdition> {
-        @Contract("_ -> this")
-        @NotNull Builder name(@NotNull String name);
+	@NotNull ItemStack icon();
 
-        @Contract("_ -> this")
-        @NotNull Builder displayName(@NotNull Component displayName);
-
-        @Contract("_ -> this")
-        @NotNull Builder creator(@NotNull UUID creator);
-
-        @Contract("_ -> this")
-        @NotNull Builder location(@NotNull Location location);
-
-        @Contract("_ -> this")
-        @NotNull Builder icon(@NotNull ItemStack icon);
-
-        @Contract("_ -> this")
-        @NotNull Builder level(int level);
+	int level();
 
 
+	interface Builder extends Buildable.Builder<ClanHome>, EditionApplicable<ClanHome, HomeEdition> {
+		@Contract("_ -> this")
+		@NotNull Builder name(@NotNull String name);
+
+		@Contract("_ -> this")
+		@NotNull Builder displayName(@NotNull Component displayName);
+
+		@Contract("_ -> this")
+		@NotNull Builder creator(@NotNull UUID creator);
+
+		@Contract("_ -> this")
+		@NotNull Builder location(@NotNull Location location);
+
+		@Contract("_ -> this")
+		@NotNull Builder icon(@NotNull ItemStack icon);
+
+		@Contract("_ -> this")
+		@NotNull Builder level(int level);
 
 
-    }
+	}
 }

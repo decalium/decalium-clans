@@ -20,6 +20,7 @@ public interface Decorations {
 
 		@AnnotationBasedSorter.Order(1)
 		TextMessage name();
+
 		@AnnotationBasedSorter.Order(2)
 		Material material();
 
@@ -89,18 +90,17 @@ public interface Decorations {
 
 	@ConfDefault.DefaultObject("emptyListDefault")
 	List<@SubSection Gradient> gradients();
+
 	@ConfDefault.DefaultObject("emptyListDefault")
 	List<@SubSection Color> colors();
+
 	@ConfDefault.DefaultObject("emptyListDefault")
 	List<@SubSection Symbol> symbols();
-
 
 
 	static <T> List<T> emptyListDefault() {
 		return List.of();
 	}
-
-
 
 
 }

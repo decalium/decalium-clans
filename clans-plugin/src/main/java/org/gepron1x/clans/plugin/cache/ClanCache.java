@@ -29,41 +29,40 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class ClanCache {
-    private final Map<String, CachingClan> clanMap = new ConcurrentHashMap<>();
-    private final Map<UUID, CachingClan> userClanMap = new ConcurrentHashMap<>();
+	private final Map<String, CachingClan> clanMap = new ConcurrentHashMap<>();
+	private final Map<UUID, CachingClan> userClanMap = new ConcurrentHashMap<>();
 
-    public ClanCache() {
+	public ClanCache() {
 
-    }
+	}
 
-    @Nullable
-    public CachingClan getUserClan(@NotNull UUID uuid) {
-        return userClanMap.get(uuid);
+	@Nullable
+	public CachingClan getUserClan(@NotNull UUID uuid) {
+		return userClanMap.get(uuid);
 
-    }
+	}
 
-    public @NotNull @UnmodifiableView Collection<Clan> getClans() {
-        return Collections.unmodifiableCollection(clanMap.values());
-    }
-
-
-
-    public boolean isCached(@NotNull String tag) {
-        return clanMap.containsKey(tag);
-    }
-
-    @Nullable
-    public CachingClan getClan(@NotNull String tag) {
-        return clanMap.get(tag);
-    }
+	public @NotNull @UnmodifiableView Collection<Clan> getClans() {
+		return Collections.unmodifiableCollection(clanMap.values());
+	}
 
 
-    public void cacheClan(CachingClan clan) {
-        clanMap.put(clan.tag(), clan);
-        for(ClanMember member : clan.members()) {
-            userClanMap.put(member.uniqueId(), clan);
-        }
-    }
+	public boolean isCached(@NotNull String tag) {
+		return clanMap.containsKey(tag);
+	}
+
+	@Nullable
+	public CachingClan getClan(@NotNull String tag) {
+		return clanMap.get(tag);
+	}
+
+
+	public void cacheClan(CachingClan clan) {
+		clanMap.put(clan.tag(), clan);
+		for (ClanMember member : clan.members()) {
+			userClanMap.put(member.uniqueId(), clan);
+		}
+	}
 
 	public void cacheClan(UUID user, CachingClan clan) {
 		userClanMap.put(user, clan);
@@ -74,30 +73,30 @@ public final class ClanCache {
 	}
 
 
-    public void removeClan(String tag) {
-        Clan clan = clanMap.remove(tag);
-        if(clan == null) return;
-        for(UUID uuid : clan.memberMap().keySet()) userClanMap.remove(uuid);
-    }
+	public void removeClan(String tag) {
+		Clan clan = clanMap.remove(tag);
+		if (clan == null) return;
+		for (UUID uuid : clan.memberMap().keySet()) userClanMap.remove(uuid);
+	}
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("cachedClans", clanMap.values())
-                .toString();
-    }
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("cachedClans", clanMap.values())
+				.toString();
+	}
 
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ClanCache clanCache = (ClanCache) o;
-        return clanMap.equals(clanCache.clanMap) && userClanMap.equals(clanCache.userClanMap);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		ClanCache clanCache = (ClanCache) o;
+		return clanMap.equals(clanCache.clanMap) && userClanMap.equals(clanCache.userClanMap);
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(clanMap, userClanMap);
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(clanMap, userClanMap);
+	}
 }

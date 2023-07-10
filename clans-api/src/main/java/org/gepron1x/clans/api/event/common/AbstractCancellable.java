@@ -22,16 +22,16 @@ import org.bukkit.event.Cancellable;
 
 public interface AbstractCancellable extends Cancellable {
 
-    Cancellation cancellation();
+	Cancellation cancellation();
 
-    @Override
-    default boolean isCancelled() {
-        return cancellation().isCancelled();
-    }
+	@Override
+	default boolean isCancelled() {
+		return cancellation().isCancelled();
+	}
 
-    @Override
-    default void setCancelled(boolean b) {
-        cancellation().setCancelled(b);
-    }
+	@Override
+	default void setCancelled(boolean b) {
+		cancellation().setCancelled(b);
+	}
 
 }

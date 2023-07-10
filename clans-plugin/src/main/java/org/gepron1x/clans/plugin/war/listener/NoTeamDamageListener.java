@@ -30,30 +30,30 @@ import java.util.Optional;
 
 public final class NoTeamDamageListener implements Listener {
 
-    private final Wars wars;
+	private final Wars wars;
 
-    public NoTeamDamageListener(Wars wars) {
-        this.wars = wars;
-    }
+	public NoTeamDamageListener(Wars wars) {
+		this.wars = wars;
+	}
 
 
-    @EventHandler
-    public void onDamage(EntityDamageByEntityEvent event) {
-        Optional<Player> opt = getDamager(event.getDamager());
-        if(opt.isEmpty()) return;
-        Player damager = opt.orElseThrow();
-        if(!(event.getEntity() instanceof Player player)) return;
-        if(damager.equals(player)) return;
-        wars.currentWar(damager).flatMap(war -> war.team(damager)).ifPresent(team -> {
-            if(team.isMember(player)) {
-                event.setCancelled(true);
-            }
-        });
-    }
+	@EventHandler
+	public void onDamage(EntityDamageByEntityEvent event) {
+		Optional<Player> opt = getDamager(event.getDamager());
+		if (opt.isEmpty()) return;
+		Player damager = opt.orElseThrow();
+		if (!(event.getEntity() instanceof Player player)) return;
+		if (damager.equals(player)) return;
+		wars.currentWar(damager).flatMap(war -> war.team(damager)).ifPresent(team -> {
+			if (team.isMember(player)) {
+				event.setCancelled(true);
+			}
+		});
+	}
 
-    public Optional<Player> getDamager(Entity entity) {
-        return new DamagerOf(entity).damager();
-    }
+	public Optional<Player> getDamager(Entity entity) {
+		return new DamagerOf(entity).damager();
+	}
 
 
 }

@@ -26,5 +26,5 @@ import java.util.function.Consumer;
 
 public interface Clan extends IdentifiedDraftClan {
 
-    @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction);
+	@NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction);
 }

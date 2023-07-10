@@ -21,5 +21,5 @@ package org.gepron1x.clans.api.event.common;
 import org.gepron1x.clans.api.clan.DraftClan;
 
 public interface DraftClanEvent {
-    DraftClan clan();
+	DraftClan clan();
 }

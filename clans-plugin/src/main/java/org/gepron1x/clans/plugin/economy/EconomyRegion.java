@@ -46,7 +46,7 @@ public final class EconomyRegion implements ClanRegion {
 
 	@Override
 	public Shield addShield(Duration duration) {
-		if(!player.has(prices.shield())) {
+		if (!player.has(prices.shield())) {
 			throw new NotEnoughMoneyException(prices.notEnoughMoney().with("price", prices.shield()), prices.shield(), player.balance());
 		}
 		return region.addShield(duration);

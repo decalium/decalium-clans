@@ -30,71 +30,71 @@ import java.util.Collection;
 
 public interface Formatted<T extends Formatted<T>> { // i have no clue how to call this
 
-    default T with(String prefix, TagResolver resolver) {
-        return with(PrefixedTagResolver.prefixed(resolver, prefix));
-    }
-    T with(TagResolver tagResolver);
+	default T with(String prefix, TagResolver resolver) {
+		return with(PrefixedTagResolver.prefixed(resolver, prefix));
+	}
 
-    T with(String key, Tag tag);
+	T with(TagResolver tagResolver);
 
-
-    T with(Collection<? extends TagResolver> resolvers);
+	T with(String key, Tag tag);
 
 
-    default T with(TagResolver... resolvers) {
-        return with(Arrays.asList(resolvers));
-    }
+	T with(Collection<? extends TagResolver> resolvers);
 
 
-
-    default T with(String key, ComponentLike like) {
-        return with(key, like.asComponent());
-    }
-
-    default T with(String key, Component component) {
-        return with(key, Tag.selfClosingInserting(component));
-    }
-
-    default T withMiniMessage(String key, String value) {
-        return with(key, Tag.preProcessParsed(value));
-    }
+	default T with(TagResolver... resolvers) {
+		return with(Arrays.asList(resolvers));
+	}
 
 
-    default T with(String key, String value) {
-        return with(key, Component.text(value));
-    }
+	default T with(String key, ComponentLike like) {
+		return with(key, like.asComponent());
+	}
 
-    default T with(String key, CharSequence sequence) {
-        return with(key, sequence.toString());
-    }
+	default T with(String key, Component component) {
+		return with(key, Tag.selfClosingInserting(component));
+	}
 
-    default T with(String key, int value) {
-        return with(key, Component.text(value));
-    }
+	default T withMiniMessage(String key, String value) {
+		return with(key, Tag.preProcessParsed(value));
+	}
 
-    default T with(String key, double value) {
-        return with(key, Component.text(value));
-    }
 
-    default T with(String key, float value) {
-        return with(key, Component.text(value));
-    }
+	default T with(String key, String value) {
+		return with(key, Component.text(value));
+	}
 
-    default T with(String key, short value) {
-        return with(key, Component.text(value));
-    }
+	default T with(String key, CharSequence sequence) {
+		return with(key, sequence.toString());
+	}
 
-    default T with(String key, long value) {
-        return with(key, Component.text(value));
-    }
+	default T with(String key, int value) {
+		return with(key, Component.text(value));
+	}
 
-    default T with(String key, boolean value) {
-        return with(key, Component.text(value));
-    }
+	default T with(String key, double value) {
+		return with(key, Component.text(value));
+	}
 
-    default T with(String key, char value) {
-        return with(key, Component.text(value));
-    }
+	default T with(String key, float value) {
+		return with(key, Component.text(value));
+	}
+
+	default T with(String key, short value) {
+		return with(key, Component.text(value));
+	}
+
+	default T with(String key, long value) {
+		return with(key, Component.text(value));
+	}
+
+	default T with(String key, boolean value) {
+		return with(key, Component.text(value));
+	}
+
+	default T with(String key, char value) {
+		return with(key, Component.text(value));
+	}
 
 	default T booleanState(String key, boolean value) {
 		return with(new BooleanStateResolver(key, value));

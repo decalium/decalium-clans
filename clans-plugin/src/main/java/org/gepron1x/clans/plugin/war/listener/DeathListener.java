@@ -31,25 +31,25 @@ import java.util.Optional;
 
 public final class DeathListener implements Listener {
 
-    private final Wars wars;
+	private final Wars wars;
 
-    public DeathListener(Wars wars) {
-        this.wars = wars;
-    }
+	public DeathListener(Wars wars) {
+		this.wars = wars;
+	}
 
-    @EventHandler(ignoreCancelled = true)
-    public void on(PlayerDeathEvent event) {
-        wars.onDeath(event.getEntity());
-    }
+	@EventHandler(ignoreCancelled = true)
+	public void on(PlayerDeathEvent event) {
+		wars.onDeath(event.getEntity());
+	}
 
-    @EventHandler
-    public void on(PlayerQuitEvent event) {
-        Player player = event.getPlayer();
-        if(wars.currentWar(player).isPresent()) {
-            player.setHealth(0);
-            Optional.ofNullable(player.getLastDamageCause()).filter(EntityDamageByEntityEvent.class::isInstance)
-                    .map(EntityDamageByEntityEvent.class::cast).flatMap(e -> new DamagerOf(e.getDamager()).damager()).ifPresent(player::setKiller);
-        }
-        wars.onDeath(player);
-    }
+	@EventHandler
+	public void on(PlayerQuitEvent event) {
+		Player player = event.getPlayer();
+		if (wars.currentWar(player).isPresent()) {
+			player.setHealth(0);
+			Optional.ofNullable(player.getLastDamageCause()).filter(EntityDamageByEntityEvent.class::isInstance)
+					.map(EntityDamageByEntityEvent.class::cast).flatMap(e -> new DamagerOf(e.getDamager()).damager()).ifPresent(player::setKiller);
+		}
+		wars.onDeath(player);
+	}
 }

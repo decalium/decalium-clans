@@ -23,19 +23,19 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class PrefixedRowMapper<T> implements RowMapper<T> {
-    protected final String prefix;
+	protected final String prefix;
 
-    public PrefixedRowMapper(@Nullable String prefix) {
-        this.prefix = prefix == null ? "" : prefix + "_";
-    }
+	public PrefixedRowMapper(@Nullable String prefix) {
+		this.prefix = prefix == null ? "" : prefix + "_";
+	}
 
-    public PrefixedRowMapper() {
-        this(null);
-    }
+	public PrefixedRowMapper() {
+		this(null);
+	}
 
-    protected String prefixed(@NotNull String value) {
-        return prefix + value;
-    }
+	protected String prefixed(@NotNull String value) {
+		return prefix + value;
+	}
 
 
 }

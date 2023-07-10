@@ -28,7 +28,7 @@ public final class SqlQueue {
 		transactions.clear();
 		try {
 			jdbi.useHandle(handle -> {
-				for(var consumer : queue) {
+				for (var consumer : queue) {
 					consumer.useHandle(handle);
 				}
 			});

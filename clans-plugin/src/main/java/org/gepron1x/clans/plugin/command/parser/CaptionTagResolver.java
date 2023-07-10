@@ -27,17 +27,17 @@ import org.jetbrains.annotations.Nullable;
 
 public final class CaptionTagResolver implements TagResolver.WithoutArguments {
 
-    private final ParserException exception;
+	private final ParserException exception;
 
-    public CaptionTagResolver(ParserException exception) {
-        this.exception = exception;
-    }
+	public CaptionTagResolver(ParserException exception) {
+		this.exception = exception;
+	}
 
-    @Override
-    public @Nullable Tag resolve(@NotNull String name) {
-        for(CaptionVariable variable : exception.captionVariables()) {
-            if(variable.getKey().equals(name)) return Tag.preProcessParsed(variable.getValue());
-        }
-        return null;
-    }
+	@Override
+	public @Nullable Tag resolve(@NotNull String name) {
+		for (CaptionVariable variable : exception.captionVariables()) {
+			if (variable.getKey().equals(name)) return Tag.preProcessParsed(variable.getValue());
+		}
+		return null;
+	}
 }

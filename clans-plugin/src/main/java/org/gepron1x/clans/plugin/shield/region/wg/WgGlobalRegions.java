@@ -25,6 +25,7 @@ public final class WgGlobalRegions implements GlobalRegions {
 		this.container = container;
 		this.configs = configs;
 	}
+
 	@Override
 	public Set<ClanRegions> listRegions() {
 		return wgClanRegions().collect(Collectors.toUnmodifiableSet());
@@ -37,6 +38,7 @@ public final class WgGlobalRegions implements GlobalRegions {
 	public void update() {
 		wgClanRegions().forEach(WgClanRegions::updateRegions);
 	}
+
 	@Override
 	public ClanRegions clanRegions(Clan clan) {
 		return new WgClanRegions(regions.clanRegions(clan), regions, container, configs);
@@ -44,7 +46,7 @@ public final class WgGlobalRegions implements GlobalRegions {
 
 	@Override
 	public void remove(int id) {
-		for(ClanRegions regions : listRegions()) {
+		for (ClanRegions regions : listRegions()) {
 			regions.region(id).ifPresent(regions::remove);
 		}
 		regions.remove(id);

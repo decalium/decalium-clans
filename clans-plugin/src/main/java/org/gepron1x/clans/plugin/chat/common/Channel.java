@@ -26,20 +26,18 @@ import org.bukkit.entity.Player;
 import java.util.Set;
 
 public interface Channel {
-    Component render(Player sender, Audience recipient, Component message, Component originalMessage);
+	Component render(Player sender, Audience recipient, Component message, Component originalMessage);
 
-    String prefix();
+	String prefix();
 
-    boolean usePermitted(Player player);
+	boolean usePermitted(Player player);
 
-    Set<? extends Audience> recipients(Player player);
+	Set<? extends Audience> recipients(Player player);
 
-    Set<Player> filter(Player sender, Set<Player> receivers);
+	Set<Player> filter(Player sender, Set<Player> receivers);
 
 
-
-    Key key();
-
+	Key key();
 
 
 }

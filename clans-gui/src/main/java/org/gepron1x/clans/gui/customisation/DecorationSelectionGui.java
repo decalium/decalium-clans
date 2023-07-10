@@ -30,7 +30,6 @@ public class DecorationSelectionGui<T extends Decorations.BaseDecoration> implem
 	private final Clan clan;
 
 
-
 	public DecorationSelectionGui(List<T> decorations, Clan clan) {
 		this.decorations = decorations;
 		this.clan = clan;
@@ -41,13 +40,13 @@ public class DecorationSelectionGui<T extends Decorations.BaseDecoration> implem
 		AtomicReference<ItemStack> selected = new AtomicReference<>(null);
 		CombinedDecoration tagDecoration = clan.tagDecoration();
 
-		 var gui = new PaginatedGui<>(4, decorations, deco -> {
+		var gui = new PaginatedGui<>(4, decorations, deco -> {
 			boolean matches = deco.has(clan.tagDecoration());
 			CombinedDecoration newDecoration = deco.apply(tagDecoration);
 			var builder = ItemBuilder.create(deco.material()).edit(m -> {
 				m.displayName(deco.name().asComponent().decoration(TextDecoration.ITALIC, false));
 				m.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-				if(matches) {
+				if (matches) {
 					m.addEnchant(Enchantment.LUCK, 1, true);
 				}
 			});
@@ -58,17 +57,17 @@ public class DecorationSelectionGui<T extends Decorations.BaseDecoration> implem
 						.thenAcceptSync(result -> {
 							e.getWhoClicked().playSound(Sound.sound(Key.key("minecraft:ui.cartography_table.take_result"), Sound.Source.MASTER, 1f, 1f));
 							e.getCurrentItem().editMeta(m -> m.addEnchant(Enchantment.LUCK, 1, true));
-							if(selected.get() != null) selected.get().editMeta(m -> m.removeEnchant(Enchantment.LUCK));
+							if (selected.get() != null) selected.get().editMeta(m -> m.removeEnchant(Enchantment.LUCK));
 							selected.set(e.getCurrentItem());
 							Gui.getGui(e.getInventory()).update();
 						});
 
 			}).guiItem();
-			if(matches) selected.set(item.getItem());
+			if (matches) selected.set(item.getItem());
 			return item;
 		}).asGui();
-		 gui.setOnGlobalClick(e -> e.setCancelled(true));
-		 gui.setOnGlobalDrag(e -> e.setCancelled(true));
+		gui.setOnGlobalClick(e -> e.setCancelled(true));
+		gui.setOnGlobalDrag(e -> e.setCancelled(true));
 		return gui;
 	}
 }

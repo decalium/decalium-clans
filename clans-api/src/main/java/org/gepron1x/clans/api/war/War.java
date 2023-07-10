@@ -25,23 +25,23 @@ import java.util.Optional;
 
 public interface War {
 
-    Team enemy(Team team);
+	Team enemy(Team team);
 
-    Collection<Team> teams();
+	Collection<Team> teams();
 
-    default Optional<Team> team(Player player) {
-        for(Team team : teams()) {
-            if(team.isMember(player)) return Optional.of(team);
-        }
-        return Optional.empty();
-    }
+	default Optional<Team> team(Player player) {
+		for (Team team : teams()) {
+			if (team.isMember(player)) return Optional.of(team);
+		}
+		return Optional.empty();
+	}
 
 
-    boolean onPlayerDeath(Player player);
+	boolean onPlayerDeath(Player player);
 
-    boolean teamWon();
+	boolean teamWon();
 
-    void finish();
+	void finish();
 
 
 }

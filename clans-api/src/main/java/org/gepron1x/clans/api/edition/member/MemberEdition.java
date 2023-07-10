@@ -25,12 +25,12 @@ import org.jetbrains.annotations.NotNull;
 
 public interface MemberEdition extends Edition<ClanMember> {
 
-    @Override
-    @NotNull
-    default Class<ClanMember> getTarget() {
-        return ClanMember.class;
-    }
+	@Override
+	@NotNull
+	default Class<ClanMember> getTarget() {
+		return ClanMember.class;
+	}
 
-    MemberEdition appoint(@NotNull ClanRole role);
+	MemberEdition appoint(@NotNull ClanRole role);
 
 }

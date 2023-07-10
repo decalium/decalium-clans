@@ -93,113 +93,113 @@ import static org.gepron1x.clans.plugin.wg.WgRepositoryImpl.AsyncRegionStorage;
 
 public final class DecaliumClansPlugin extends JavaPlugin {
 
-    public static final String VERSION = "0.1";
-    public static final int BSTATS_ID = 17010;
+	public static final String VERSION = "0.1";
+	public static final int BSTATS_ID = 17010;
 
-    private RoleRegistry roleRegistry;
+	private RoleRegistry roleRegistry;
 
 	private BukkitFactoryOfTheFuture futuresFactory;
 
-    private ClanStorage storage;
+	private ClanStorage storage;
 	private RegionStorage regionStorage;
 
-    private PaperCommandManager<CommandSender> commandManager;
+	private PaperCommandManager<CommandSender> commandManager;
 
-    private Configuration<ClansConfig> configuration;
-    private Configuration<MessagesConfig> messagesConfiguration;
+	private Configuration<ClansConfig> configuration;
+	private Configuration<MessagesConfig> messagesConfiguration;
 
-    private Configuration<PricesConfig> prices;
+	private Configuration<PricesConfig> prices;
 
 	private MutableClansApi api;
 
-    private UserCaching userCaching;
+	private UserCaching userCaching;
 
 
-    @Override
-    public void onEnable() {
-        enable();
-        new AsciiArt(getSLF4JLogger()).print();
-        getSLF4JLogger().info("Plugin successfully loaded!");
-    }
+	@Override
+	public void onEnable() {
+		enable();
+		new AsciiArt(getSLF4JLogger()).print();
+		getSLF4JLogger().info("Plugin successfully loaded!");
+	}
 
 
-    private void buildRoleRegistry() {
-        ClanRole ownerRole = config().roles().ownerRole();
-        ClanRole defaultRole = config().roles().defaultRole();
-        List<ClanRole> otherRoles = config().roles().otherRoles();
+	private void buildRoleRegistry() {
+		ClanRole ownerRole = config().roles().ownerRole();
+		ClanRole defaultRole = config().roles().defaultRole();
+		List<ClanRole> otherRoles = config().roles().otherRoles();
 
-        ArrayList<ClanRole> roles = new ArrayList<>(otherRoles.size() + 2);
-        roles.add(ownerRole);
-        roles.add(defaultRole);
-        roles.addAll(otherRoles);
-        this.roleRegistry = new RoleRegistryImpl(defaultRole, ownerRole, roles);
+		ArrayList<ClanRole> roles = new ArrayList<>(otherRoles.size() + 2);
+		roles.add(ownerRole);
+		roles.add(defaultRole);
+		roles.addAll(otherRoles);
+		this.roleRegistry = new RoleRegistryImpl(defaultRole, ownerRole, roles);
 
-    }
+	}
 
-    private void enable() {
-        ClanBuilderFactory builderFactory = new ClanBuilderFactoryImpl();
+	private void enable() {
+		ClanBuilderFactory builderFactory = new ClanBuilderFactoryImpl();
 
-        TagResolver resolver = TagResolver.resolver(
-                TagResolver.standard(),
-                TagResolver.resolver(
-                        "prefix", (queue, ctx) -> Tag.selfClosingInserting(messages().prefix())
-                )
-        );
-        MiniMessage miniMessage = MiniMessage.builder().tags(resolver).build();
+		TagResolver resolver = TagResolver.resolver(
+				TagResolver.standard(),
+				TagResolver.resolver(
+						"prefix", (queue, ctx) -> Tag.selfClosingInserting(messages().prefix())
+				)
+		);
+		MiniMessage miniMessage = MiniMessage.builder().tags(resolver).build();
 
-        ConfigurationOptions options = new ConfigurationOptions.Builder()
-                .addSerialiser(new DurationSerializer())
-                .addSerialiser(new TextMessageSerializer(miniMessage))
-                .addSerialiser(new AdventureComponentSerializer(miniMessage))
-                .addSerialiser(new ClanRoleSerializer(builderFactory))
-                .addSerialiser(new ClanPermissionSerializer())
-                .addSerialiser(new PatternSerializer())
-                .addSerialiser(new TextColorSerializer())
-                .addSerialiser(new HelpColorsSerializer())
-                .addSerialiser(new FlagSetSerializer())
-                .addSerialiser(new TimeFormatSerializer())
+		ConfigurationOptions options = new ConfigurationOptions.Builder()
+				.addSerialiser(new DurationSerializer())
+				.addSerialiser(new TextMessageSerializer(miniMessage))
+				.addSerialiser(new AdventureComponentSerializer(miniMessage))
+				.addSerialiser(new ClanRoleSerializer(builderFactory))
+				.addSerialiser(new ClanPermissionSerializer())
+				.addSerialiser(new PatternSerializer())
+				.addSerialiser(new TextColorSerializer())
+				.addSerialiser(new HelpColorsSerializer())
+				.addSerialiser(new FlagSetSerializer())
+				.addSerialiser(new TimeFormatSerializer())
 				.addSerialiser(new Line.Serializer())
 				.addSerialiser(new MessageSerializer(new ActionParser(miniMessage)))
-                .setCreateSingleElementCollections(true)
-                .build();
-        this.messagesConfiguration = Configuration.create(this, "messages.yml", MessagesConfig.class, options);
-        this.configuration = Configuration.create(this, "config.yml", ClansConfig.class, options);
-        this.prices = Configuration.create(this, "prices.yml", PricesConfig.class, options);
+				.setCreateSingleElementCollections(true)
+				.build();
+		this.messagesConfiguration = Configuration.create(this, "messages.yml", MessagesConfig.class, options);
+		this.configuration = Configuration.create(this, "config.yml", ClansConfig.class, options);
+		this.prices = Configuration.create(this, "prices.yml", PricesConfig.class, options);
 
-        this.messagesConfiguration.reloadConfig();
-        this.configuration.reloadConfig();
-        this.prices.reloadConfig();
+		this.messagesConfiguration.reloadConfig();
+		this.configuration.reloadConfig();
+		this.prices.reloadConfig();
 
 		futuresFactory = BukkitFactoryOfTheFuture.fixedThreadPool(this, config().storage().hikariPool().maxPoolSize());
 
-        buildRoleRegistry();
-        ClansConfig config = config();
-        MessagesConfig messages = messages();
+		buildRoleRegistry();
+		ClansConfig config = config();
+		MessagesConfig messages = messages();
 
-        Configs configs = new Configs(this.configuration, this.messagesConfiguration);
-
-
-        HikariDataSource ds = new HikariDataSourceCreation(this, config).create();
-        Jdbi jdbi = new JdbiCreation(ds).create();
-
-        this.storage = new SqlClanStorage(this, jdbi, ds, config.storage().type(), builderFactory, roleRegistry);
-        this.storage.initialize();
+		Configs configs = new Configs(this.configuration, this.messagesConfiguration);
 
 
-        ClanCache clanCache = new ClanCache();
+		HikariDataSource ds = new HikariDataSourceCreation(this, config).create();
+		Jdbi jdbi = new JdbiCreation(ds).create();
 
-        ClanRepository base = new ClanRepositoryImpl(this.storage, futuresFactory);
-
-        ClanRepository repository = new AnnouncingClanRepository(base,
-                getServer(),
-                messages);
+		this.storage = new SqlClanStorage(this, jdbi, ds, config.storage().type(), builderFactory, roleRegistry);
+		this.storage.initialize();
 
 
-        if(config.levels().enabled()) {
-            repository = new LeveledClanRepository(repository, futuresFactory, configs);
-        }
+		ClanCache clanCache = new ClanCache();
 
-        userCaching = new UserCaching(repository, clanCache, getServer(), futuresFactory);
+		ClanRepository base = new ClanRepositoryImpl(this.storage, futuresFactory);
+
+		ClanRepository repository = new AnnouncingClanRepository(base,
+				getServer(),
+				messages);
+
+
+		if (config.levels().enabled()) {
+			repository = new LeveledClanRepository(repository, futuresFactory, configs);
+		}
+
+		userCaching = new UserCaching(repository, clanCache, getServer(), futuresFactory);
 
 		CachingClanRepository cachingClanRepository = new CachingClanRepositoryImpl(
 				repository,
@@ -210,131 +210,132 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 		regionStorage = new SqlRegionStorage(jdbi, cachingClanRepository, new SqlQueue());
 		WgGlobalRegions regions = new WgGlobalRegions(regionStorage.loadRegions(), WorldGuard.getInstance().getPlatform().getRegionContainer(), configs);
 		regions.update();
-        CachingClanRepository clanRepository = new WgExtension(cachingClanRepository, configs, regions, new AsyncRegionStorage(futuresFactory, regionStorage)).make();
+		CachingClanRepository clanRepository = new WgExtension(cachingClanRepository, configs, regions, new AsyncRegionStorage(futuresFactory, regionStorage)).make();
 
 		getServer().getScheduler().runTaskTimerAsynchronously(this, regionStorage::save, 20 * 60, 20 * 60);
 
 
+		Services services = new PluginServices(this);
+		Users users = new DefaultUsers(clanRepository, regions);
+		if (isEnabled("Vault")) {
+			users = new VaultHook(users, services, prices.data(), futuresFactory).hook();
+		}
 
-        Services services = new PluginServices(this);
-        Users users = new DefaultUsers(clanRepository, regions);
-        if(isEnabled("Vault")) {
-            users = new VaultHook(users, services, prices.data(), futuresFactory).hook();
-        }
-
-        getServer().getPluginManager().registerEvents(new CacheListener(userCaching), this);
+		getServer().getPluginManager().registerEvents(new CacheListener(userCaching), this);
 
 		LegacyComponentSerializer legacy = LegacyComponentSerializer.builder().character(LegacyComponentSerializer.SECTION_CHAR).hexColors().useUnusualXRepeatedCharacterHexFormat().build();
 
-        if(isEnabled("PlaceholderAPI")) {
-            new PlaceholderAPIHook(getServer(), config, clanCache, legacy).register();
-        }
+		if (isEnabled("PlaceholderAPI")) {
+			new PlaceholderAPIHook(getServer(), config, clanCache, legacy).register();
+		}
 
-        if(isEnabled("CarbonChat")) {
-            new CarbonChatHook(getServer(), clanCache, configs).register();
-        }
+		if (isEnabled("CarbonChat")) {
+			new CarbonChatHook(getServer(), clanCache, configs).register();
+		}
 
-        Logger logger = getSLF4JLogger();
+		Logger logger = getSLF4JLogger();
 
-        ClanCommand command = new ClanCommand(logger, clanRepository, users, configs, futuresFactory, builderFactory, roleRegistry);
-        InviteCommand inviteCommand = new InviteCommand(logger, clanRepository, users, configs, futuresFactory, builderFactory, roleRegistry);
-        MemberCommand memberCommand = new MemberCommand(logger, clanRepository, users, configs, futuresFactory);
-        HomeCommand homeCommand = new HomeCommand(logger, clanRepository, users, configs, futuresFactory, builderFactory);
-        Wars wars = new WarsCreation(this, configs).create();
-        ClanWarCommand clanWarCommand = new ClanWarCommand(logger, clanRepository, users, configs, futuresFactory, wars);
-        // ShieldCommand shieldCommand = new ShieldCommand(logger, clanRepository, users, configs, futuresFactory, shields);
+		ClanCommand command = new ClanCommand(logger, clanRepository, users, configs, futuresFactory, builderFactory, roleRegistry);
+		InviteCommand inviteCommand = new InviteCommand(logger, clanRepository, users, configs, futuresFactory, builderFactory, roleRegistry);
+		MemberCommand memberCommand = new MemberCommand(logger, clanRepository, users, configs, futuresFactory);
+		HomeCommand homeCommand = new HomeCommand(logger, clanRepository, users, configs, futuresFactory, builderFactory);
+		Wars wars = new WarsCreation(this, configs).create();
+		ClanWarCommand clanWarCommand = new ClanWarCommand(logger, clanRepository, users, configs, futuresFactory, wars);
+		// ShieldCommand shieldCommand = new ShieldCommand(logger, clanRepository, users, configs, futuresFactory, shields);
 
-        try {
-            commandManager = new CommandManagerCreation(this, clanRepository, roleRegistry, messages).create();
-        } catch (Exception e) {
-            getSLF4JLogger().error("Error initializing the command manager! Please contact the developer.", e);
-        }
+		try {
+			commandManager = new CommandManagerCreation(this, clanRepository, roleRegistry, messages).create();
+		} catch (Exception e) {
+			getSLF4JLogger().error("Error initializing the command manager! Please contact the developer.", e);
+		}
 
 
-        command.register(commandManager);
-        inviteCommand.register(commandManager);
-        memberCommand.register(commandManager);
-        homeCommand.register(commandManager);
-        clanWarCommand.register(commandManager);
-        // shieldCommand.register(commandManager);
+		command.register(commandManager);
+		inviteCommand.register(commandManager);
+		memberCommand.register(commandManager);
+		homeCommand.register(commandManager);
+		clanWarCommand.register(commandManager);
+		// shieldCommand.register(commandManager);
 
-        commandManager.command(
-                commandManager.commandBuilder("clan").literal("reload").permission("clans.admin.reload")
-                        .meta(CommandMeta.DESCRIPTION, messages.help().messages().descriptions().reload())
-                        .handler(ctx -> {
-                    disable();
-                    enable();
-                    List<UUID> uuids = getServer().getOnlinePlayers().stream().map(Player::getUniqueId).toList();
-                    futuresFactory.runAsync(() -> uuids.forEach(this.userCaching::cacheUser)).thenAccept(ignored -> {
-                        ctx.getSender().sendMessage("[DecaliumClans] Successfully reloaded.");
-                    });
-                })
-        );
+		commandManager.command(
+				commandManager.commandBuilder("clan").literal("reload").permission("clans.admin.reload")
+						.meta(CommandMeta.DESCRIPTION, messages.help().messages().descriptions().reload())
+						.handler(ctx -> {
+							disable();
+							enable();
+							List<UUID> uuids = getServer().getOnlinePlayers().stream().map(Player::getUniqueId).toList();
+							futuresFactory.runAsync(() -> uuids.forEach(this.userCaching::cacheUser)).thenAccept(ignored -> {
+								ctx.getSender().sendMessage("[DecaliumClans] Successfully reloaded.");
+							});
+						})
+		);
 		commandManager.command(commandManager.commandBuilder("clan").literal("region").permission("clans.region").handler(new ClanExecutionHandler(ctx -> {
 			Clan clan = ctx.get(ClanExecutionHandler.CLAN);
 		}, users, messages, logger)));
-        var help = new MinecraftHelp<>("/clan help", AudienceProvider.nativeAudience(), this.commandManager);
-        help.setHelpColors(messages.help().colors());
-        help.messageProvider(messages.help().messages().messageProvider());
-        help.descriptionDecorator(s -> miniMessage.deserialize(s));
-        commandManager.command(commandManager.commandBuilder("clan").literal("help", "usage")
-                .meta(CommandMeta.DESCRIPTION, messages.help().messages().descriptions().help())
-                .permission("clans.help")
-                .argument(StringArgument.<CommandSender>builder("query").greedy().asOptionalWithDefault(""))
-                .handler(ctx -> help.queryCommands(ctx.getOrDefault("query", ""), ctx.getSender())));
-        StatisticListener statisticListener = new StatisticListener(clanRepository, this, futuresFactory, config);
-        getServer().getPluginManager().registerEvents(statisticListener, this);
-        statisticListener.start();
-        new ShieldRefreshTask(regions, WorldGuard.getInstance().getPlatform().getRegionContainer(), configs)
-                .runTaskTimerAsynchronously(this, 20, 5 * 20);
+		var help = new MinecraftHelp<>("/clan help", AudienceProvider.nativeAudience(), this.commandManager);
+		help.setHelpColors(messages.help().colors());
+		help.messageProvider(messages.help().messages().messageProvider());
+		help.descriptionDecorator(s -> miniMessage.deserialize(s));
+		commandManager.command(commandManager.commandBuilder("clan").literal("help", "usage")
+				.meta(CommandMeta.DESCRIPTION, messages.help().messages().descriptions().help())
+				.permission("clans.help")
+				.argument(StringArgument.<CommandSender>builder("query").greedy().asOptionalWithDefault(""))
+				.handler(ctx -> help.queryCommands(ctx.getOrDefault("query", ""), ctx.getSender())));
+		StatisticListener statisticListener = new StatisticListener(clanRepository, this, futuresFactory, config);
+		getServer().getPluginManager().registerEvents(statisticListener, this);
+		statisticListener.start();
+		new ShieldRefreshTask(regions, WorldGuard.getInstance().getPlatform().getRegionContainer(), configs)
+				.runTaskTimerAsynchronously(this, 20, 5 * 20);
 
-        DecaliumClansApi clansApi = new DecaliumClansApiImpl(clanRepository, users, this.roleRegistry, builderFactory, futuresFactory, wars, regions, prices.data(), config.levels());
+		DecaliumClansApi clansApi = new DecaliumClansApiImpl(clanRepository, users, this.roleRegistry, builderFactory, futuresFactory, wars, regions, prices.data(), config.levels());
 		this.api = this.api == null ? new MutableClansApi(clansApi) : this.api;
 		this.api.setApi(clansApi);
-        services.register(DecaliumClansApi.class, this.api);
-        new Metrics(this, BSTATS_ID);
+		services.register(DecaliumClansApi.class, this.api);
+		new Metrics(this, BSTATS_ID);
 
-        new HologramProtection(this).register();
+		new HologramProtection(this).register();
 
-    }
+	}
 
-    private void disable() {
+	private void disable() {
 		regionStorage.save();
 		this.getServer().getScheduler().cancelTasks(this);
-        if(this.storage != null) this.storage.shutdown();
-        HandlerList.unregisterAll(this);
+		if (this.storage != null) this.storage.shutdown();
+		HandlerList.unregisterAll(this);
 		try {
 			futuresFactory.shutdownAndTerminate();
 		} catch (InterruptedException e) {
 			getSLF4JLogger().error("Failed to shutdown with following error:", e);
 		}
-        getServer().getServicesManager().unregisterAll(this);
-    }
+		getServer().getServicesManager().unregisterAll(this);
+	}
 
-    @Override
-    public void onLoad() {
-        /*if(isEnabled("WorldGuard"))*/ WgExtension.registerFlags();
-    }
+	@Override
+	public void onLoad() {
+		/*if(isEnabled("WorldGuard"))*/
+		WgExtension.registerFlags();
+	}
 
-    private boolean isEnabled(String pluginName) {
-        return getServer().getPluginManager().isPluginEnabled(pluginName);
-    }
-    @Override
-    public void onDisable() {
-        disable();
-        getSLF4JLogger().info("Goodbye!");
-    }
+	private boolean isEnabled(String pluginName) {
+		return getServer().getPluginManager().isPluginEnabled(pluginName);
+	}
 
-    public ClansConfig config() {
-        return configuration.data();
-    }
+	@Override
+	public void onDisable() {
+		disable();
+		getSLF4JLogger().info("Goodbye!");
+	}
 
-    public MessagesConfig messages() {
-        return messagesConfiguration.data();
-    }
+	public ClansConfig config() {
+		return configuration.data();
+	}
 
-    public PaperCommandManager<CommandSender> commandManager() {
-        return this.commandManager;
-    }
+	public MessagesConfig messages() {
+		return messagesConfiguration.data();
+	}
+
+	public PaperCommandManager<CommandSender> commandManager() {
+		return this.commandManager;
+	}
 
 }

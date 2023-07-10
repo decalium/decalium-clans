@@ -32,47 +32,47 @@ import java.util.function.Consumer;
 public record ClanMemberImpl(UUID uuid,
 							 ClanRole role, Instant joined) implements ClanMember {
 
-    @Override
-    public @NotNull UUID uniqueId() {
-        return uuid;
-    }
+	@Override
+	public @NotNull UUID uniqueId() {
+		return uuid;
+	}
 
-    @Override
-    public @NotNull ClanRole role() {
-        return role;
-    }
+	@Override
+	public @NotNull ClanRole role() {
+		return role;
+	}
 
-    @Override
-    public @NotNull ClanMember withRole(@NotNull ClanRole role) {
-        return new ClanMemberImpl(uuid, role, joined);
-    }
+	@Override
+	public @NotNull ClanMember withRole(@NotNull ClanRole role) {
+		return new ClanMemberImpl(uuid, role, joined);
+	}
 
-    @Override
-    public @NotNull ClanMember.Builder toBuilder() {
-        return builder().uuid(uuid).role(role);
-    }
+	@Override
+	public @NotNull ClanMember.Builder toBuilder() {
+		return builder().uuid(uuid).role(role);
+	}
 
-    public static BuilderImpl builder() {
-        return new BuilderImpl();
-    }
+	public static BuilderImpl builder() {
+		return new BuilderImpl();
+	}
 
-    public static class BuilderImpl implements Builder {
-        private UUID uuid;
-        private ClanRole role;
+	public static class BuilderImpl implements Builder {
+		private UUID uuid;
+		private ClanRole role;
 
 		private Instant joined;
 
-        @Override
-        public @NotNull Builder uuid(UUID uuid) {
-            this.uuid = uuid;
-            return this;
-        }
+		@Override
+		public @NotNull Builder uuid(UUID uuid) {
+			this.uuid = uuid;
+			return this;
+		}
 
-        @Override
-        public @NotNull Builder role(@NotNull ClanRole role) {
-            this.role = role;
-            return this;
-        }
+		@Override
+		public @NotNull Builder role(@NotNull ClanRole role) {
+			this.role = role;
+			return this;
+		}
 
 		@Override
 		public @NotNull Builder joined(Instant date) {
@@ -81,45 +81,45 @@ public record ClanMemberImpl(UUID uuid,
 		}
 
 		@Override
-        public @NotNull ClanMember build() {
-            return new ClanMemberImpl(Objects.requireNonNull((uuid)), Objects.requireNonNull(role), joined == null ? Instant.now() : joined);
-        }
+		public @NotNull ClanMember build() {
+			return new ClanMemberImpl(Objects.requireNonNull((uuid)), Objects.requireNonNull(role), joined == null ? Instant.now() : joined);
+		}
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            BuilderImpl builder = (BuilderImpl) o;
-            return Objects.equals(uuid, builder.uuid) && Objects.equals(role, builder.role) && Objects.equals(joined, builder.joined);
-        }
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			BuilderImpl builder = (BuilderImpl) o;
+			return Objects.equals(uuid, builder.uuid) && Objects.equals(role, builder.role) && Objects.equals(joined, builder.joined);
+		}
 
-        @Override
-        public int hashCode() {
-            return Objects.hash(uuid, role);
-        }
+		@Override
+		public int hashCode() {
+			return Objects.hash(uuid, role);
+		}
 
-        @Override
-        public String toString() {
-            return MoreObjects.toStringHelper(this)
-                    .add("uuid", uuid)
-                    .add("role", role)
+		@Override
+		public String toString() {
+			return MoreObjects.toStringHelper(this)
+					.add("uuid", uuid)
+					.add("role", role)
 					.add("joined", joined)
-                    .toString();
-        }
+					.toString();
+		}
 
-        @Override
-        public void applyEdition(Consumer<MemberEdition> consumer) {
-            consumer.accept(new MemberEditionImpl());
-        }
+		@Override
+		public void applyEdition(Consumer<MemberEdition> consumer) {
+			consumer.accept(new MemberEditionImpl());
+		}
 
-        private final class MemberEditionImpl implements MemberEdition {
+		private final class MemberEditionImpl implements MemberEdition {
 
-            @Override
-            public MemberEdition appoint(@NotNull ClanRole role) {
-                BuilderImpl.this.role(role);
-                return this;
-            }
+			@Override
+			public MemberEdition appoint(@NotNull ClanRole role) {
+				BuilderImpl.this.role(role);
+				return this;
+			}
 
-        }
-    }
+		}
+	}
 }

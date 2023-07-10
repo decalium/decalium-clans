@@ -32,6 +32,7 @@ public final class ClanCreationGui implements GuiLike {
 		this.viewer = viewer;
 		this.clans = clans;
 	}
+
 	@Override
 	public Gui asGui() {
 		ClansConfig config = JavaPlugin.getPlugin(DecaliumClansPlugin.class).config();
@@ -40,17 +41,18 @@ public final class ClanCreationGui implements GuiLike {
 		GuiItem confirm = ItemBuilder.skullFromId("a92e31ffb59c90ab08fc9dc1fe26802035a3a47c42fee63423bcdb4262ecb9b6")
 				.name("<#92FF25>Создать клан за <price>")
 				.with("price", clans.prices().clanCreation()).cancelEvent().guiItem(e -> {
-			Player player = (Player) e.getWhoClicked();
-			DraftClan clan = clans.draftClanBuilder().tag(gui.getRenameText())
-					.displayName(Component.text(gui.getRenameText()))
-					.owner(clans.memberBuilder().player(player).role(clans.roleRegistry().ownerRole()).build()).build();
-			viewer.create(clan).thenAcceptSync(result -> {
-				player.closeInventory();
-				if(result.isSuccess()) new ClanGui(player.getServer(), result.clan(), viewer, clans).asGui().show(player);
-			}).exceptionally(ExceptionHandler.catchException(NotEnoughMoneyException.class, ex -> {
-				new ErrorItem(e, ex).show();
-			}));
-		});
+					Player player = (Player) e.getWhoClicked();
+					DraftClan clan = clans.draftClanBuilder().tag(gui.getRenameText())
+							.displayName(Component.text(gui.getRenameText()))
+							.owner(clans.memberBuilder().player(player).role(clans.roleRegistry().ownerRole()).build()).build();
+					viewer.create(clan).thenAcceptSync(result -> {
+						player.closeInventory();
+						if (result.isSuccess())
+							new ClanGui(player.getServer(), result.clan(), viewer, clans).asGui().show(player);
+					}).exceptionally(ExceptionHandler.catchException(NotEnoughMoneyException.class, ex -> {
+						new ErrorItem(e, ex).show();
+					}));
+				});
 
 
 		GuiItem paper = ItemBuilder.create(Material.PAPER).name("введите тег").cancelEvent().guiItem();
@@ -60,11 +62,11 @@ public final class ClanCreationGui implements GuiLike {
 		AtomicBoolean valid = new AtomicBoolean(true);
 		StaticPane pane1 = new StaticPane(1, 1);
 		gui.setOnNameInputChanged(s -> {
-			if(config.displayNameFormat().tagRegex().matcher(s).matches() && !valid.get()) {
+			if (config.displayNameFormat().tagRegex().matcher(s).matches() && !valid.get()) {
 				valid.set(true);
 				pane.addItem(confirm, 0, 0);
 				gui.update();
-			} else if(valid.get()) {
+			} else if (valid.get()) {
 				pane.addItem(INVALID_TAG, 0, 0);
 				valid.set(false);
 				gui.update();

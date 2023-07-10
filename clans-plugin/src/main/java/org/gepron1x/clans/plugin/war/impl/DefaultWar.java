@@ -32,63 +32,63 @@ import java.util.Objects;
 
 public final class DefaultWar implements War {
 
-    private final Collection<Team> teams;
+	private final Collection<Team> teams;
 
-    public DefaultWar(Collection<Team> teams) {
-        this.teams = teams;
-    }
+	public DefaultWar(Collection<Team> teams) {
+		this.teams = teams;
+	}
 
-    @Override
-    public Team enemy(Team team) {
-        Preconditions.checkArgument(this.teams.contains(team), "Team is not in the war");
-        Iterator<Team> iterator = Iterators.cycle(this.teams);
-        Team next = iterator.next();
-        while(next.equals(team)) {
-            next = iterator.next();
-        }
-        return next;
-    }
+	@Override
+	public Team enemy(Team team) {
+		Preconditions.checkArgument(this.teams.contains(team), "Team is not in the war");
+		Iterator<Team> iterator = Iterators.cycle(this.teams);
+		Team next = iterator.next();
+		while (next.equals(team)) {
+			next = iterator.next();
+		}
+		return next;
+	}
 
-    @Override
-    public Collection<Team> teams() {
-        return Collections.unmodifiableCollection(teams);
-    }
+	@Override
+	public Collection<Team> teams() {
+		return Collections.unmodifiableCollection(teams);
+	}
 
-    @Override
-    public boolean onPlayerDeath(Player player) {
-        boolean ok = false;
-        for(Team team : teams) {
-            ok |= team.onDeath(player);
-        }
-        return ok;
-    }
+	@Override
+	public boolean onPlayerDeath(Player player) {
+		boolean ok = false;
+		for (Team team : teams) {
+			ok |= team.onDeath(player);
+		}
+		return ok;
+	}
 
-    @Override
-    public boolean teamWon() {
-        for(Team team : teams) {
-            if(!team.isAlive()) return true;
-        }
-        return false;
-    }
+	@Override
+	public boolean teamWon() {
+		for (Team team : teams) {
+			if (!team.isAlive()) return true;
+		}
+		return false;
+	}
 
-    @Override
-    public void finish() {
-        for(Team team : teams) {
-            final StatisticType type = team.isAlive() ? StatisticType.CLAN_WAR_WINS : StatisticType.CLAN_WAR_LOSES;
-            team.clan().edit(edition -> edition.incrementStatistic(type));
-        }
-    }
+	@Override
+	public void finish() {
+		for (Team team : teams) {
+			final StatisticType type = team.isAlive() ? StatisticType.CLAN_WAR_WINS : StatisticType.CLAN_WAR_LOSES;
+			team.clan().edit(edition -> edition.incrementStatistic(type));
+		}
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DefaultWar that = (DefaultWar) o;
-        return teams.equals(that.teams);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		DefaultWar that = (DefaultWar) o;
+		return teams.equals(that.teams);
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(teams);
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(teams);
+	}
 }

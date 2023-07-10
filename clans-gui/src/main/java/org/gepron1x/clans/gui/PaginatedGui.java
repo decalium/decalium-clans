@@ -31,12 +31,12 @@ import java.util.function.Function;
 public final class PaginatedGui<E> implements GuiLike {
 	private final int rows;
 	private final Collection<? extends E> elements;
-    private final Function<? super E, GuiItem> mapper;
+	private final Function<? super E, GuiItem> mapper;
 
 	public PaginatedGui(int rows, Collection<? extends E> elements, Function<? super E, GuiItem> mapper) {
 		this.rows = rows;
 		this.elements = elements;
-        this.mapper = mapper;
+		this.mapper = mapper;
 	}
 
 	public PaginatedGui(Collection<? extends E> elements, Function<? super E, GuiItem> mapper) {
@@ -44,35 +44,35 @@ public final class PaginatedGui<E> implements GuiLike {
 	}
 
 
-    @Override
-    public ChestGui asGui() {
-        ChestGui gui = new ChestGui(rows, "Paginated Gui");
+	@Override
+	public ChestGui asGui() {
+		ChestGui gui = new ChestGui(rows, "Paginated Gui");
 		gui.addPane(ClanGui.border(0, rows));
 		gui.addPane(ClanGui.border(8, rows));
-        PaginatedPane pages = new PaginatedPane(2, 1, 5, rows - 3);
-        pages.populateWithGuiItems(elements.stream().map(mapper).toList());
-        gui.addPane(pages);
-        if(pages.getPages() < 2) return gui;
+		PaginatedPane pages = new PaginatedPane(2, 1, 5, rows - 3);
+		pages.populateWithGuiItems(elements.stream().map(mapper).toList());
+		gui.addPane(pages);
+		if (pages.getPages() < 2) return gui;
 
 		StaticPane navigation = new StaticPane(2, rows - 2, 5, 1);
-        navigation.setOnClick(event -> event.setCancelled(true));
+		navigation.setOnClick(event -> event.setCancelled(true));
 
-        navigation.addItem(new GuiItem(new ItemStack(Material.RED_WOOL), event -> {
-            if (pages.getPage() > 0) {
-                pages.setPage(pages.getPage() - 1);
-                gui.update();
-            }
-        }), 0, 0);
+		navigation.addItem(new GuiItem(new ItemStack(Material.RED_WOOL), event -> {
+			if (pages.getPage() > 0) {
+				pages.setPage(pages.getPage() - 1);
+				gui.update();
+			}
+		}), 0, 0);
 
-        navigation.addItem(new GuiItem(new ItemStack(Material.GREEN_WOOL), event -> {
-            if (pages.getPage() < pages.getPages() - 1) {
-                pages.setPage(pages.getPage() + 1);
-                gui.update();
-            }
-        }), 4, 0);
+		navigation.addItem(new GuiItem(new ItemStack(Material.GREEN_WOOL), event -> {
+			if (pages.getPage() < pages.getPages() - 1) {
+				pages.setPage(pages.getPage() + 1);
+				gui.update();
+			}
+		}), 4, 0);
 
-        gui.addPane(navigation);
+		gui.addPane(navigation);
 
-        return gui;
-    }
+		return gui;
+	}
 }

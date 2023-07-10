@@ -7,13 +7,13 @@ import java.util.Set;
 
 public final class BossBars {
 
-    private final Set<BossBar> bars;
+	private final Set<BossBar> bars;
 
-    public BossBars(Set<BossBar> bars) {
-        this.bars = bars;
-    }
+	public BossBars(Set<BossBar> bars) {
+		this.bars = bars;
+	}
 
-    public void hide(Audience audience) {
-        bars.forEach(audience::hideBossBar);
-    }
+	public void hide(Audience audience) {
+		bars.forEach(audience::hideBossBar);
+	}
 }

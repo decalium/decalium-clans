@@ -34,52 +34,52 @@ import java.util.function.Consumer;
 
 public final class AnnouncingClan implements Clan, DelegatingClan {
 
-    private final Clan delegate;
-    private transient final MessagesConfig messages;
-    private transient final Server server;
+	private final Clan delegate;
+	private transient final MessagesConfig messages;
+	private transient final Server server;
 
-    public AnnouncingClan(Clan delegate, MessagesConfig messages, Server server) {
-        this.delegate = delegate;
-        this.messages = messages;
-        this.server = server;
-    }
+	public AnnouncingClan(Clan delegate, MessagesConfig messages, Server server) {
+		this.delegate = delegate;
+		this.messages = messages;
+		this.server = server;
+	}
 
-    @Override
-    public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
-        return this.delegate.edit(transaction).thenApplySync(clan -> {
-            transaction.accept(new AnnouncingClanEdition(clan, new ClanAudience(clan, this.server), this.server, this.messages));
-            return new AnnouncingClan(clan, this.messages, this.server);
-        });
-    }
+	@Override
+	public @NotNull CentralisedFuture<Clan> edit(Consumer<ClanEdition> transaction) {
+		return this.delegate.edit(transaction).thenApplySync(clan -> {
+			transaction.accept(new AnnouncingClanEdition(clan, new ClanAudience(clan, this.server), this.server, this.messages));
+			return new AnnouncingClan(clan, this.messages, this.server);
+		});
+	}
 
-    @Override
-    public int id() {
-        return this.delegate.id();
-    }
+	@Override
+	public int id() {
+		return this.delegate.id();
+	}
 
-    @Override
-    public DraftClan delegate() {
-        return this.delegate;
-    }
+	@Override
+	public DraftClan delegate() {
+		return this.delegate;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AnnouncingClan that = (AnnouncingClan) o;
-        return delegate.equals(that.delegate) && messages.equals(that.messages) && server.equals(that.server);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		AnnouncingClan that = (AnnouncingClan) o;
+		return delegate.equals(that.delegate) && messages.equals(that.messages) && server.equals(that.server);
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(delegate, messages, server);
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(delegate, messages, server);
+	}
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("delegate", delegate)
-                .add("server", server)
-                .toString();
-    }
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("delegate", delegate)
+				.add("server", server)
+				.toString();
+	}
 }

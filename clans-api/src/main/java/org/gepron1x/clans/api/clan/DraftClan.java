@@ -40,94 +40,101 @@ import java.util.UUID;
 
 public interface DraftClan extends StatisticHolder, ComponentLike, Buildable<DraftClan, DraftClan.Builder> {
 
-    @Override
-    @NotNull
-    default Component asComponent() { return displayName(); }
+	@Override
+	@NotNull
+	default Component asComponent() {
+		return displayName();
+	}
 
-    @NotNull String tag();
-    @NotNull Component displayName();
+	@NotNull String tag();
 
-    @NotNull ClanMember owner();
+	@NotNull Component displayName();
+
+	@NotNull ClanMember owner();
 
 	@NotNull CombinedDecoration tagDecoration();
 
-    @NotNull @Unmodifiable
-    default Collection<? extends ClanMember> members() {
-        return memberMap().values();
-    }
+	@NotNull
+	@Unmodifiable
+	default Collection<? extends ClanMember> members() {
+		return memberMap().values();
+	}
 
-    @NotNull @Unmodifiable Map<UUID, ? extends ClanMember> memberMap();
+	@NotNull @Unmodifiable Map<UUID, ? extends ClanMember> memberMap();
 
-    default Optional<ClanMember> member(@NotNull UUID uuid) {
-        return Optional.ofNullable(memberMap().get(uuid));
-    }
+	default Optional<ClanMember> member(@NotNull UUID uuid) {
+		return Optional.ofNullable(memberMap().get(uuid));
+	}
 
-    default Optional<ClanMember> member(@NotNull OfflinePlayer player) {
-        return member(player.getUniqueId());
-    }
-
-
-    @NotNull @Unmodifiable default Collection<? extends ClanHome> homes() {
-        return homeMap().values();
-    }
-
-    default Optional<ClanHome> home(@NotNull String name) {
-        return Optional.ofNullable(homeMap().get(name));
-    }
+	default Optional<ClanMember> member(@NotNull OfflinePlayer player) {
+		return member(player.getUniqueId());
+	}
 
 
-    @NotNull @Unmodifiable Map<String, ? extends ClanHome> homeMap();
+	@NotNull
+	@Unmodifiable
+	default Collection<? extends ClanHome> homes() {
+		return homeMap().values();
+	}
 
-    default int level() {
-        return statisticOr(StatisticType.LEVEL, 0) + 1;
-    }
+	default Optional<ClanHome> home(@NotNull String name) {
+		return Optional.ofNullable(homeMap().get(name));
+	}
 
-    
-    interface Builder extends Buildable.Builder<DraftClan>, EditionApplicable<DraftClan, ClanEdition> {
-        
-        @Contract("_ -> this")
-        @NotNull Builder tag(@NotNull String tag);
 
-        @Contract("_ -> this")
-        @NotNull Builder owner(ClanMember owner);
+	@NotNull @Unmodifiable Map<String, ? extends ClanHome> homeMap();
 
-        @Contract("_ -> this")
-        @NotNull Builder displayName(@NotNull Component displayName);
+	default int level() {
+		return statisticOr(StatisticType.LEVEL, 0) + 1;
+	}
+
+
+	interface Builder extends Buildable.Builder<DraftClan>, EditionApplicable<DraftClan, ClanEdition> {
+
+		@Contract("_ -> this")
+		@NotNull Builder tag(@NotNull String tag);
+
+		@Contract("_ -> this")
+		@NotNull Builder owner(ClanMember owner);
+
+		@Contract("_ -> this")
+		@NotNull Builder displayName(@NotNull Component displayName);
 
 		@Contract("_ -> this")
 		@NotNull Builder tagDecoration(CombinedDecoration decoration);
 
-        @Contract("_ -> this")
-        @NotNull Builder addMember(@NotNull ClanMember member);
+		@Contract("_ -> this")
+		@NotNull Builder addMember(@NotNull ClanMember member);
 
-        @Contract("_ -> this")
-        @NotNull Builder removeMember(@NotNull ClanMember member);
+		@Contract("_ -> this")
+		@NotNull Builder removeMember(@NotNull ClanMember member);
 
 
+		@Contract("_ -> this")
+		@NotNull Builder addHome(@NotNull ClanHome home);
 
-        @Contract("_ -> this")
-        @NotNull Builder addHome(@NotNull ClanHome home);
+		@Contract("_ -> this")
+		@NotNull Builder removeHome(@NotNull ClanHome home);
 
-        @Contract("_ -> this")
-        @NotNull Builder removeHome(@NotNull ClanHome home);
+		@Contract("_ -> this")
+		@NotNull Builder homes(@NotNull Collection<? extends ClanHome> homes);
 
-        @Contract("_ -> this")
-        @NotNull Builder homes(@NotNull Collection<? extends ClanHome> homes);
+		@Contract("_ -> this")
+		@NotNull Builder members(@NotNull Collection<? extends ClanMember> members);
 
-        @Contract("_ -> this")
-        @NotNull Builder members(@NotNull Collection<? extends ClanMember> members);
+		@Contract("_, _ -> this")
+		@NotNull Builder statistic(@NotNull StatisticType type, int value);
 
-        @Contract("_, _ -> this")
-        @NotNull Builder statistic(@NotNull StatisticType type, int value);
+		@Contract("_ -> this")
+		@NotNull Builder statistics(@NotNull Map<StatisticType, Integer> statistics);
 
-        @Contract("_ -> this")
-        @NotNull Builder statistics(@NotNull Map<StatisticType, Integer> statistics);
+		@NotNull Builder emptyStatistics();
 
-        @NotNull Builder emptyStatistics();
-        @NotNull Builder emptyMembers();
-        @NotNull Builder emptyHomes();
+		@NotNull Builder emptyMembers();
 
-        Builder self();
-    }
+		@NotNull Builder emptyHomes();
+
+		Builder self();
+	}
 
 }

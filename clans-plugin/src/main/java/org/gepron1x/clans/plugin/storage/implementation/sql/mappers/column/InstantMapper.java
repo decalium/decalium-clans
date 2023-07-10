@@ -26,8 +26,8 @@ import java.sql.SQLException;
 import java.time.Instant;
 
 public final class InstantMapper implements ColumnMapper<Instant> {
-    @Override
-    public Instant map(ResultSet r, int columnNumber, StatementContext ctx) throws SQLException {
-        return r.getTimestamp(columnNumber).toInstant();
-    }
+	@Override
+	public Instant map(ResultSet r, int columnNumber, StatementContext ctx) throws SQLException {
+		return r.getTimestamp(columnNumber).toInstant();
+	}
 }

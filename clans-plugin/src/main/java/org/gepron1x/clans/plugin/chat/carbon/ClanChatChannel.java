@@ -40,97 +40,98 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public final class ClanChatChannel implements ChatChannel {
-    private static final Key KEY = Key.key("decaliumclans", "clanchat");
-    private final Server server;
-    private final ClanCache cache;
-    private final Configs configs;
+	private static final Key KEY = Key.key("decaliumclans", "clanchat");
+	private final Server server;
+	private final ClanCache cache;
+	private final Configs configs;
 
-    public ClanChatChannel(@NotNull Server server, @NotNull ClanCache cache, @NotNull Configs configs) {
-        this.server = server;
-        this.cache = cache;
-        this.configs = configs;
-    }
-    @Override
-    public ChannelPermissionResult speechPermitted(CarbonPlayer carbonPlayer) {
-        return ifInTheClan(carbonPlayer);
-    }
+	public ClanChatChannel(@NotNull Server server, @NotNull ClanCache cache, @NotNull Configs configs) {
+		this.server = server;
+		this.cache = cache;
+		this.configs = configs;
+	}
 
-    @Override
-    public ChannelPermissionResult hearingPermitted(CarbonPlayer player) {
-        return ifInTheClan(player);
-    }
+	@Override
+	public ChannelPermissionResult speechPermitted(CarbonPlayer carbonPlayer) {
+		return ifInTheClan(carbonPlayer);
+	}
 
-    private ChannelPermissionResult ifInTheClan(CarbonPlayer player) {
-        return ChannelPermissionResult.allowedIf(
-                configs.config().chat().notInTheClan().asComponent(),
-                () -> cache.getUserClan(player.uuid()) != null
-        );
-    }
+	@Override
+	public ChannelPermissionResult hearingPermitted(CarbonPlayer player) {
+		return ifInTheClan(player);
+	}
 
-    @Override
-    public List<Audience> recipients(CarbonPlayer sender) {
-        IdentifiedDraftClan clan = cache.getUserClan(sender.uuid());
-        if(clan == null) return Collections.emptyList();
-        return clan.members().stream()
-                .map(m -> m.asPlayer(server))
-                .filter(Optional::isPresent).map(Optional::get)
-                .collect(Collectors.toList());
-    }
+	private ChannelPermissionResult ifInTheClan(CarbonPlayer player) {
+		return ChannelPermissionResult.allowedIf(
+				configs.config().chat().notInTheClan().asComponent(),
+				() -> cache.getUserClan(player.uuid()) != null
+		);
+	}
 
-    @Override
-    public Set<CarbonPlayer> filterRecipients(CarbonPlayer sender, Set<CarbonPlayer> recipients) {
-        IdentifiedDraftClan clan = cache.getUserClan(sender.uuid());
-        if(clan == null) return Collections.emptySet();
+	@Override
+	public List<Audience> recipients(CarbonPlayer sender) {
+		IdentifiedDraftClan clan = cache.getUserClan(sender.uuid());
+		if (clan == null) return Collections.emptyList();
+		return clan.members().stream()
+				.map(m -> m.asPlayer(server))
+				.filter(Optional::isPresent).map(Optional::get)
+				.collect(Collectors.toList());
+	}
 
-        return recipients.stream().filter(p -> clan.member(sender.uuid()).isPresent()).collect(Collectors.toSet());
-    }
+	@Override
+	public Set<CarbonPlayer> filterRecipients(CarbonPlayer sender, Set<CarbonPlayer> recipients) {
+		IdentifiedDraftClan clan = cache.getUserClan(sender.uuid());
+		if (clan == null) return Collections.emptySet();
 
-    @Override
-    public @NotNull String quickPrefix() {
-        return "~";
-    }
+		return recipients.stream().filter(p -> clan.member(sender.uuid()).isPresent()).collect(Collectors.toSet());
+	}
 
-    @Override
-    public boolean shouldRegisterCommands() {
-        return true;
-    }
+	@Override
+	public @NotNull String quickPrefix() {
+		return "~";
+	}
 
-    @Override
-    public String commandName() {
-        return "clanschat";
-    }
+	@Override
+	public boolean shouldRegisterCommands() {
+		return true;
+	}
 
-    @Override
-    public List<String> commandAliases() {
-        return Collections.emptyList();
-    }
+	@Override
+	public String commandName() {
+		return "clanschat";
+	}
 
-    @Override
-    public @MonotonicNonNull String permission() {
-        return "clans.chat";
-    }
+	@Override
+	public List<String> commandAliases() {
+		return Collections.emptyList();
+	}
 
-    @Override
-    public double radius() {
-        return -1;
-    }
+	@Override
+	public @MonotonicNonNull String permission() {
+		return "clans.chat";
+	}
 
-    @Override
-    public @NotNull RenderedMessage render(CarbonPlayer sender, Audience recipient, Component message, Component originalMessage) {
+	@Override
+	public double radius() {
+		return -1;
+	}
 
-        DraftClan clan = Objects.requireNonNull(cache.getUserClan(sender.uuid()));
-        ClanMember member = clan.member(sender.uuid()).orElseThrow();
-        return new RenderedMessage(configs.config().chat().format()
-                .with(new PapiTagResolver(this.server.getPlayer(sender.uuid())))
-                .with(ClanTagResolver.prefixed(clan))
-                .with("role", member.role())
-                .with("member", CarbonPlayer.renderName(sender))
-                .with("message", originalMessage)
-                .asComponent(), MessageType.CHAT);
-    }
+	@Override
+	public @NotNull RenderedMessage render(CarbonPlayer sender, Audience recipient, Component message, Component originalMessage) {
 
-    @Override
-    public @NotNull Key key() {
-        return KEY;
-    }
+		DraftClan clan = Objects.requireNonNull(cache.getUserClan(sender.uuid()));
+		ClanMember member = clan.member(sender.uuid()).orElseThrow();
+		return new RenderedMessage(configs.config().chat().format()
+				.with(new PapiTagResolver(this.server.getPlayer(sender.uuid())))
+				.with(ClanTagResolver.prefixed(clan))
+				.with("role", member.role())
+				.with("member", CarbonPlayer.renderName(sender))
+				.with("message", originalMessage)
+				.asComponent(), MessageType.CHAT);
+	}
+
+	@Override
+	public @NotNull Key key() {
+		return KEY;
+	}
 }

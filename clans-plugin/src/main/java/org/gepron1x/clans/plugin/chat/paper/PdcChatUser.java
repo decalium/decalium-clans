@@ -29,25 +29,26 @@ import java.util.Optional;
 
 public final class PdcChatUser implements ChatUser {
 
-    private static final NamespacedKey CHAT_CHANNEL = new NamespacedKey(JavaPlugin.getPlugin(DecaliumClansPlugin.class), "chat_channel");
+	private static final NamespacedKey CHAT_CHANNEL = new NamespacedKey(JavaPlugin.getPlugin(DecaliumClansPlugin.class), "chat_channel");
 
-    private final PersistentDataContainer container;
+	private final PersistentDataContainer container;
 
-    public PdcChatUser(PersistentDataContainer container) {
+	public PdcChatUser(PersistentDataContainer container) {
 
-        this.container = container;
-    }
+		this.container = container;
+	}
 
-    public PdcChatUser(PersistentDataHolder holder) {
-        this(holder.getPersistentDataContainer());
-    }
-    @Override
-    public Optional<Key> currentChannelKey() {
-        return Optional.ofNullable(container.get(CHAT_CHANNEL, KeyDataType.KEY));
-    }
+	public PdcChatUser(PersistentDataHolder holder) {
+		this(holder.getPersistentDataContainer());
+	}
 
-    @Override
-    public void currentChannelKey(Key key) {
-        container.set(CHAT_CHANNEL, KeyDataType.KEY, key);
-    }
+	@Override
+	public Optional<Key> currentChannelKey() {
+		return Optional.ofNullable(container.get(CHAT_CHANNEL, KeyDataType.KEY));
+	}
+
+	@Override
+	public void currentChannelKey(Key key) {
+		container.set(CHAT_CHANNEL, KeyDataType.KEY, key);
+	}
 }

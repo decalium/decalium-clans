@@ -20,7 +20,7 @@ public final class LevelRequiredBuilder {
 
 
 	public ItemBuilder ifAllowed(Consumer<ItemBuilder> consumer) {
-		if(clan.level() < level) builder.interaction(Colors.NEGATIVE, "Необходим "+level+" уровень!");
+		if (clan.level() < level) builder.interaction(Colors.NEGATIVE, "Необходим " + level + " уровень!");
 		else consumer.accept(builder);
 		return builder;
 	}

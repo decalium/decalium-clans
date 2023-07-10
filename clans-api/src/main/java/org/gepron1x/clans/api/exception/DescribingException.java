@@ -28,11 +28,11 @@ import java.util.Optional;
 
 public class DescribingException extends RuntimeException implements Action {
 
-    private final Action action;
+	private final Action action;
 
-    public DescribingException(ComponentLike description) {
-        this((a, r) -> a.sendMessage(description));
-    }
+	public DescribingException(ComponentLike description) {
+		this((a, r) -> a.sendMessage(description));
+	}
 
 
 	public DescribingException(Action action) {

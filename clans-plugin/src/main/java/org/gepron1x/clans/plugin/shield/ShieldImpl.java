@@ -22,4 +22,5 @@ import org.gepron1x.clans.api.shield.Shield;
 
 import java.time.Instant;
 
-public record ShieldImpl(Instant started, Instant end) implements Shield { }
+public record ShieldImpl(Instant started, Instant end) implements Shield {
+}

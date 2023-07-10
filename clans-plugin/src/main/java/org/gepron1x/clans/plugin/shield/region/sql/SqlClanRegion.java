@@ -38,6 +38,7 @@ public final class SqlClanRegion implements ClanRegion {
 		this.queue = queue;
 
 	}
+
 	@Override
 	public int id() {
 		return region.id();

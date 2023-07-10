@@ -25,9 +25,9 @@ public class ActionParserTest {
 
 	public static TextColor lastColor(Component component) {
 		TextColor color = component.color();
-		while(component.children().size() != 0) {
+		while (component.children().size() != 0) {
 			component = component.children().get(component.children().size() - 1);
-			if(component.color() != null) color = component.color();
+			if (component.color() != null) color = component.color();
 		}
 		return color;
 	}

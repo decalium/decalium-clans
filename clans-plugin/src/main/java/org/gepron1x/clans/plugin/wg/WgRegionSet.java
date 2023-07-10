@@ -28,20 +28,21 @@ public record WgRegionSet(RegionContainer container, Iterable<ClanRegion> region
 	}
 
 	public void clear() {
-		for(ClanRegion region : regions) {
+		for (ClanRegion region : regions) {
 			RegionManager manager = container.get(BukkitAdapter.adapt(region.location().getWorld()));
-			if(manager != null) manager.removeRegion("clans_region_"+region.id());
+			if (manager != null) manager.removeRegion("clans_region_" + region.id());
 		}
 	}
 
 	private void forEach(Consumer<ProtectedRegion> consumer) {
-		for(ClanRegion region : regions) {
+		for (ClanRegion region : regions) {
 			new ProtectedRegionOf(container, region).region().ifPresent(consumer);
 		}
 	}
+
 	public Collection<ProtectedRegion> protectedRegions() {
 		HashSet<ProtectedRegion> result = new HashSet<>();
-		for(ClanRegion region : regions) {
+		for (ClanRegion region : regions) {
 			new ProtectedRegionOf(container, region).region().ifPresent(result::add);
 		}
 		return result;

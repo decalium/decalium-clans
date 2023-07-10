@@ -33,22 +33,23 @@ import java.time.Instant;
 import java.util.UUID;
 
 public final class MemberMapper extends PrefixedRowMapper<ClanMember> {
-    private static final String UNIQUE_ID = "uuid", ROLE = "role", JOINED = "joined";
-    private final ClanBuilderFactory builderFactory;
-    private final RoleRegistry roleRegistry;
+	private static final String UNIQUE_ID = "uuid", ROLE = "role", JOINED = "joined";
+	private final ClanBuilderFactory builderFactory;
+	private final RoleRegistry roleRegistry;
 
-    public MemberMapper(@NotNull ClanBuilderFactory builderFactory, @NotNull RoleRegistry roleRegistry, @Nullable String prefix) {
-        super(prefix);
-        this.builderFactory = builderFactory;
-        this.roleRegistry = roleRegistry;
-    }
-    @Override
-    public ClanMember map(ResultSet rs, StatementContext ctx) throws SQLException {
-        ColumnMapper<UUID> uuidMapper = ctx.findColumnMapperFor(UUID.class).orElseThrow();
+	public MemberMapper(@NotNull ClanBuilderFactory builderFactory, @NotNull RoleRegistry roleRegistry, @Nullable String prefix) {
+		super(prefix);
+		this.builderFactory = builderFactory;
+		this.roleRegistry = roleRegistry;
+	}
+
+	@Override
+	public ClanMember map(ResultSet rs, StatementContext ctx) throws SQLException {
+		ColumnMapper<UUID> uuidMapper = ctx.findColumnMapperFor(UUID.class).orElseThrow();
 		ColumnMapper<Instant> instantMapper = ctx.findColumnMapperFor(Instant.class).orElseThrow();
-        return builderFactory.memberBuilder().uuid(uuidMapper.map(rs, prefixed(UNIQUE_ID), ctx))
-                .role(roleRegistry.value(rs.getString(prefixed(ROLE))).orElseThrow())
+		return builderFactory.memberBuilder().uuid(uuidMapper.map(rs, prefixed(UNIQUE_ID), ctx))
+				.role(roleRegistry.value(rs.getString(prefixed(ROLE))).orElseThrow())
 				.joined(instantMapper.map(rs, prefixed(JOINED), ctx))
-                .build();
-    }
+				.build();
+	}
 }

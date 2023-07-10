@@ -27,12 +27,12 @@ import java.sql.Types;
 
 public final class ItemStackArgumentFactory extends AbstractArgumentFactory<ItemStack> {
 
-    public ItemStackArgumentFactory() {
-        super(Types.BLOB);
-    }
+	public ItemStackArgumentFactory() {
+		super(Types.BLOB);
+	}
 
-    @Override
-    protected Argument build(ItemStack value, ConfigRegistry config) {
-        return (position, statement, ctx) -> statement.setBytes(position, value.serializeAsBytes());
-    }
+	@Override
+	protected Argument build(ItemStack value, ConfigRegistry config) {
+		return (position, statement, ctx) -> statement.setBytes(position, value.serializeAsBytes());
+	}
 }

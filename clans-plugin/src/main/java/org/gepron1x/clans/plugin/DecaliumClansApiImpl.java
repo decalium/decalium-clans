@@ -35,5 +35,7 @@ public record DecaliumClansApiImpl(@NotNull CachingClanRepository repository,
 								   @NotNull RoleRegistry roleRegistry,
 								   @NotNull ClanBuilderFactory builderFactory,
 								   @NotNull FactoryOfTheFuture futuresFactory,
-								   @NotNull Wars wars,@Override
-								   @NotNull GlobalRegions regions, @NotNull Prices prices, LevelsMeta levels) implements DecaliumClansApi { }
+								   @NotNull Wars wars, @Override
+								   @NotNull GlobalRegions regions, @NotNull Prices prices,
+								   LevelsMeta levels) implements DecaliumClansApi {
+}

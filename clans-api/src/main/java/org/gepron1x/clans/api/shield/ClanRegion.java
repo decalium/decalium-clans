@@ -34,7 +34,6 @@ public interface ClanRegion {
 	Shield shield();
 
 
-
 	Shield addShield(Duration duration);
 
 	void removeShield();

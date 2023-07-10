@@ -30,19 +30,19 @@ import static space.arim.dazzleconf.annote.ConfDefault.DefaultString;
 
 public interface PricesConfig extends Prices {
 
-    @DefaultDouble(800)
-    @ConfKey("home-creation")
+	@DefaultDouble(800)
+	@ConfKey("home-creation")
 	@Override
-    double homeCreation();
+	double homeCreation();
 
-    @DefaultDouble(100)
-    @ConfKey("clan-creation")
+	@DefaultDouble(100)
+	@ConfKey("clan-creation")
 	@Override
-    double clanCreation();
+	double clanCreation();
 
-    @DefaultDouble(200)
-    @ConfKey("clan-upgrade")
-    double clanUpgrade();
+	@DefaultDouble(200)
+	@ConfKey("clan-upgrade")
+	double clanUpgrade();
 
 	@ConfDefault.DefaultMap({})
 	@ConfKey("upgrade-prices")
@@ -61,10 +61,10 @@ public interface PricesConfig extends Prices {
 
 	@DefaultDouble(1000)
 	@Override
-    double shield();
+	double shield();
 
-    @DefaultString("<prefix><red> You need at least <price> to do that.")
-    @ConfKey("not-enough-money")
+	@DefaultString("<prefix><red> You need at least <price> to do that.")
+	@ConfKey("not-enough-money")
 	Message notEnoughMoney();
 
 

@@ -27,26 +27,27 @@ import java.util.Optional;
 
 public final class PluginServices implements Services {
 
-    private final Plugin plugin;
-    private final ServicesManager services;
+	private final Plugin plugin;
+	private final ServicesManager services;
 
-    public PluginServices(Plugin plugin) {
+	public PluginServices(Plugin plugin) {
 
-        this.plugin = plugin;
-        services = plugin.getServer().getServicesManager();
-    }
-    @Override
-    public <T> void register(Class<T> clazz, T service, ServicePriority priority) {
-        services.register(clazz, service, this.plugin, priority);
-    }
+		this.plugin = plugin;
+		services = plugin.getServer().getServicesManager();
+	}
 
-    @Override
-    public void unregister(Object service) {
-        services.unregister(service);
-    }
+	@Override
+	public <T> void register(Class<T> clazz, T service, ServicePriority priority) {
+		services.register(clazz, service, this.plugin, priority);
+	}
 
-    @Override
-    public <T> Optional<T> get(Class<T> clazz) {
-        return Optional.ofNullable(services.getRegistration(clazz)).map(RegisteredServiceProvider::getProvider);
-    }
+	@Override
+	public void unregister(Object service) {
+		services.unregister(service);
+	}
+
+	@Override
+	public <T> Optional<T> get(Class<T> clazz) {
+		return Optional.ofNullable(services.getRegistration(clazz)).map(RegisteredServiceProvider::getProvider);
+	}
 }

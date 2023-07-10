@@ -39,78 +39,79 @@ import java.util.Set;
 
 public final class ClanChannel implements Channel {
 
-    private static final Key KEY = Key.key("decaliumclans:chat");
-    private final CachingClanRepository repository;
-    private final Server server;
-    private final ClansConfig config;
+	private static final Key KEY = Key.key("decaliumclans:chat");
+	private final CachingClanRepository repository;
+	private final Server server;
+	private final ClansConfig config;
 
-    public ClanChannel(CachingClanRepository repository, Server server, ClansConfig config) {
+	public ClanChannel(CachingClanRepository repository, Server server, ClansConfig config) {
 
-        this.repository = repository;
-        this.server = server;
-        this.config = config;
-    }
-    @Override
-    public Component render(Player sender, Audience recipient, Component message, Component originalMessage) {
-        Clan clan = this.repository.userClanIfCached(sender).orElseThrow();
-        ClanMember member = clan.member(sender).orElseThrow();
-        return config.chat().format()
-                .with(new PapiTagResolver(sender))
-                .with("clan", ClanTagResolver.clan(clan))
-                .with("role", member.role())
-                .with("member", sender.displayName())
-                .with("message", originalMessage)
-                .asComponent();
-    }
+		this.repository = repository;
+		this.server = server;
+		this.config = config;
+	}
 
-    @Override
-    public String prefix() {
-        return config.chat().prefix();
-    }
+	@Override
+	public Component render(Player sender, Audience recipient, Component message, Component originalMessage) {
+		Clan clan = this.repository.userClanIfCached(sender).orElseThrow();
+		ClanMember member = clan.member(sender).orElseThrow();
+		return config.chat().format()
+				.with(new PapiTagResolver(sender))
+				.with("clan", ClanTagResolver.clan(clan))
+				.with("role", member.role())
+				.with("member", sender.displayName())
+				.with("message", originalMessage)
+				.asComponent();
+	}
 
-    @Override
-    public boolean usePermitted(Player player) {
-        return repository.userClanIfCached(player).isPresent();
-    }
+	@Override
+	public String prefix() {
+		return config.chat().prefix();
+	}
 
-    @Override
-    public Set<? extends Audience> recipients(Player player) {
-        return this.repository.userClanIfCached(player).map(clan -> new ClanOnlinePlayers(clan, server).players())
-                .map(Set::copyOf).orElse(Collections.emptySet());
-    }
+	@Override
+	public boolean usePermitted(Player player) {
+		return repository.userClanIfCached(player).isPresent();
+	}
 
-    @Override
-    public Set<Player> filter(Player sender, Set<Player> receivers) {
-        return this.repository.userClanIfCached(sender).map(clan -> {
-            Set<Player> filtered = new HashSet<>(receivers);
-            filtered.removeIf(p -> clan.member(p).isEmpty());
-            return filtered;
-        }).map(Set::copyOf).orElse(Collections.emptySet());
-    }
+	@Override
+	public Set<? extends Audience> recipients(Player player) {
+		return this.repository.userClanIfCached(player).map(clan -> new ClanOnlinePlayers(clan, server).players())
+				.map(Set::copyOf).orElse(Collections.emptySet());
+	}
 
-    @Override
-    public Key key() {
-        return KEY;
-    }
+	@Override
+	public Set<Player> filter(Player sender, Set<Player> receivers) {
+		return this.repository.userClanIfCached(sender).map(clan -> {
+			Set<Player> filtered = new HashSet<>(receivers);
+			filtered.removeIf(p -> clan.member(p).isEmpty());
+			return filtered;
+		}).map(Set::copyOf).orElse(Collections.emptySet());
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ClanChannel that = (ClanChannel) o;
-        return repository.equals(that.repository) && server.equals(that.server) && config.equals(that.config);
-    }
+	@Override
+	public Key key() {
+		return KEY;
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(repository, server, config);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		ClanChannel that = (ClanChannel) o;
+		return repository.equals(that.repository) && server.equals(that.server) && config.equals(that.config);
+	}
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("repository", repository)
-                .add("server", server)
-                .toString();
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(repository, server, config);
+	}
+
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("repository", repository)
+				.add("server", server)
+				.toString();
+	}
 }

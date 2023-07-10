@@ -30,35 +30,36 @@ import org.jetbrains.annotations.NotNull;
 
 public final class LeveledEdition implements EmptyClanEdition {
 
-    private final Clan clan;
-    private final Levels.PerLevel perLevel;
-    private final Configs configs;
+	private final Clan clan;
+	private final Levels.PerLevel perLevel;
+	private final Configs configs;
 
-    public LeveledEdition(Clan clan, Levels.PerLevel perLevel, Configs configs) {
-        this.clan = clan;
-        this.perLevel = perLevel;
-        this.configs = configs;
-    }
+	public LeveledEdition(Clan clan, Levels.PerLevel perLevel, Configs configs) {
+		this.clan = clan;
+		this.perLevel = perLevel;
+		this.configs = configs;
+	}
 
-    @Override
-    public ClanEdition addMember(@NotNull ClanMember member) {
-        if(clan.members().size() >= perLevel.slots()) {
-            throw new DescribingException(configs.messages().level().tooManyHomes().with("slots", perLevel.slots()));
-        }
-        return this;
-    }
+	@Override
+	public ClanEdition addMember(@NotNull ClanMember member) {
+		if (clan.members().size() >= perLevel.slots()) {
+			throw new DescribingException(configs.messages().level().tooManyHomes().with("slots", perLevel.slots()));
+		}
+		return this;
+	}
 
-    @Override
-    public ClanEdition addHome(@NotNull ClanHome home) {
-        if(clan.homes().size() >= perLevel.homes()) {
-            throw new DescribingException(configs.messages().level().tooManyHomes().with("homes", perLevel.homes()));
-        }
-        return this;
-    }
+	@Override
+	public ClanEdition addHome(@NotNull ClanHome home) {
+		if (clan.homes().size() >= perLevel.homes()) {
+			throw new DescribingException(configs.messages().level().tooManyHomes().with("homes", perLevel.homes()));
+		}
+		return this;
+	}
 
-    @Override
-    public ClanEdition upgrade() {
-        if(clan.level() >= configs.config().levels().maxLevel()) throw new DescribingException(configs.messages().level().maxLevel());
-        return this;
-    }
+	@Override
+	public ClanEdition upgrade() {
+		if (clan.level() >= configs.config().levels().maxLevel())
+			throw new DescribingException(configs.messages().level().maxLevel());
+		return this;
+	}
 }

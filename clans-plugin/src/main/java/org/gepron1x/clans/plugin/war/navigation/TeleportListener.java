@@ -42,7 +42,7 @@ public final class TeleportListener implements Listener {
 	@EventHandler
 	public void on(PlayerTeleportEvent event) {
 		World world = event.getTo().getWorld();
-		if(Objects.equals(event.getFrom().getWorld(), world)) return;
+		if (Objects.equals(event.getFrom().getWorld(), world)) return;
 		wars.currentWar(event.getPlayer()).ifPresent(war -> {
 			configs.messages().war().navigationDifferentWorld()
 					.with("target", event.getPlayer().displayName())

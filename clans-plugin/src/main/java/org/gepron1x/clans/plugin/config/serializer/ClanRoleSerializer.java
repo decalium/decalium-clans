@@ -35,53 +35,54 @@ import java.util.Set;
 
 public final class ClanRoleSerializer implements ValueSerialiser<ClanRole> {
 
-    private static final String NAME = "name", DISPLAY_NAME = "display_name", WEIGHT = "weight", PERMISSIONS = "permissions";
-    private final ClanBuilderFactory builderFactory;
+	private static final String NAME = "name", DISPLAY_NAME = "display_name", WEIGHT = "weight", PERMISSIONS = "permissions";
+	private final ClanBuilderFactory builderFactory;
 
 
-    public ClanRoleSerializer(@NotNull ClanBuilderFactory builderFactory) {
+	public ClanRoleSerializer(@NotNull ClanBuilderFactory builderFactory) {
 
-        this.builderFactory = builderFactory;
-    }
-    @Override
-    public Class<ClanRole> getTargetClass() {
-        return ClanRole.class;
-    }
+		this.builderFactory = builderFactory;
+	}
 
-    @Override
-    public ClanRole deserialise(FlexibleType flexibleType) throws BadValueException {
-        ClanRole.Builder builder = builderFactory.roleBuilder();
-        Map<String, FlexibleType> map = flexibleType.getMap((key, value) -> Map.entry(key.getString(), value));
-        List<String> s = map.get(PERMISSIONS).getList(FlexibleType::getString);
-        Set<ClanPermission> permissions;
-        if(s.size() == 1 && s.get(0).equals("*")) {
-            permissions = ClanPermission.all();
-        } else {
-            permissions = map.get(PERMISSIONS).getSet(flexType -> flexType.getObject(ClanPermission.class));
-        }
-        return builder.name(map.get(NAME).getString())
-                .displayName(map.get(DISPLAY_NAME).getObject(Component.class))
-                .weight(map.get(WEIGHT).getInteger())
-                .permissions(permissions)
-                .build();
-    }
+	@Override
+	public Class<ClanRole> getTargetClass() {
+		return ClanRole.class;
+	}
 
-    @Override
-    public Map<String, Object> serialise(ClanRole value, Decomposer decomposer) {
-        Map<String, Object> map = new LinkedHashMap<>(4);
+	@Override
+	public ClanRole deserialise(FlexibleType flexibleType) throws BadValueException {
+		ClanRole.Builder builder = builderFactory.roleBuilder();
+		Map<String, FlexibleType> map = flexibleType.getMap((key, value) -> Map.entry(key.getString(), value));
+		List<String> s = map.get(PERMISSIONS).getList(FlexibleType::getString);
+		Set<ClanPermission> permissions;
+		if (s.size() == 1 && s.get(0).equals("*")) {
+			permissions = ClanPermission.all();
+		} else {
+			permissions = map.get(PERMISSIONS).getSet(flexType -> flexType.getObject(ClanPermission.class));
+		}
+		return builder.name(map.get(NAME).getString())
+				.displayName(map.get(DISPLAY_NAME).getObject(Component.class))
+				.weight(map.get(WEIGHT).getInteger())
+				.permissions(permissions)
+				.build();
+	}
 
-        map.put(NAME, value.name());
-        map.put(DISPLAY_NAME, decomposer.decompose(Component.class, value.displayName()));
-        map.put(WEIGHT, value.weight());
+	@Override
+	public Map<String, Object> serialise(ClanRole value, Decomposer decomposer) {
+		Map<String, Object> map = new LinkedHashMap<>(4);
 
-        Object permissions;
-        if(value.permissions().containsAll(ClanPermission.all())) {
-            permissions = List.of("*");
-        } else {
-            permissions = decomposer.decomposeCollection(ClanPermission.class, value.permissions());
-        }
-        map.put(PERMISSIONS, permissions);
+		map.put(NAME, value.name());
+		map.put(DISPLAY_NAME, decomposer.decompose(Component.class, value.displayName()));
+		map.put(WEIGHT, value.weight());
 
-        return map;
-    }
+		Object permissions;
+		if (value.permissions().containsAll(ClanPermission.all())) {
+			permissions = List.of("*");
+		} else {
+			permissions = decomposer.decomposeCollection(ClanPermission.class, value.permissions());
+		}
+		map.put(PERMISSIONS, permissions);
+
+		return map;
+	}
 }
