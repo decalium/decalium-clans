@@ -42,7 +42,7 @@ public class PermissiveClanExecutionHandler implements CommandExecutionHandler<C
     public void execute(@NonNull CommandContext<CommandSender> commandContext) {
         ClanMember member = commandContext.get(ClanExecutionHandler.CLAN_MEMBER);
         if(!member.hasPermission(permission)) {
-            commandContext.getSender().sendMessage(messages.noClanPermission());
+			messages.noClanPermission().send(commandContext.getSender());
             return;
         }
         delegate.execute(commandContext);

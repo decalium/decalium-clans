@@ -44,9 +44,10 @@ public final class TeleportListener implements Listener {
 		World world = event.getTo().getWorld();
 		if(Objects.equals(event.getFrom().getWorld(), world)) return;
 		wars.currentWar(event.getPlayer()).ifPresent(war -> {
-			new WarAudience(war).sendMessage(configs.messages().war().navigationDifferentWorld()
+			configs.messages().war().navigationDifferentWorld()
 					.with("target", event.getPlayer().displayName())
-					.with("world", configs.config().wars().navigation().worldName(world)));
+					.with("world", configs.config().wars().navigation().worldName(world))
+					.send(new WarAudience(war));
 		});
 	}
 }

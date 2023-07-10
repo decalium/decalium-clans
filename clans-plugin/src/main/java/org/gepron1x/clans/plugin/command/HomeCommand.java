@@ -116,7 +116,7 @@ public class HomeCommand extends AbstractClanCommand {
         Player player = (Player) context.getSender();
         String name = context.get("name");
         if(!Validations.checkHomeName(name)) {
-            player.sendMessage(this.messages.commands().home().invalidHomeName());
+            this.messages.commands().home().invalidHomeName().send(player);
             return;
         }
         Component displayName = context.<Component>getOptional("display_name").orElseGet(() -> Component.text(name, NamedTextColor.GRAY));
@@ -137,14 +137,14 @@ public class HomeCommand extends AbstractClanCommand {
 
         Clan clan = context.get(ClanExecutionHandler.CLAN);
         if(clan.homes().size() >= this.clansConfig.homes().maxHomes()) {
-            player.sendMessage(messages.commands().home().tooManyHomes());
+            messages.commands().home().tooManyHomes().send(player);
             return;
         }
         if(clan.home(name).isPresent()) {
-            player.sendMessage(messages.commands().home().homeAlreadyExists().with("name", name));
+            messages.commands().home().homeAlreadyExists().with("name", name).send(player);
             return;
         }
-       clan.edit(edition -> edition.addHome(home)).thenAccept(c -> player.sendMessage(messages.commands().home().created()))
+       clan.edit(edition -> edition.addHome(home)).thenAccept(c -> messages.commands().home().created().send(player))
                .exceptionally(this.exceptionHandler(context.getSender()));
     }
 
@@ -155,7 +155,7 @@ public class HomeCommand extends AbstractClanCommand {
         ClanHome home = context.get("home");
 
        clan.edit(edition -> edition.removeHome(home)).thenAccept(c -> {
-            player.sendMessage(messages.commands().home().deleted());
+            messages.commands().home().deleted().send(player);
         }).exceptionally(exceptionHandler(player));
     }
 
@@ -163,7 +163,7 @@ public class HomeCommand extends AbstractClanCommand {
         Player player = (Player) context.getSender();
         ClanHome home = context.get("home");
         player.teleportAsync(home.location()).thenAccept(bool -> {
-            if(bool) player.sendMessage(this.messages.commands().home().teleported().with("home", home.displayName()));
+            if(bool) this.messages.commands().home().teleported().with("home", home.displayName()).send(player);
         }).exceptionally(exceptionHandler(player));
     }
 
@@ -174,7 +174,7 @@ public class HomeCommand extends AbstractClanCommand {
         clan.edit(edition -> edition.editHome(home.name(), homeEdition -> {
             homeEdition.rename(name);
         })).thenAccept(c -> {
-            context.getSender().sendMessage(this.messages.commands().home().renamed());
+            this.messages.commands().home().renamed().send(context.getSender());
         }).exceptionally(exceptionHandler(context.getSender()));
     }
 
@@ -184,7 +184,7 @@ public class HomeCommand extends AbstractClanCommand {
             ClanMember member = ctx.get(ClanExecutionHandler.CLAN_MEMBER);
             ClanHome home = ctx.get("home");
             if(!home.creator().equals(member.uniqueId()) && !member.hasPermission(ClanPermission.EDIT_OTHERS_HOMES)) {
-                ctx.getSender().sendMessage(this.messages.noClanPermission());
+                this.messages.noClanPermission().send(ctx.getSender());
                 return;
             }
             delegate.execute(ctx);

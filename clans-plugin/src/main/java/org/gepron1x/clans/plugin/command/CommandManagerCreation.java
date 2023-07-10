@@ -91,25 +91,25 @@ public final class CommandManagerCreation {
 
     private void exceptionHandlers(CommandManager<CommandSender> manager) {
         manager.registerExceptionHandler(NoPermissionException.class, (sender, ex) -> {
-            sender.sendMessage(this.messages.noPermission());
+            this.messages.noPermission().send(sender);
         });
         manager.registerExceptionHandler(InvalidSyntaxException.class, (sender, ex) -> {
-            sender.sendMessage(this.messages.commands().invalidSyntax().withMiniMessage("syntax", ex.getCorrectSyntax().replace("|", "<gray>, </gray>")));
+            this.messages.commands().invalidSyntax().withMiniMessage("syntax", ex.getCorrectSyntax().replace("|", "<gray>, </gray>")).send(sender);
         });
 
         manager.registerExceptionHandler(ArgumentParseException.class, (sender, ex) -> {
             Throwable exception = ex.getCause();
             if(exception instanceof DescribingException e) {
-                sender.sendMessage(e.description());
+                e.send(sender);
             }
             else {
-                sender.sendMessage(messages.commands().invalidArgument().withMiniMessage("message", ex.getMessage()));
+                messages.commands().invalidArgument().withMiniMessage("message", ex.getMessage()).send(sender);
             }
         });
 
         manager.registerExceptionHandler(InvalidCommandSenderException.class, (sender, ex) -> {
             if(ex.getRequiredSender().equals(Player.class)) {
-                sender.sendMessage(messages.commands().onlyPlayersCanDoThis());
+                messages.commands().onlyPlayersCanDoThis().send(sender);
             } else {
                 sender.sendMessage("Only senders with type " + ex.getRequiredSender().getSimpleName() + " can do this.");
             }

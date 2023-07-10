@@ -22,17 +22,18 @@ import com.google.common.base.MoreObjects;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.title.Title;
-import org.gepron1x.clans.plugin.util.message.Message;
+import org.gepron1x.clans.api.chat.action.Action;
+import org.gepron1x.clans.plugin.util.message.TextMessage;
 
 import java.util.Objects;
 
 public final class TitleAction implements Action {
 
-    private final Message title;
-    private final Message subTitle;
+    private final TextMessage title;
+    private final TextMessage subTitle;
     private final Title.Times times;
 
-    public TitleAction(Message title, Message subTitle, Title.Times times) {
+    public TitleAction(TextMessage title, TextMessage subTitle, Title.Times times) {
         this.title = title;
         this.subTitle = subTitle;
         this.times = times;

@@ -20,16 +20,19 @@ package org.gepron1x.clans.plugin.util.action;
 
 import com.google.common.base.MoreObjects;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import org.gepron1x.clans.plugin.util.message.Message;
+import org.gepron1x.clans.api.chat.action.Action;
+import org.gepron1x.clans.plugin.util.message.TextMessage;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public final class ActionBarAction implements Action {
 
-    private final Message actionBar;
+    private final TextMessage actionBar;
 
-    public ActionBarAction(Message actionBar) {
+    public ActionBarAction(TextMessage actionBar) {
 
         this.actionBar = actionBar;
     }
@@ -37,6 +40,12 @@ public final class ActionBarAction implements Action {
     public void send(Audience audience, TagResolver resolver) {
         audience.sendActionBar(actionBar.with(resolver));
     }
+
+
+	@Override
+	public Optional<Component> text(TagResolver resolver) {
+		return Optional.of(actionBar.with(resolver).asComponent());
+	}
 
 	@Override
 	public boolean equals(Object o) {

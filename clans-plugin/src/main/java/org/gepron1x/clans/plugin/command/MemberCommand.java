@@ -90,22 +90,22 @@ public class MemberCommand extends AbstractClanCommand {
 
 
         if(other.equals(member)) {
-            player.sendMessage(messages.cannotDoActionOnYourSelf());
+            messages.cannotDoActionOnYourSelf().send(player);
             return;
         }
 
         if(other.role().weight() > member.role().weight()) {
-            player.sendMessage(messages.commands().member().memberHasHigherWeight().with("member", member));
+            messages.commands().member().memberHasHigherWeight().with("member", member).send(player);
             return;
         }
 
         if(member.role().weight() <= role.weight()) {
-            player.sendMessage(messages.commands().member().role().roleHasHigherWeight().with("role", role.displayName()));
+            messages.commands().member().role().roleHasHigherWeight().with("role", role.displayName()).send(player);
             return;
         }
 
         clan.edit(edition -> edition.editMember(other.uniqueId(), memberEdition -> memberEdition.appoint(role)))
-                .thenAccept(c -> player.sendMessage(messages.commands().member().role().success()))
+                .thenAccept(c -> messages.commands().member().role().success().send(player))
                 .exceptionally(exceptionHandler(player));
 
     }
@@ -116,7 +116,7 @@ public class MemberCommand extends AbstractClanCommand {
         Player player = (Player) context.getSender();
         ClanMember newOwner = context.get("member");
         if(!clan.owner().equals(member)) {
-            player.sendMessage(this.messages.commands().member().onlyOwnerCanDoThis());
+            this.messages.commands().member().onlyOwnerCanDoThis().send(player);
             return;
         }
         clan.edit(edition -> {
@@ -136,18 +136,18 @@ public class MemberCommand extends AbstractClanCommand {
 
         ClanMember other = context.get("member");
         if(other.equals(member)) {
-            player.sendMessage(messages.cannotDoActionOnYourSelf());
+            messages.cannotDoActionOnYourSelf().send(player);
             return;
         }
 
 
         if (other.role().weight() >= member.role().weight()) {
-            player.sendMessage(messages.commands().member().memberHasHigherWeight().with("member", member));
+            messages.commands().member().memberHasHigherWeight().with("member", member).send(player);
         }
 
 
         clan.edit(clanEdition -> clanEdition.removeMember(other)).thenAccept(newClan -> {
-            player.sendMessage(messages.commands().member().kick().success());
+            messages.commands().member().kick().success().send(player);
         }).exceptionally(exceptionHandler(player));
     }
 

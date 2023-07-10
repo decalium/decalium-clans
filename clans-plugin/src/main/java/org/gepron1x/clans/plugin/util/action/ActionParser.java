@@ -22,7 +22,8 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.title.Title;
-import org.gepron1x.clans.plugin.util.message.Message;
+import org.gepron1x.clans.api.chat.action.Action;
+import org.gepron1x.clans.plugin.util.message.TextMessage;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -46,13 +47,13 @@ public final class ActionParser {
     public Action parseSingle(String value) {
         Matcher matcher = ACTION_PATTERN.matcher(value);
         if(!matcher.matches()) {
-			return new ParsedAction(new MessageAction(Message.message(value, miniMessage)), value);
+			return new ParsedAction(new ChatAction(TextMessage.message(value, miniMessage)), value);
 		}
         String type = matcher.group(1);
 		String text = matcher.group(2);
         ActionArgs args = new ActionArgs(splitQuoted(text));
         return new ParsedAction(switch(type) {
-			case "actionbar" -> new ActionBarAction(Message.message(text, miniMessage));
+			case "actionbar" -> new ActionBarAction(TextMessage.message(text, miniMessage));
             case "sound" -> {
                 Key key = args.requireArg(0).asKey();
                 float volume = args.arg(1).map(ActionArgs.Arg::asFloat).orElse(1f);
@@ -60,14 +61,14 @@ public final class ActionParser {
                 yield new SoundAction(Sound.sound(key, Sound.Source.AMBIENT, volume, pitch));
             }
             case "title" -> {
-                Message title = args.requireArg(0).asMessage(miniMessage);
-                Message subTitle = args.arg(1).map(arg -> arg.asMessage(miniMessage)).orElse(Message.EMPTY);
+                TextMessage title = args.requireArg(0).asMessage(miniMessage);
+                TextMessage subTitle = args.arg(1).map(arg -> arg.asMessage(miniMessage)).orElse(TextMessage.EMPTY);
                 Duration fadeIn = args.arg(2).map(ActionArgs.Arg::asDuration).orElse(Title.DEFAULT_TIMES.fadeIn());
                 Duration stay = args.arg(3).map(ActionArgs.Arg::asDuration).orElse(Title.DEFAULT_TIMES.stay());
                 Duration fadeOut = args.arg(4).map(ActionArgs.Arg::asDuration).orElse(Title.DEFAULT_TIMES.fadeOut());
                 yield new TitleAction(title, subTitle, Title.Times.times(fadeIn, stay, fadeOut));
             }
-            default -> new MessageAction(Message.message(text, miniMessage));
+            default -> new ChatAction(TextMessage.message(text, miniMessage));
         }, value);
     }
 

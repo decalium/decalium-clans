@@ -6,7 +6,7 @@ import org.gepron1x.clans.api.decoration.ColorDecoration;
 import org.gepron1x.clans.api.decoration.CombinedDecoration;
 import org.gepron1x.clans.api.decoration.GradientDecoration;
 import org.gepron1x.clans.api.decoration.SymbolDecoration;
-import org.gepron1x.clans.plugin.util.message.Message;
+import org.gepron1x.clans.plugin.util.message.TextMessage;
 import space.arim.dazzleconf.annote.ConfDefault;
 import space.arim.dazzleconf.annote.SubSection;
 import space.arim.dazzleconf.sorter.AnnotationBasedSorter;
@@ -19,7 +19,7 @@ public interface Decorations {
 	interface BaseDecoration {
 
 		@AnnotationBasedSorter.Order(1)
-		Message name();
+		TextMessage name();
 		@AnnotationBasedSorter.Order(2)
 		Material material();
 

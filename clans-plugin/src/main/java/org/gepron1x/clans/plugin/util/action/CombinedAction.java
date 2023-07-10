@@ -20,9 +20,15 @@ package org.gepron1x.clans.plugin.util.action;
 
 import com.google.common.base.MoreObjects;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import org.gepron1x.clans.api.chat.action.Action;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public final class CombinedAction implements Action {
 
@@ -36,6 +42,15 @@ public final class CombinedAction implements Action {
     public void send(Audience audience, TagResolver resolver) {
         for(Action action : actions) action.send(audience, resolver);
     }
+
+	@Override
+	public Optional<Component> text(TagResolver resolver) {
+		List<Component> list = new ArrayList<>();
+		for(Action action : actions) action.text(resolver).ifPresent(list::add);
+		if(list.size() == 0) return Optional.empty();
+		if(list.size() == 1) return Optional.of(list.get(0));
+		return Optional.of(Component.join(JoinConfiguration.newlines(), list));
+	}
 
 	public Iterable<? extends Action> actions() {
 		return actions;

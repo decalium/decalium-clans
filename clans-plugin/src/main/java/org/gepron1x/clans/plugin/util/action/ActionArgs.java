@@ -20,7 +20,7 @@ package org.gepron1x.clans.plugin.util.action;
 
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.gepron1x.clans.plugin.util.message.Message;
+import org.gepron1x.clans.plugin.util.message.TextMessage;
 
 import java.time.Duration;
 import java.util.List;
@@ -60,8 +60,8 @@ final class ActionArgs {
         public Duration asDuration() {
             return Duration.ofMillis(asInteger() * 50L);
         }
-        public Message asMessage(MiniMessage miniMessage) {
-            return Message.message(value, miniMessage);
+        public TextMessage asMessage(MiniMessage miniMessage) {
+            return TextMessage.message(value, miniMessage);
         }
     }
 

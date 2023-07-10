@@ -81,7 +81,7 @@ public abstract class AbstractClanCommand implements AbstractCommand {
     protected <T> Function<Throwable, T> exceptionHandler(Audience sender) {
         return t -> {
             if(t instanceof CompletionException completionException && completionException.getCause() instanceof DescribingException ex) {
-                sender.sendMessage(ex.description());
+                ex.send(sender);
                 return null;
             }
             sender.sendMessage(Component.text("Error happened while executing command; see console for more info.", NamedTextColor.RED));

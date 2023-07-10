@@ -29,7 +29,7 @@ import org.gepron1x.clans.api.user.ClanUser;
 import org.gepron1x.clans.gui.item.ClanRegionItem;
 import org.gepron1x.clans.libraries.cloud.commandframework.bukkit.parsers.PlayerArgument;
 import org.gepron1x.clans.plugin.DecaliumClansPlugin;
-import org.gepron1x.clans.plugin.util.message.Message;
+import org.gepron1x.clans.plugin.util.message.TextMessage;
 import org.gepron1x.clans.plugin.util.services.PluginServices;
 
 public final class DecaliumClansGui extends JavaPlugin {
@@ -44,8 +44,8 @@ public final class DecaliumClansGui extends JavaPlugin {
 			builder.resolver(new DecaliumColorResolver());
 	}).build();
 
-	public static Message message(String value) {
-		return Message.message(value, MINI_MESSAGE);
+	public static TextMessage message(String value) {
+		return TextMessage.message(value, MINI_MESSAGE);
 	}
 
     @Override

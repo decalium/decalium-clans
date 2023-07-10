@@ -16,7 +16,7 @@
  * along with decalium-clans. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package org.gepron1x.clans.plugin.util.message;
+package org.gepron1x.clans.api.chat.action;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;

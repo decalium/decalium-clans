@@ -51,26 +51,26 @@ public final class AnnouncingClanEdition implements EmptyClanEdition {
     }
     @Override
     public ClanEdition rename(@NotNull Component displayName) {
-        this.audience.sendMessage(messages.announcements().clanSetDisplayName().with("name", displayName));
+        messages.announcements().clanSetDisplayName().with("name", displayName).send(this.audience);
         return this;
     }
 
 
     @Override
     public ClanEdition owner(@NotNull ClanMember owner) {
-        this.audience.sendMessage(messages.announcements().clanOwnerChanged().with("member", owner.renderName(server)));
+        messages.announcements().clanOwnerChanged().with("member", owner.renderName(server)).send(this.audience);
         return this;
     }
 
     @Override
     public ClanEdition addMember(@NotNull ClanMember member) {
-        this.audience.sendMessage(messages.announcements().memberAdded().with("member", member.renderName(server)));
+        messages.announcements().memberAdded().with("member", member.renderName(server)).send(this.audience);
         return this;
     }
 
     @Override
     public ClanEdition removeMember(@NotNull ClanMember member) {
-        this.audience.sendMessage(messages.announcements().memberRemoved().with("member", member.renderName(server)));
+        messages.announcements().memberRemoved().with("member", member.renderName(server)).send(this.audience);
         return this;
     }
 
@@ -82,17 +82,17 @@ public final class AnnouncingClanEdition implements EmptyClanEdition {
 
     @Override
     public ClanEdition addHome(@NotNull ClanHome home) {
-        this.audience.sendMessage(messages.announcements().homeCreated()
+        messages.announcements().homeCreated()
                 .with("member", requireNonNull(clan.member(home.creator())).orElseThrow().renderName(server))
-                .with("home_name", home.displayName()));
+                .with("home_name", home.displayName()).send(this.audience);
         return this;
     }
 
     @Override
     public ClanEdition removeHome(@NotNull ClanHome home) {
-        this.audience.sendMessage(messages.announcements().homeDeleted()
+        messages.announcements().homeDeleted()
                 .with("member", clan.member(home.creator()).orElseThrow().renderName(server))
-                .with("home_name", home.displayName()));
+                .with("home_name", home.displayName()).send(this.audience);
         return this;
     }
 
@@ -113,10 +113,9 @@ public final class AnnouncingClanEdition implements EmptyClanEdition {
         }
         @Override
         public MemberEdition appoint(@NotNull ClanRole role) {
-            AnnouncingClanEdition.this.audience.sendMessage(messages.announcements().memberPromoted()
+            messages.announcements().memberPromoted()
                     .with("member", member.renderName(server))
-                    .with("role", role)
-            );
+                    .with("role", role).send(AnnouncingClanEdition.this.audience);
             return this;
         }
     }
@@ -131,7 +130,7 @@ public final class AnnouncingClanEdition implements EmptyClanEdition {
 
         @Override
         public HomeEdition upgrade() {
-            audience.sendMessage(messages.announcements().homeUpgraded().with("home", home.displayName()).with("level", home.level()));
+            messages.announcements().homeUpgraded().with("home", home.displayName()).with("level", home.level()).send(audience);
             return this;
         }
 

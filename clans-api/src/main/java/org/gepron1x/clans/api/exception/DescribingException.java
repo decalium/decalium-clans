@@ -18,23 +18,34 @@
  */
 package org.gepron1x.clans.api.exception;
 
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import org.gepron1x.clans.api.chat.action.Action;
 
-public class DescribingException extends RuntimeException {
+import java.util.Optional;
 
-    private final Component description;
+public class DescribingException extends RuntimeException implements Action {
 
-    public DescribingException(Component description) {
-
-        this.description = description;
-    }
+    private final Action action;
 
     public DescribingException(ComponentLike description) {
-        this(description.asComponent());
+        this((a, r) -> a.sendMessage(description));
     }
 
-    public Component description() {
-        return this.description;
-    }
+
+	public DescribingException(Action action) {
+		this.action = action;
+	}
+
+	@Override
+	public void send(Audience audience, TagResolver resolver) {
+		action.send(audience, resolver);
+	}
+
+	@Override
+	public Optional<Component> text(TagResolver resolver) {
+		return action.text(resolver);
+	}
 }

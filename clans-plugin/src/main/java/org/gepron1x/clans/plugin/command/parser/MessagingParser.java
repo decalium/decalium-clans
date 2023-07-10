@@ -24,8 +24,8 @@ import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.exceptions.parsing.ParserException;
 import net.kyori.adventure.audience.Audience;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.gepron1x.clans.api.chat.action.Message;
 import org.gepron1x.clans.api.exception.DescribingException;
-import org.gepron1x.clans.plugin.util.message.Message;
 
 import java.util.List;
 import java.util.Queue;

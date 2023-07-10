@@ -18,8 +18,8 @@
  */
 package org.gepron1x.clans.plugin.config.settings;
 
+import org.gepron1x.clans.api.chat.action.Message;
 import org.gepron1x.clans.api.economy.Prices;
-import org.gepron1x.clans.plugin.util.message.Message;
 import space.arim.dazzleconf.annote.ConfDefault;
 import space.arim.dazzleconf.annote.ConfKey;
 
@@ -65,7 +65,7 @@ public interface PricesConfig extends Prices {
 
     @DefaultString("<prefix><red> You need at least <price> to do that.")
     @ConfKey("not-enough-money")
-    Message notEnoughMoney();
+	Message notEnoughMoney();
 
 
 }

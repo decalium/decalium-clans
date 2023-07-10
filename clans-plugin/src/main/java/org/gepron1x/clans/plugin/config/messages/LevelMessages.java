@@ -18,7 +18,7 @@
  */
 package org.gepron1x.clans.plugin.config.messages;
 
-import org.gepron1x.clans.plugin.util.message.Message;
+import org.gepron1x.clans.api.chat.action.Message;
 import space.arim.dazzleconf.annote.ConfKey;
 
 import static space.arim.dazzleconf.annote.ConfDefault.DefaultString;
@@ -27,18 +27,18 @@ public interface LevelMessages {
 
     @DefaultString("<prefix> You already have a maximum level")
     @ConfKey("max-level")
-    Message maxLevel();
+	Message maxLevel();
 
     @DefaultString("<prefix> Too many members. Your clan has only <slots> slots. Upgrade the clan to get more")
     @ConfKey("too-many-members")
-    Message tooManyMembers();
+	Message tooManyMembers();
 
     @DefaultString("<prefix> Too many homes. Your clan can only have <homes> homes. Upgrade the clan to get more.")
     @ConfKey("too-many-homes")
-    Message tooManyHomes();
+	Message tooManyHomes();
 
 
     @DefaultString("<prefix> Successfully upgraded clan to level <level>.")
-    Message upgraded();
+	Message upgraded();
 
 }

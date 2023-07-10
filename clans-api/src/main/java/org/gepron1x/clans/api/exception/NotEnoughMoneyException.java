@@ -1,20 +1,14 @@
 package org.gepron1x.clans.api.exception;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentLike;
+import org.gepron1x.clans.api.chat.action.Action;
 
 public class NotEnoughMoneyException extends DescribingException {
 
 	private final double price;
 	private final double got;
-	public NotEnoughMoneyException(Component description, double price, double got) {
-		super(description);
-		this.price = price;
-		this.got = got;
-	}
 
-	public NotEnoughMoneyException(ComponentLike description, double price, double got) {
-		super(description);
+	public NotEnoughMoneyException(Action action, double price, double got) {
+		super(action);
 		this.price = price;
 		this.got = got;
 	}

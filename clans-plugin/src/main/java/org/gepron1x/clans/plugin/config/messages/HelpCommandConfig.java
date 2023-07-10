@@ -22,7 +22,7 @@ package org.gepron1x.clans.plugin.config.messages;
 import cloud.commandframework.minecraft.extras.MinecraftHelp;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.command.CommandSender;
-import org.gepron1x.clans.plugin.util.message.Message;
+import org.gepron1x.clans.plugin.util.message.TextMessage;
 import space.arim.dazzleconf.annote.ConfComments;
 import space.arim.dazzleconf.annote.ConfKey;
 import space.arim.dazzleconf.annote.SubSection;
@@ -58,58 +58,58 @@ public interface HelpCommandConfig {
 
         @ConfKey("title")
         @DefaultString("Decalium Clans Help")
-        Message title();
+		TextMessage title();
 
         @ConfKey("command")
         @DefaultString("Command")
-        Message command();
+		TextMessage command();
 
         @ConfKey("description")
         @DefaultString("Description")
-        Message description();
+		TextMessage description();
 
         @ConfKey("no-description")
         @DefaultString("No description")
-        Message noDescription();
+		TextMessage noDescription();
 
         @ConfKey("arguments")
         @DefaultString("Arguments")
-        Message arguments();
+		TextMessage arguments();
 
         @ConfKey("optional")
         @DefaultString("Optional")
-        Message optional();
+		TextMessage optional();
 
         @ConfKey("search-results")
         @DefaultString("Showing search results for query")
-        Message searchResults();
+		TextMessage searchResults();
 
         @ConfKey("no-results-found")
         @DefaultString("No results for query")
-        Message noResults();
+		TextMessage noResults();
 
         @ConfKey("available-commands")
         @DefaultString("Available Commands")
-        Message availableCommands();
+		TextMessage availableCommands();
 
         @ConfKey("click-to-show-help")
         @DefaultString("Click to show help for this command")
-        Message clickToShowHelp();
+		TextMessage clickToShowHelp();
 
         @ConfKey("page-out-of-range")
         @DefaultString("Error: Page <page> is not in range. Must be in range [1, <max_pages>]")
-        Message pageOutOfRange();
+		TextMessage pageOutOfRange();
 
         @ConfKey("click-for-next-page")
         @DefaultString("Click for next page")
-        Message clickForNextPage();
+		TextMessage clickForNextPage();
 
         @ConfKey("click-for-previous-page")
         @DefaultString("Click for previous page")
-        Message clickForPreviousPage();
+		TextMessage clickForPreviousPage();
 
         default MinecraftHelp.MessageProvider<CommandSender> messageProvider() {
-            Map<String, Message> map = new HashMap<>();
+            Map<String, TextMessage> map = new HashMap<>();
             map.put(MinecraftHelp.MESSAGE_HELP_TITLE, title());
             map.put(MinecraftHelp.MESSAGE_COMMAND, command());
             map.put(MinecraftHelp.MESSAGE_DESCRIPTION, description());

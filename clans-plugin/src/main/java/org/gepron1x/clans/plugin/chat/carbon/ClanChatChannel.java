@@ -62,7 +62,7 @@ public final class ClanChatChannel implements ChatChannel {
 
     private ChannelPermissionResult ifInTheClan(CarbonPlayer player) {
         return ChannelPermissionResult.allowedIf(
-                configs.messages().notInTheClan().asComponent(),
+                configs.config().chat().notInTheClan().asComponent(),
                 () -> cache.getUserClan(player.uuid()) != null
         );
     }

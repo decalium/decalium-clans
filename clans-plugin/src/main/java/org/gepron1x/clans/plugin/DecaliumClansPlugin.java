@@ -149,7 +149,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 
         ConfigurationOptions options = new ConfigurationOptions.Builder()
                 .addSerialiser(new DurationSerializer())
-                .addSerialiser(new MessageSerializer(miniMessage))
+                .addSerialiser(new TextMessageSerializer(miniMessage))
                 .addSerialiser(new AdventureComponentSerializer(miniMessage))
                 .addSerialiser(new ClanRoleSerializer(builderFactory))
                 .addSerialiser(new ClanPermissionSerializer())
@@ -159,7 +159,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
                 .addSerialiser(new FlagSetSerializer())
                 .addSerialiser(new TimeFormatSerializer())
 				.addSerialiser(new Line.Serializer())
-				.addSerialiser(new ActionSerializer(new ActionParser(miniMessage)))
+				.addSerialiser(new MessageSerializer(new ActionParser(miniMessage)))
                 .setCreateSingleElementCollections(true)
                 .build();
         this.messagesConfiguration = Configuration.create(this, "messages.yml", MessagesConfig.class, options);

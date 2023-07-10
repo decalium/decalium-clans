@@ -1,15 +1,16 @@
-package org.gepron1x.clans.plugin.util.action;
+package org.gepron1x.clans.api.chat.action;
 
 import com.google.common.base.MoreObjects;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import org.gepron1x.clans.plugin.util.message.Formatted;
 
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Optional;
 
-public interface FormattedAction extends Formatted<FormattedAction>, Action {
+public interface Message extends Formatted<Message>, Action {
 
 	Action action();
 
@@ -17,11 +18,18 @@ public interface FormattedAction extends Formatted<FormattedAction>, Action {
 		send(audience, TagResolver.empty());
 	}
 
-	static FormattedAction create(Action action) {
+	@Override
+	default Optional<Component> text(TagResolver resolver) {
+		return action().text(resolver);
+	}
+
+	Optional<Component> text();
+
+	static Message create(Action action) {
 		return new Impl(action);
 	}
 
-	record Impl(Action action) implements FormattedAction {
+	record Impl(Action action) implements Message {
 
 		@Override
 		public void send(Audience audience, TagResolver resolver) {
@@ -29,22 +37,27 @@ public interface FormattedAction extends Formatted<FormattedAction>, Action {
 		}
 
 		@Override
-		public FormattedAction with(TagResolver tagResolver) {
+		public Message with(TagResolver tagResolver) {
 			return new Mutable(action, TagResolver.builder().resolver(tagResolver));
 		}
 
 		@Override
-		public FormattedAction with(String key, Tag tag) {
+		public Message with(String key, Tag tag) {
 			return new Mutable(action, TagResolver.builder().tag(key, tag));
 		}
 
 		@Override
-		public FormattedAction with(Collection<? extends TagResolver> resolvers) {
+		public Message with(Collection<? extends TagResolver> resolvers) {
 			return new Mutable(action, TagResolver.builder().resolvers(resolvers));
+		}
+
+		@Override
+		public Optional<Component> text() {
+			return text(TagResolver.empty());
 		}
 	}
 
-	final class Mutable implements FormattedAction {
+	final class Mutable implements Message {
 
 		private final Action action;
 		private final TagResolver.Builder builder;
@@ -66,19 +79,24 @@ public interface FormattedAction extends Formatted<FormattedAction>, Action {
 		}
 
 		@Override
-		public FormattedAction with(TagResolver tagResolver) {
+		public Optional<Component> text() {
+			return text(builder.build());
+		}
+
+		@Override
+		public Message with(TagResolver tagResolver) {
 			builder.resolver(tagResolver);
 			return this;
 		}
 
 		@Override
-		public FormattedAction with(String key, Tag tag) {
+		public Message with(String key, Tag tag) {
 			builder.tag(key, tag);
 			return this;
 		}
 
 		@Override
-		public FormattedAction with(Collection<? extends TagResolver> resolvers) {
+		public Message with(Collection<? extends TagResolver> resolvers) {
 			builder.resolvers(resolvers);
 			return this;
 		}

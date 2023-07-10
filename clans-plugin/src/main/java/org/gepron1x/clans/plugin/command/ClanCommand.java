@@ -40,7 +40,7 @@ import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.plugin.command.argument.ComponentArgument;
 import org.gepron1x.clans.plugin.config.Configs;
 import org.gepron1x.clans.plugin.config.messages.HelpCommandConfig;
-import org.gepron1x.clans.plugin.util.message.Message;
+import org.gepron1x.clans.plugin.util.message.TextMessage;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
@@ -118,12 +118,12 @@ public class ClanCommand extends AbstractClanCommand {
 
         String tag = context.get("tag");
         if(tag.length() < clansConfig.displayNameFormat().minTagSize()) {
-            player.sendMessage(this.messages.commands().creation().invalidTag());
+            this.messages.commands().creation().invalidTag().send(player);
 			return;
         }
 
 		if(!clansConfig.displayNameFormat().tagRegex().matcher(tag).matches()) {
-			player.sendMessage(this.messages.commands().creation().invalidTag());
+			this.messages.commands().creation().invalidTag().send(player);
 			return;
 		}
 
@@ -142,13 +142,13 @@ public class ClanCommand extends AbstractClanCommand {
 
         users.userFor(player).create(clan).thenAcceptSync(result -> {
             if(result.isSuccess()) {
-                player.sendMessage(messages.commands().creation().success().with("tag", tag).with("name", tag));
+                messages.commands().creation().success().with("tag", tag).with("name", tag).send(player);
             } else {
-                player.sendMessage(switch (result.status()) {
+				(switch (result.status()) {
                     case MEMBERS_IN_OTHER_CLANS -> messages.alreadyInClan();
                     case ALREADY_EXISTS -> messages.commands().creation().clanWithTagAlreadyExists();
                     default -> throw new IllegalStateException("Unexpected value: " + result.status());
-                });
+                }).send(player);
             }
         }).exceptionally(exceptionHandler(player));
 
@@ -159,21 +159,21 @@ public class ClanCommand extends AbstractClanCommand {
         Clan clan = context.get(ClanExecutionHandler.CLAN);
         Component displayName = context.get("display_name");
         clan.edit(edition -> edition.rename(displayName))
-                .thenAccept(c -> player.sendMessage(this.messages.commands().displayNameSet().with("name", displayName)))
+                .thenAccept(c -> this.messages.commands().displayNameSet().with("name", displayName).send(player))
                 .exceptionally(exceptionHandler(player));
     }
 
     private void myClan(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
         Clan clan = context.get(ClanExecutionHandler.CLAN);
-        player.sendMessage(this.messages.commands().infoFormat().with("clan", ClanTagResolver.clan(clan)));
+        this.messages.commands().infoFormat().with("clan", ClanTagResolver.clan(clan)).send(player);
     }
 
     private void listMembers(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
         Clan clan = context.get(ClanExecutionHandler.CLAN);
        for(ClanMember member : clan.members()) {
-           player.sendMessage(Message.message("<role> <member>")
+           player.sendMessage(TextMessage.message("<role> <member>")
                    .with("role", member.role())
                    .with("member", member));
        }
@@ -185,11 +185,11 @@ public class ClanCommand extends AbstractClanCommand {
         Player player = (Player) context.getSender();
         Clan clan = context.get(ClanExecutionHandler.CLAN);
         if(clan.owner().uniqueId().equals(player.getUniqueId())) {
-            player.sendMessage(this.messages.commands().ownerCannotLeave());
+            this.messages.commands().ownerCannotLeave().send(player);
             return;
         }
         clan.edit(edition -> edition.removeMember(context.get(ClanExecutionHandler.CLAN_MEMBER))).thenAccept(c -> {
-            player.sendMessage(this.messages.commands().left());
+            this.messages.commands().left().send(player);
         }).exceptionally(exceptionHandler(player));
     }
 
@@ -197,7 +197,7 @@ public class ClanCommand extends AbstractClanCommand {
         Player player = (Player) context.getSender();
         Clan clan = context.get(ClanExecutionHandler.CLAN);
         clanRepository.removeClan(clan).thenAcceptSync(success -> {
-            if(success) player.sendMessage(this.messages.commands().deletion().success());
+            if(success) this.messages.commands().deletion().success().send(player);
         }).exceptionally(exceptionHandler(player));
     }
 
@@ -205,7 +205,7 @@ public class ClanCommand extends AbstractClanCommand {
     private void upgradeClan(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
         Clan clan = context.get(ClanExecutionHandler.CLAN);
-        clan.edit(ClanEdition::upgrade).thenAccept(c -> player.sendMessage(this.messages.level().upgraded().with("level", c.level())))
-                .exceptionally(exceptionHandler(player));
+        clan.edit(ClanEdition::upgrade).thenAccept(c -> this.messages.level().upgraded().with("level", c.level()).send(player))
+				.exceptionally(exceptionHandler(player));
     }
 }

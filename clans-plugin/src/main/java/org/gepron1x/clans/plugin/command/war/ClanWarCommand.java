@@ -115,11 +115,11 @@ public final class ClanWarCommand extends AbstractClanCommand {
         ClanReference victim = context.get("clan");
 
         if(victim.cached().isEmpty()) {
-            player.sendMessage(this.messages.noOnlinePlayers());
+            this.messages.noOnlinePlayers().send(player);
             return;
         }
         if(victim.equals(enacted)) {
-            player.sendMessage(this.messages.cannotDoActionOnYourSelf());
+            this.messages.cannotDoActionOnYourSelf().send(player);
             return;
         }
 
@@ -127,15 +127,15 @@ public final class ClanWarCommand extends AbstractClanCommand {
             TagResolver resolver = ClanTagResolver.prefixed(clan);
             for(ClanMember member : members) {
                 member.asPlayer(player.getServer()).ifPresent(p -> {
-                    p.sendMessage(this.messages.commands().wars().requestMessage().with(resolver));
+                    this.messages.commands().wars().requestMessage().with(resolver).send(p);
                     if(member.hasPermission(ClanPermission.ACCEPT_WAR)) {
-                        p.sendMessage(this.messages.commands().wars().acceptMessage().with(resolver).withMiniMessage("tag", clan.tag()));
+                        this.messages.commands().wars().acceptMessage().with(resolver).withMiniMessage("tag", clan.tag()).send(p);
                     }
                 });
             }
         });
 
-        player.sendMessage(this.messages.commands().wars().requestSent());
+        this.messages.commands().wars().requestSent().send(player);
 
         ClanWarRequest request = new ClanWarRequest(wars, enacted, victim);
         this.requestMap.put(victim.cached().map(Clan::tag).orElseThrow(), clan.tag(), request);
@@ -148,13 +148,9 @@ public final class ClanWarCommand extends AbstractClanCommand {
         Clan actor = request.actor().orElseThrow();
         Clan victim = request.victim().orElseThrow();
         request.accept();
-        player.sendMessage(this.messages.commands().wars().accepted()
-                .with(ClanTagResolver.prefixed(actor))
-        );
-        new ClanAudience(actor, player.getServer()).sendMessage(
-                this.messages.commands().wars().victimAccepted()
-                        .with(ClanTagResolver.prefixed(victim))
-        );
+		this.messages.commands().wars().accepted().with("clan", ClanTagResolver.clan(actor)).send(player);
+		this.messages.commands().wars().victimAccepted().with(ClanTagResolver.prefixed(victim))
+				.send(new ClanAudience(actor, player.getServer()));
 
 
     }
@@ -164,10 +160,9 @@ public final class ClanWarCommand extends AbstractClanCommand {
         ClanWarRequest request = context.get(REQUEST);
         Clan actor = request.actor().orElseThrow();
         Clan victim = request.victim().orElseThrow();
-        sender.sendMessage(this.messages.commands().wars().declined().with(ClanTagResolver.prefixed(actor)));
-        new ClanAudience(actor, sender.getServer()).sendMessage(
-                this.messages.commands().wars().victimDeclined().with(ClanTagResolver.prefixed(victim))
-        );
+        this.messages.commands().wars().declined().with(ClanTagResolver.prefixed(actor)).send(sender);
+		this.messages.commands().wars().victimDeclined().with(ClanTagResolver.prefixed(victim))
+				.send(new ClanAudience(actor, sender.getServer()));
     }
 
     private CommandExecutionHandler<CommandSender> requireRequest(CommandExecutionHandler<CommandSender> delegate) {
@@ -176,7 +171,7 @@ public final class ClanWarCommand extends AbstractClanCommand {
             Clan clan = ctx.get(ClanExecutionHandler.CLAN);
             ClanWarRequest request = this.requestMap.get(clan.tag(), tag);
             if(request == null || request.actor().cached().isEmpty()) {
-                ctx.getSender().sendMessage(this.messages.commands().wars().noRequests().with("tag", tag));
+                this.messages.commands().wars().noRequests().with("tag", tag).send(ctx.getSender());
                 return;
             }
             ctx.store(REQUEST, request);

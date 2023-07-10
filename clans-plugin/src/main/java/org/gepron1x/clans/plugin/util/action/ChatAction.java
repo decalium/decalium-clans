@@ -20,16 +20,19 @@ package org.gepron1x.clans.plugin.util.action;
 
 import com.google.common.base.MoreObjects;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import org.gepron1x.clans.plugin.util.message.Message;
+import org.gepron1x.clans.api.chat.action.Action;
+import org.gepron1x.clans.plugin.util.message.TextMessage;
 
 import java.util.Objects;
+import java.util.Optional;
 
-public final class MessageAction implements Action {
+public final class ChatAction implements Action {
 
-    private final Message message;
+    private final TextMessage message;
 
-    public MessageAction(Message message) {
+    public ChatAction(TextMessage message) {
         this.message = message;
     }
     @Override
@@ -38,10 +41,15 @@ public final class MessageAction implements Action {
     }
 
 	@Override
+	public Optional<Component> text(TagResolver resolver) {
+		return Optional.of(message.with(resolver).asComponent());
+	}
+
+	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-		MessageAction that = (MessageAction) o;
+		ChatAction that = (ChatAction) o;
 		return Objects.equals(message, that.message);
 	}
 

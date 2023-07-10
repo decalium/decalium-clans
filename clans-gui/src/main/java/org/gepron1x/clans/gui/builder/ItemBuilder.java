@@ -34,9 +34,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.gepron1x.clans.api.chat.action.Formatted;
 import org.gepron1x.clans.gui.Colors;
 import org.gepron1x.clans.gui.DecaliumClansGui;
-import org.gepron1x.clans.plugin.util.message.Formatted;
 
 import java.util.*;
 import java.util.function.Consumer;

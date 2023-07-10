@@ -23,20 +23,21 @@ import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import org.gepron1x.clans.api.chat.action.Formatted;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
-public record Message(MiniMessage miniMessage,
-                      String value) implements ComponentLike, Formatted<Message.Container> {
+public record TextMessage(MiniMessage miniMessage,
+						  String value) implements ComponentLike, Formatted<TextMessage.Container> {
 
-    public static final Message EMPTY = Message.message("");
+    public static final TextMessage EMPTY = TextMessage.message("");
 
-    public static Message message(@NotNull String value, @NotNull MiniMessage miniMessage) {
-        return new Message(miniMessage, value);
+    public static TextMessage message(@NotNull String value, @NotNull MiniMessage miniMessage) {
+        return new TextMessage(miniMessage, value);
     }
 
-    public static Message message(@NotNull String value) {
+    public static TextMessage message(@NotNull String value) {
         return message(value, MiniMessage.miniMessage());
     }
 
@@ -61,7 +62,8 @@ public record Message(MiniMessage miniMessage,
     }
 
 
-    public static final class Container implements Formatted<Container>, ComponentLike {
+
+	public static final class Container implements Formatted<Container>, ComponentLike {
 
         private final String value;
         private final MiniMessage miniMessage;

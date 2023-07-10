@@ -1,6 +1,8 @@
 package org.gepron1x.clans.gui;
 
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -22,7 +24,7 @@ public final class ErrorItem {
 	}
 
 	public ErrorItem(InventoryClickEvent event, DescribingException exception) {
-		this(event, exception.description());
+		this(event, exception.text(TagResolver.empty()).orElse(Component.empty()));
 	}
 
 	public ItemStack item() {

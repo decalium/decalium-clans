@@ -29,7 +29,7 @@ import org.gepron1x.clans.plugin.config.format.DisplayNameFormat;
 import org.gepron1x.clans.plugin.config.format.TimeFormat;
 import org.gepron1x.clans.plugin.storage.StorageType;
 import org.gepron1x.clans.plugin.util.hologram.Line;
-import org.gepron1x.clans.plugin.util.message.Message;
+import org.gepron1x.clans.plugin.util.message.TextMessage;
 import org.gepron1x.clans.plugin.wg.FlagSet;
 import space.arim.dazzleconf.annote.ConfComments;
 import space.arim.dazzleconf.annote.ConfHeader;
@@ -163,7 +163,7 @@ public interface ClansConfig {
         @ConfKey("hologram-format")
         @DefaultString("Home <home_name>")
         @ConfComments("Hologram format.")
-        Message hologramFormat();
+		TextMessage hologramFormat();
 
 
     }
@@ -247,7 +247,12 @@ public interface ClansConfig {
         @ConfKey("format")
         @ConfComments({"The chat format. Available placeholders:", "<role> - Member's role.", "<member> Member's name.", "<message> - chat message."})
         @DefaultString("<role> <member> <white>➟ <#cbd4d2><message>")
-        Message format();
+		TextMessage format();
+
+
+		@ConfKey("not-in-the-clan")
+		@DefaultString("Вы не в клане!")
+		TextMessage notInTheClan();
 
         @ConfKey("prefix")
         @DefaultString("~")
@@ -333,7 +338,7 @@ public interface ClansConfig {
 
 			static List<Line> format$default() {
 				return List.of("Клановый регион", "", "Название: <clan_display_name>", "Щит: <active:'Активен':'Не активен'>")
-						.stream().map(s -> new Line(Message.message(s))).toList();
+						.stream().map(s -> new Line(TextMessage.message(s))).toList();
 			}
 
 

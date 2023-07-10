@@ -19,8 +19,8 @@
 package org.gepron1x.clans.plugin.config.messages;
 
 import net.kyori.adventure.text.Component;
-import org.gepron1x.clans.plugin.util.action.FormattedAction;
-import org.gepron1x.clans.plugin.util.message.Message;
+import org.gepron1x.clans.api.chat.action.Message;
+import org.gepron1x.clans.plugin.util.message.TextMessage;
 import space.arim.dazzleconf.annote.ConfComments;
 import space.arim.dazzleconf.annote.ConfHeader;
 import space.arim.dazzleconf.annote.ConfKey;
@@ -45,33 +45,33 @@ public interface MessagesConfig {
 
     @ConfKey("no-permission")
     @DefaultString("<prefix> You do not have permission to use this.")
-    Message noPermission();
+	Message noPermission();
 
     @ConfKey("no-online-players-in-clan")
     @DefaultString("<prefix> No online players in the clan.")
-    Message noOnlinePlayers();
+	Message noOnlinePlayers();
 
     @ConfKey("cannot-do-action-on-yourself")
     @DefaultString("<prefix> You can't do that with yourself!")
-    Message cannotDoActionOnYourSelf();
+	Message cannotDoActionOnYourSelf();
 
 
 
     @ConfKey("no-clan-permission")
     @DefaultString("<prefix> Your role does not grant you permission to do this.")
-    Message noClanPermission();
+	Message noClanPermission();
 
     @ConfKey("already-in-clan")
     @DefaultString("<prefix> You are already in a clan!")
-    Message alreadyInClan();
+	Message alreadyInClan();
 
     @ConfKey("player-is-already-in-clan")
     @DefaultString("<prefix> Player <player> is already in a clan!")
-    Message playerIsAlreadyInClan();
+	Message playerIsAlreadyInClan();
 
     @ConfKey("not-in-clan")
     @DefaultString("<prefix> You are not in the clan!")
-    Message notInTheClan();
+	Message notInTheClan();
 
     @SubSection
     @ConfKey("announcements")
@@ -95,39 +95,39 @@ public interface MessagesConfig {
     interface Announcements {
         @ConfKey("member-added")
         @DefaultString("<prefix> <member> joined the clan!")
-        Message memberAdded();
+		Message memberAdded();
 
         @ConfKey("member-removed")
         @DefaultString("<prefix> <member> is not with us anymore!")
-        Message memberRemoved();
+		Message memberRemoved();
 
         @ConfKey("member-promoted")
         @DefaultString("<prefix> <member> is <role> now!")
-        Message memberPromoted();
+		Message memberPromoted();
 
         @ConfKey("clan-deleted")
         @DefaultString("<prefix> Your clan is disbanded.")
-        Message clanDeleted();
+		Message clanDeleted();
 
         @ConfKey("clan-set-display-name")
         @DefaultString("<prefix> Clan is now called <name>")
-        Message clanSetDisplayName();
+		Message clanSetDisplayName();
 
         @ConfKey("home-created")
         @DefaultString("<prefix> <member> created a new clan home <home_name>")
-        Message homeCreated();
+		Message homeCreated();
 
         @ConfKey("home-deleted")
         @DefaultString("<prefix> <member> deleted home <home_name>")
-        Message homeDeleted();
+		Message homeDeleted();
 
         @ConfKey("home-upgraded")
         @DefaultString("<prefix> Home <home> is level <level> now!")
-        Message homeUpgraded();
+		Message homeUpgraded();
 
         @ConfKey("clan-owner-changed")
         @DefaultString("<prefix> <member> is the owner now.")
-        Message clanOwnerChanged();
+		Message clanOwnerChanged();
 
 
     }
@@ -136,42 +136,42 @@ public interface MessagesConfig {
 
         @ConfKey("player-died")
         @DefaultString("<prefix> ClanWar -> <member> died!")
-		FormattedAction playerDied();
+		Message playerDied();
 
 		@ConfKey("player-died-subtitle")
 		@DefaultString("<gray><killer> \uD83D\uDDE1<red>\uD83C\uDF27</red> <victim></gray>")
-		Message playerDiedSubTitle();
+		TextMessage playerDiedSubTitle();
 
         @ConfKey("win")
         @DefaultString("<prefix> ClanWar -> <clan_display_name> wins! Congratulations!")
-        FormattedAction win();
+		Message win();
 
         @ConfKey("preparation-title")
         @DefaultString("<first_display_name> vs <second_display_name>")
-        Message preparationTitle();
+		TextMessage preparationTitle();
 
         @ConfKey("boss-bar-format")
         @DefaultString("<display_name> <alive>/<members>")
-        Message bossBarFormat();
+		TextMessage bossBarFormat();
 
         @ConfKey("navigation-bar-format")
         @DefaultString("Distance to <target>: <distance> <arrow>")
-        Message navigationBarFormat();
+		TextMessage navigationBarFormat();
 
         @ConfKey("navigation-bar-format-in-different-world")
         @DefaultString("<target> is in <world> world")
-        Message navigationDifferentWorld();
+		Message navigationDifferentWorld();
     }
 
 	interface Region {
 
 		@ConfKey("region-overlaps")
 		@DefaultString("[title] <red>❌ Это место уже занято! ❌;Попробуйте поставить блок подальше")
-		FormattedAction regionOverlaps();
+		Message regionOverlaps();
 
 		@ConfKey("not-in-clan")
 		@DefaultStrings({"[sound] minecraft:note_block.iron_xylophone", "[title]<red>❌ Вы не состите в клане! ❌;Вступите в клан или создайте его."})
-		FormattedAction notInClan();
+		Message notInClan();
 	}
 
 
@@ -180,33 +180,33 @@ public interface MessagesConfig {
     interface Commands {
         @ConfKey("invalid-syntax")
         @DefaultString("<prefix> Invalid command syntax! Use /clan help to get information on how to use this command.")
-        Message invalidSyntax();
+		Message invalidSyntax();
 
         @ConfKey("invalid-argument")
         @DefaultString("<prefix> Invalid argument! <message>")
-        Message invalidArgument();
+		Message invalidArgument();
 
         @ConfKey("command-for-players-only")
         @DefaultString("<prefix> Only players can execute this command!")
-        Message onlyPlayersCanDoThis();
+		Message onlyPlayersCanDoThis();
 
         @ConfKey("info-format")
         @DefaultString("Clan <clan_display_name> (<clan_tag>)<br>Owner: <clan_owner_name><br>Members: <members>")
-        Message infoFormat();
+		Message infoFormat();
 
 
 
         @ConfKey("display-name-set")
         @DefaultString("<prefix> Display name was set to <name>.")
-        Message displayNameSet();
+		Message displayNameSet();
 
         @ConfKey("left-clan")
         @DefaultString("<prefix> Successfully left the clan.")
-        Message left();
+		Message left();
 
         @ConfKey("owner-cannot-leave")
         @DefaultString("<prefix> You cannot leave the clan because you are the owner.")
-        Message ownerCannotLeave();
+		Message ownerCannotLeave();
 
         @ConfKey("creation")
         @SubSection
@@ -215,9 +215,6 @@ public interface MessagesConfig {
         @ConfKey("deletion")
         @SubSection
         Deletion deletion();
-
-        @ConfKey("levels")
-        @SubSection LevelMessages levels();
 
         @ConfKey("invitation")
         @SubSection
@@ -239,15 +236,15 @@ public interface MessagesConfig {
 
             @ConfKey("clan-with-tag-already-exists")
             @DefaultString("<prefix> Clan with given tag already exists! Think about something more original!")
-            Message clanWithTagAlreadyExists();
+			Message clanWithTagAlreadyExists();
 
             @ConfKey("invalid-tag")
             @DefaultString("<prefix> Error! Invalid tag/name. you can only use english letters and numbers. [a-z0-9]. The display name also should containt at least 3 english letters.")
-            Message invalidTag();
+			Message invalidTag();
 
             @ConfKey("success")
             @DefaultString("<prefix> Clan <name> created successfully")
-            Message success();
+			Message success();
 
         }
 
@@ -255,7 +252,7 @@ public interface MessagesConfig {
 
             @ConfKey("success")
             @DefaultString("<prefix> Clan deleted successfully.")
-            Message success();
+			Message success();
         }
 
 
@@ -264,39 +261,39 @@ public interface MessagesConfig {
             @ConfKey("invitation")
             @DefaultString("<prefix> <sender> invites you to the clan <clan_display_name>! " +
                     "<click:run_command:'/clan accept <sender>'>Click here</click> to accept invitation or type /clan accept <sender>")
-            Message invitationMessage();
+			Message invitationMessage();
 
             @ConfKey("sent")
             @DefaultString("<prefix> Invitation successfully sent to <receiver>.")
-            Message invitationSent();
+			Message invitationSent();
 
             @ConfKey("player-accepted")
             @DefaultString("<prefix> <receiver> accepted your invitation.")
-            Message playerAccepted();
+			Message playerAccepted();
 
             @ConfKey("accepted")
             @DefaultString("<prefix> You accepted invitation to <clan_display_name> from <sender>.")
-            Message accepted();
+			Message accepted();
 
             @ConfKey("player-declined")
             @DefaultString("<prefix> <receiver> declined your invitation.")
-            Message playerDeclined();
+			Message playerDeclined();
 
             @ConfKey("declined")
             @DefaultString("<prefix> You declined invitation from <sender>.")
-            Message declined();
+			Message declined();
 
 
 
             @ConfKey("no-invitations")
             @DefaultString("<prefix> You have no invitations from <player>")
-            Message noInvitations();
+			Message noInvitations();
 
 
 
             @ConfKey("clan-got-deleted")
             @DefaultString("<prefix> Clan you joined got deleted!")
-            Message clanGotDeleted();
+			Message clanGotDeleted();
 
         }
 
@@ -305,15 +302,15 @@ public interface MessagesConfig {
 
             @ConfKey("member-not-in-clan")
             @DefaultString("<prefix> Specified player is not a member of the clan.")
-            Message notAMember();
+			Message notAMember();
 
             @ConfKey("member-has-higher-weight")
             @DefaultString("<prefix> Member <member> has higher weight than you. You cannot do any sanctions on him.")
-            Message memberHasHigherWeight();
+			Message memberHasHigherWeight();
 
             @ConfKey("only-owner-can-do-this")
             @DefaultString("<prefix> Only owner can do this!")
-            Message onlyOwnerCanDoThis();
+			Message onlyOwnerCanDoThis();
 
 
             @ConfKey("role")
@@ -327,15 +324,15 @@ public interface MessagesConfig {
 
                 @ConfKey("success")
                 @DefaultString("<prefix> Role was set successfully.")
-                Message success();
+				Message success();
 
                 @ConfKey("role-has-higher-weight")
                 @DefaultString("<prefix> Role <role> has higher weight than yours. You cannot set it.")
-                Message roleHasHigherWeight();
+				Message roleHasHigherWeight();
 
                 @ConfKey("role-not-found")
                 @DefaultString("Role <role> was not found.")
-                Message roleNotFound();
+				Message roleNotFound();
 
             }
 
@@ -343,11 +340,11 @@ public interface MessagesConfig {
 
                 @ConfKey("success")
                 @DefaultString("<prefix> Kicked <member> from clan successfully.")
-                Message success();
+				Message success();
 
                 @ConfKey("kicked")
                 @DefaultString("<prefix> <member> kicked you from the <clan>!")
-                Message kicked();
+				Message kicked();
 
             }
 
@@ -358,40 +355,40 @@ public interface MessagesConfig {
 
             @ConfKey("too-many-homes")
             @DefaultString("<prefix> Too many homes already exist!")
-            Message tooManyHomes();
+			Message tooManyHomes();
 
 
             @ConfKey("home-not-found")
             @DefaultString("<prefix> No home with name <name> found.")
-            Message homeNotFound();
+			Message homeNotFound();
 
             @ConfKey("invalid-name")
             @DefaultString("<prefix> Error! Invalid home name. you can only use english letters and numbers. [a-z0-9]")
-            Message invalidHomeName();
+			Message invalidHomeName();
 
             @ConfKey("home-already-exists")
             @DefaultString("<prefix> Home with name <name> already exists!")
-            Message homeAlreadyExists();
+			Message homeAlreadyExists();
 
             @ConfKey("created")
             @DefaultString("<prefix> Created new home successfully.")
-            Message created();
+			Message created();
 
             @ConfKey("deleted")
             @DefaultString("<prefix> Deleted home succesfully.")
-            Message deleted();
+			Message deleted();
 
             @ConfKey("teleported")
             @DefaultString("<prefix> Teleported to <home>")
-            Message teleported();
+			Message teleported();
 
             @ConfKey("renamed")
             @DefaultString("<prefix> Successfully renamed the clan home")
-            Message renamed();
+			Message renamed();
 
             @ConfKey("upgraded")
             @DefaultString("<prefix> Successfully upgraded home to level <level>.")
-            Message upgraded();
+			Message upgraded();
 
 
         }
@@ -399,36 +396,36 @@ public interface MessagesConfig {
         interface WarRequest {
             @ConfKey("request-message")
             @DefaultString("<prefix> <clan_display_name> Invites you to the clan war!")
-            Message requestMessage();
+			Message requestMessage();
 
             @ConfKey("accepter-message")
             @DefaultString("<prefix> <click:run_command:'/clan war accept <tag>'><red>Click here</red></click> to accept the request" +
                     "         or run /clan war accept <tag>")
-            Message acceptMessage();
+			Message acceptMessage();
 
             @ConfKey("no-requests")
             @DefaultString("<prefix> No requests from <tag>.")
-            Message noRequests();
+			Message noRequests();
 
             @ConfKey("request-sent")
             @DefaultString("<prefix> War request sent.")
-            Message requestSent();
+			Message requestSent();
 
             @ConfKey("declined-message")
             @DefaultString("<prefix> Denied war request from <clan_display_name>.")
-            Message declined();
+			Message declined();
 
             @ConfKey("accepted-message")
             @DefaultString("<prefix> Accepted war request from <clan_display_name>.")
-            Message accepted();
+			Message accepted();
 
             @ConfKey("victim-declined")
             @DefaultString("<prefix> <clan_display_name> declined war request.")
-            Message victimDeclined();
+			Message victimDeclined();
 
             @ConfKey("victim-accepted")
             @DefaultString("<prefix> <clan_display_name> accepted war request.")
-            Message victimAccepted();
+			Message victimAccepted();
         }
 
 

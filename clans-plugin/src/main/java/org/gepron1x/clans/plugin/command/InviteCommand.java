@@ -47,8 +47,6 @@ import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.util.*;
 
-import static net.kyori.adventure.text.Component.text;
-
 public class InviteCommand extends AbstractClanCommand {
 
     private final ClanBuilderFactory builderFactory;
@@ -107,30 +105,29 @@ public class InviteCommand extends AbstractClanCommand {
         Player player = (Player) context.getSender();
         Player receiver = context.<SinglePlayerSelector>get("receiver").getPlayer();
         if (receiver == null) {
-            player.sendMessage(text("Lol"));
             return;
         }
 
         Clan clan = context.get(ClanExecutionHandler.CLAN);
         Levels.PerLevel perLevel = clansConfig.levels().forLevel(clan.level());
         if(clan.members().size() >= perLevel.slots()) {
-            player.sendMessage(this.messages.level().tooManyMembers().with("slots", perLevel.slots()));
+            this.messages.level().tooManyMembers().with("slots", perLevel.slots()).send(player);
             return;
         }
 
         this.clanRepository.requestUserClan(receiver.getUniqueId()).thenAcceptSync(opt -> {
             if (opt.isPresent()) {
-                player.sendMessage(messages.playerIsAlreadyInClan().with("player", receiver.displayName()));
+                messages.playerIsAlreadyInClan().with("player", receiver.displayName()).send(player);
                 return;
             }
             invitations.put(receiver.getUniqueId(), player.getName(),
                     new Invitation(player.getUniqueId(), receiver.getUniqueId()));
-            player.sendMessage(messages.commands().invitation().invitationSent().with("receiver", receiver.displayName()));
+            messages.commands().invitation().invitationSent().with("receiver", receiver.displayName()).send(player);
 
-            receiver.sendMessage(messages.commands().invitation().invitationMessage()
+            messages.commands().invitation().invitationMessage()
                     .withMiniMessage("sender", player.getName())
-                    .with("clan_display_name", clan.displayName())
-            );
+                    .with("clan_display_name", clan.displayName()).send(receiver);
+
         }).exceptionally(exceptionHandler(player));
 
     }
@@ -146,14 +143,14 @@ public class InviteCommand extends AbstractClanCommand {
         this.clanRepository.requestUserClan(invitation.sender())
                 .thenComposeSync(clan -> {
                     if (clan.isEmpty()) {
-                        player.sendMessage(messages.commands().invitation().clanGotDeleted());
+                        messages.commands().invitation().clanGotDeleted().send(player);
                         return futuresFactory.completedFuture(false);
                     }
                     return clan.get().edit(edition -> edition.addMember(member)).thenApply(c -> true);
                 }).thenAcceptSync(bool -> {
                     if (!bool) return;
                     if (senderPlayer != null) {
-                        senderPlayer.sendMessage(messages.commands().invitation().playerAccepted().with("receiver", player.displayName()));
+                        messages.commands().invitation().playerAccepted().with("receiver", player.displayName()).send(senderPlayer);
                     }
                 }).exceptionally(exceptionHandler(player));
     }
@@ -166,9 +163,9 @@ public class InviteCommand extends AbstractClanCommand {
 
         Player senderPlayer = player.getServer().getPlayer(invitation.sender());
 
-        player.sendMessage(messages.commands().invitation().declined());
+        messages.commands().invitation().declined().send(player);
         if (senderPlayer != null) {
-            senderPlayer.sendMessage(messages.commands().invitation().playerDeclined().with("receiver", player.displayName()));
+            messages.commands().invitation().playerDeclined().with("receiver", player.displayName()).send(senderPlayer);
         }
 
         invitations.remove(player.getUniqueId(), name);
@@ -179,7 +176,7 @@ public class InviteCommand extends AbstractClanCommand {
     private Invitation checkInvitation(Player player, String name) {
         Invitation invitation = invitations.get(player.getUniqueId(), name);
         if (invitation == null) {
-            player.sendMessage(messages.commands().invitation().noInvitations().with("player", name));
+            messages.commands().invitation().noInvitations().with("player", name).send(player);
         }
         return invitation;
     }

@@ -16,16 +16,27 @@
  * along with decalium-clans. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package org.gepron1x.clans.plugin.util.action;
+package org.gepron1x.clans.api.chat.action;
 
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+
+import java.util.Optional;
 
 public interface Action {
 
     Action EMPTY = (audience, resolver) -> {};
 
     void send(Audience audience, TagResolver resolver);
+
+	default Optional<Component> text(TagResolver resolver) {
+		return Optional.empty();
+	}
+
+	default void send(Audience audience) {
+		send(audience, TagResolver.empty());
+	}
 
 
 

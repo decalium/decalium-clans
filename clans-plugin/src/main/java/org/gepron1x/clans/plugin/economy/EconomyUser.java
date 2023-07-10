@@ -64,7 +64,7 @@ public final class EconomyUser implements ClanUser {
     public CentralisedFuture<ClanCreationResult> create(DraftClan draft) {
         if(!player.has(prices.clanCreation())) {
 			return futuresFactory.failedFuture(new NotEnoughMoneyException(
-					prices.notEnoughMoney().with("amount", prices.clanCreation()).asComponent(),
+					prices.notEnoughMoney().with("amount", prices.clanCreation()),
 					prices.clanCreation(), player.balance()
 					)
 			);

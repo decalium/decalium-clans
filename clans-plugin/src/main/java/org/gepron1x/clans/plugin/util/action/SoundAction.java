@@ -21,6 +21,7 @@ package org.gepron1x.clans.plugin.util.action;
 import com.google.common.base.MoreObjects;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.sound.Sound;
+import org.gepron1x.clans.api.chat.action.Action;
 
 import java.util.Objects;
 
