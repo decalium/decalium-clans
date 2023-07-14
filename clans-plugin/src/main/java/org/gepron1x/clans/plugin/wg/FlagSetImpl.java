@@ -33,11 +33,11 @@ public final class FlagSetImpl implements FlagSet {
 		});
 		return serialized;
 	}
-
+	@SuppressWarnings("unchecked")
 	private static <T> Object marshal(Flag<T> flag, Object object) {
 		return flag.marshal((T) object);
 	}
-
+	@SuppressWarnings("unchecked")
 	private static <T> void setFlag(ProtectedRegion region, Flag<T> flag, Object object) {
 		region.setFlag(flag, (T) object);
 	}

@@ -86,6 +86,8 @@ public final class RegionsGui implements GuiLike {
 					.with("x", location.getBlockX()).with("z", location.getBlockZ())
 					.booleanState("shield_active", region.shield().active()).guiItem();
 		}).asGui();
+		gui.setOnGlobalDrag(e -> e.setCancelled(true));
+		gui.setOnGlobalClick(e -> e.setCancelled(true));
 		gui.setTitle(ComponentHolder.of(Component.text("Регионы клана")));
 		return gui;
 	}

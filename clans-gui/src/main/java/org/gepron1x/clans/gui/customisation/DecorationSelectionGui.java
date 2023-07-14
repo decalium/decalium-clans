@@ -43,9 +43,9 @@ public class DecorationSelectionGui<T extends Decorations.BaseDecoration> implem
 		var gui = new PaginatedGui<>(4, decorations, deco -> {
 			boolean matches = deco.has(clan.tagDecoration());
 			CombinedDecoration newDecoration = deco.apply(tagDecoration);
-			var builder = ItemBuilder.create(deco.material()).edit(m -> {
+			var builder = ItemBuilder.create(deco.item()).edit(m -> {
 				m.displayName(deco.name().asComponent().decoration(TextDecoration.ITALIC, false));
-				m.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+				m.addItemFlags(ItemFlag.values());
 				if (matches) {
 					m.addEnchant(Enchantment.LUCK, 1, true);
 				}

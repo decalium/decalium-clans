@@ -13,10 +13,10 @@ import java.util.function.Consumer;
 
 public final class ConfirmationGui implements GuiLike {
 
-	private static final ItemBuilder CONFIRM = ItemBuilder.skullFromId("a92e31ffb59c90ab08fc9dc1fe26802035a3a47c42fee63423bcdb4262ecb9b6")
+	private static final ItemBuilder CONFIRM = ItemBuilder.skull(Heads.GREEN_CHECKMARK)
 			.name("<#92FF25>Подтвердить");
 
-	private static final ItemBuilder CANCEL = ItemBuilder.skullFromId("beb588b21a6f98ad1ff4e085c552dcb050efc9cab427f46048f18fc803475f7")
+	private static final ItemBuilder CANCEL = ItemBuilder.skull(Heads.DECLINE)
 			.name("<#fb2727>Отменить");
 
 	private final Component title;

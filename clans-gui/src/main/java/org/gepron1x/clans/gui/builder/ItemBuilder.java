@@ -19,17 +19,15 @@
 package org.gepron1x.clans.gui.builder;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
-import com.destroystokyo.paper.profile.ProfileProperty;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
-import com.google.gson.JsonObject;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -37,8 +35,12 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.gepron1x.clans.api.chat.action.Formatted;
 import org.gepron1x.clans.gui.Colors;
 import org.gepron1x.clans.gui.DecaliumClansGui;
+import org.gepron1x.clans.gui.Heads;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public final class ItemBuilder implements Formatted<ItemBuilder> {
@@ -77,6 +79,11 @@ public final class ItemBuilder implements Formatted<ItemBuilder> {
 		return create(new ItemStack(material));
 	}
 
+
+	public static ItemBuilder skull(Player player) {
+		return skull(player.getPlayerProfile());
+	}
+
 	public static ItemBuilder skull(PlayerProfile profile) {
 		ItemStack item = new ItemStack(Material.PLAYER_HEAD);
 		SkullMeta meta = (SkullMeta) item.getItemMeta();
@@ -86,20 +93,11 @@ public final class ItemBuilder implements Formatted<ItemBuilder> {
 	}
 
 	public static ItemBuilder skull(String base64) {
-		PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID());
-		profile.setProperty(new ProfileProperty("textures", base64));
-		return skull(profile);
+		return skull(Heads.base64(base64));
 	}
 
 	public static ItemBuilder skullFromId(String id) {
-		String url = "http://textures.minecraft.net/texture/" + id;
-		JsonObject skin = new JsonObject();
-		skin.addProperty("url", url);
-		JsonObject textures = new JsonObject();
-		textures.add("SKIN", skin);
-		JsonObject object = new JsonObject();
-		object.add("textures", textures);
-		return skull(Base64.getEncoder().encodeToString(object.toString().getBytes()));
+		return skull(Heads.fromId(id));
 	}
 
 
@@ -136,7 +134,7 @@ public final class ItemBuilder implements Formatted<ItemBuilder> {
 	}
 
 	public ItemBuilder description(List<String> strings) {
-		return lore(new DescriptionLoreApplicable(LoreApplicable.text(strings)));
+		return lore(Lore.description(strings));
 	}
 
 	public ItemBuilder description(String... strings) {
@@ -144,7 +142,7 @@ public final class ItemBuilder implements Formatted<ItemBuilder> {
 	}
 
 	public ItemBuilder interaction(TextColor color, List<String> strings) {
-		return lore(new InteractionLoreApplicable(LoreApplicable.text(strings), color));
+		return lore(Lore.interaction(color, strings));
 	}
 
 	public ItemBuilder menuInteraction(TextColor color) {

@@ -8,8 +8,7 @@ import org.gepron1x.clans.gui.builder.ItemBuilder;
 
 public final class GoBackGui implements GuiLike {
 
-	private static final String TEXTURE = "74133f6ac3be2e2499a784efadcfffeb9ace025c3646ada67f3414e5ef3394";
-	private static final ItemBuilder GO_BACK = ItemBuilder.skullFromId(TEXTURE).name("<#fb2727>Обратно в меню");
+	private static final ItemBuilder GO_BACK = ItemBuilder.skull(Heads.GO_BACK).name("<#fb2727>Обратно в меню");
 	private final ChestGui gui;
 	private final Slot slot;
 	private final GuiLike toGo;
