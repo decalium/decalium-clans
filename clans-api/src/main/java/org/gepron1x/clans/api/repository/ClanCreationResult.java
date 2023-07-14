@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 public record ClanCreationResult(@Nullable Clan clan, @NotNull Status status) {
 
@@ -56,6 +57,11 @@ public record ClanCreationResult(@Nullable Clan clan, @NotNull Status status) {
 	public Clan orElseThrow() {
 		if (clan == null) throw new NoSuchElementException("no clan present");
 		return clan;
+	}
+
+	public ClanCreationResult map(UnaryOperator<Clan> mapper) {
+		if(clan != null) return new ClanCreationResult(mapper.apply(clan), status);
+		return this;
 	}
 
 	public Optional<Clan> asOptional() {

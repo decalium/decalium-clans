@@ -251,7 +251,7 @@ public final class DraftClanImpl implements DraftClan {
 		public @NotNull DraftClan build() {
 			return new DraftClanImpl(
 					Objects.requireNonNull(tag),
-					Objects.requireNonNull(displayName),
+					displayName == null ? decoration.apply(tag) : displayName,
 					decoration,
 					Objects.requireNonNull(owner),
 					Map.copyOf(members),

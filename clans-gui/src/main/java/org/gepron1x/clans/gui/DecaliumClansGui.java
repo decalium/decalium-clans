@@ -26,6 +26,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.DecaliumClansApi;
+import org.gepron1x.clans.api.exception.DescribingException;
+import org.gepron1x.clans.api.exception.ExceptionHandler;
 import org.gepron1x.clans.api.user.ClanUser;
 import org.gepron1x.clans.gui.chat.Conversation;
 import org.gepron1x.clans.gui.item.ClanRegionItem;
@@ -79,7 +81,7 @@ public final class DecaliumClansGui extends JavaPlugin {
 				})
 		);
 
-		Conversation conversation = new Conversation(this);
+		Conversation conversation = new Conversation(this, api.futuresFactory());
 		getServer().getPluginManager().registerEvents(conversation, this);
 		commandManager.command(commandManager.commandBuilder("clan").senderType(Player.class).permission("clans.gui").handler(ctx -> {
 			Player sender = (Player) ctx.getSender();
@@ -89,16 +91,17 @@ public final class DecaliumClansGui extends JavaPlugin {
 			} else {
 				clansPlugin.messages().commands().creation().creation().send(sender);
 				conversation.ask(sender, Duration.ofMinutes(1L)).thenCompose(s -> {
+					sender.clearTitle();
 					if(!clansPlugin.config().displayNameFormat().tagRegex().matcher(s).matches()) {
-						clansPlugin.messages().commands().creation().invalidTag().send(sender);
-						return api.futuresFactory().failedFuture(new Exception());
+						throw new DescribingException(clansPlugin.messages().commands().creation().invalidTag());
 					}
 					return api.create(sender, s);
 				}).thenAccept(result -> {
-					if(!result.isSuccess()) {
-						clansPlugin.messages().commands().creation().clanWithTagAlreadyExists().send(sender);
-					}
-				});
+					if(!result.isSuccess()) throw new DescribingException(clansPlugin.messages().commands().creation().clanWithTagAlreadyExists());
+					clansPlugin.messages().commands().creation().success().with("name", result.clan().tag()).send(sender);
+				}).exceptionally(ExceptionHandler.catchException(DescribingException.class, e -> {
+					e.send(sender);
+				}));
 			}
 		}));
 

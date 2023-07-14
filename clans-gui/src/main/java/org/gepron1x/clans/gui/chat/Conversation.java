@@ -8,26 +8,29 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
+import org.gepron1x.clans.libraries.space.arim.omnibus.util.concurrent.CentralisedFuture;
+import org.gepron1x.clans.libraries.space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 public final class Conversation implements Listener {
 
 
 	private final Plugin plugin;
+	private final FactoryOfTheFuture futures;
 
-	public Conversation(Plugin plugin) {
+	public Conversation(Plugin plugin, FactoryOfTheFuture futures) {
 
 		this.plugin = plugin;
+		this.futures = futures;
 	}
 
 
-	private final Map<UUID, CompletableFuture<String>> conversations = new HashMap<>();
+	private final Map<UUID, CentralisedFuture<String>> conversations = new HashMap<>();
 
 
 	@EventHandler()
@@ -35,6 +38,7 @@ public final class Conversation implements Listener {
 	public void on(AsyncChatEvent event) {
 		var future = conversations.remove(event.getPlayer().getUniqueId());
 		if(future == null) return;
+		event.setCancelled(true);
 		future.complete(PlainTextComponentSerializer.plainText().serialize(event.originalMessage()));
 	}
 
@@ -49,9 +53,9 @@ public final class Conversation implements Listener {
 	}
 
 
-	public CompletableFuture<String> ask(Player player, Duration timeout) {
+	public CentralisedFuture<String> ask(Player player, Duration timeout) {
 		var uuid = player.getUniqueId();
-		var future = new CompletableFuture<String>();
+		CentralisedFuture<String> future = futures.newIncompleteFuture();
 		conversations.put(uuid, future);
 		this.plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
 			cancel(uuid);

@@ -46,7 +46,7 @@ public abstract class AdaptingClanRepository implements ClanRepository {
 	public @NotNull CentralisedFuture<ClanCreationResult> createClan(@NotNull DraftClan draftClan) {
 		return this.repository.createClan(draftClan)
 				.thenApply(result ->
-						new ClanCreationResult(result.isSuccess() ? mappingFunction.apply(result.orElseThrow()) : null, result.status())
+						result.map(mappingFunction::apply)
 				);
 	}
 
