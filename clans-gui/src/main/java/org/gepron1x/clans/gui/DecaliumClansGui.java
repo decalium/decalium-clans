@@ -23,14 +23,18 @@ import me.gepronix.decaliumcustomitems.DecaliumCustomItems;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.DecaliumClansApi;
 import org.gepron1x.clans.api.user.ClanUser;
+import org.gepron1x.clans.gui.chat.Conversation;
 import org.gepron1x.clans.gui.item.ClanRegionItem;
 import org.gepron1x.clans.libraries.cloud.commandframework.bukkit.parsers.PlayerArgument;
 import org.gepron1x.clans.plugin.DecaliumClansPlugin;
 import org.gepron1x.clans.plugin.util.message.TextMessage;
 import org.gepron1x.clans.plugin.util.services.PluginServices;
+
+import java.time.Duration;
 
 public final class DecaliumClansGui extends JavaPlugin {
 
@@ -52,6 +56,7 @@ public final class DecaliumClansGui extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		DecaliumCustomItems.get().getItemRegistry().removeItem(ClanRegionItem.HOME_ITEM);
+		HandlerList.unregisterAll(this);
 	}
 
 	@Override
@@ -73,11 +78,28 @@ public final class DecaliumClansGui extends JavaPlugin {
 					});
 				})
 		);
+
+		Conversation conversation = new Conversation(this);
+		getServer().getPluginManager().registerEvents(conversation, this);
 		commandManager.command(commandManager.commandBuilder("clan").senderType(Player.class).permission("clans.gui").handler(ctx -> {
 			Player sender = (Player) ctx.getSender();
 			ClanUser user = api.users().userFor(sender);
-			user.clan().map(clan -> new ClanGui(getServer(), clan, user, api).asGui())
-					.orElseGet(() -> new ClanCreationGui(user, api).asGui()).show(sender);
+			if(user.clan().isPresent()) {
+				new ClanGui(getServer(), user.clan().orElseThrow(), user, api).asGui().show(sender);
+			} else {
+				clansPlugin.messages().commands().creation().creation().send(sender);
+				conversation.ask(sender, Duration.ofMinutes(1L)).thenCompose(s -> {
+					if(!clansPlugin.config().displayNameFormat().tagRegex().matcher(s).matches()) {
+						clansPlugin.messages().commands().creation().invalidTag().send(sender);
+						return api.futuresFactory().failedFuture(new Exception());
+					}
+					return api.create(sender, s);
+				}).thenAccept(result -> {
+					if(!result.isSuccess()) {
+						clansPlugin.messages().commands().creation().clanWithTagAlreadyExists().send(sender);
+					}
+				});
+			}
 		}));
 
 	}

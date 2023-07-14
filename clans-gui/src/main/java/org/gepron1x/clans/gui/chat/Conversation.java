@@ -34,6 +34,7 @@ public final class Conversation implements Listener {
 	@ApiStatus.Internal
 	public void on(AsyncChatEvent event) {
 		var future = conversations.remove(event.getPlayer().getUniqueId());
+		if(future == null) return;
 		future.complete(PlainTextComponentSerializer.plainText().serialize(event.originalMessage()));
 	}
 

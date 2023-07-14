@@ -241,6 +241,10 @@ public interface MessagesConfig {
 			@DefaultString("<prefix> Clan <name> created successfully")
 			Message success();
 
+			@ConfKey("creation")
+			@DefaultString("[title] Придумайте название;можно использовать только английские буквы и цифры;0;1200;20")
+			Message creation();
+
 		}
 
 		interface Deletion {

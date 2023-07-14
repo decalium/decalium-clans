@@ -18,6 +18,7 @@
  */
 package org.gepron1x.clans.api;
 
+import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.home.ClanHome;
 import org.gepron1x.clans.api.clan.member.ClanMember;
@@ -25,10 +26,12 @@ import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.api.economy.LevelsMeta;
 import org.gepron1x.clans.api.economy.Prices;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
+import org.gepron1x.clans.api.repository.ClanCreationResult;
 import org.gepron1x.clans.api.shield.GlobalRegions;
 import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.api.war.Wars;
 import org.jetbrains.annotations.NotNull;
+import space.arim.omnibus.util.concurrent.CentralisedFuture;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 public interface DecaliumClansApi extends ClanBuilderFactory {
@@ -76,5 +79,12 @@ public interface DecaliumClansApi extends ClanBuilderFactory {
 	@NotNull
 	default ClanRole.Builder roleBuilder() {
 		return builderFactory().roleBuilder();
+	}
+
+
+	default CentralisedFuture<ClanCreationResult> create(Player player, String tag) {
+		ClanMember owner = memberBuilder().player(player).role(roleRegistry().ownerRole()).build();
+		DraftClan clan = draftClanBuilder().tag(tag).owner(owner).build();
+		return users().userFor(player).create(clan);
 	}
 }
