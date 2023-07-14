@@ -26,13 +26,14 @@ repositories {
     maven { url = uri("https://repo.parks.dev/repository/maven-public/") }
     maven { url = uri("https://jitpack.io") }
     maven("https://maven.enginehub.org/repo/")
+    maven("https://repo.decalium.ru/shapshots")
 
 }
 
 dependencies {
     implementation(project(":clans-api"))
     implementation("org.bstats:bstats-bukkit:3.0.0")
-    compileOnly("net.pl3x.purpur:purpur-api:1.16.5-R0.1-SNAPSHOT")
+    compileOnly("ru.decalium.cobalt:cobalt-api:1.16.5-R0.1-SNAPSHOT")
     // paperDevBundle("1.18.2-R0.1-SNAPSHOT")
     implementation("org.jdbi:jdbi3-core:3.37.1") {
         exclude(group = "org.slf4j", module = "slf4j-api")
