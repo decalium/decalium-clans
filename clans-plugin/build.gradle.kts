@@ -23,10 +23,10 @@ repositories {
     maven { url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/") }
     maven { url = uri("https://oss.sonatype.org/content/groups/public/") }
     maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
-    maven { url = uri("https://repo.parks.dev/repository/maven-public/") }
     maven { url = uri("https://jitpack.io") }
     maven("https://maven.enginehub.org/repo/")
     maven("https://repo.decalium.ru/shapshots")
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
 
 }
 
@@ -35,6 +35,10 @@ dependencies {
     implementation("org.bstats:bstats-bukkit:3.0.0")
     compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
     // paperDevBundle("1.18.2-R0.1-SNAPSHOT")
+    compileOnly("de.hexaoxi:carbonchat-api:2.1.0-SNAPSHOT") {
+        exclude("net.kyori", "adventure-text-minimessage")
+        exclude("ninja.egg82", "messenger-api")
+    }
     implementation("org.jdbi:jdbi3-core:3.37.1") {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
