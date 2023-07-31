@@ -66,6 +66,6 @@ public final class CarbonChatUser implements ChatUser {
 
 	@Override
 	public void currentChannel(Key key) {
-		player.selectedChannel(registry.get(key));
+		player.selectedChannel(registry.channel(key));
 	}
 }

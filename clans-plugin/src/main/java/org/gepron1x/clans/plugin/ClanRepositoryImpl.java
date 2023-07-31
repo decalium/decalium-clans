@@ -23,6 +23,7 @@ import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.IdentifiedDraftClan;
 import org.gepron1x.clans.api.repository.ClanCreationResult;
 import org.gepron1x.clans.api.repository.ClanRepository;
+import org.gepron1x.clans.api.repository.ClanTop;
 import org.gepron1x.clans.plugin.clan.ClanImpl;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
 import org.jetbrains.annotations.NotNull;
@@ -30,9 +31,8 @@ import space.arim.omnibus.util.concurrent.CentralisedFuture;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class ClanRepositoryImpl implements ClanRepository {
 	private final ClanStorage storage;
@@ -70,8 +70,13 @@ public final class ClanRepositoryImpl implements ClanRepository {
 	}
 
 	@Override
-	public @NotNull CentralisedFuture<Set<? extends Clan>> clans() {
-		return futuresFactory.supplyAsync(() -> this.storage.loadClans().stream().map(this::adapt).collect(Collectors.toUnmodifiableSet()));
+	public @NotNull ClanTop top() {
+		return new ClanTopImpl(futuresFactory, storage);
+	}
+
+	@Override
+	public @NotNull CentralisedFuture<Stream<? extends Clan>> clans() {
+		return futuresFactory.supplyAsync(() -> this.storage.loadClans().stream().map(this::adapt));
 	}
 
 	Clan adapt(IdentifiedDraftClan draftClan) {

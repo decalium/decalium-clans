@@ -62,6 +62,11 @@ public interface EmptyClanEdition extends ClanEdition {
 	}
 
 	@Override
+	default ClanEdition upgrade() {
+		return this;
+	}
+
+	@Override
 	default ClanEdition incrementStatistic(@NotNull StatisticType type) {
 		return this;
 	}

@@ -20,9 +20,7 @@ package org.gepron1x.clans.plugin.chat.carbon;
 
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.util.RenderedMessage;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
@@ -124,9 +122,14 @@ public final class CarbonChannel implements ChatChannel {
 	}
 
 	@Override
-	public @NotNull RenderedMessage render(CarbonPlayer sender, Audience recipient, Component message, Component originalMessage) {
+	public boolean emptyRadiusRecipientsMessage() {
+		return false;
+	}
+
+	@Override
+	public @NotNull Component render(CarbonPlayer sender, Audience recipient, Component message, Component originalMessage) {
 		Player player = player(sender).orElseThrow();
-		return new RenderedMessage(this.channel.render(player, recipient, message, originalMessage), MessageType.CHAT);
+		return this.channel.render(player, recipient, message, originalMessage);
 	}
 
 	@Override

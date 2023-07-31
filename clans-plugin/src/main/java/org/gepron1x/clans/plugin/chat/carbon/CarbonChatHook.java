@@ -32,8 +32,7 @@ public record CarbonChatHook(@NotNull Server server, @NotNull ClanCache cache, @
 		CarbonChat carbon = CarbonChatProvider.carbonChat();
 		ClanChatChannel chatChannel = new ClanChatChannel(server, cache, configs);
 		ChannelRegistry registry = carbon.channelRegistry();
-		boolean exists = registry.get(chatChannel.key()) != null;
-		carbon.channelRegistry().register(chatChannel.key(), chatChannel);
-		if (!exists) carbon.channelRegistry().registerChannelCommands(chatChannel);
+		boolean exists = registry.channel(chatChannel.key()) != null;
+		carbon.channelRegistry().register(chatChannel);
 	}
 }

@@ -69,7 +69,10 @@ public final class EconomyUser implements ClanUser {
 					)
 			);
 		}
-		return user.create(draft);
+		return user.create(draft).thenApply(r -> {
+			if(r.isSuccess()) player.withdraw(prices.clanCreation());
+			return r;
+		});
 	}
 
 	@Override

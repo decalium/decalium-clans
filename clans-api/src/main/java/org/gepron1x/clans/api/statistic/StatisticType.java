@@ -38,6 +38,11 @@ public record StatisticType(@NotNull String name) {
 		return NAMES;
 	}
 
+	public static StatisticType type(String name) {
+		var value = NAMES.value(name);
+		return value == null ? new StatisticType(name) : value;
+	}
+
 	public static Set<StatisticType> all() {
 		return NAMES.values();
 	}

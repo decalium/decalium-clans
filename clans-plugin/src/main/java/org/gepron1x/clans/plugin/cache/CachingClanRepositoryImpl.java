@@ -20,9 +20,11 @@ package org.gepron1x.clans.plugin.cache;
 
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
+import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.repository.ClanCreationResult;
 import org.gepron1x.clans.api.repository.ClanRepository;
+import org.gepron1x.clans.api.repository.ClanTop;
 import org.gepron1x.clans.plugin.AdaptingClanRepository;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -51,6 +53,9 @@ public final class CachingClanRepositoryImpl extends AdaptingClanRepository impl
 	@Override
 	public @NotNull CentralisedFuture<ClanCreationResult> createClan(@NotNull DraftClan draftClan) {
 		if (cache.isCached(draftClan.tag())) return futuresFactory.completedFuture(ClanCreationResult.alreadyExists());
+		for(ClanMember member : draftClan.members()) {
+			if(cache.getUserClan(member.uniqueId()) != null) return futuresFactory.completedFuture(ClanCreationResult.membersInOtherClans());
+		}
 		return repository.createClan(draftClan).thenApply(result -> {
 			return result.map(clan -> {
 				var c = new CachingClan(clan, cache, futuresFactory);
@@ -75,6 +80,11 @@ public final class CachingClanRepositoryImpl extends AdaptingClanRepository impl
 			return this.futuresFactory.completedFuture(Optional.of(clan));
 		}
 		return super.requestClan(tag);
+	}
+
+	@Override
+	public @NotNull ClanTop top() {
+		return repository.top(); // no need to cache
 	}
 
 	@Override

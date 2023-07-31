@@ -25,8 +25,8 @@ import org.jetbrains.annotations.NotNull;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 public interface ClanRepository {
 	@NotNull CentralisedFuture<ClanCreationResult> createClan(@NotNull DraftClan draftClan);
@@ -42,6 +42,9 @@ public interface ClanRepository {
 		return requestUserClan(player.getUniqueId());
 	}
 
-	@NotNull CentralisedFuture<Set<? extends Clan>> clans();
+
+	@NotNull ClanTop top();
+
+	@NotNull CentralisedFuture<Stream<? extends Clan>> clans();
 
 }

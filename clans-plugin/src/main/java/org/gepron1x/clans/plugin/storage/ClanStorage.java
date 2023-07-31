@@ -22,9 +22,11 @@ import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.IdentifiedDraftClan;
 import org.gepron1x.clans.api.edition.ClanEdition;
 import org.gepron1x.clans.api.repository.ClanCreationResult;
+import org.gepron1x.clans.api.statistic.StatisticType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -43,9 +45,12 @@ public interface ClanStorage {
 	@Nullable IdentifiedDraftClan loadUserClan(@NotNull UUID uuid);
 
 
-	@NotNull Set<IdentifiedDraftClanImpl> loadClans();
+	@NotNull Set<IdentifiedDraftClan> loadClans();
+
+	@NotNull Top top();
 
 	SaveResult saveClan(@NotNull DraftClan clan);
+
 
 	void applyEdition(int id, @NotNull Consumer<ClanEdition> consumer);
 
@@ -60,6 +65,13 @@ public interface ClanStorage {
 		}
 
 
+	}
+
+	interface Top {
+
+		List<IdentifiedDraftClan> top(StatisticType type);
+
+		List<IdentifiedDraftClan> top(StatisticType type, int limit);
 	}
 
 

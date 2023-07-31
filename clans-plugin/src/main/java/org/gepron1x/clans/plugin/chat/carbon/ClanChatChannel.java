@@ -20,9 +20,7 @@ package org.gepron1x.clans.plugin.chat.carbon;
 
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.util.RenderedMessage;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Server;
@@ -117,17 +115,22 @@ public final class ClanChatChannel implements ChatChannel {
 	}
 
 	@Override
-	public @NotNull RenderedMessage render(CarbonPlayer sender, Audience recipient, Component message, Component originalMessage) {
+	public boolean emptyRadiusRecipientsMessage() {
+		return false;
+	}
+
+	@Override
+	public @NotNull Component render(CarbonPlayer sender, Audience recipient, Component message, Component originalMessage) {
 
 		DraftClan clan = Objects.requireNonNull(cache.getUserClan(sender.uuid()));
 		ClanMember member = clan.member(sender.uuid()).orElseThrow();
-		return new RenderedMessage(configs.config().chat().format()
+		return configs.config().chat().format()
 				.with(new PapiTagResolver(this.server.getPlayer(sender.uuid())))
 				.with(ClanTagResolver.prefixed(clan))
 				.with("role", member.role())
 				.with("member", CarbonPlayer.renderName(sender))
 				.with("message", originalMessage)
-				.asComponent(), MessageType.CHAT);
+				.asComponent();
 	}
 
 	@Override

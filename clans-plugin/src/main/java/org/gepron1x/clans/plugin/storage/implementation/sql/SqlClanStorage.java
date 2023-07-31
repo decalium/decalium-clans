@@ -19,35 +19,23 @@
 package org.gepron1x.clans.plugin.storage.implementation.sql;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 import org.flywaydb.core.Flyway;
-import org.gepron1x.clans.api.ClanBuilderFactory;
-import org.gepron1x.clans.api.RoleRegistry;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.IdentifiedDraftClan;
-import org.gepron1x.clans.api.clan.home.ClanHome;
-import org.gepron1x.clans.api.clan.member.ClanMember;
 import org.gepron1x.clans.api.edition.ClanEdition;
-import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
-import org.gepron1x.clans.plugin.storage.IdentifiedDraftClanImpl;
 import org.gepron1x.clans.plugin.storage.StorageType;
 import org.gepron1x.clans.plugin.storage.implementation.sql.common.SavableHomes;
 import org.gepron1x.clans.plugin.storage.implementation.sql.common.SavableMembers;
 import org.gepron1x.clans.plugin.storage.implementation.sql.common.SavableStatistics;
 import org.gepron1x.clans.plugin.storage.implementation.sql.edition.SqlClanEdition;
-import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.ClanBuilderMapper;
-import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.ClanHomeBuilderMapper;
-import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.LocationMapper;
-import org.gepron1x.clans.plugin.storage.implementation.sql.mappers.row.MemberMapper;
 import org.intellij.lang.annotations.Language;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.LinkedHashMap;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -77,8 +65,7 @@ public final class SqlClanStorage implements ClanStorage {
 	private final Jdbi jdbi;
 	private final HikariDataSource dataSource;
 	private final StorageType type;
-	private final ClanBuilderFactory builderFactory;
-	private final RoleRegistry roleRegistry;
+	private final ClanCollector collector;
 	private final Plugin plugin;
 
 
@@ -86,14 +73,12 @@ public final class SqlClanStorage implements ClanStorage {
 						  @NotNull Jdbi jdbi,
 						  @NotNull HikariDataSource dataSource,
 						  @NotNull StorageType type,
-						  @NotNull ClanBuilderFactory builderFactory,
-						  @NotNull RoleRegistry roleRegistry) {
+						  @NotNull ClanCollector collector) {
 		this.plugin = plugin;
 		this.jdbi = jdbi;
 		this.dataSource = dataSource;
 		this.type = type;
-		this.builderFactory = builderFactory;
-		this.roleRegistry = roleRegistry;
+		this.collector = collector;
 	}
 
 	@Override
@@ -133,8 +118,13 @@ public final class SqlClanStorage implements ClanStorage {
 	}
 
 	@Override
-	public @NotNull Set<IdentifiedDraftClanImpl> loadClans() {
+	public @NotNull Set<IdentifiedDraftClan> loadClans() {
 		return jdbi.withHandle(handle -> collectClans(handle.createQuery(SELECT_CLANS))).collect(Collectors.toSet());
+	}
+
+	@Override
+	public @NotNull Top top() {
+		return new SqlClanTop(jdbi, collector);
 	}
 
 	@Override
@@ -177,36 +167,8 @@ public final class SqlClanStorage implements ClanStorage {
 	}
 
 
-	private Stream<IdentifiedDraftClanImpl> collectClans(Query query) {
-		return query.registerRowMapper(DraftClan.Builder.class, new ClanBuilderMapper("clan", builderFactory))
-				.registerRowMapper(ClanMember.class, new MemberMapper(builderFactory, roleRegistry, "member"))
-				.registerRowMapper(ClanHome.Builder.class, new ClanHomeBuilderMapper(builderFactory, "home"))
-				.registerRowMapper(Location.class, new LocationMapper(plugin.getServer(), "location"))
-				.reduceRows(new LinkedHashMap<Integer, DraftClan.Builder>(), (map, rowView) -> {
-					DraftClan.Builder builder = map.computeIfAbsent(
-							rowView.getColumn("clan_id", Integer.class),
-							clanTag -> rowView.getRow(DraftClan.Builder.class));
-					UUID owner = rowView.getColumn("clan_owner", UUID.class);
-
-					if (rowView.getColumn("member_uuid", byte[].class) != null) {
-						ClanMember member = rowView.getRow(ClanMember.class);
-						if (member.uniqueId().equals(owner)) {
-							builder.owner(member);
-						} else {
-							builder.addMember(rowView.getRow(ClanMember.class));
-						}
-					}
-
-					if (rowView.getColumn("home_name", String.class) != null) {
-						builder.addHome(rowView.getRow(ClanHome.Builder.class).location(rowView.getRow(Location.class)).build());
-					}
-					String statType = rowView.getColumn("statistic_type", String.class);
-
-					if (statType != null) {
-						builder.statistic(new StatisticType(statType), rowView.getColumn("statistic_value", Integer.class));
-					}
-					return map;
-				}).entrySet().stream().map(entry -> new IdentifiedDraftClanImpl(entry.getKey(), entry.getValue().build()));
+	private Stream<IdentifiedDraftClan> collectClans(Query query) {
+		return collector.collectClans(query);
 	}
 
 }

@@ -68,10 +68,7 @@ import org.gepron1x.clans.plugin.shield.region.wg.WgGlobalRegions;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
 import org.gepron1x.clans.plugin.storage.HikariDataSourceCreation;
 import org.gepron1x.clans.plugin.storage.RegionStorage;
-import org.gepron1x.clans.plugin.storage.implementation.sql.JdbiCreation;
-import org.gepron1x.clans.plugin.storage.implementation.sql.SqlClanStorage;
-import org.gepron1x.clans.plugin.storage.implementation.sql.SqlQueue;
-import org.gepron1x.clans.plugin.storage.implementation.sql.SqlRegionStorage;
+import org.gepron1x.clans.plugin.storage.implementation.sql.*;
 import org.gepron1x.clans.plugin.users.DefaultUsers;
 import org.gepron1x.clans.plugin.util.AsciiArt;
 import org.gepron1x.clans.plugin.util.action.ActionParser;
@@ -182,7 +179,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 		HikariDataSource ds = new HikariDataSourceCreation(this, config).create();
 		Jdbi jdbi = new JdbiCreation(ds).create();
 
-		this.storage = new SqlClanStorage(this, jdbi, ds, config.storage().type(), builderFactory, roleRegistry);
+		this.storage = new SqlClanStorage(this, jdbi, ds, config.storage().type(), new ClanCollector(builderFactory, roleRegistry));
 		this.storage.initialize();
 
 

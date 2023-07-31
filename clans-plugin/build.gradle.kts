@@ -33,7 +33,7 @@ repositories {
 dependencies {
     implementation(project(":clans-api"))
     implementation("org.bstats:bstats-bukkit:3.0.0")
-    compileOnly("ru.decalium.cobalt:cobalt-api:1.16.5-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
     // paperDevBundle("1.18.2-R0.1-SNAPSHOT")
     implementation("org.jdbi:jdbi3-core:3.37.1") {
         exclude(group = "org.slf4j", module = "slf4j-api")
@@ -62,10 +62,6 @@ dependencies {
     compileOnly("me.clip:placeholderapi:2.10.9")
     implementation("com.zaxxer:HikariCP:5.0.1") {
         exclude(group = "org.slf4j", module = "slf4j-api")
-    }
-    compileOnly("net.draycia:carbonchat-api:2.1.0-SNAPSHOT") {
-        exclude("net.kyori", "adventure-text-minimessage")
-        exclude("ninja.egg82", "messenger-api")
     }
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.0") {
         exclude("org.bukkit", "bukkit")
