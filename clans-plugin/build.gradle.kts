@@ -124,7 +124,7 @@ tasks {
         // Configure the Minecraft version for our task.
         // This is the only required configuration besides applying the plugin.
         // Your plugin's jar (or shadowJar if present) will be used automatically.
-        minecraftVersion("1.18.2")
+        minecraftVersion("1.19.4")
         jvmArgs("-Xms128M", "-Xmx512M")
 
     }
@@ -140,7 +140,7 @@ bukkit {
     name = "DecaliumClans"
     main = "org.gepron1x.clans.plugin.DecaliumClansPlugin"
     description = "Shining clans plugin"
-    apiVersion = "1.16"
+    apiVersion = "1.19"
     authors = listOf("gepron1x", "manya")
     website = "https://clans.decalium.ru"
     softDepend = listOf("PlaceholderAPI", "CarbonChat", "WorldGuard", "Vault", "DecentHolograms")
