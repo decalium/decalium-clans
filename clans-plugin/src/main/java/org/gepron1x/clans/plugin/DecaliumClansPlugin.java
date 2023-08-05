@@ -41,6 +41,7 @@ import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanRole;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.repository.ClanRepository;
+import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.api.user.Users;
 import org.gepron1x.clans.api.war.Wars;
 import org.gepron1x.clans.plugin.announce.AnnouncingClanRepository;
@@ -63,6 +64,7 @@ import org.gepron1x.clans.plugin.level.LeveledClanRepository;
 import org.gepron1x.clans.plugin.listener.CacheListener;
 import org.gepron1x.clans.plugin.listener.HologramProtection;
 import org.gepron1x.clans.plugin.listener.StatisticListener;
+import org.gepron1x.clans.plugin.papi.ClanTopCache;
 import org.gepron1x.clans.plugin.papi.PlaceholderAPIHook;
 import org.gepron1x.clans.plugin.shield.region.wg.WgGlobalRegions;
 import org.gepron1x.clans.plugin.storage.ClanStorage;
@@ -83,6 +85,7 @@ import space.arim.dazzleconf.ConfigurationOptions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.gepron1x.clans.plugin.wg.WgRepositoryImpl.AsyncRegionStorage;
@@ -219,11 +222,14 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 		}
 
 		getServer().getPluginManager().registerEvents(new CacheListener(userCaching), this);
+		ClanTopCache topCache = new ClanTopCache(cachingClanRepository.top(), 10);
+		Set.of(StatisticType.KILLS, StatisticType.CLAN_WAR_WINS).forEach(topCache::cache);
+		getServer().getScheduler().runTaskTimer(this, topCache, 20 * 60 * 5, 20 * 60 * 5);
 
 		LegacyComponentSerializer legacy = LegacyComponentSerializer.builder().character(LegacyComponentSerializer.SECTION_CHAR).hexColors().useUnusualXRepeatedCharacterHexFormat().build();
 
 		if (isEnabled("PlaceholderAPI")) {
-			new PlaceholderAPIHook(getServer(), config, clanCache, legacy).register();
+			new PlaceholderAPIHook(getServer(), config, clanCache, topCache, legacy).register();
 		}
 
 		if (isEnabled("CarbonChat")) {
