@@ -22,9 +22,9 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.flags.BooleanFlag;
 import com.sk89q.worldguard.protection.flags.IntegerFlag;
 import com.sk89q.worldguard.protection.flags.StringFlag;
+import org.gepron1x.clans.api.region.ClanRegion;
+import org.gepron1x.clans.api.region.GlobalRegions;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
-import org.gepron1x.clans.api.shield.ClanRegion;
-import org.gepron1x.clans.api.shield.GlobalRegions;
 import org.gepron1x.clans.plugin.config.Configs;
 
 import java.util.List;

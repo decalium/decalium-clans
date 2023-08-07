@@ -20,8 +20,8 @@ package org.gepron1x.clans.plugin.shield.region.sql;
 
 import org.bukkit.Location;
 import org.gepron1x.clans.api.reference.ClanReference;
-import org.gepron1x.clans.api.shield.ClanRegion;
-import org.gepron1x.clans.api.shield.Shield;
+import org.gepron1x.clans.api.region.ClanRegion;
+import org.gepron1x.clans.api.region.Shield;
 import org.gepron1x.clans.plugin.storage.implementation.sql.SqlQueue;
 
 import java.time.Duration;

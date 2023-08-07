@@ -4,7 +4,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.Location;
-import org.gepron1x.clans.api.shield.ClanRegion;
+import org.gepron1x.clans.api.region.ClanRegion;
 import org.gepron1x.clans.plugin.config.Configs;
 import org.gepron1x.clans.plugin.wg.WgExtension;
 

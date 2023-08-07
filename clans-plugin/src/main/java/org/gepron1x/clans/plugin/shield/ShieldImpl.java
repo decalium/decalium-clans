@@ -18,7 +18,7 @@
  */
 package org.gepron1x.clans.plugin.shield;
 
-import org.gepron1x.clans.api.shield.Shield;
+import org.gepron1x.clans.api.region.Shield;
 
 import java.time.Instant;
 

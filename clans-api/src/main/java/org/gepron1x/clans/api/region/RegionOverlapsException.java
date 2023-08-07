@@ -1,4 +1,4 @@
-package org.gepron1x.clans.api.shield;
+package org.gepron1x.clans.api.region;
 
 public class RegionOverlapsException extends RuntimeException {
 

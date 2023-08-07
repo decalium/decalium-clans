@@ -24,9 +24,9 @@ import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.reference.ClanReference;
-import org.gepron1x.clans.api.shield.ClanRegion;
-import org.gepron1x.clans.api.shield.ClanRegions;
-import org.gepron1x.clans.api.shield.GlobalRegions;
+import org.gepron1x.clans.api.region.ClanRegion;
+import org.gepron1x.clans.api.region.ClanRegions;
+import org.gepron1x.clans.api.region.GlobalRegions;
 import org.gepron1x.clans.plugin.config.Configs;
 import org.gepron1x.clans.plugin.shield.region.wg.RegionHologram;
 

@@ -20,8 +20,8 @@ package org.gepron1x.clans.plugin.wg;
 
 import com.sk89q.worldguard.WorldGuard;
 import org.gepron1x.clans.api.clan.Clan;
+import org.gepron1x.clans.api.region.GlobalRegions;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
-import org.gepron1x.clans.api.shield.GlobalRegions;
 import org.gepron1x.clans.plugin.AdaptingClanRepository;
 import org.gepron1x.clans.plugin.config.Configs;
 import org.gepron1x.clans.plugin.storage.RegionStorage;

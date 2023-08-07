@@ -1,4 +1,4 @@
-package org.gepron1x.clans.api.shield;
+package org.gepron1x.clans.api.region;
 
 import org.bukkit.block.Block;
 import org.gepron1x.clans.api.clan.Clan;

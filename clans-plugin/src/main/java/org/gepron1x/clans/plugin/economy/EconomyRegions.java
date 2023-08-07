@@ -1,8 +1,8 @@
 package org.gepron1x.clans.plugin.economy;
 
 import org.bukkit.Location;
-import org.gepron1x.clans.api.shield.ClanRegion;
-import org.gepron1x.clans.api.shield.ClanRegions;
+import org.gepron1x.clans.api.region.ClanRegion;
+import org.gepron1x.clans.api.region.ClanRegions;
 import org.gepron1x.clans.plugin.config.settings.PricesConfig;
 
 import java.util.Collection;

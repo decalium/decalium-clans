@@ -5,7 +5,7 @@ import org.bukkit.Location;
 import org.gepron1x.clans.api.chat.BooleanStateResolver;
 import org.gepron1x.clans.api.chat.ClanTagResolver;
 import org.gepron1x.clans.api.clan.Clan;
-import org.gepron1x.clans.api.shield.ClanRegion;
+import org.gepron1x.clans.api.region.ClanRegion;
 import org.gepron1x.clans.plugin.config.Configs;
 import org.gepron1x.clans.plugin.util.hologram.ClanHologram;
 import org.gepron1x.clans.plugin.util.hologram.DecentClanHologram;

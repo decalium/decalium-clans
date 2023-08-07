@@ -3,9 +3,9 @@ package org.gepron1x.clans.plugin.shield.region.sql;
 import org.bukkit.block.Block;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.reference.TagClanReference;
+import org.gepron1x.clans.api.region.ClanRegions;
+import org.gepron1x.clans.api.region.GlobalRegions;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
-import org.gepron1x.clans.api.shield.ClanRegions;
-import org.gepron1x.clans.api.shield.GlobalRegions;
 import org.gepron1x.clans.plugin.shield.region.ClanRegionsImpl;
 import org.gepron1x.clans.plugin.storage.implementation.sql.SqlQueue;
 

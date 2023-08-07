@@ -19,8 +19,8 @@
 package org.gepron1x.clans.plugin.users;
 
 import org.bukkit.entity.Player;
+import org.gepron1x.clans.api.region.GlobalRegions;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
-import org.gepron1x.clans.api.shield.GlobalRegions;
 import org.gepron1x.clans.api.user.ClanUser;
 import org.gepron1x.clans.api.user.Users;
 

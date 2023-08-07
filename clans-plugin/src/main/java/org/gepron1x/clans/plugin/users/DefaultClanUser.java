@@ -21,10 +21,10 @@ package org.gepron1x.clans.plugin.users;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
+import org.gepron1x.clans.api.region.ClanRegions;
+import org.gepron1x.clans.api.region.GlobalRegions;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.repository.ClanCreationResult;
-import org.gepron1x.clans.api.shield.ClanRegions;
-import org.gepron1x.clans.api.shield.GlobalRegions;
 import org.gepron1x.clans.api.user.ClanUser;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 

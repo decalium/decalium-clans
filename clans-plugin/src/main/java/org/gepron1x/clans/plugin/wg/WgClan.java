@@ -23,7 +23,7 @@ import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.edition.ClanEdition;
-import org.gepron1x.clans.api.shield.ClanRegions;
+import org.gepron1x.clans.api.region.ClanRegions;
 import org.gepron1x.clans.plugin.clan.DelegatingClan;
 import org.gepron1x.clans.plugin.config.Configs;
 import org.gepron1x.clans.plugin.edition.PostClanEdition;
