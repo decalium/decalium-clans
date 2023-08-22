@@ -19,56 +19,58 @@
 package org.gepron1x.clans.gui;
 
 import com.github.stefvanschie.inventoryframework.adventuresupport.ComponentHolder;
-import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Server;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataType;
+import com.github.stefvanschie.inventoryframework.pane.util.Slot;
+import net.kyori.adventure.text.Component;
 import org.gepron1x.clans.api.chat.ClanHomeTagResolver;
 import org.gepron1x.clans.api.chat.ClanTagResolver;
 import org.gepron1x.clans.api.clan.Clan;
+import org.gepron1x.clans.api.clan.member.ClanMember;
+import org.gepron1x.clans.api.clan.member.ClanPermission;
+import org.gepron1x.clans.api.user.ClanUser;
+import org.gepron1x.clans.gui.builder.ItemBuilder;
 
-import java.util.stream.Stream;
 
-import static org.gepron1x.clans.gui.DecaliumClansGui.message;
 
 public final class HomeListGui implements GuiLike {
 
-	private static final NamespacedKey HOME_NAME = new NamespacedKey(DecaliumClansGui.getPlugin(DecaliumClansGui.class), "home_name");
 
-	private final Server server;
 	private final Clan clan;
+	private final ClanUser viewer;
+	private final GuiLike parent;
 
-	public HomeListGui(Clan clan, Server server) {
-
-		this.server = server;
-		this.clan = clan;
+	public HomeListGui(GuiLike parent, ClanUser viewer) {
+		this.parent = parent;
+		this.clan = viewer.clan().orElseThrow();
+		this.viewer = viewer;
 	}
 
 	@Override
 	public Gui asGui() {
 		ChestGui gui = new PaginatedGui<>(clan.homes(), clanHome -> {
-			ItemStack item = clanHome.icon();
-			item.editMeta(meta -> {
-				ClanHomeTagResolver resolver = ClanHomeTagResolver.home(clanHome);
-				meta.displayName(DecaliumClansGui.message("<home_display_name> (<gray><home_name></gray>)").with("home", resolver).asComponent());
-				meta.getPersistentDataContainer().set(HOME_NAME, PersistentDataType.STRING, clanHome.name());
-				meta.lore(Stream.of(
-						message("<yellow>Уровень: <white><home_level>"),
-						message("<yellow>Владелец: <white><home_owner_name>"),
-						message("<green><bold>Нажмите, чтобы телепортироваться")
-				).map(m -> m.with("home", resolver).asComponent()).toList());
-			});
-			return new GuiItem(item, event -> {
-				if (event.isLeftClick()) event.getWhoClicked().teleportAsync(clanHome.location()).exceptionally(t -> {
-					t.printStackTrace();
-					return null;
-				});
-			});
+			ClanHomeTagResolver resolver = ClanHomeTagResolver.home(clanHome);
+			boolean canDelete = viewer.member().map(ClanMember::uniqueId)
+					.map(uuid -> clanHome.creator().equals(uuid)).orElse(false) || viewer.hasPermission(ClanPermission.EDIT_OTHERS_HOMES);
+			ItemBuilder builder = ItemBuilder.create(clanHome.icon()).name("<home_display_name>")
+					.description("Владелец: <home_owner_name>", "Координаты (X, Z): <x> <z>")
+					.space()
+					.interaction(Colors.NEUTRAL, "Нажмите, чтобы телепортироваться")
+					.consumer(event -> {
+						if(event.isShiftClick() && canDelete) {
+								ConfirmationGui.confirmAndReturn(Component.text("Вы уверены?"), e -> clan.edit(edition -> edition.removeHome(clanHome)), event).asGui()
+										.show(event.getWhoClicked());
+
+						} else if(event.isLeftClick()) {
+							event.getWhoClicked().teleportAsync(clanHome.location());
+						}
+					})
+					.with("home", resolver).with("x", clanHome.location().getBlockX())
+					.with("z", clanHome.location().getBlockZ());
+			if(canDelete) builder.interaction(Colors.NEGATIVE, "Shift+ЛКМ, чтобы удалить!");
+			return builder.guiItem();
 		}).asGui();
-		gui.setTitle(ComponentHolder.of(DecaliumClansGui.message("Базы клана <display_name>").with(ClanTagResolver.clan(clan)).asComponent()));
-		return gui;
+		gui.setTitle(ComponentHolder.of(DecaliumClansGui.message("Телепорты клана <display_name>").with(ClanTagResolver.clan(clan)).asComponent()));
+		return new GoBackGui(gui, Slot.fromXY(6, 5), parent).asGui();
 	}
 }

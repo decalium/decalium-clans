@@ -198,7 +198,8 @@ public final class ClanGui implements GuiLike {
 				.name("<gradient:#c733fb:#fd439c>Клановые телепорты")
 				.space()
 				.description("Используйте общие точки", "телепорта со своим кланом!")
-				.space(), ItemBuilder::menuInteraction).guiItem();
+				.space(), builder -> builder.menuInteraction()
+				.consumer(e -> new HomeListGui(this, viewer).asGui().show(e.getWhoClicked()))).guiItem();
 	}
 
 	private ItemBuilder levelRequired(int level, ItemBuilder builder, Consumer<ItemBuilder> consumer) {
