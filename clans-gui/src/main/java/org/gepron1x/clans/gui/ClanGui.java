@@ -171,7 +171,7 @@ public final class ClanGui implements GuiLike {
 	}
 
 	private GuiItem clanUpgrade() {
-		return ItemBuilder.create(Material.TOTEM_OF_UNDYING).amount(Math.min(1, clan.level()))
+		return ItemBuilder.create(Material.TOTEM_OF_UNDYING).amount(Math.max(clan.level(), 1))
 				.name("<gradient:#FDA624:#FFD84A>Улучшение клана")
 				.space()
 				.description("Прокачивай уровень и", "открывай новые возможности", "для себя и своих соклановцев!")
