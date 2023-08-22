@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("net.pl3x.purpur:purpur-api:1.16.5-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
     implementation("com.jeff_media:CustomBlockData:2.2.0")
     compileOnly(project(":clans-plugin", "shadow"))
     compileOnly("com.github.MilkBowl:VaultAPI:1.7") {
