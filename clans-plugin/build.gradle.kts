@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":clans-api"))
+    api(project(":clans-api"))
     implementation("org.bstats:bstats-bukkit:3.0.0")
     compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
     // paperDevBundle("1.18.2-R0.1-SNAPSHOT")
