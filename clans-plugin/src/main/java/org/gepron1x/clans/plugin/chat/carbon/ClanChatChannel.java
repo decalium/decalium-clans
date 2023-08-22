@@ -76,7 +76,6 @@ public final class ClanChatChannel implements ChatChannel {
 				.collect(Collectors.toList());
 	}
 
-	@Override
 	public Set<CarbonPlayer> filterRecipients(CarbonPlayer sender, Set<CarbonPlayer> recipients) {
 		IdentifiedDraftClan clan = cache.getUserClan(sender.uuid());
 		if (clan == null) return Collections.emptySet();
@@ -128,7 +127,7 @@ public final class ClanChatChannel implements ChatChannel {
 				.with(new PapiTagResolver(this.server.getPlayer(sender.uuid())))
 				.with(ClanTagResolver.prefixed(clan))
 				.with("role", member.role())
-				.with("member", CarbonPlayer.renderName(sender))
+				.with("member", sender.displayName())
 				.with("message", originalMessage)
 				.asComponent();
 	}

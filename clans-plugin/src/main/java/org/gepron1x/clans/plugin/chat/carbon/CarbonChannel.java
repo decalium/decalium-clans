@@ -80,7 +80,6 @@ public final class CarbonChannel implements ChatChannel {
 		return List.copyOf(audiences);
 	}
 
-	@Override
 	public Set<CarbonPlayer> filterRecipients(CarbonPlayer sender, Set<CarbonPlayer> recipients) {
 		return player(sender).map(player -> {
 			Set<Player> players = recipients.stream().map(this::player)

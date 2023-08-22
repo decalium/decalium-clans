@@ -21,6 +21,7 @@ package org.gepron1x.clans.plugin.chat.carbon;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
+import net.draycia.carbon.api.channels.ChatChannel;
 import org.bukkit.Server;
 import org.gepron1x.clans.plugin.cache.ClanCache;
 import org.gepron1x.clans.plugin.config.Configs;
@@ -32,7 +33,11 @@ public record CarbonChatHook(@NotNull Server server, @NotNull ClanCache cache, @
 		CarbonChat carbon = CarbonChatProvider.carbonChat();
 		ClanChatChannel chatChannel = new ClanChatChannel(server, cache, configs);
 		ChannelRegistry registry = carbon.channelRegistry();
-		boolean exists = registry.channel(chatChannel.key()) != null;
-		carbon.channelRegistry().register(chatChannel);
+		ChatChannel channel = registry.channel(chatChannel.key());
+		if(channel instanceof MutableChannel mutable) {
+			mutable.setDelegate(chatChannel);
+			return;
+		}
+		registry.register(new MutableChannel(chatChannel));
 	}
 }

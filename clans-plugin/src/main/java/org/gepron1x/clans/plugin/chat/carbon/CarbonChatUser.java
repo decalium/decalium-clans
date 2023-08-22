@@ -51,7 +51,7 @@ public final class CarbonChatUser implements ChatUser {
 
 	@Override
 	public Component renderName() {
-		return CarbonPlayer.renderName(player);
+		return player.displayName();
 	}
 
 	@Override
