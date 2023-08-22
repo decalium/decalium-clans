@@ -82,7 +82,7 @@ public final class UpgradeGui implements GuiLike {
 					.with("regions", perLevel.regions())
 					.with("homes", perLevel.homes());
 			if (clanLevel + 1 == level) {
-				builder.space().interaction(Colors.POSITIVE, "Нажмите, чтобы прокачать клан за <price> монет")
+				builder.space().interaction(Colors.POSITIVE, "Нажмите, чтобы прокачать клан за <#FDA624><price>◎")
 						.with("price", clans.prices().clanUpgrade(clanLevel + 1));
 				builder.consumer(e -> {
 					viewer.clan().orElseThrow().edit(ClanEdition::upgrade)
