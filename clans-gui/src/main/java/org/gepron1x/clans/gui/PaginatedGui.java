@@ -49,7 +49,7 @@ public final class PaginatedGui<E> implements GuiLike {
 		ChestGui gui = new ChestGui(rows, "Paginated Gui");
 		gui.addPane(ClanGui.border(0, rows));
 		gui.addPane(ClanGui.border(8, rows));
-		PaginatedPane pages = new PaginatedPane(2, 1, 5, rows - 3);
+		PaginatedPane pages = new PaginatedPane(2, 1, 5, rows - 2);
 		pages.populateWithGuiItems(elements.stream().map(mapper).toList());
 		gui.addPane(pages);
 		if (pages.getPages() < 2) return gui;
