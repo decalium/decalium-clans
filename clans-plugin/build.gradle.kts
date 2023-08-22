@@ -33,6 +33,7 @@ repositories {
 dependencies {
     api(project(":clans-api"))
     implementation("org.bstats:bstats-bukkit:3.0.0")
+    implementation("com.github.Xezard.XGlow:XGlow:1.1.0")
     compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
     // paperDevBundle("1.18.2-R0.1-SNAPSHOT")
     compileOnly("de.hexaoxi:carbonchat-api:2.1.0-SNAPSHOT") {
@@ -102,6 +103,7 @@ tasks {
         relocateDependency("io.leangen.geantyref")
         relocateDependency("com.zaxxer.hikari")
         relocateDependency("org.bstats")
+        relocateDependency("ru.xezard.glow")
 
     }
 
@@ -143,6 +145,6 @@ bukkit {
     apiVersion = "1.19"
     authors = listOf("gepron1x", "manya")
     website = "https://clans.decalium.ru"
-    softDepend = listOf("PlaceholderAPI", "CarbonChat", "WorldGuard", "Vault", "DecentHolograms")
+    softDepend = listOf("PlaceholderAPI", "CarbonChat", "WorldGuard", "Vault", "DecentHolograms", "ProtocolLib")
 }
 
