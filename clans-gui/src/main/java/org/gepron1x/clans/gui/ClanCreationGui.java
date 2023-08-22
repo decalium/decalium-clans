@@ -39,7 +39,7 @@ public final class ClanCreationGui implements GuiLike {
 		AnvilGui gui = new AnvilGui("Создание клана");
 		gui.setCost((short) 0);
 		GuiItem confirm = ItemBuilder.skullFromId("a92e31ffb59c90ab08fc9dc1fe26802035a3a47c42fee63423bcdb4262ecb9b6")
-				.name("<#92FF25>Создать клан за <price>")
+				.name("<#92FF25>Создать клан за <#FDA624><price>◎")
 				.with("price", clans.prices().clanCreation()).cancelEvent().guiItem(e -> {
 					Player player = (Player) e.getWhoClicked();
 					DraftClan clan = clans.draftClanBuilder().tag(gui.getRenameText())

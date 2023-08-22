@@ -47,7 +47,7 @@ public final class RegionsGui implements GuiLike {
 		pane.setOnClick(e -> e.setCancelled(true));
 		pane.addItem(ItemBuilder.create(Material.LODESTONE).name("<#92FF25>⛨ Купить блок региона")
 				.description("Защитите постройки и базы вашего клана от нападений!").space()
-				.interaction(Colors.POSITIVE, "Нажмите, чтобы приобрести за <price>!").with("price", clans.prices().region())
+				.interaction(Colors.POSITIVE, "Нажмите, чтобы приобрести за <#FDA624><price>◎").with("price", clans.prices().region())
 				.consumer(e -> {
 					if (!player.has(clans.prices().region())) {
 						new ErrorItem(e, Component.text("Недостаточно средств!", Colors.NEGATIVE)).show();
