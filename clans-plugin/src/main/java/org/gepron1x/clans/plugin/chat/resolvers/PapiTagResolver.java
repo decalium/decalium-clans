@@ -46,7 +46,7 @@ public final class PapiTagResolver implements TagResolver {
 
 	@Override
 	public @Nullable Tag resolve(@NotNull String name, @NotNull ArgumentQueue arguments, @NotNull Context ctx) throws ParsingException {
-		String str = arguments.popOr("Define the placeholder you wanna to use.").value();
+		String str = arguments.popOr("Define the placeholder you wanna use.").value();
 		String percents = "%" + str + "%";
 		String result = PlaceholderAPI.setPlaceholders(this.player, percents);
 		if (result.equals(percents)) return null;
