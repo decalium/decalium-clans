@@ -2,13 +2,13 @@ package org.gepron1x.clans.plugin.war.announce;
 
 import com.google.common.base.MoreObjects;
 import net.kyori.adventure.audience.Audience;
-import org.gepron1x.clans.api.chat.GroupAudience;
+import net.kyori.adventure.audience.ForwardingAudience;
 import org.gepron1x.clans.api.war.War;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public final class WarAudience implements GroupAudience {
+public final class WarAudience implements ForwardingAudience {
 	private final War war;
 
 	public WarAudience(War war) {
