@@ -90,6 +90,6 @@ public final class ClanMemberListGui implements GuiLike {
 		}).asGui();
 		gui.setTitle(ComponentHolder.of(DecaliumClansGui.message("Участники клана <display_name>").with(ClanTagResolver.clan(clan)).asComponent()));
 		gui.update();
-		return new GoBackGui(gui, Slot.fromXY(6, 5), parent).asGui();
+		return new GoBackGui(gui, Slot.fromXY(6, 5), parent).cancelByDefault().asGui();
 	}
 }
