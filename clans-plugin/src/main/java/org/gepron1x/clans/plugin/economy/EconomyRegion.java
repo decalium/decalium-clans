@@ -6,10 +6,13 @@ import org.gepron1x.clans.api.exception.NotEnoughMoneyException;
 import org.gepron1x.clans.api.reference.ClanReference;
 import org.gepron1x.clans.api.region.ClanRegion;
 import org.gepron1x.clans.api.region.Shield;
+import org.gepron1x.clans.api.region.effect.ActiveEffect;
+import org.gepron1x.clans.api.region.effect.RegionEffect;
 import org.gepron1x.clans.plugin.config.settings.PricesConfig;
 
 import java.time.Duration;
 import java.util.Objects;
+import java.util.Optional;
 
 public final class EconomyRegion implements ClanRegion {
 
@@ -50,6 +53,16 @@ public final class EconomyRegion implements ClanRegion {
 			throw new NotEnoughMoneyException(prices.notEnoughMoney().with("price", prices.shield()), prices.shield(), player.balance());
 		}
 		return region.addShield(duration);
+	}
+
+	@Override
+	public ActiveEffect applyEffect(RegionEffect effect, Duration duration) {
+		return this.region.applyEffect(effect, duration);
+	}
+
+	@Override
+	public Optional<ActiveEffect> activeEffect() {
+		return this.region.activeEffect();
 	}
 
 	@Override

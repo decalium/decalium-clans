@@ -8,6 +8,8 @@ import org.bukkit.Location;
 import org.gepron1x.clans.api.reference.ClanReference;
 import org.gepron1x.clans.api.region.ClanRegion;
 import org.gepron1x.clans.api.region.Shield;
+import org.gepron1x.clans.api.region.effect.ActiveEffect;
+import org.gepron1x.clans.api.region.effect.RegionEffect;
 import org.gepron1x.clans.plugin.config.Configs;
 import org.gepron1x.clans.plugin.wg.ProtectedRegionOf;
 import org.gepron1x.clans.plugin.wg.WgExtension;
@@ -57,6 +59,16 @@ public final class WgClanRegion implements ClanRegion {
 			configs.config().shields().shieldFlags().apply(region);
 		});
 		return region.addShield(duration);
+	}
+
+	@Override
+	public ActiveEffect applyEffect(RegionEffect effect, Duration duration) {
+		return region.applyEffect(effect, duration);
+	}
+
+	@Override
+	public Optional<ActiveEffect> activeEffect() {
+		return region.activeEffect();
 	}
 
 	@Override

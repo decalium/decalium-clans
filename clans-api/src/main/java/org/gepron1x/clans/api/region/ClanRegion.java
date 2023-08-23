@@ -20,8 +20,11 @@ package org.gepron1x.clans.api.region;
 
 import org.bukkit.Location;
 import org.gepron1x.clans.api.reference.ClanReference;
+import org.gepron1x.clans.api.region.effect.ActiveEffect;
+import org.gepron1x.clans.api.region.effect.RegionEffect;
 
 import java.time.Duration;
+import java.util.Optional;
 
 public interface ClanRegion {
 
@@ -35,6 +38,10 @@ public interface ClanRegion {
 
 
 	Shield addShield(Duration duration);
+
+	ActiveEffect applyEffect(RegionEffect effect, Duration duration);
+
+	Optional<ActiveEffect> activeEffect();
 
 	void removeShield();
 }

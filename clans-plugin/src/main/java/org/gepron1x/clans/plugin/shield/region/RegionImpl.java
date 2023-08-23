@@ -5,11 +5,16 @@ import org.bukkit.Location;
 import org.gepron1x.clans.api.reference.ClanReference;
 import org.gepron1x.clans.api.region.ClanRegion;
 import org.gepron1x.clans.api.region.Shield;
+import org.gepron1x.clans.api.region.effect.ActiveEffect;
+import org.gepron1x.clans.api.region.effect.RegionEffect;
 import org.gepron1x.clans.plugin.shield.ShieldImpl;
+import org.gepron1x.clans.plugin.shield.region.effect.ActiveEffectImpl;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
+import java.util.Optional;
 
 public final class RegionImpl implements ClanRegion {
 
@@ -17,13 +22,20 @@ public final class RegionImpl implements ClanRegion {
 	private final ClanReference clan;
 	private final Location location;
 	private Shield shield;
+	@Nullable
+	private ActiveEffect effect;
 
-	public RegionImpl(int id, ClanReference clan, Location location, Shield shield) {
+	public RegionImpl(int id, ClanReference clan, Location location, Shield shield, @Nullable ActiveEffect effect) {
 
 		this.id = id;
 		this.clan = clan;
 		this.location = location;
 		this.shield = shield;
+		this.effect = effect;
+	}
+
+	public RegionImpl(int id, ClanReference clan, Location location, Shield shield) {
+		this(id, clan, location, shield, null);
 	}
 
 	@Override
@@ -53,6 +65,16 @@ public final class RegionImpl implements ClanRegion {
 		Instant end = now.plus(duration);
 		this.shield = new ShieldImpl(now, end);
 		return this.shield;
+	}
+
+	@Override
+	public ActiveEffect applyEffect(RegionEffect effect, Duration duration) {
+		return this.effect = new ActiveEffectImpl(effect, Instant.now().plus(duration));
+	}
+
+	@Override
+	public Optional<ActiveEffect> activeEffect() {
+		return Optional.ofNullable(this.effect);
 	}
 
 	@Override

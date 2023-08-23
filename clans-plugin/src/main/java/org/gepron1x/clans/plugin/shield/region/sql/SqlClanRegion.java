@@ -22,10 +22,13 @@ import org.bukkit.Location;
 import org.gepron1x.clans.api.reference.ClanReference;
 import org.gepron1x.clans.api.region.ClanRegion;
 import org.gepron1x.clans.api.region.Shield;
+import org.gepron1x.clans.api.region.effect.ActiveEffect;
+import org.gepron1x.clans.api.region.effect.RegionEffect;
 import org.gepron1x.clans.plugin.storage.implementation.sql.SqlQueue;
 
 import java.time.Duration;
 import java.util.Objects;
+import java.util.Optional;
 
 public final class SqlClanRegion implements ClanRegion {
 
@@ -72,6 +75,18 @@ public final class SqlClanRegion implements ClanRegion {
 					.bind(2, shield.end()).execute();
 		});
 		return shield;
+	}
+
+	@Override
+	public ActiveEffect applyEffect(RegionEffect effect, Duration duration) {
+		var activeEffect = region.applyEffect(effect, duration);
+		// TODO
+		return activeEffect;
+	}
+
+	@Override
+	public Optional<ActiveEffect> activeEffect() {
+		return region.activeEffect();
 	}
 
 	@Override
