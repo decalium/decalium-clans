@@ -127,13 +127,19 @@ public final class ClanChatChannel implements ChatChannel {
 				.with(new PapiTagResolver(this.server.getPlayer(sender.uuid())))
 				.with(ClanTagResolver.prefixed(clan))
 				.with("role", member.role())
-				.with("member", sender.displayName())
-				.with("message", originalMessage)
+				.with("member", renderName(sender))
+				.with("message", message)
 				.asComponent();
 	}
 
 	@Override
 	public @NotNull Key key() {
 		return KEY;
+	}
+
+
+	private Component renderName(CarbonPlayer player) {
+		Component displayName = player.displayName();
+		return displayName == null ? Component.text(player.username()) : displayName;
 	}
 }
