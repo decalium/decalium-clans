@@ -20,10 +20,13 @@ package org.gepron1x.clans.gui;
 
 import com.jeff_media.customblockdata.CustomBlockData;
 import me.gepronix.decaliumcustomitems.DecaliumCustomItems;
+import me.gepronix.decaliumcustomitems.RegistryReloadEvent;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.DecaliumClansApi;
 import org.gepron1x.clans.api.exception.DescribingException;
@@ -38,15 +41,10 @@ import org.gepron1x.clans.plugin.util.services.PluginServices;
 
 import java.time.Duration;
 
-public final class DecaliumClansGui extends JavaPlugin {
+public final class DecaliumClansGui extends JavaPlugin implements Listener {
 
 	public static final MiniMessage MINI_MESSAGE = MiniMessage.builder()
-			.postProcessor(c -> {
-				var result = c;
-				if (!result.hasDecoration(TextDecoration.ITALIC))
-					result = result.decoration(TextDecoration.ITALIC, false);
-				return result;
-			})
+			.postProcessor(c -> c.compact().decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE))
 			.editTags(builder -> {
 				builder.resolver(new DecaliumColorResolver());
 			}).build();
@@ -58,12 +56,14 @@ public final class DecaliumClansGui extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		DecaliumCustomItems.get().getItemRegistry().removeItem(ClanRegionItem.HOME_ITEM);
-		HandlerList.unregisterAll(this);
+		HandlerList.unregisterAll((JavaPlugin) this);
 	}
 
 	@Override
 	public void onEnable() {
+		getServer().getPluginManager().registerEvents(this, this);
 		CustomBlockData.registerListener(this);
+
 
 		DecaliumClansApi api = new PluginServices(this).get(DecaliumClansApi.class).orElseThrow();
 		DecaliumClansPlugin clansPlugin = JavaPlugin.getPlugin(DecaliumClansPlugin.class);
@@ -105,5 +105,12 @@ public final class DecaliumClansGui extends JavaPlugin {
 			}
 		}));
 
+	}
+
+	@EventHandler
+	public void on(RegistryReloadEvent event) {
+		DecaliumClansApi api = new PluginServices(this).get(DecaliumClansApi.class).orElseThrow();
+		DecaliumClansPlugin clansPlugin = JavaPlugin.getPlugin(DecaliumClansPlugin.class);
+		event.registry().registerItem(new ClanRegionItem(this, api, clansPlugin.messages()).build());
 	}
 }

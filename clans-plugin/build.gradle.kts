@@ -1,3 +1,5 @@
+import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
+
 plugins {
     java
     `java-library`
@@ -145,6 +147,8 @@ bukkit {
     apiVersion = "1.19"
     authors = listOf("gepron1x", "manya")
     website = "https://clans.decalium.ru"
-    softDepend = listOf("PlaceholderAPI", "CarbonChat", "WorldGuard", "Vault", "DecentHolograms", "ProtocolLib")
+    softDepend = listOf("PlaceholderAPI", "CarbonChat", "WorldGuard", "Vault", "DecentHolograms", "ProtocolLib", "Hyperverse")
+    load = BukkitPluginDescription.PluginLoadOrder.POSTWORLD
+
 }
 

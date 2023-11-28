@@ -23,7 +23,7 @@ dependencies {
     compileOnly("com.github.MilkBowl:VaultAPI:1.7") {
         exclude("org.bukkit", "bukkit")
     }
-    compileOnly("me.gepron1x:DecaliumCustomItems:1.1.1")
+    compileOnly("me.gepron1x:DecaliumCustomItems:1.1.2")
     implementation("com.github.stefvanschie.inventoryframework:IF:0.10.10")
 }
 

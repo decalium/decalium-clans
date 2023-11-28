@@ -1,4 +1,4 @@
-package org.gepron1x.clans.gui;
+package org.gepron1x.clans.gui.region;
 
 import com.github.stefvanschie.inventoryframework.adventuresupport.ComponentHolder;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
@@ -8,6 +8,7 @@ import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import me.gepronix.decaliumcustomitems.DecaliumCustomItems;
 import me.gepronix.decaliumcustomitems.item.StackOfItems;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -20,6 +21,7 @@ import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.exception.NotEnoughMoneyException;
 import org.gepron1x.clans.api.region.ClanRegion;
 import org.gepron1x.clans.api.user.ClanUser;
+import org.gepron1x.clans.gui.*;
 import org.gepron1x.clans.gui.builder.InteractionLoreApplicable;
 import org.gepron1x.clans.gui.builder.ItemBuilder;
 import org.gepron1x.clans.gui.builder.LoreApplicable;
@@ -68,7 +70,7 @@ public class RegionGui implements GuiLike {
 					block.getWorld().dropItem(block.getLocation(), new StackOfItems(i).get());
 				});
 			}, () -> {
-				e.getWhoClicked().openInventory(e.getInventory());
+				Guis.getGui(e.getInventory()).show(e.getWhoClicked());
 			}).asGui().show(e.getWhoClicked());
 		}), 0, 0);
 
@@ -86,7 +88,7 @@ public class RegionGui implements GuiLike {
 		ItemBuilder shield = ItemBuilder.create(Material.ITEM_FRAME)
 				.edit(this::editShieldMeta).edit(meta -> meta.addItemFlags(ItemFlag.HIDE_ENCHANTS));
 		GuiItem item = shield.guiItem();
-		item.setAction(e -> {
+		item.setAction(ConfirmAction.price(clans.prices().shield(), e -> {
 			if (region.shield().expired()) {
 				try {
 					region.addShield(clans.levels().forLevel(user.clan().orElseThrow()).shieldDuration());
@@ -96,7 +98,7 @@ public class RegionGui implements GuiLike {
 					new ErrorItem(e, ex).show();
 				}
 			}
-		});
+		}));
 		if (region.shield().active()) startRefresh(item.getItem(), gui);
 		return item;
 	}
@@ -111,7 +113,7 @@ public class RegionGui implements GuiLike {
 		} else {
 			meta.removeEnchant(Enchantment.PROTECTION_ENVIRONMENTAL);
 			new InteractionLoreApplicable(LoreApplicable.text("Нажмите, чтобы приобрести щит за <price>!"), Colors.POSITIVE)
-					.apply(meta);
+					.apply(meta, Formatter.number("price", clans.prices().shield()));
 		}
 	}
 

@@ -82,9 +82,10 @@ public final class UpgradeGui implements GuiLike {
 					.with("regions", perLevel.regions())
 					.with("homes", perLevel.homes());
 			if (clanLevel + 1 == level) {
+				double price = clans.prices().clanUpgrade(clanLevel + 1);
 				builder.space().interaction(Colors.POSITIVE, "Нажмите, чтобы прокачать клан за <#FDA624><price>◎")
 						.with("price", clans.prices().clanUpgrade(clanLevel + 1));
-				builder.consumer(e -> {
+				builder.consumer(ConfirmAction.price(price, e -> {
 					viewer.clan().orElseThrow().edit(ClanEdition::upgrade)
 							.thenAccept(clan -> {
 								pane.clear();
@@ -92,7 +93,7 @@ public final class UpgradeGui implements GuiLike {
 								gui.update();
 							})
 							.exceptionally(ExceptionHandler.catchException(DescribingException.class, ex -> handleDescribingException(ex, e)));
-				});
+				}));
 			}
 			pane.addItem(builder.guiItem(), i, 0);
 		}

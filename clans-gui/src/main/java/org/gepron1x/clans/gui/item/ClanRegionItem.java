@@ -40,7 +40,7 @@ import org.gepron1x.clans.api.region.ClanRegion;
 import org.gepron1x.clans.api.region.RegionOverlapsException;
 import org.gepron1x.clans.api.user.ClanUser;
 import org.gepron1x.clans.gui.DecaliumClansGui;
-import org.gepron1x.clans.gui.RegionGui;
+import org.gepron1x.clans.gui.region.RegionGui;
 import org.gepron1x.clans.plugin.DecaliumClansPlugin;
 import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
 

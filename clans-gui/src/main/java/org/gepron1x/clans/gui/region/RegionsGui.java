@@ -1,4 +1,4 @@
-package org.gepron1x.clans.gui;
+package org.gepron1x.clans.gui.region;
 
 import com.github.stefvanschie.inventoryframework.adventuresupport.ComponentHolder;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
@@ -15,6 +15,7 @@ import org.gepron1x.clans.api.DecaliumClansApi;
 import org.gepron1x.clans.api.region.ClanRegion;
 import org.gepron1x.clans.api.region.ClanRegions;
 import org.gepron1x.clans.api.user.ClanUser;
+import org.gepron1x.clans.gui.*;
 import org.gepron1x.clans.gui.builder.ItemBuilder;
 import org.gepron1x.clans.gui.item.ClanRegionItem;
 import org.gepron1x.clans.plugin.DecaliumClansPlugin;
@@ -48,7 +49,7 @@ public final class RegionsGui implements GuiLike {
 		pane.addItem(ItemBuilder.create(Material.LODESTONE).name("<#92FF25>⛨ Купить блок региона")
 				.description("Защитите постройки и базы вашего клана от нападений!").space()
 				.interaction(Colors.POSITIVE, "Нажмите, чтобы приобрести за <#FDA624><price>◎").with("price", clans.prices().region())
-				.consumer(e -> {
+				.consumer(ConfirmAction.price(clans.prices().region(), e -> {
 					if (!player.has(clans.prices().region())) {
 						new ErrorItem(e, Component.text("Недостаточно средств!", Colors.NEGATIVE)).show();
 						return;
@@ -57,7 +58,7 @@ public final class RegionsGui implements GuiLike {
 					DecaliumCustomItems.get().getItemRegistry().of(ClanRegionItem.HOME_ITEM).ifPresent(i -> {
 						e.getWhoClicked().getInventory().addItem(new StackOfItems(i).get());
 					});
-				}).guiItem(), 0, 0
+				})).guiItem(), 0, 0
 		);
 		pane.addItem(ItemBuilder.create(Material.CAMPFIRE).name("<#42C4FB>Список регионов")
 				.description("Просмотри список клановых регионов")

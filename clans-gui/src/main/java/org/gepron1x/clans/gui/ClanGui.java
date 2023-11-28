@@ -42,6 +42,7 @@ import org.gepron1x.clans.api.user.ClanUser;
 import org.gepron1x.clans.api.util.player.UuidPlayerReference;
 import org.gepron1x.clans.gui.builder.ItemBuilder;
 import org.gepron1x.clans.gui.customisation.CustomisationGui;
+import org.gepron1x.clans.gui.region.RegionsGui;
 import org.gepron1x.clans.plugin.economy.VaultPlayerImpl;
 import org.gepron1x.clans.plugin.util.services.PluginServices;
 
