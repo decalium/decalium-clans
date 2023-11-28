@@ -8,6 +8,8 @@ import com.sk89q.worldguard.protection.regions.RegionContainer;
 import eu.decentsoftware.holograms.api.DHAPI;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.gepron1x.clans.api.clan.Clan;
+import org.gepron1x.clans.api.reference.ClanReference;
 import org.gepron1x.clans.api.region.ClanRegion;
 import org.gepron1x.clans.api.region.ClanRegions;
 import org.gepron1x.clans.api.region.GlobalRegions;
@@ -17,11 +19,13 @@ import org.gepron1x.clans.plugin.shield.region.RegionBlock;
 import org.gepron1x.clans.plugin.wg.ProtectedRegionOf;
 import org.gepron1x.clans.plugin.wg.WgExtension;
 import org.gepron1x.clans.plugin.wg.WgRegionSet;
+import space.arim.omnibus.util.concurrent.CentralisedFuture;
 
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
@@ -73,7 +77,9 @@ public final class WgClanRegions implements ClanRegions {
 		if (checkIntersecting(dummy, location)) throw new RegionOverlapsException();
 
 		ClanRegion r = regions.create(location);
+
 		ProtectedRegion region = new RegionCreation(configs, r).create();
+		r.clan().cached().ifPresent(clan -> clan.memberMap().keySet().forEach(region.getMembers()::addPlayer));
 		RegionManager manager = requireNonNull(container.get(BukkitAdapter.adapt(location.getWorld())));
 		manager.addRegion(region);
 		r.clan().ifPresent(clan -> {
@@ -96,21 +102,31 @@ public final class WgClanRegions implements ClanRegions {
 	}
 
 	public void updateRegions() {
+		Map<ClanReference, CentralisedFuture<Optional<Clan>>> cache = new ConcurrentHashMap<>();
 		for (ClanRegion region : regions.regions()) {
+
 			var regionOf = new ProtectedRegionOf(container, region);
-			regionOf.region().ifPresentOrElse(r -> {
-			}, () -> {
-				regionOf.regionManager().ifPresent(manager -> manager.addRegion(new RegionCreation(configs, region).create()));
+			ProtectedRegion pr = regionOf.region().orElseGet(() -> {
+				ProtectedRegion protectedRegion = new RegionCreation(configs, region).create();
+				regionOf.regionManager().ifPresent(manager -> manager.addRegion(protectedRegion));
 				RegionBlock.set(region.location().getBlock(), region.id());
+				return protectedRegion;
 			});
+			cache.computeIfAbsent(region.clan(), ClanReference::clan).thenAccept(o -> o.ifPresent(
+					clan -> {
+						pr.getMembers().clear();
+						clan.memberMap().keySet().forEach(pr.getMembers()::addPlayer);
+					}
+			));
 		}
 	}
 
 	private boolean checkIntersecting(ProtectedRegion region, Location location) {
-		Iterator<ClanRegion> iterator = global.listRegions().stream().flatMap(regions -> regions.regions().stream())
+		return container.get(BukkitAdapter.adapt(location.getWorld())).getApplicableRegions(region).size() != 0;
+		/* Iterator<ClanRegion> iterator = global.listRegions().stream().flatMap(regions -> regions.regions().stream())
 				.filter(region1 -> Objects.equals(region1.location().getWorld(), location.getWorld())).iterator();
 		return region.getIntersectingRegions(new WgRegionSet(container, () -> iterator).protectedRegions()).stream()
-				.anyMatch(overlapping -> overlapping.getFlag(WgExtension.REGION_ID) != null);
+				.findFirst().isPresent(); */
 	}
 
 	@Override

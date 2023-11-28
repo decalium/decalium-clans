@@ -3,6 +3,7 @@ package org.gepron1x.clans.plugin.shield.region.sql;
 import org.bukkit.block.Block;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.reference.TagClanReference;
+import org.gepron1x.clans.api.region.ClanRegion;
 import org.gepron1x.clans.api.region.ClanRegions;
 import org.gepron1x.clans.api.region.GlobalRegions;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
@@ -16,16 +17,21 @@ public final class SqlGlobalRegions implements GlobalRegions {
 
 	static final String REGION_ID = "decaliumclans_region_id";
 
-
+	private final Map<Integer, ClanRegion> globalRegionMap;
 	private final Map<Integer, ClanRegions> regions;
+
 	private final SqlQueue queue;
 
 	private final AtomicInteger idCounter;
 	private final CachingClanRepository repository;
 
 
-	public SqlGlobalRegions(Map<Integer, ClanRegions> regions, SqlQueue queue, AtomicInteger idCounter, CachingClanRepository repository) {
-
+	public SqlGlobalRegions(Map<Integer, ClanRegion> globalRegionMap,
+							Map<Integer, ClanRegions> regions,
+							SqlQueue queue,
+							AtomicInteger idCounter,
+							CachingClanRepository repository) {
+		this.globalRegionMap = globalRegionMap;
 		this.regions = regions;
 		this.queue = queue;
 		this.idCounter = idCounter;
@@ -41,8 +47,13 @@ public final class SqlGlobalRegions implements GlobalRegions {
 	public ClanRegions clanRegions(Clan clan) {
 		return regions.computeIfAbsent(clan.id(), id -> {
 			return new SqlClanRegions(
-					new ClanRegionsImpl(new HashMap<>(), new TagClanReference(repository, clan.tag()), idCounter), id, queue);
+					new ClanRegionsImpl(this.globalRegionMap, new HashMap<>(), new TagClanReference(repository, clan.tag()), idCounter), id, queue);
 		});
+	}
+
+	@Override
+	public Optional<ClanRegion> region(int id) {
+		return Optional.ofNullable(globalRegionMap.get(id));
 	}
 
 	@Override

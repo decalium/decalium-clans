@@ -80,7 +80,12 @@ public final class SqlClanRegion implements ClanRegion {
 	@Override
 	public ActiveEffect applyEffect(RegionEffect effect, Duration duration) {
 		var activeEffect = region.applyEffect(effect, duration);
-		// TODO
+		queue.add(handle -> {
+			handle.createUpdate("INSERT INTO region_effects (`region_id`, `end`, `type`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `end`=VALUES(`end`), `type`=VALUES(`type`)")
+					.bind(0, region.id())
+					.bind(1, activeEffect.end())
+					.bind(2, effect.name()).execute();
+		});
 		return activeEffect;
 	}
 

@@ -74,7 +74,12 @@ public final class RegionImpl implements ClanRegion {
 
 	@Override
 	public Optional<ActiveEffect> activeEffect() {
-		return Optional.ofNullable(this.effect);
+		if(this.effect == null) return Optional.empty();
+		if(!this.effect.active()) {
+			this.effect = null;
+			return Optional.empty();
+		}
+		return Optional.of(effect);
 	}
 
 	@Override

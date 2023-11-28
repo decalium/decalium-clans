@@ -12,6 +12,7 @@ public interface GlobalRegions {
 
 	ClanRegions clanRegions(Clan clan);
 
+	Optional<ClanRegion> region(int id);
 	void remove(int id);
 
 	Optional<Integer> regionId(Block block);

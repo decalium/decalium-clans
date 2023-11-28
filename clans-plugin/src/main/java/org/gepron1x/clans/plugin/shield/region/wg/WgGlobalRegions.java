@@ -3,6 +3,7 @@ package org.gepron1x.clans.plugin.shield.region.wg;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.bukkit.block.Block;
 import org.gepron1x.clans.api.clan.Clan;
+import org.gepron1x.clans.api.region.ClanRegion;
 import org.gepron1x.clans.api.region.ClanRegions;
 import org.gepron1x.clans.api.region.GlobalRegions;
 import org.gepron1x.clans.plugin.config.Configs;
@@ -42,6 +43,11 @@ public final class WgGlobalRegions implements GlobalRegions {
 	@Override
 	public ClanRegions clanRegions(Clan clan) {
 		return new WgClanRegions(regions.clanRegions(clan), regions, container, configs);
+	}
+
+	@Override
+	public Optional<ClanRegion> region(int id) {
+		return this.regions.region(id).map(region -> new WgClanRegion(region, container, configs));
 	}
 
 	@Override

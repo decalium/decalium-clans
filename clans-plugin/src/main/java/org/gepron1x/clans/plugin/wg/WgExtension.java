@@ -58,6 +58,7 @@ public final class WgExtension {
 		List.of(CLAN, HOME_NAME, SHIELD_ACTIVE, REGION_ID).forEach(WorldGuard.getInstance().getFlagRegistry()::register);
 	}
 
+
 	public static String regionName(ClanRegion region) {
 		return regionName(region.id());
 	}

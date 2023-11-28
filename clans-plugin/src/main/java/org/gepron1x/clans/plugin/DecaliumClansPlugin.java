@@ -37,8 +37,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.DecaliumClansApi;
 import org.gepron1x.clans.api.RoleRegistry;
-import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.member.ClanRole;
+import org.gepron1x.clans.api.region.effect.RegionEffect;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.repository.ClanRepository;
 import org.gepron1x.clans.api.statistic.StatisticType;
@@ -73,10 +73,13 @@ import org.gepron1x.clans.plugin.storage.RegionStorage;
 import org.gepron1x.clans.plugin.storage.implementation.sql.*;
 import org.gepron1x.clans.plugin.users.DefaultUsers;
 import org.gepron1x.clans.plugin.util.AsciiArt;
+import org.gepron1x.clans.plugin.util.MapOf;
+import org.gepron1x.clans.plugin.util.MapRegistry;
 import org.gepron1x.clans.plugin.util.action.ActionParser;
 import org.gepron1x.clans.plugin.util.hologram.Line;
 import org.gepron1x.clans.plugin.util.services.PluginServices;
 import org.gepron1x.clans.plugin.util.services.Services;
+import org.gepron1x.clans.plugin.wg.RegionEffectSessionHandler;
 import org.gepron1x.clans.plugin.wg.ShieldRefreshTask;
 import org.gepron1x.clans.plugin.wg.WgExtension;
 import org.jdbi.v3.core.Jdbi;
@@ -119,6 +122,8 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 	public void onEnable() {
 		enable();
 		new AsciiArt(getSLF4JLogger()).print();
+		WorldGuard.getInstance().getPlatform().getSessionManager().registerHandler(
+				new RegionEffectSessionHandler.Factory(this.api), null);
 		getSLF4JLogger().info("Plugin successfully loaded!");
 	}
 
@@ -160,6 +165,8 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 				.addSerialiser(new TimeFormatSerializer())
 				.addSerialiser(new Line.Serializer())
 				.addSerialiser(new MessageSerializer(new ActionParser(miniMessage)))
+				.addSerialiser(new PotionEffectTypeSerializer())
+				.addSerialiser(new RegionEffectSerializer())
 				.setCreateSingleElementCollections(true)
 				.build();
 		this.messagesConfiguration = Configuration.create(this, "messages.yml", MessagesConfig.class, options);
@@ -207,7 +214,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 				clanCache
 		);
 
-		regionStorage = new SqlRegionStorage(jdbi, cachingClanRepository, new SqlQueue());
+		regionStorage = new SqlRegionStorage(jdbi, cachingClanRepository, new SqlQueue(), new MapRegistry<>(new MapOf<>(RegionEffect::name, config.regionEffects()).create()));
 		WgGlobalRegions regions = new WgGlobalRegions(regionStorage.loadRegions(), WorldGuard.getInstance().getPlatform().getRegionContainer(), configs);
 		regions.update();
 		CachingClanRepository clanRepository = new WgExtension(cachingClanRepository, configs, regions, new AsyncRegionStorage(futuresFactory, regionStorage)).make();
@@ -268,13 +275,10 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 							enable();
 							List<UUID> uuids = getServer().getOnlinePlayers().stream().map(Player::getUniqueId).toList();
 							futuresFactory.runAsync(() -> uuids.forEach(this.userCaching::cacheUser)).thenAccept(ignored -> {
-								ctx.getSender().sendMessage("[DecaliumClans] Successfully reloaded.");
+								ctx.getSender().sendPlainMessage("[DecaliumClans] Successfully reloaded.");
 							});
 						})
 		);
-		commandManager.command(commandManager.commandBuilder("clan").literal("region").permission("clans.region").handler(new ClanExecutionHandler(ctx -> {
-			Clan clan = ctx.get(ClanExecutionHandler.CLAN);
-		}, users, messages, logger)));
 		var help = new MinecraftHelp<>("/clan help", AudienceProvider.nativeAudience(), this.commandManager);
 		help.setHelpColors(messages.help().colors());
 		help.messageProvider(messages.help().messages().messageProvider());

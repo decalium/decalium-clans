@@ -1,16 +1,18 @@
 package org.gepron1x.clans.api.region.effect;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import java.time.Duration;
 
 public interface RegionEffect {
 
 	String name();
 
-	Component displayName();
+	ItemStack icon();
 
 
-	void onEnter(Player player);
+	void onEnter(Player player, Duration duration);
 
 	void onLeave(Player player);
 

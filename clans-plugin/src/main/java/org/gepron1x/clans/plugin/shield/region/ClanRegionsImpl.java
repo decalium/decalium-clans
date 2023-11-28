@@ -12,11 +12,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public final class ClanRegionsImpl implements ClanRegions {
 
+	private final Map<Integer, ClanRegion> globalRegionMap;
 	private final Map<Integer, ClanRegion> regions;
 	private final ClanReference clan;
 	private final AtomicInteger idCounter;
 
-	public ClanRegionsImpl(Map<Integer, ClanRegion> regions, ClanReference clan, AtomicInteger idCounter) {
+	public ClanRegionsImpl(Map<Integer, ClanRegion> globalRegionMap, Map<Integer, ClanRegion> regions, ClanReference clan, AtomicInteger idCounter) {
+		this.globalRegionMap = globalRegionMap;
 
 		this.regions = regions;
 		this.clan = clan;
@@ -46,6 +48,7 @@ public final class ClanRegionsImpl implements ClanRegions {
 	@Override
 	public ClanRegion create(Location location) {
 		RegionImpl region = new RegionImpl(idCounter.incrementAndGet(), clan, location.clone(), Shield.NONE);
+		globalRegionMap.put(region.id(), region);
 		regions.put(region.id(), region);
 		return region;
 	}

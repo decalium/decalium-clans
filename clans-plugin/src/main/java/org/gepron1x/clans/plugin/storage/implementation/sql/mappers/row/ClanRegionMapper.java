@@ -23,14 +23,17 @@ import org.bukkit.World;
 import org.gepron1x.clans.api.reference.ClanReference;
 import org.gepron1x.clans.api.region.ClanRegion;
 import org.gepron1x.clans.api.region.Shield;
+import org.gepron1x.clans.api.region.effect.RegionEffect;
 import org.gepron1x.clans.plugin.shield.ShieldImpl;
 import org.gepron1x.clans.plugin.shield.region.RegionImpl;
+import org.gepron1x.clans.plugin.shield.region.effect.ActiveEffectImpl;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.Instant;
 
 public final class ClanRegionMapper implements RowMapper<ClanRegion> {
 
@@ -49,7 +52,13 @@ public final class ClanRegionMapper implements RowMapper<ClanRegion> {
 		ClanReference reference = ctx.findColumnMapperFor(ClanReference.class).orElseThrow().map(rs, "clan_tag", ctx);
 		Timestamp start = rs.getTimestamp("start");
 		Timestamp end = rs.getTimestamp("end");
+		RegionEffect effectType = ctx.findColumnMapperFor(RegionEffect.class).orElseThrow().map(rs, "effect_type", ctx);
+		ActiveEffectImpl effect = effectType == null ? null : new ActiveEffectImpl(
+				effectType,
+				ctx.findColumnMapperFor(Instant.class).orElseThrow().map(rs, "effect_end", ctx)
+		);
 		Shield shield = start == null ? Shield.NONE : new ShieldImpl(start.toInstant(), end.toInstant());
-		return new RegionImpl(rs.getInt("id"), reference, location, shield);
+
+		return new RegionImpl(rs.getInt("id"), reference, location, shield, effect);
 	}
 }
