@@ -21,8 +21,7 @@ package org.gepron1x.clans.plugin.command;
 import cloud.commandframework.Command;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.StringArgument;
-import cloud.commandframework.bukkit.arguments.selector.SinglePlayerSelector;
-import cloud.commandframework.bukkit.parsers.selector.SinglePlayerSelectorArgument;
+import cloud.commandframework.bukkit.parsers.PlayerArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.meta.CommandMeta;
 import cloud.commandframework.permission.Permission;
@@ -77,7 +76,7 @@ public class InviteCommand extends AbstractClanCommand {
 
 		manager.command(builder.literal("invite").meta(CommandMeta.DESCRIPTION, descriptions.invite())
 				.permission(Permission.of("clans.invite"))
-				.argument(SinglePlayerSelectorArgument.of("receiver"))
+				.argument(PlayerArgument.of("receiver"))
 				.handler(
 						clanExecutionHandler(
 								new PermissiveClanExecutionHandler(this::invite, ClanPermission.INVITE, this.messages)
@@ -87,14 +86,14 @@ public class InviteCommand extends AbstractClanCommand {
 
 		manager.command(builder.literal("accept").meta(CommandMeta.DESCRIPTION, descriptions.accept())
 				.permission(Permission.of("clans.invite.accept"))
-				.argument(StringArgument.<CommandSender>newBuilder("sender_name")
+				.argument(StringArgument.<CommandSender>builder("sender_name")
 						.withSuggestionsProvider(this::invitationCompletion))
 				.handler(this::acceptInvite)
 		);
 
 		manager.command(builder.literal("decline").meta(CommandMeta.DESCRIPTION, descriptions.decline())
 				.permission(Permission.of("clans.invite.decline"))
-				.argument(StringArgument.<CommandSender>newBuilder("sender_name").withSuggestionsProvider(this::invitationCompletion))
+				.argument(StringArgument.<CommandSender>builder("sender_name").withSuggestionsProvider(this::invitationCompletion))
 				.handler(this::declineInvite)
 		);
 
@@ -103,10 +102,7 @@ public class InviteCommand extends AbstractClanCommand {
 
 	private void invite(CommandContext<CommandSender> context) {
 		Player player = (Player) context.getSender();
-		Player receiver = context.<SinglePlayerSelector>get("receiver").getPlayer();
-		if (receiver == null) {
-			return;
-		}
+		Player receiver = context.get("receiver");
 
 		Clan clan = context.get(ClanExecutionHandler.CLAN);
 		Levels.PerLevel perLevel = clansConfig.levels().forLevel(clan.level());
