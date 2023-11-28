@@ -20,8 +20,6 @@ package org.gepron1x.clans.plugin.listener;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -36,7 +34,7 @@ import org.gepron1x.clans.plugin.util.DurationTicks;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.util.Map;
-import java.util.UUID;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public final class StatisticListener implements Listener {
@@ -57,23 +55,27 @@ public final class StatisticListener implements Listener {
 
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onDeath(PlayerDeathEvent event) {
-		Entity entity = event.getEntity();
-		if (entity.getType() != EntityType.PLAYER) return;
-		incrementStatistic(entity.getUniqueId(), StatisticType.DEATHS);
-		Player killer = event.getEntity().getKiller();
-		if (killer == null || killer.equals(entity)) return;
-		this.incrementStatistic(killer.getUniqueId(), StatisticType.KILLS);
-
+		Player entity = event.getEntity();
+		if(entity.equals(entity.getKiller())) return;
+		incrementKills(entity);
 	}
 
 
-	private void incrementStatistic(UUID uuid, final StatisticType type) {
-		repository.userClanIfCached(uuid).map(Clan::tag).ifPresent(tag -> {
-			Integer value = statisticsTable.get(tag, type);
-			if (value == null) value = 0;
-			value += 1;
-			statisticsTable.put(tag, type, value);
-		});
+	private void incrementStatistic(String tag, final StatisticType type) {
+		Integer value = statisticsTable.get(tag, type);
+		if (value == null) value = 0;
+		value += 1;
+		statisticsTable.put(tag, type, value);
+	}
+
+	private void incrementKills(Player player) { // tricky optionals
+		Optional<Clan> playerClan = repository.userClanIfCached(player);
+		Optional<Clan> killerClan = Optional.ofNullable(player.getKiller()).flatMap(repository::userClanIfCached);
+		if(playerClan.flatMap(clan -> killerClan.map(clan::equals)).orElse(false)) { // both are in the same clan
+			return;
+		}
+		playerClan.ifPresent(clan -> incrementStatistic(clan.tag(), StatisticType.DEATHS));
+		killerClan.ifPresent(clan -> incrementStatistic(clan.tag(), StatisticType.KILLS));
 	}
 
 
