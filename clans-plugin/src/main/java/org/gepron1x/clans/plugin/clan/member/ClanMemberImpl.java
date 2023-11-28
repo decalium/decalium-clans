@@ -49,7 +49,7 @@ public record ClanMemberImpl(UUID uuid,
 
 	@Override
 	public @NotNull ClanMember.Builder toBuilder() {
-		return builder().uuid(uuid).role(role);
+		return builder().uuid(uuid).role(role).joined(joined);
 	}
 
 	public static BuilderImpl builder() {
