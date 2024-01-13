@@ -10,7 +10,7 @@ public interface ActiveEffect {
 	Instant end();
 
 	default boolean active() {
-		return Instant.now().isAfter(end());
+		return Instant.now().isBefore(end());
 	}
 
 	default Duration left() {
