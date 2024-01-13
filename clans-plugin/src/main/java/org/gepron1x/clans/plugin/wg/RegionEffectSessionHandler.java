@@ -66,8 +66,8 @@ public final class RegionEffectSessionHandler extends Handler {
 	}
 
 	private Optional<ActiveEffect> region(LocalPlayer player, ProtectedRegion region) {
+		if(!region.isMember(player)) return Optional.empty();
 		return Optional.ofNullable(region.getFlag(WgExtension.REGION_ID)).flatMap(api.regions()::region)
-				.filter(clanRegion -> clanRegion.clan().cached().flatMap(clan -> clan.member(player.getUniqueId())).isPresent())
 				.flatMap(ClanRegion::activeEffect);
 	}
 }

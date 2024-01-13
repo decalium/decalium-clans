@@ -1,9 +1,5 @@
 package org.gepron1x.clans.plugin.config.serializer;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.gepron1x.clans.api.region.effect.RegionEffect;
@@ -28,19 +24,11 @@ public final class RegionEffectSerializer implements ValueSerialiser<RegionEffec
 		PotionEffectType type = map.get("type").getObject(PotionEffectType.class);
 		int duration = map.get("duration").getInteger();
 		int amplifier = map.get("amplifier").getInteger();
-
-
 		String name = map.get("name").getString();
-		Component displayName = map.get("display-name").getObject(Component.class);
-		Material material = map.get("icon").getEnum(Material.class);
-
-		ItemStack icon = new ItemStack(material);
-		icon.editMeta(meta -> meta.displayName(displayName.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE)));
-
 
 		PotionEffect potionEffect = new PotionEffect(type, duration, amplifier);
 
-		return new PotionRegionEffect(name, icon, potionEffect);
+		return new PotionRegionEffect(name, potionEffect);
 	}
 
 	@Override
@@ -48,8 +36,6 @@ public final class RegionEffectSerializer implements ValueSerialiser<RegionEffec
 		Map<String, Object> map = new LinkedHashMap<>();
 		if(!(value instanceof PotionRegionEffect effect)) throw new IllegalStateException("Don't know how to serialize" + value);
 		map.put("name", effect.name());
-		map.put("display-name", decomposer.decompose(Component.class, effect.icon().getItemMeta().displayName()));
-		map.put("icon", decomposer.decompose(Material.class, effect.icon().getType()));
 		map.put("type", decomposer.decompose(PotionEffectType.class, effect.effect().getType()));
 		map.put("duration", effect.effect().getDuration());
 		map.put("amplifier", effect.effect().getAmplifier());

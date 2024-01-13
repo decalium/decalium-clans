@@ -4,7 +4,9 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.reference.ClanReference;
 import org.gepron1x.clans.api.region.ClanRegion;
 import org.gepron1x.clans.api.region.Shield;
@@ -17,6 +19,7 @@ import org.gepron1x.clans.plugin.wg.WgExtension;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 public final class WgClanRegion implements ClanRegion {
 
@@ -63,7 +66,18 @@ public final class WgClanRegion implements ClanRegion {
 
 	@Override
 	public ActiveEffect applyEffect(RegionEffect effect, Duration duration) {
-		return region.applyEffect(effect, duration);
+		Optional<ActiveEffect> previous = region.activeEffect();
+		ActiveEffect eff = region.applyEffect(effect, duration);
+		region().ifPresent(region -> {
+			for(UUID uuid : region.getMembers().getUniqueIds()) {
+				Player player = Bukkit.getPlayer(uuid);
+				if(player == null) continue;
+				if(!region.contains(BukkitAdapter.asBlockVector(player.getLocation()))) continue;
+				previous.ifPresent(e -> e.effect().onLeave(player));
+				effect.onEnter(player, eff.left());
+			}
+		});
+		return eff;
 	}
 
 	@Override

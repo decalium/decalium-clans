@@ -2,20 +2,14 @@ package org.gepron1x.clans.plugin.shield.region.effect;
 
 import io.papermc.paper.util.Tick;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.gepron1x.clans.api.region.effect.RegionEffect;
 
 import java.time.Duration;
 
 
-public record PotionRegionEffect(String name, ItemStack icon, PotionEffect effect) implements RegionEffect {
+public record PotionRegionEffect(String name, PotionEffect effect) implements RegionEffect {
 
-
-	@Override
-	public ItemStack icon() {
-		return this.icon.clone();
-	}
 
 	@Override
 	public void onEnter(Player player, Duration duration) {

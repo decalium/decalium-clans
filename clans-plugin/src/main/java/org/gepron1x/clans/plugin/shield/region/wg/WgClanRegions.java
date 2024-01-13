@@ -6,8 +6,10 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import eu.decentsoftware.holograms.api.DHAPI;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.reference.ClanReference;
 import org.gepron1x.clans.api.region.ClanRegion;
@@ -21,10 +23,7 @@ import org.gepron1x.clans.plugin.wg.WgExtension;
 import org.gepron1x.clans.plugin.wg.WgRegionSet;
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -65,8 +64,18 @@ public final class WgClanRegions implements ClanRegions {
 
 	@Override
 	public void remove(ClanRegion region) {
+		var activeEffect = region.activeEffect();
 		regions.remove(region);
-		new ProtectedRegionOf(container, region).remove();
+		var protectedRegion = new ProtectedRegionOf(container, region);
+		protectedRegion.region().ifPresent(r -> {
+			for(UUID uuid : r.getMembers().getUniqueIds()) {
+				Player player = Bukkit.getPlayer(uuid);
+				if(player == null) continue;
+				if(!r.contains(BukkitAdapter.asBlockVector(player.getLocation()))) continue;
+				activeEffect.ifPresent(e -> e.effect().onLeave(player));
+			}
+		});
+		protectedRegion.remove();
 		DHAPI.removeHologram(WgExtension.regionName(region));
 		RegionBlock.remove(region.location().getBlock());
 	}

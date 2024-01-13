@@ -28,6 +28,7 @@ import org.gepron1x.clans.gui.builder.LoreApplicable;
 import org.gepron1x.clans.gui.item.ClanRegionItem;
 import org.gepron1x.clans.plugin.DecaliumClansPlugin;
 import org.gepron1x.clans.plugin.config.format.TimeFormat;
+import org.gepron1x.clans.plugin.util.message.TextMessage;
 
 import static org.gepron1x.clans.gui.DecaliumClansGui.message;
 
@@ -71,12 +72,12 @@ public class RegionGui implements GuiLike {
 				});
 			}, () -> {
 				Guis.getGui(e.getInventory()).show(e.getWhoClicked());
-			}).asGui().show(e.getWhoClicked());
+			}).gui().show(e.getWhoClicked());
 		}), 0, 0);
 
 		pane.addItem(shield(gui), 2, 0);
 
-		pane.addItem(ItemBuilder.create(Material.POTION).guiItem(), 4, 0);
+		pane.addItem(effects(), 4, 0);
 		gui.getSlotsComponent().addPane(pane);
 		gui.setOnClose(e -> {
 			if (refreshTask != null) refreshTask.cancel();
@@ -86,27 +87,41 @@ public class RegionGui implements GuiLike {
 
 	private GuiItem shield(Gui gui) {
 		ItemBuilder shield = ItemBuilder.create(Material.ITEM_FRAME)
-				.edit(this::editShieldMeta).edit(meta -> meta.addItemFlags(ItemFlag.HIDE_ENCHANTS));
+				.edit(meta -> {
+					editShieldMeta(meta);
+					meta.addItemFlags(ItemFlag.values());
+				});
 		GuiItem item = shield.guiItem();
-		item.setAction(ConfirmAction.price(clans.prices().shield(), e -> {
-			if (region.shield().expired()) {
+		item.setAction(e -> {
+			if(!region.shield().expired()) return;
+			if(!user.clan().map(clan -> clan.level() >= clans.levels().allowAt().shields()).orElse(false)) {
+				new ErrorItem(e, TextMessage.message("<#fb2727>Прокачайте клан, чтобы открыть доступ к щиту!")).show();
+				return;
+			}
+			ConfirmAction.price(clans.prices().shield(), event -> {
 				try {
 					region.addShield(clans.levels().forLevel(user.clan().orElseThrow()).shieldDuration());
 					item.getItem().editMeta(this::editShieldMeta);
 					startRefresh(item.getItem(), gui);
 				} catch (NotEnoughMoneyException ex) {
-					new ErrorItem(e, ex).show();
+					new ErrorItem(event, ex).show();
 				}
-			}
-		}));
+
+			}).accept(e);
+		});
 		if (region.shield().active()) startRefresh(item.getItem(), gui);
 		return item;
+	}
+
+	private GuiItem effects() {
+		return ItemBuilder.create(Material.POTION).name("<#FDA624>Клановые эффекты")
+				.consumer(event -> new RegionEffectGui(user, region).gui().show(event.getWhoClicked()))
+				.guiItem();
 	}
 
 	private void editShieldMeta(ItemMeta meta) {
 		meta.displayName(DecaliumClansGui.message("<#DBFDFF>\uD83D\uDEE1 Щит: <active:'<#92FF25>Активен':'<#fb2727>Не активен'>")
 				.booleanState("active", region.shield().active()).asComponent());
-
 		if (region.shield().active()) {
 			updateTimer(meta);
 			meta.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 1, true);
