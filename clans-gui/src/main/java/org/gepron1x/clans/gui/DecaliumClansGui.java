@@ -49,6 +49,8 @@ public final class DecaliumClansGui extends JavaPlugin implements Listener {
 				builder.resolver(new DecaliumColorResolver());
 			}).build();
 
+	private ClanRegionItem regionItem;
+
 	public static TextMessage message(String value) {
 		return TextMessage.message(value, MINI_MESSAGE);
 	}
@@ -62,21 +64,21 @@ public final class DecaliumClansGui extends JavaPlugin implements Listener {
 	@Override
 	public void onEnable() {
 		getServer().getPluginManager().registerEvents(this, this);
+		getServer().getPluginManager().registerEvents(new GuiEventListener(), this);
 		CustomBlockData.registerListener(this);
-
 
 		DecaliumClansApi api = new PluginServices(this).get(DecaliumClansApi.class).orElseThrow();
 		DecaliumClansPlugin clansPlugin = JavaPlugin.getPlugin(DecaliumClansPlugin.class);
 		var commandManager = clansPlugin.commandManager();
-
-		DecaliumCustomItems.get().getItemRegistry().registerItem(new ClanRegionItem(this, api, clansPlugin.messages()).build());
+		regionItem = new ClanRegionItem(this, api, clansPlugin.messages());
+		DecaliumCustomItems.get().getItemRegistry().registerItem(regionItem.build());
 		commandManager.command(commandManager.commandBuilder("clan").literal("gui").senderType(Player.class)
 				.permission("clans.gui").argument(PlayerArgument.optional("player"))
 				.handler(ctx -> {
 					Player player = (Player) ctx.getOrSupplyDefault("player", ctx::getSender);
 					Player viewer = (Player) ctx.getSender();
 					api.users().userFor(player).clan().ifPresent(clan -> {
-						new ClanGui(getServer(), clan, api.users().userFor(viewer), api).asGui().show(viewer);
+						new ClanGui(getServer(), clan, api.users().userFor(viewer), api).gui().show(viewer);
 					});
 				})
 		);
@@ -87,7 +89,7 @@ public final class DecaliumClansGui extends JavaPlugin implements Listener {
 			Player sender = (Player) ctx.getSender();
 			ClanUser user = api.users().userFor(sender);
 			if(user.clan().isPresent()) {
-				new ClanGui(getServer(), user.clan().orElseThrow(), user, api).asGui().show(sender);
+				new ClanGui(getServer(), user.clan().orElseThrow(), user, api).gui().show(sender);
 			} else {
 				clansPlugin.messages().commands().creation().creation().send(sender);
 				conversation.ask(sender, Duration.ofMinutes(1L)).thenCompose(s -> {
@@ -111,6 +113,7 @@ public final class DecaliumClansGui extends JavaPlugin implements Listener {
 	public void on(RegistryReloadEvent event) {
 		DecaliumClansApi api = new PluginServices(this).get(DecaliumClansApi.class).orElseThrow();
 		DecaliumClansPlugin clansPlugin = JavaPlugin.getPlugin(DecaliumClansPlugin.class);
+		if(regionItem != null) HandlerList.unregisterAll(regionItem);
 		event.registry().registerItem(new ClanRegionItem(this, api, clansPlugin.messages()).build());
 	}
 }

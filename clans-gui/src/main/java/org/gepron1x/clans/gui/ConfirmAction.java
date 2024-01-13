@@ -30,11 +30,15 @@ public final class ConfirmAction implements Consumer<InventoryClickEvent> {
 		}, () -> {
 			event.getWhoClicked().closeInventory();
 			gui.show(event.getWhoClicked());
-		}).asGui().show(event.getWhoClicked());
+		}).gui().show(event.getWhoClicked());
 	}
 
 
 	public static ConfirmAction price(double price, Consumer<InventoryClickEvent> action) {
 		return new ConfirmAction(action, TextMessage.message("Купить за <price>◎?").with("price", price));
+	}
+
+	public static ConfirmAction confirm(Consumer<InventoryClickEvent> action) {
+		return new ConfirmAction(action, TextMessage.message("Вы уверены?"));
 	}
 }

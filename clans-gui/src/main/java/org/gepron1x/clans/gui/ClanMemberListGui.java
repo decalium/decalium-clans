@@ -69,7 +69,7 @@ public final class ClanMemberListGui implements GuiLike {
 				event = event.andThen(e -> {
 					if (e.getClick() == ClickType.LEFT) {
 						e.getWhoClicked().closeInventory();
-						new RoleSelectionGui(this, viewer, clanMember, clansApi).asGui().show(e.getWhoClicked());
+						new RoleSelectionGui(this, viewer, clanMember, clansApi).gui().show(e.getWhoClicked());
 					}
 				});
 			}
@@ -80,9 +80,12 @@ public final class ClanMemberListGui implements GuiLike {
 						new ConfirmationGui(DecaliumClansGui.message("Исключить <name>?").with(resolver), confirmEvent -> {
 							clan.edit(edition -> edition.removeMember(clanMember)).thenAcceptSync(newClan -> {
 								confirmEvent.getWhoClicked().closeInventory();
-								this.asGui().show(confirmEvent.getWhoClicked());
+								this.gui().show(confirmEvent.getWhoClicked());
 							});
-						}, () -> e.getWhoClicked().openInventory(e.getInventory())).asGui().show(e.getWhoClicked());
+						}, () -> {
+							e.getWhoClicked().openInventory(e.getInventory());
+							Guis.update(e);
+						}).gui().show(e.getWhoClicked());
 					}
 				});
 			}
@@ -90,6 +93,6 @@ public final class ClanMemberListGui implements GuiLike {
 		}).asGui();
 		gui.setTitle(ComponentHolder.of(DecaliumClansGui.message("Участники клана <display_name>").with(ClanTagResolver.clan(clan)).asComponent()));
 		gui.update();
-		return new GoBackGui(gui, Slot.fromXY(6, 5), parent).cancelByDefault().asGui();
+		return new GoBackGui(gui, Slot.fromXY(6, 5), parent).asGui();
 	}
 }

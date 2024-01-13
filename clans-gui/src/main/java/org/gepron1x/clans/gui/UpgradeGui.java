@@ -66,7 +66,7 @@ public final class UpgradeGui implements GuiLike {
 			if (levels.allowAt().homes() == level) abilities.add("Клановым телепортам");
 			if (levels.allowAt().colors() == level) abilities.add("Декорациям (Цвет)");
 			if (levels.allowAt().gradients() == level) abilities.add("Декорациям (Градиенты)");
-			if (levels.allowAt().symbols() == level) abilities.add("Декорациям (Титулы)");
+			if (levels.allowAt().symbols() == level) abilities.add("Декорациям (Титулы)"); // do better
 			if (!abilities.isEmpty()) {
 				builder.space().lore("<#7CD8D8>Откроет доступ к:")
 						.lore(new DescriptionLoreApplicable(LoreApplicable.text(abilities).color(Colors.POSITIVE)));

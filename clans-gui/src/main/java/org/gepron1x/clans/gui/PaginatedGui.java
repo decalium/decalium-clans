@@ -22,8 +22,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
+import org.gepron1x.clans.gui.builder.ItemBuilder;
 
 import java.util.Collection;
 import java.util.function.Function;
@@ -57,14 +56,14 @@ public final class PaginatedGui<E> implements GuiLike {
 		StaticPane navigation = new StaticPane(2, rows - 2, 5, 1);
 		navigation.setOnClick(event -> event.setCancelled(true));
 
-		navigation.addItem(new GuiItem(new ItemStack(Material.RED_WOOL), event -> {
+		navigation.addItem(ItemBuilder.skull(Heads.NEXT).name("<#DBFDFF>Предыдущая").guiItem(event -> {
 			if (pages.getPage() > 0) {
 				pages.setPage(pages.getPage() - 1);
 				gui.update();
 			}
 		}), 0, 0);
 
-		navigation.addItem(new GuiItem(new ItemStack(Material.GREEN_WOOL), event -> {
+		navigation.addItem(ItemBuilder.skull(Heads.NEXT).name("<#DBFDFF>Следующая").guiItem(event -> {
 			if (pages.getPage() < pages.getPages() - 1) {
 				pages.setPage(pages.getPage() + 1);
 				gui.update();

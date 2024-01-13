@@ -33,7 +33,7 @@ public final class Conversation implements Listener {
 	private final Map<UUID, CentralisedFuture<String>> conversations = new HashMap<>();
 
 
-	@EventHandler()
+	@EventHandler
 	@ApiStatus.Internal
 	public void on(AsyncChatEvent event) {
 		var future = conversations.remove(event.getPlayer().getUniqueId());

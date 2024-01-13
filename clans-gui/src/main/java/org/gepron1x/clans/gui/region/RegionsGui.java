@@ -64,7 +64,7 @@ public final class RegionsGui implements GuiLike {
 				.description("Просмотри список клановых регионов")
 				.menuInteraction().consumer(e -> {
 					e.getWhoClicked().closeInventory();
-					new GoBackGui(regionListGui(), Slot.fromXY(6, 5), this).asGui().show(e.getWhoClicked());
+					new GoBackGui(regionListGui(), Slot.fromXY(6, 5), this).gui().show(e.getWhoClicked());
 				}).guiItem(), 2, 0);
 
 		gui.addPane(pane);
@@ -77,7 +77,7 @@ public final class RegionsGui implements GuiLike {
 	private ChestGui regionListGui() {
 		List<ClanRegion> regions = user.regions().map(ClanRegions::regions).orElse(List.of()).stream().sorted(Comparator.comparing(ClanRegion::id)).toList();
 		Map<String, Component> worlds = JavaPlugin.getPlugin(DecaliumClansPlugin.class).config().wars().navigation().worldDisplayNames();
-		ChestGui gui = new PaginatedGui<>(regions, region -> {
+		ChestGui gui = (ChestGui) new PaginatedGui<>(regions, region -> {
 			Location location = region.location();
 			Component worldName = worlds.get(location.getWorld().getName());
 			if (worldName == null) worldName = Component.text(location.getWorld().getName());
@@ -86,9 +86,7 @@ public final class RegionsGui implements GuiLike {
 							"Мир<gray>: <#42C4FB><world>", "Координаты (X, Z)<gray>:<#42C4FB> <x> <z>").with("world", worldName)
 					.with("x", location.getBlockX()).with("z", location.getBlockZ())
 					.booleanState("shield_active", region.shield().active()).guiItem();
-		}).asGui();
-		gui.setOnGlobalDrag(e -> e.setCancelled(true));
-		gui.setOnGlobalClick(e -> e.setCancelled(true));
+		}).gui();
 		gui.setTitle(ComponentHolder.of(Component.text("Регионы клана")));
 		return gui;
 	}

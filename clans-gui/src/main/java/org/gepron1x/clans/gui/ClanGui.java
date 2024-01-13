@@ -68,6 +68,10 @@ public final class ClanGui implements GuiLike {
 		return viewer.isIn(clan);
 	}
 
+	private boolean hasPermission(ClanPermission permission) {
+		return viewer.hasPermission(permission);
+	}
+
 	@Override
 	public Gui asGui() {
 		int rows = 3;
@@ -75,7 +79,6 @@ public final class ClanGui implements GuiLike {
 		ChestGui gui = new ChestGui(rows, ComponentHolder.of(message("Клан <clan>").with("clan", clan.displayName()).asComponent()));
 		StaticPane pane = new StaticPane(9, rows);
 		pane.setOnClick(e -> e.setCancelled(true));
-		ClanTagResolver resolver = ClanTagResolver.clan(clan);
 
 		gui.addPane(pane);
 		gui.addPane(border(0, rows));
@@ -102,7 +105,7 @@ public final class ClanGui implements GuiLike {
 				.space()
 				.menuInteraction(TextColor.color(ownsClan() ? 0x92FF25 : 0xDBFDFF))
 				.guiItem(event -> {
-					new ClanMemberListGui(this, clan, viewer, api).asGui().show(event.getWhoClicked());
+					new ClanMemberListGui(this, clan, viewer, api).gui().show(event.getWhoClicked());
 				});
 	}
 
@@ -120,7 +123,7 @@ public final class ClanGui implements GuiLike {
 		} else if (ownsClan()) {
 			interaction = "Нажмите в меню другого клана для вызова на битву!";
 			color = Colors.NEUTRAL;
-		} else if (viewer.hasPermission(ClanPermission.SEND_WAR_REQUEST)) {
+		} else if (!viewer.hasPermission(ClanPermission.SEND_WAR_REQUEST)) {
 			color = Colors.NEGATIVE;
 			interaction = "Ваша роль не позволяет вызывать кланы на битву.";
 			material = Material.BARRIER;
@@ -161,10 +164,10 @@ public final class ClanGui implements GuiLike {
 				.with("dagger", "\uD83D\uDDE1").with("skull", "☠").with("crossed_swords", "⚔").with("flag", "⚐").with("potion", "\uD83E\uDDEA")
 				.with(resolver)
 				.edit(meta -> meta.addItemFlags(ItemFlag.values()));
-		if (ownsClan()) {
+		if (hasPermission(ClanPermission.DECORATE) && ownsClan()) {
 			builder.space().interaction(Colors.POSITIVE, "Нажмите для кастомизации клана").consumer(e -> {
 				e.getWhoClicked().closeInventory();
-				new CustomisationGui(this, clan, api).asGui().show(e.getWhoClicked());
+				new CustomisationGui(this, clan, api).gui().show(e.getWhoClicked());
 			});
 		}
 
@@ -178,7 +181,7 @@ public final class ClanGui implements GuiLike {
 				.description("Прокачивай уровень и", "открывай новые возможности", "для себя и своих соклановцев!")
 				.space()
 				.menuInteraction()
-				.guiItem(e -> new UpgradeGui(this, viewer, api).asGui().show(e.getWhoClicked()));
+				.guiItem(e -> new UpgradeGui(this, viewer, api).gui().show(e.getWhoClicked()));
 	}
 
 	private GuiItem regions() {
@@ -189,7 +192,7 @@ public final class ClanGui implements GuiLike {
 			builder.menuInteraction().consumer(e -> {
 				Economy economy = new PluginServices(JavaPlugin.getPlugin(DecaliumClansGui.class)).get(Economy.class).orElseThrow();
 				VaultPlayerImpl player = new VaultPlayerImpl((Player) e.getWhoClicked(), economy);
-				new RegionsGui(this, viewer, player, api).asGui().show(e.getWhoClicked());
+				new RegionsGui(this, viewer, player, api).gui().show(e.getWhoClicked());
 			});
 		}).guiItem();
 	}
@@ -200,7 +203,7 @@ public final class ClanGui implements GuiLike {
 				.space()
 				.description("Используйте общие точки", "телепорта со своим кланом!")
 				.space(), builder -> builder.menuInteraction()
-				.consumer(e -> new HomeListGui(this, viewer).asGui().show(e.getWhoClicked()))).guiItem();
+				.consumer(e -> new HomeListGui(this, viewer).gui().show(e.getWhoClicked()))).guiItem();
 	}
 
 	private ItemBuilder levelRequired(int level, ItemBuilder builder, Consumer<ItemBuilder> consumer) {

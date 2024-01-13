@@ -23,12 +23,10 @@ import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 public interface GuiLike {
 	Gui asGui();
 
-	default GuiLike cancelByDefault() {
-		return () -> {
-			Gui gui = this.asGui();
-			gui.setOnGlobalClick(e -> e.setCancelled(true));
-			gui.setOnGlobalDrag(e -> e.setCancelled(true));
-			return gui;
-		};
+	default Gui gui() {
+		Gui gui = this.asGui();
+		gui.setOnGlobalClick(event -> event.setCancelled(true));
+		gui.setOnGlobalDrag(event -> event.setCancelled(true));
+		return gui;
 	}
 }

@@ -22,7 +22,6 @@ import com.github.stefvanschie.inventoryframework.adventuresupport.ComponentHold
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
-import net.kyori.adventure.text.Component;
 import org.gepron1x.clans.api.chat.ClanHomeTagResolver;
 import org.gepron1x.clans.api.chat.ClanTagResolver;
 import org.gepron1x.clans.api.clan.Clan;
@@ -58,8 +57,7 @@ public final class HomeListGui implements GuiLike {
 					.interaction(Colors.NEUTRAL, "Нажмите, чтобы телепортироваться")
 					.consumer(event -> {
 						if(event.isShiftClick() && canDelete) {
-								ConfirmationGui.confirmAndReturn(Component.text("Вы уверены?"), e -> clan.edit(edition -> edition.removeHome(clanHome)), event).asGui()
-										.show(event.getWhoClicked());
+							ConfirmAction.confirm(e -> clan.edit(edition -> edition.removeHome(clanHome))).accept(event);
 
 						} else if(event.isLeftClick()) {
 							event.getWhoClicked().teleportAsync(clanHome.location());
