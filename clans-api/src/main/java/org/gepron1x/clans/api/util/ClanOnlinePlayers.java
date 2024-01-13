@@ -19,6 +19,7 @@
 package org.gepron1x.clans.api.util;
 
 import com.google.common.base.MoreObjects;
+import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.clan.DraftClan;
@@ -36,6 +37,10 @@ public final class ClanOnlinePlayers implements Iterable<Player> {
 
 		this.clan = clan;
 		this.server = server;
+	}
+
+	public ClanOnlinePlayers(DraftClan clan) {
+		this(clan, Bukkit.getServer());
 	}
 
 	public Collection<Player> players() {

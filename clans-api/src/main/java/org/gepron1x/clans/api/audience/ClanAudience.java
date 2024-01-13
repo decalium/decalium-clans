@@ -23,6 +23,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.pointer.Pointers;
+import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.util.ClanOnlinePlayers;
@@ -39,6 +40,10 @@ public final class ClanAudience implements ForwardingAudience {
 	public ClanAudience(@NotNull DraftClan clan, @NotNull Server server) {
 		this.clan = clan;
 		this.server = server;
+	}
+
+	public ClanAudience(@NotNull DraftClan clan) {
+		this(clan, Bukkit.getServer());
 	}
 
 
