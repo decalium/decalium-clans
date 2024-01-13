@@ -79,6 +79,7 @@ public class ClanCommand extends AbstractClanCommand {
 
 		manager.command(builder.literal("delete").meta(CommandMeta.DESCRIPTION, descriptions.delete())
 				.permission(Permission.of("clans.delete"))
+				.argument(StringArgument.optional("tag"))
 				.handler(clanExecutionHandler(
 								new PermissiveClanExecutionHandler(this::deleteClan, ClanPermission.DISBAND, this.messages)
 						)
@@ -194,6 +195,11 @@ public class ClanCommand extends AbstractClanCommand {
 	private void deleteClan(CommandContext<CommandSender> context) {
 		Player player = (Player) context.getSender();
 		Clan clan = context.get(ClanExecutionHandler.CLAN);
+		String tag = context.getOrDefault("tag", "");
+		if(!clan.tag().equals(tag)) {
+			this.messages.commands().deletion().enterTagToDelete().with("tag", clan.tag()).send(player);
+			return;
+		}
 		clanRepository.removeClan(clan).thenAcceptSync(success -> {
 			if (success) this.messages.commands().deletion().success().send(player);
 		}).exceptionally(exceptionHandler(player));
