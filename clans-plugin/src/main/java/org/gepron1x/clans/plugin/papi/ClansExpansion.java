@@ -108,7 +108,7 @@ public final class ClansExpansion extends PlaceholderExpansion {
 		if(type == null) return null;
 		int position;
 		try {
-			position = Integer.parseInt(parts[1]);
+			position = Integer.parseInt(parts[1]) - 1;
 		} catch(NumberFormatException ex) { return null; }
 		Clan clan = top.top(type, position);
 		if(clan == null) return "";
