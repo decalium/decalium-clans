@@ -30,6 +30,8 @@ repositories {
     maven("https://repo.decalium.ru/shapshots")
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
 
+    maven("https://nexus.sirblobman.xyz/public/")
+
 }
 
 dependencies {
@@ -77,6 +79,10 @@ dependencies {
         exclude("org.bukkit", "bukkit")
     }
     compileOnly("com.github.decentsoftware-eu:decentholograms:2.8.1")
+    compileOnly("com.github.sirblobman.api:core:2.9-SNAPSHOT")
+    compileOnly("com.github.sirblobman.combatlogx:api:11.4-SNAPSHOT")
+
+
     testImplementation("net.kyori:adventure-text-minimessage:4.13.1")
     testImplementation("com.google.guava:guava:32.0.0-jre")
     testImplementation("com.google.code.gson:gson:2.10.1")
