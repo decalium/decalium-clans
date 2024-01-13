@@ -12,16 +12,16 @@ public final class SqlClanTop implements ClanStorage.Top {
 	@Language("SQL")
 	private static final String SELECT_ORDER_BY_STATISTIC_TYPE = """
 						SELECT clans_simple.* FROM
-						(SELECT * FROM statistics WHERE statistics.`type`=?) AS statistics
-						LEFT JOIN clans_simple ON statistics.clan_id = clans_simple.clan_id ORDER BY statistics.`value` DESC
+						(SELECT * FROM statistics WHERE statistics.`type`=?) AS stats
+						LEFT JOIN clans_simple ON stats.clan_id = clans_simple.clan_id ORDER BY stats.`value` DESC
 						""";
 
 
 	@Language("SQL")
 	private static final String SELECT_ORDER_BY_STATISTIC_TYPE_LIMIT = """
 						SELECT clans_simple.* FROM
-						(SELECT * FROM statistics WHERE statistics.`type`=? LIMIT ?) AS statistics
-						LEFT JOIN clans_simple ON statistics.clan_id = clans_simple.clan_id ORDER BY statistics.`value` DESC
+						(SELECT * FROM statistics WHERE statistics.`type`=? LIMIT ?) AS stats
+						LEFT JOIN clans_simple ON stats.clan_id = clans_simple.clan_id ORDER BY stats.`value` DESC
 						""";
 
 	private final Jdbi jdbi;
