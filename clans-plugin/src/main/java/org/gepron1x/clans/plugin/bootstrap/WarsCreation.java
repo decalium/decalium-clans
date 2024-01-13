@@ -18,17 +18,22 @@
  */
 package org.gepron1x.clans.plugin.bootstrap;
 
+import com.github.sirblobman.combatlogx.api.ICombatLogX;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.gepron1x.clans.api.war.Wars;
 import org.gepron1x.clans.plugin.config.Configs;
 import org.gepron1x.clans.plugin.listener.CrystalExplosionListener;
+import org.gepron1x.clans.plugin.war.CombatLogger;
+import org.gepron1x.clans.plugin.war.CombatXLogger;
 import org.gepron1x.clans.plugin.war.announce.AnnouncingWars;
 import org.gepron1x.clans.plugin.war.impl.DefaultWars;
 import org.gepron1x.clans.plugin.war.listener.DeathListener;
 import org.gepron1x.clans.plugin.war.listener.NoTeamDamageListener;
 import org.gepron1x.clans.plugin.war.navigation.Navigation;
 import org.gepron1x.clans.plugin.war.navigation.TeleportListener;
+
+import java.util.Objects;
 
 public final class WarsCreation {
 
@@ -44,7 +49,7 @@ public final class WarsCreation {
 	public Wars create() {
 
 		PluginManager pm = plugin.getServer().getPluginManager();
-		Wars base = new DefaultWars(plugin.getServer());
+		Wars base = new DefaultWars(plugin.getServer(), logger());
 		Wars wars = new AnnouncingWars(base, configs.messages());
 		pm.registerEvents(new DeathListener(wars), plugin);
 		if (configs.config().wars().disableTeamDamage()) pm.registerEvents(new NoTeamDamageListener(base), plugin);
@@ -54,5 +59,15 @@ public final class WarsCreation {
 		plugin.getServer().getScheduler().runTaskTimer(plugin, new Navigation(base, configs.messages()), 5, 5);
 		return wars;
 
+	}
+
+
+	private CombatLogger logger() {
+		PluginManager pm = plugin.getServer().getPluginManager();
+		if(!pm.isPluginEnabled("CombatLogX")) return CombatLogger.nop();
+		ICombatLogX combatLogX = (ICombatLogX) Objects.requireNonNull(pm.getPlugin("CombatLogX"));
+		var logger = new CombatXLogger(combatLogX.getCombatManager(), combatLogX.getPlayerDataManager());
+		plugin.getServer().getPluginManager().registerEvents(logger, plugin);
+		return logger;
 	}
 }

@@ -300,7 +300,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 		services.register(DecaliumClansApi.class, this.api);
 		new Metrics(this, BSTATS_ID);
 
-		new HologramProtection(this).register();
+		getServer().getPluginManager().registerEvents(new CombatLogListener(users), this);
 
 	}
 

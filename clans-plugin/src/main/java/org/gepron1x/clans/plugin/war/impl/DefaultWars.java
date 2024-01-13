@@ -29,6 +29,7 @@ import org.gepron1x.clans.api.util.player.PlayerReference;
 import org.gepron1x.clans.api.war.Team;
 import org.gepron1x.clans.api.war.War;
 import org.gepron1x.clans.api.war.Wars;
+import org.gepron1x.clans.plugin.war.CombatLogger;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,15 +39,17 @@ public final class DefaultWars implements Wars {
 
 	private final Set<War> currentWars = new HashSet<>();
 	private final Server server;
+	private final CombatLogger combatLogger;
 
-	public DefaultWars(Server server) {
-
+	public DefaultWars(Server server, CombatLogger combatLogger) {
 		this.server = server;
+		this.combatLogger = combatLogger;
 	}
 
 	@Override
 	public void start(War war) {
 		Preconditions.checkArgument(!this.currentWars.contains(war), "war already started");
+		for(Team team : war.teams()) for(PlayerReference member : team.members()) member.ifOnline(combatLogger::tag);
 		this.currentWars.add(war);
 	}
 
@@ -97,6 +100,7 @@ public final class DefaultWars implements Wars {
 			if (war.teamWon()) {
 				iterator.remove();
 				war.finish();
+				for(Team team : war.teams()) for(PlayerReference member : team.members()) member.ifOnline(combatLogger::untag);
 			}
 		}
 
