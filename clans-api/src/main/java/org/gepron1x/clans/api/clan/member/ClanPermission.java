@@ -41,11 +41,17 @@ public record ClanPermission(@NotNull String value) {
 	public static final ClanPermission SEND_WAR_REQUEST = new ClanPermission("send_war_request");
 	public static final ClanPermission ACCEPT_WAR = new ClanPermission("accept_war");
 
+	public static final ClanPermission DECORATE = new ClanPermission("decorate");
+
+	public static final ClanPermission SET_CLAN_REGION = new ClanPermission("set_clan_region");
+	public static final ClanPermission CLAN_REGION_MENU = new ClanPermission("clan_region_menu");
+
 	private static final Index<String, ClanPermission> NAMES =
 			Index.create(ClanPermission::value,
 					INVITE, KICK, SET_ROLE,
 					ADD_HOME, REMOVE_HOME, EDIT_OTHERS_HOMES,
-					SET_DISPLAY_NAME, PROMOTE_OWNER, DISBAND, SEND_WAR_REQUEST, ACCEPT_WAR);
+					SET_DISPLAY_NAME, PROMOTE_OWNER, DISBAND, SEND_WAR_REQUEST, ACCEPT_WAR, DECORATE,
+					SET_CLAN_REGION, CLAN_REGION_MENU);
 
 	public static Index<String, ClanPermission> registry() {
 		return NAMES;
@@ -53,6 +59,11 @@ public record ClanPermission(@NotNull String value) {
 
 	public static Set<ClanPermission> all() {
 		return NAMES.values();
+	}
+
+	public static @NotNull ClanPermission permission(String value) {
+		ClanPermission perm = NAMES.value(value);
+		return perm == null ? new ClanPermission(value) : perm;
 	}
 
 	@Override

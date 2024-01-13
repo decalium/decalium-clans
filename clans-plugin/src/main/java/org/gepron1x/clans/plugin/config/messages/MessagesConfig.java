@@ -170,6 +170,18 @@ public interface MessagesConfig {
 		@ConfKey("not-in-clan")
 		@DefaultStrings({"[sound] minecraft:note_block.iron_xylophone", "[title]<red>❌ Вы не состите в клане! ❌;Вступите в клан или создайте его."})
 		Message notInClan();
+
+		@ConfKey("no-permission")
+		@DefaultStrings({"[sound] minecraft:note_block.iron_xylophone", "[title]<red>❌ Вам нельзя ставить приваты ❌;Ваша роль не позволяет устанавливать регионы."})
+		Message noClanPermission();
+
+		@ConfKey("permission")
+		@DefaultStrings({"[sound] minecraft:note_block.iron_xylophone", "[title]<red>❌ Здесь нельзя ставить приваты ❌"})
+		Message noPermission();
+
+		@ConfKey("too-many-regions")
+		@DefaultStrings({"[sound] minecraft:note_block.iron_xylophone", "[title]<red>❌ Слишком много регионов! ❌;Прокачайте клан чтобы устаноить больше."})
+		Message tooManyRegions();
 	}
 
 
@@ -252,6 +264,10 @@ public interface MessagesConfig {
 			@ConfKey("success")
 			@DefaultString("<prefix> Clan deleted successfully.")
 			Message success();
+
+			@ConfKey("enter-tag-to-confirm")
+			@DefaultString("<prefix> Вы уверены? Введите <color:#fb2727>/clan delete <tag></color> чтобы подтвердить удаление.")
+			Message enterTagToDelete();
 		}
 
 
@@ -423,6 +439,16 @@ public interface MessagesConfig {
 			@ConfKey("victim-accepted")
 			@DefaultString("<prefix> <clan_display_name> accepted war request.")
 			Message victimAccepted();
+
+
+			@ConfKey("captain-should-be-online")
+			@DefaultString("<prefix> Капитан противника должен быть на сервере.")
+			Message captainShouldBeOnline();
+
+
+			@ConfKey("captains-should-be-in-war-world")
+			@DefaultString("<prefix> Капитаны должны находиться в обычном мире, чтобы начать войну.")
+			Message shouldBeInWarWorld();
 		}
 
 
