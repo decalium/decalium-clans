@@ -51,6 +51,7 @@ import org.gepron1x.clans.plugin.cache.CachingClanRepositoryImpl;
 import org.gepron1x.clans.plugin.cache.ClanCache;
 import org.gepron1x.clans.plugin.cache.UserCaching;
 import org.gepron1x.clans.plugin.chat.carbon.CarbonChatHook;
+import org.gepron1x.clans.plugin.combatlog.CombatLogListener;
 import org.gepron1x.clans.plugin.command.*;
 import org.gepron1x.clans.plugin.command.war.ClanWarCommand;
 import org.gepron1x.clans.plugin.config.Configs;
@@ -58,11 +59,11 @@ import org.gepron1x.clans.plugin.config.Configuration;
 import org.gepron1x.clans.plugin.config.messages.MessagesConfig;
 import org.gepron1x.clans.plugin.config.serializer.*;
 import org.gepron1x.clans.plugin.config.settings.ClansConfig;
+import org.gepron1x.clans.plugin.config.settings.EffectDescription;
 import org.gepron1x.clans.plugin.config.settings.PricesConfig;
 import org.gepron1x.clans.plugin.economy.VaultHook;
 import org.gepron1x.clans.plugin.level.LeveledClanRepository;
 import org.gepron1x.clans.plugin.listener.CacheListener;
-import org.gepron1x.clans.plugin.listener.HologramProtection;
 import org.gepron1x.clans.plugin.listener.StatisticListener;
 import org.gepron1x.clans.plugin.papi.ClanTopCache;
 import org.gepron1x.clans.plugin.papi.PlaceholderAPIHook;
@@ -214,7 +215,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 				clanCache
 		);
 
-		regionStorage = new SqlRegionStorage(jdbi, cachingClanRepository, new SqlQueue(), new MapRegistry<>(new MapOf<>(RegionEffect::name, config.regionEffects()).create()));
+		regionStorage = new SqlRegionStorage(jdbi, cachingClanRepository, new SqlQueue(), new MapRegistry<>(new MapOf<>(RegionEffect::name, config.region().effects().stream().map(EffectDescription::effect).toList()).create()));
 		WgGlobalRegions regions = new WgGlobalRegions(regionStorage.loadRegions(), WorldGuard.getInstance().getPlatform().getRegionContainer(), configs);
 		regions.update();
 		CachingClanRepository clanRepository = new WgExtension(cachingClanRepository, configs, regions, new AsyncRegionStorage(futuresFactory, regionStorage)).make();
