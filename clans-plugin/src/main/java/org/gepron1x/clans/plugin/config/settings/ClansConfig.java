@@ -20,20 +20,13 @@ package org.gepron1x.clans.plugin.config.settings;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.gepron1x.clans.api.clan.member.ClanPermission;
 import org.gepron1x.clans.api.clan.member.ClanRole;
-import org.gepron1x.clans.api.region.effect.RegionEffect;
 import org.gepron1x.clans.plugin.clan.member.ClanRoleImpl;
 import org.gepron1x.clans.plugin.config.UserComponentSerializer;
 import org.gepron1x.clans.plugin.config.format.DisplayNameFormat;
 import org.gepron1x.clans.plugin.config.format.TimeFormat;
-import org.gepron1x.clans.plugin.shield.region.effect.PotionRegionEffect;
 import org.gepron1x.clans.plugin.storage.StorageType;
 import org.gepron1x.clans.plugin.util.hologram.Line;
 import org.gepron1x.clans.plugin.util.message.TextMessage;
@@ -65,21 +58,6 @@ public interface ClansConfig {
 	@SubSection
 	@ConfComments("Decorations to use on clan tag")
 	Decorations decorations();
-
-	@DefaultObject("regionEffects$default")
-	List<RegionEffect> regionEffects();
-
-	static List<RegionEffect> regionEffects$default() {
-		ItemStack icon = new ItemStack(Material.GOLDEN_PICKAXE);
-		icon.editMeta(meta -> meta.displayName(Component.translatable(PotionEffectType.FAST_DIGGING)
-				.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE)));
-		return List.of(new PotionRegionEffect(
-				"haste",
-				icon,
-				new PotionEffect(PotionEffectType.FAST_DIGGING, PotionEffect.INFINITE_DURATION, 1)
-				)
-		);
-	}
 
 
 	@DefaultString("<gray>Not in clan")
@@ -295,6 +273,10 @@ public interface ClansConfig {
 		@ConfComments("Disables damage between team members.")
 		boolean disableTeamDamage();
 
+		@ConfKey("war-world")
+		@DefaultString("world")
+		String warWorld();
+
 		@ConfComments("Navigator options")
 		@SubSection Navigation navigation();
 
@@ -368,6 +350,14 @@ public interface ClansConfig {
 			}
 
 
+		}
+
+		@ConfKey("effects")
+		@DefaultObject("effects$default")
+		List<@SubSection EffectDescription> effects();
+
+		static List<EffectDescription> effects$default() {
+			return List.of();
 		}
 	}
 }
