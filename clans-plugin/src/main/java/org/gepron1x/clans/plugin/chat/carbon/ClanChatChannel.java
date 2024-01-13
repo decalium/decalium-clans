@@ -18,6 +18,7 @@
  */
 package org.gepron1x.clans.plugin.chat.carbon;
 
+import net.draycia.carbon.api.channels.ChannelPermissionResult;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.kyori.adventure.audience.Audience;
@@ -60,10 +61,12 @@ public final class ClanChatChannel implements ChatChannel {
 	}
 
 	private ChannelPermissionResult ifInTheClan(CarbonPlayer player) {
-		return ChannelPermissionResult.allowedIf(
+
+		/* return ChannelPermissionResult.allowedIf(
 				configs.config().chat().notInTheClan().asComponent(),
 				() -> cache.getUserClan(player.uuid()) != null
-		);
+		); */
+		return ChannelPermissionResult.channelPermissionResult(cache.getUserClan(player.uuid()) != null, configs.config().chat().notInTheClan()::asComponent);
 	}
 
 	@Override

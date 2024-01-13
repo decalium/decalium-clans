@@ -1,5 +1,6 @@
 package org.gepron1x.clans.plugin.chat.carbon;
 
+import net.draycia.carbon.api.channels.ChannelPermissionResult;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.kyori.adventure.audience.Audience;
@@ -81,5 +82,10 @@ public final class MutableChannel implements ChatChannel {
 
 	public void setDelegate(ChatChannel channel) {
 		this.delegate = channel;
+	}
+
+	@Override
+	public String toString() {
+		return this.delegate.toString();
 	}
 }

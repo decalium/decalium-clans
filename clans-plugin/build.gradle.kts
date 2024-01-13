@@ -38,7 +38,7 @@ dependencies {
     implementation("com.github.Xezard.XGlow:XGlow:1.1.0")
     compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
     // paperDevBundle("1.18.2-R0.1-SNAPSHOT")
-    compileOnly("de.hexaoxi:carbonchat-api:2.1.0-SNAPSHOT") {
+    compileOnly("de.hexaoxi:carbonchat-api:3.0.0-SNAPSHOT") {
         exclude("net.kyori", "adventure-text-minimessage")
         exclude("ninja.egg82", "messenger-api")
     }
@@ -147,7 +147,7 @@ bukkit {
     apiVersion = "1.19"
     authors = listOf("gepron1x", "manya")
     website = "https://clans.decalium.ru"
-    softDepend = listOf("PlaceholderAPI", "CarbonChat", "WorldGuard", "Vault", "DecentHolograms", "ProtocolLib", "Hyperverse")
+    softDepend = listOf("PlaceholderAPI", "CarbonChat", "WorldGuard", "Vault", "DecentHolograms", "ProtocolLib", "Hyperverse", "CombatLogX")
     load = BukkitPluginDescription.PluginLoadOrder.POSTWORLD
 
 }
