@@ -23,6 +23,7 @@ import org.gepron1x.clans.plugin.config.format.TimeFormat;
 import java.time.Duration;
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.StringJoiner;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -39,14 +40,14 @@ public final class BaseTimeFormat implements TimeFormat {
 	@Override
 	public String format(Duration duration) {
 		long seconds = duration.toSeconds();
-		if (seconds == 0) return "0" + units.getOrDefault(units.lastKey(), "");
-		StringBuilder sb = new StringBuilder();
+		if (seconds == 0) return "0 " + units.getOrDefault(units.lastKey(), "");
+		StringJoiner joiner = new StringJoiner(" ");
 		for (Map.Entry<TimeUnit, String> entry : units.entrySet()) {
 			long value = entry.getKey().convert(seconds, SECONDS);
-			if (value > 0) sb.append(value).append(entry.getValue());
+			if (value > 0) joiner.add(value + entry.getValue());
 			seconds = seconds - entry.getKey().toSeconds(value); // Duration.ofSeconds(duration.getSeconds() - unit.toSeconds(value));
 		}
-		return sb.toString();
+		return joiner.toString();
 	}
 
 	public Map<TimeUnit, String> units() {
