@@ -18,6 +18,7 @@
  */
 package org.gepron1x.clans.plugin.papi;
 
+import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Server;
 import org.gepron1x.clans.plugin.cache.ClanCache;
@@ -31,6 +32,11 @@ public record PlaceholderAPIHook(Server server, ClansConfig config,
 
 	public void register() {
 		new ClansExpansion(server, config, cache, legacy, topCache).register();
+	}
+
+	public static void unregister() {
+		var expansionManager = PlaceholderAPIPlugin.getInstance().getLocalExpansionManager();
+		expansionManager.findExpansionByIdentifier("clans").ifPresent(expansionManager::unregister);
 	}
 
 }

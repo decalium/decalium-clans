@@ -314,6 +314,7 @@ public final class DecaliumClansPlugin extends JavaPlugin {
 		} catch (InterruptedException e) {
 			getSLF4JLogger().error("Failed to shutdown with following error:", e);
 		}
+		PlaceholderAPIHook.unregister();
 		getServer().getServicesManager().unregisterAll(this);
 	}
 
