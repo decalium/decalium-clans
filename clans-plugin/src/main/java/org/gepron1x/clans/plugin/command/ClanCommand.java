@@ -29,7 +29,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.gepron1x.clans.api.ClanBuilderFactory;
 import org.gepron1x.clans.api.RoleRegistry;
-import org.gepron1x.clans.api.chat.ClanTagResolver;
 import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.clan.DraftClan;
 import org.gepron1x.clans.api.clan.member.ClanMember;
@@ -100,10 +99,6 @@ public class ClanCommand extends AbstractClanCommand {
 				.permission(Permission.of("clans.member.list"))
 				.handler(clanExecutionHandler(this::listMembers)));
 
-		manager.command(builder.literal("info", "myclan").meta(CommandMeta.DESCRIPTION, descriptions.info())
-				.permission(Permission.of("clans.info"))
-				.handler(clanExecutionHandler(this::myClan)));
-
 		manager.command(builder.literal("leave").meta(CommandMeta.DESCRIPTION, descriptions.leave())
 				.permission(Permission.of("clans.leave"))
 				.handler(clanExecutionHandler(this::leaveClan)));
@@ -161,12 +156,6 @@ public class ClanCommand extends AbstractClanCommand {
 		clan.edit(edition -> edition.rename(displayName))
 				.thenAccept(c -> this.messages.commands().displayNameSet().with("name", displayName).send(player))
 				.exceptionally(exceptionHandler(player));
-	}
-
-	private void myClan(CommandContext<CommandSender> context) {
-		Player player = (Player) context.getSender();
-		Clan clan = context.get(ClanExecutionHandler.CLAN);
-		this.messages.commands().infoFormat().with("clan", ClanTagResolver.clan(clan)).send(player);
 	}
 
 	private void listMembers(CommandContext<CommandSender> context) {
