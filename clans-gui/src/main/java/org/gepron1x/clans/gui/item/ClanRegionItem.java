@@ -110,6 +110,7 @@ public final class ClanRegionItem implements BuildableItem.NoConfig, Listener {
 
 	@EventHandler
 	public void on(PlayerInteractEvent event) {
+		if(event.getPlayer().isSneaking()) return;
 		ClanUser user = clans.users().userFor(event.getPlayer());
 		if(!user.hasPermission(ClanPermission.CLAN_REGION_MENU)) return;
 		Optional.ofNullable(event.getClickedBlock()).flatMap(b -> clans.regions().regionId(b)).flatMap(id -> {
