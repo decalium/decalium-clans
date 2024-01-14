@@ -20,6 +20,7 @@ package org.gepron1x.clans.plugin.listener;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import io.papermc.paper.util.Tick;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -30,7 +31,6 @@ import org.gepron1x.clans.api.clan.Clan;
 import org.gepron1x.clans.api.repository.CachingClanRepository;
 import org.gepron1x.clans.api.statistic.StatisticType;
 import org.gepron1x.clans.plugin.config.settings.ClansConfig;
-import org.gepron1x.clans.plugin.util.DurationTicks;
 import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 
 import java.util.Map;
@@ -70,6 +70,7 @@ public final class StatisticListener implements Listener {
 
 	private void incrementKills(Player player) { // tricky optionals
 		Optional<Clan> playerClan = repository.userClanIfCached(player);
+		if(playerClan.isEmpty()) return;
 		Optional<Clan> killerClan = Optional.ofNullable(player.getKiller()).flatMap(repository::userClanIfCached);
 		if(playerClan.flatMap(clan -> killerClan.map(clan::equals)).orElse(false)) { // both are in the same clan
 			return;
@@ -80,7 +81,7 @@ public final class StatisticListener implements Listener {
 
 
 	public void start() {
-		long ticks = new DurationTicks(config.statisticUpdatePeriod()).getAsLong();
+		long ticks = Tick.tick().fromDuration(config.statisticUpdatePeriod());
 		plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
 			if (statisticsTable.isEmpty()) return;
 			plugin.getSLF4JLogger().info("Started updating statistics.");
